@@ -17,57 +17,48 @@ and a whole host of related complications reaching the lungs, heart, and brain.
 To study this disease, it is critical to take into account the menstrual cycle
 and its effects on the human body.
 
-Data on this disease is scarce, and the reason is diagnostic rather than
-scientific. There is no non-invasive test. A definitive diagnosis requires
-laparoscopy, which is keyhole surgery under general anaesthetic performed in
-order to look, so a patient must be considered a serious enough candidate to
-be operated on before they can be told what is wrong. Across 444 patients
-with surgically confirmed disease the mean interval from first symptom to
+While some clinical trials are still ongoing, to our knowledge endometriosis has no
+non-invasive tests. A definitive diagnosis currently requires laparoscopic surgery
+to confirm lesions formed by this disease. Across 444 patients with surgically 
+confirmed endometriosis the mean interval from first symptom to
 diagnosis was 11.1 years \citep{bontempo2025diagnostic}. Every confirmed
-sample of diseased tissue therefore comes from an operation, and every cohort
-is small, expensive and assembled one hospital at a time. The largest
-published single-cell study of endometriosis holds tens of donors. That is a
-supply problem no model can solve, and it is upstream of every decision in
-this paper.
+sample of diseased tissue therefore comes from a surgery making every cohort 
+small, expensive, and assembled locally. The largest published single-cell study 
+of endometriosis has sampled tens of donors compared to the millions affected. 
+This problem calls for consolidation of data and innovation in analysis.
 
-It also determines what any single-cell study of this disease can be a study
-of. The cohort behind that eleven-year interval was 85.6\% white and 64.5\%
-educated to degree level, so eleven years is the wait for the patients best
-placed to be believed. Because reaching an operation means having been
-believed first, the published single-cell record of endometriosis is a record
-of the believed, and a corpus assembled from it is not a sample of everyone
-who has the disease. Endometriosis is a disease of tissue and of a cycle
-rather than of a gender, and anyone with a uterus can have it; donors,
-patients and participants are described as people throughout this paper.
-
-What those cohorts have established is consistent and, taken one at a time,
-bounded. Lesions are not simply displaced endometrium but carry
-transcriptional programmes of their own
-\citep{fonseca2023endometriosis,tan2022singlecell}. The unaffected
-endometrium of an affected person is already altered, so the disease is not
-confined to the lesion
-\citep{duempelmann2026endometrium,shih2022menstrual}. Immune involvement
-recurs across every study that looks for it
-\citep{huang2023immune,chen2022adenomyosis}, and reference atlases of healthy
-endometrium now describe its cell types across the cycle
-\citep{mareckova2024heca}. Each of those results, however, rests on one
-cohort of tens of donors, with its own tissue sites, its own gene panel and
-its own protocol. Questions that need variation across many donors --- how
-cycle phase and disease interact, whether a signature holds outside the
-cohort that found it --- need more donors than any single study has. Pooling
-the published record is the only route to that scale.
-
-Pooling, however, creates a confound that is not a nuisance but the biology
-itself. Every donor in this corpus was biopsied once, so each contributes
+Pooling, however, creates a critical problem this paper is specifically designed 
+to address. Every donor in this corpus was biopsied once, so each contributes
 cells from a single point in the menstrual cycle, and menstrual phase is
 constant within a donor. A quantity that is constant within a donor and
 varies between donors is, geometrically, a per-donor offset --- which is
-exactly the form a batch effect takes. Batch correction cannot distinguish
-them, so removing the study signal removes the cycle with it, and a stronger
-correction removes more. This is why integrating endometrial single-cell data
-with standard tools silently discards the signal the field most wants to
-measure: the correction is working as designed, and the design cannot tell
-the two apart.
+exactly the form a batch effect takes. It is thus easy for a naive model to
+conflate batch effects with biological signal, and worse for a model that
+corrects for them: removing the study signal removes the cycle with it, and a
+stronger correction removes more.
+
+A subtle but deliberate choice in this study is to treat this disease as a human 
+health problem rather than a gendered disease. At a scale of hundreds of millions 
+of patients, we believe this to be necessary to bring attention to this problem.
+
+
+The questions that make a pooled corpus worth assembling are the ones no
+single cohort can reach. What the field has established is consistent:
+lesions are not simply displaced endometrium but carry transcriptional
+programmes of their own \citep{fonseca2023endometriosis,tan2022singlecell};
+the unaffected endometrium of an affected person is already altered, so the
+disease is not confined to the lesion
+\citep{duempelmann2026endometrium,shih2022menstrual}; immune involvement
+recurs across every study that looks for it
+\citep{huang2023immune,chen2022adenomyosis}; and reference atlases now
+describe the cell types of healthy endometrium across the cycle
+\citep{mareckova2024heca}. Each of those results rests on one cohort, with
+its own tissue sites, its own gene panel and its own protocol, which is what
+leaves the next questions out of reach: how cycle phase and disease interact,
+and whether a signature found in one cohort holds in another. Both are
+questions about variation between donors, and both therefore require a
+representation of pooled data in which donor identity has been removed and
+cycle phase has not.
 
 \note{PARAGRAPH 6 --- what we do, and the contributions. Not ``we propose a
 novel architecture''. The trade-off is made explicit and measurable: a
