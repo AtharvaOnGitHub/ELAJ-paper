@@ -31,7 +31,20 @@ language. Sixteen dimensions against baselines at 128 and higher, so the
 comparison is not width-matched. The cycle-day continuity rests on one
 cohort. The immune disease result does not replicate across cohorts.
 17{,}873 held-out cells (4.3\%) share a donor with training through the
-one overlapping study pair. Cell-type labels exist only for endometrium.}
+one overlapping study pair. Cell-type labels exist only for endometrium.
+\\ADD, AW's ruling 30 October 2026: one study of the eleven (li et al.,
+45{,}312 cells, 2.87\% of the corpus, 6 of 269 donors) is a single-cell
+atlas of pre-ovulatory follicular fluid collected at IVF oocyte retrieval,
+not an endometrial biopsy. It entered the corpus labelled as endometrium and
+the model was conditioned accordingly, so the label is reported as it was
+given rather than silently corrected. Three consequences to state: the
+sample is a fluid aspirate where every other study is a tissue section; its
+\texttt{eutopic}/\texttt{control} marks follicular fluid from an ovarian
+endometriosis patient against a male-factor infertility control, which is
+not what those words mean in the other nine studies, so 2.87\% of the
+disease axis carries different semantics; and its cycles are
+hormonally stimulated. It contributes NO cell-family and NO phase labels, so
+the cycle and cell-type results are untouched by it.}
 
 \note{PARAGRAPH 4 — what this makes possible next, kept concrete.
 Avoid the reflexive gesture at clinical translation; say what a sixteen-
