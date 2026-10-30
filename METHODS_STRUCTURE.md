@@ -48,6 +48,11 @@ bottom rather than silently absorbed.
 Live tracker. Word counts are read from `sections/04-methods.tex`, not typed.
 Retired subsections and the reasoning are at the end under **Retired**.
 
+**Notes live in `METHODS_NOTES.md`, not in the manuscript.** A subsection's
+`\note{}` block stays inline while it is unwritten, where it serves as the
+brief; once seeded, the note moves to that file in the same commit. So the
+`.tex` reads as prose and the scaffolding is still one file away.
+
 ## The corpus
 
 | # | heading | ch | status | what it does |
@@ -89,17 +94,22 @@ Retired subsections and the reasoning are at the end under **Retired**.
 
 ## Training procedure
 
+Empty by ruling — see **Retired**. Per-study normalisation, batch
+construction and the seed/variability disclosure all fold into Optimisation,
+which now sits after the evaluation run rather than before it, because it is
+procedure rather than measurement.
+
 | # | heading | ch | status | what it does |
 |---|---|---|---|---|
-| 15 | **Optimisation** | 12 | **not written** — **CONTENTS OPEN** | AdamW, 1e-3, batch 256, bf16, cosine over a 20-epoch horizon chosen for shape not length, early stopping at patience 5. Catch-all: must also absorb per-study normalisation, per-study batch construction, the gene-masking policy, and seed 24 / single runs / the 4% band. |
+| 18 | **Optimisation** | 12 | **not written** — **CONTENTS OPEN** | AdamW, 1e-3, batch 256, bf16, cosine over a 20-epoch horizon chosen for shape not length, early stopping at patience 5. Catch-all: must also absorb per-study normalisation, per-study batch construction, the gene-masking policy, and seed 24 / single runs / the 4% band. |
 
 ## Evaluation
 
 | # | heading | ch | status | what it does |
 |---|---|---|---|---|
-| 16 | **Cross-donor agreement** | 21 | **not written** | Why plain kNN recovery fails, then the definition: same-donor neighbours discarded, k=100. Absorbs the permutation null, p-floor argument intact. |
-| 17 | **Donor and study recovery** | 24 | **not written** | How much non-biological signal remains in the latent; lower is better, because removing it is what the model is for. The frontier's second axis. |
-| 18 | **Whole-corpus embedding** | 22 | **not written** | Why the split stops mattering once the model is fixed; all 1,577,728 cells embedded; phase the exception. Absorbs the cell-type region procedure. |
+| 15 | **Cross-donor agreement** | 21 | **not written** | Why plain kNN recovery fails, then the definition: same-donor neighbours discarded, k=100. Absorbs the permutation null, p-floor argument intact. |
+| 16 | **Donor and study recovery** | 24 | **not written** | How much non-biological signal remains in the latent; lower is better, because removing it is what the model is for. The frontier's second axis. |
+| 17 | **Whole-corpus embedding** | 22 | **not written** | Why the split stops mattering once the model is fixed; all 1,577,728 cells embedded; phase the exception. Absorbs the cell-type region procedure. |
 
 ## Reporting
 
