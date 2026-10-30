@@ -1,35 +1,66 @@
 % =====================================================================
 % INTRODUCTION — NMI prints this with no heading of its own, running
-% straight from the abstract. Roughly 600–800 words, four or five
-% paragraphs. Accessible to a reader from either side: a machine
-% learning reader who has never heard of the secretory phase, and a
-% clinician who has never trained an autoencoder.
+% straight from the summary paragraph. The \section*{Introduction} below
+% is scaffolding and comes out before submission; the Introduction is
+% simply the text before the first Results subheading.
 %
-% HIGH-LEVEL ONLY. Paragraph-by-paragraph breakdown comes after the
-% flow below is approved.
+% Paragraph map and word allocation: INTRODUCTION_STRUCTURE.md.
 % =====================================================================
 
 \section*{Introduction}
 
-\note{PARAGRAPH 1 — the disease, and why it is a computational problem
-and not only a clinical one. Prevalence, diagnostic delay, the fact that
-lesions are read by eye from biopsies. What a reader needs to know about
-endometriosis to follow the rest, and nothing more. Participants are
-people with a uterus; this is a human health problem.}
+A person with endometriosis can often name the week the pain will arrive.
+Tissue resembling the lining of the uterus grows outside it, on the ovaries,
+the peritoneum, the bladder and the bowel, and because that tissue answers to
+the same hormonal cycle as the lining it resembles, it thickens and bleeds on
+the same schedule. The disease affects an estimated ten percent of people of
+reproductive age, which is some 190 million people, and its causes remain
+unknown \citep{who2025endometriosis}. A condition that announces itself on a
+calendar ought to be among the easiest to recognise. The menstrual cycle is
+therefore not a nuisance variable in this disease. It is the axis along which
+the disease moves, and any account of endometrial tissue that cannot locate a
+sample on that axis has discarded the one thing the symptoms follow.
 
-\note{PARAGRAPH 2 — the data situation. Eleven public studies, no shared
-panel, no shared protocol, cohorts of tens of donors each. Why pooling
-is the only route to statistical power here, and why pooling is also
-what breaks the standard tooling.}
+It takes eleven years. Across 444 patients with surgically confirmed disease,
+the mean interval from first symptom to diagnosis was 11.1 years
+\citep{bontempo2025diagnostic}, and how that figure decomposes matters more
+than the figure itself: six and a half of those years fall after the patient
+has presented to a clinician and asked for help, along a pathway where
+symptoms are suppressed with hormonal treatment and non-specific
+investigations are relied upon \citep{ballard2006delay}. Of the patients who
+were misdiagnosed, 49.5\% were first told their symptoms were caused by a
+mental health disorder --- a disease of the pelvis read as a disease of the
+mind, in about half of cases. This is the local form of something general and
+measured. Women report pain that is more severe, more frequent and longer
+lasting than men's and are treated for it less aggressively; presented with
+the same complaint, clinicians are more likely to prescribe a woman a
+sedative and a man an analgesic \citep{hoffmann2001girl}, and in emergency
+departments patients at the same mean pain score received analgesia less
+often if they were women \citep{chen2008gender}. A meta-analysis of ten
+studies finds misdiagnosis the single largest clinician contribution to
+delay, with general practitioners recording endometriosis as irritable bowel
+syndrome or as stress \citep{li2025factors}.
 
-\note{PARAGRAPH 3 — THE CONFOUND, which is the intellectual core of the
-paper and the thing a reader must understand before any result means
-anything. Each donor was biopsied once. Menstrual phase is therefore
-constant within a donor, and a per-donor offset is geometrically the same
-object as a batch effect. Batch correction cannot tell them apart, so
-removing the batch removes the cycle. State plainly that this is not a
-technical caveat: it is the reason naive integration of endometrial data
-silently discards the biology people want.}
+That literature is cited here with its own terms because it measured a
+difference between women and men, and the finding is unavailable without
+them. It is the last time this paper will use them. Endometriosis is a
+disease of tissue and of a cycle; it is not a disease of a gender, and
+everyone who has a uterus can have it. The evidence above is precisely why:
+a condition understood as belonging to women has been met with sedatives,
+reassurance and eleven years, and continuing to file it that way is part of
+the mechanism that produced those eleven years rather than a neutral
+description of who is affected. For the remainder of this paper, donors,
+patients and participants are people.
+
+The delay also decides what any study of this disease can be a study of. The
+cohort behind that eleven-year figure was 85.6\% white and 64.5\% educated to
+degree level, so eleven years is what the wait looks like for the patients
+best placed to be believed. Because diagnosis is surgical, every confirmed
+sample of diseased tissue comes from an operation, and reaching an operation
+means having been believed first. The published single-cell record of
+endometriosis is therefore a record of the believed. Whatever a corpus
+assembled from it samples, it is not everyone who has the disease, and no
+model recovers a patient who was sent home.
 
 \note{PARAGRAPH 4 — what we do about it. Not ``we propose a novel
 architecture''. We make the trade-off explicit and measurable, map the
