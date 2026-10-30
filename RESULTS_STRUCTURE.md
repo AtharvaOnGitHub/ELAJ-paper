@@ -1,14 +1,51 @@
-# Results — the findings, inventoried before anything is ordered
+# Results — the findings, inventoried and categorised
 
 **Edit this file. Nothing gets written as prose until you have.**
 
-Every number below is read from `Outputs/Benchmarks/*/benchmark.csv`,
-`Outputs/validate/`, or `axw1008/docs/paper/ABLATIONS.md`. Nothing is from
-memory. Where a figure is provisional or not comparable across runs, it says
-so.
+Every number is read from `Outputs/Benchmarks/*/benchmark.csv`,
+`Outputs/validate/`, or `axw1008/docs/paper/ABLATIONS.md`. Nothing from
+memory.
 
-**No ordering here, by design.** This is the list and the categories; scoring
-and sequence come next.
+---
+
+## How NMI structures a Results section
+
+**The structure rule, and I am confident of it** — two independent sources
+agree, both summarising nature.com:
+
+> Articles should be divided as follows: **Introduction (without heading),
+> Results, Discussion, and Methods. Results and Methods should be divided by
+> topical subheadings; the Discussion does not contain subheadings.**
+
+So: our Results carries topical subheadings and our Discussion must not. The
+current Discussion plan is four unheaded paragraphs, which already complies.
+
+**The numbers, and these need your eyes rather than mine.** nature.com's
+content-types page sits behind an authentication redirect from this machine,
+so I could not read it directly. What a search of it reports for **Articles**:
+
+| | reported for NMI Articles | what we have been working from |
+|---|---|---|
+| main text | **3,500 words**, excluding abstract, Methods, references, figure legends | 4,300 (Nature generic, 8pp at 5-6 items) |
+| abstract | **150 words, UNREFERENCED** | 200 words, fully referenced (Nature generic) |
+| display items | **6** | 8 |
+| references | ~50 | 50 |
+
+**⚠️ If that abstract line is right, I corrected you in the wrong
+direction.** Your original header said "NMI allows up to 200 words, no
+citations" and I overwrote it with "fully referenced" on the strength of
+Nature's generic formatting guide, which says exactly that for Nature
+Articles. NMI's own Article spec appears to say 150 and unreferenced. The
+local PDFs do not settle it — they are the AIP, initial-submission,
+preparing-material and production pages, and none of them carries the Article
+word and figure spec. **Please check the content-types page while logged in**;
+if it says 150 unreferenced, your instinct was right and the abstract note
+needs reverting.
+
+Two knock-on effects if the numbers hold: the figure list allocates **eight**
+display items against a cap of **six**, and the main-text budget is 3,500
+*excluding* the abstract, which is roomier for Results than my earlier
+arithmetic allowed.
 
 ---
 
@@ -113,22 +150,131 @@ would argue they are undersold if they sit in Methods only.
 
 ---
 
-## Open questions before we order
+## Where each finding now sits — AW's rulings, 30 October 2026
 
-1. **Does category E go in Results or stay in Methods?** E1 and E2 are
-   measurements, which argues Results. Against: they are measurements about
-   our own estimator rather than about the biology or the model, and a
-   reader may read a section defending the metric as defensive. My view is
-   that E1 earns Results on its own — `random groups` inverting from best to
-   worst is a striking result in its own right — and E2-E4 belong in Methods.
-2. **A5 and A7 are negative and both are real.** We lose to PCA at equal
-   width on cell type, and reconstruction beats a study-mean baseline by only
-   6.5%. Both need a home. Declared inside the benchmark subsection, or
-   gathered in a limitations passage?
-3. **How many of D1-D7 survive?** Seven ablation findings is more than
-   ~1,800 words of Results can carry alongside everything else. D1 and D3
-   look essential, D7 is a limitation rather than an ablation result, and
-   D2's regulariser finding is the most surprising.
-4. **Is A6 reportable at all?** Disease is weak for everyone and three
-   baselines beat our best cohort-level figure. Stating it is honest;
-   omitting it would be noticed, since the benchmark table carries disease.
+### The victory march (A1-A4, B1, C1-C5)
+
+AW: A1-A4 "should be the victory march of this paper. That puts us in SOTA
+category straight away." B1 and C1-C5 likewise. These are the subsections
+that justify the venue, and they run in sequence rather than being
+interleaved with what we found out about the model.
+
+**E3 moves into A**, on AW's ruling that it is a result rather than hedging:
+the standard scIB batch metrics are degenerate on this corpus --
+`ilisi_knn` exactly 0.0000 and `pcr_batch` exactly 1.0000 for PCA, scVI,
+scANVI and ELAJ alike, `kbet` 0.000 to 0.025 for all. It belongs beside A2
+because it is why study mixing is measured the way it is.
+
+### A5 is not a loss. RESOLVED, and verified from the data
+
+AW: "ELAJ is comparable on cell-type. I believe SCimilarity was
+semi/supervised on it. We do not 'lose' cell type." Confirmed from the
+`supervised_on` column of the benchmark table:
+
+| method | supervised on | width | cross-donor family |
+|---|---|---:|---:|
+| SCimilarity | **cell family** | 128 | 0.9896 |
+| PCA | --- | 16 | 0.9868 |
+| **ELAJ** | --- | 16 | **0.9841** |
+| scANVI | **cell family** | 16 | 0.9835 |
+| scVI | --- | 16 | 0.9828 |
+
+Both methods that beat us by more than 0.003 **were given the label being
+scored**. Write it as comparable, with the supervision declared per method,
+which the Methods already promises.
+
+⚠️ **A correctness problem in our own table, and it cuts against us if
+unfixed.** ELAJ's `supervised_on` is **empty** in every benchmark row, but
+ELAJ *is* supervised on menstrual phase. A reader of that table would
+conclude ELAJ saw no labels at all, which overstates A1 -- the headline
+result. This is `OUTSTANDING`'s "supervised_on for ELAJ rows" and it must be
+fixed before the table is published.
+
+### A6 is an open question for the field, not our failure
+
+AW: disease being weak for everyone "is a curious result to be mentioned
+against the fact that we seem to have the best biology and least donor
+identity. It is more an open question for the field rather than a failure on
+our part." So: stated inside the benchmark subsection, framed as the field's
+open problem. Three baselines reach a higher best-cohort figure than ours
+(scFoundation 0.4486, scANVI 0.4221, scVI 0.4190 against our 0.3787) and
+none of them is good.
+
+### A7 gets one or two lines
+
+AW: "Reconstruction was an objective of training. Reconstruction does not
+define what our latent space is capable of." So the 6.5% over a study-mean
+baseline is stated and not argued, and the no-per-gene-intercept point from
+Methods is what a reader needs if they press.
+
+### B2 and B3 leave the frontier subsection
+
+AW: "B2 and B3 are results closer to ablation. We found something about the
+model rather than the model found something about the data. I'd separate them
+from B1." So B1 stays in the victory march and B2-B3 join D.
+
+### D is the section an ML reader actually wants
+
+AW: "These are the results that a true ML researcher would actually want to
+read properly. The fact that we have them and we want to publish them is
+itself a huge thing for a paper like ours to do. Most other papers don't do
+this."
+
+So D1-D6 plus B2-B3 form one subsection, and the fact that the predictions
+were **registered in each config before the runs started** is worth its
+sentence -- 6 of 11 banded predictions landed, and the misses are reported.
+
+### D7 becomes C6, and splits across two sections
+
+AW: "I would point D7 to discussion. This is the disruptive finding that
+confirms what the patients go through: disease staging is not biologically
+supported as far as we can tell and we should switch to a more biological
+staging of this disease. We would need to write the numbers in results
+though. Maybe this is a C6 instead of D7?"
+
+Yes, C6. It is a discovery about the labels rather than an ablation result,
+and it sits with C4 and C5 as the third disease finding.
+
+| | |
+|---|---|
+| **Results (C6)** | the numbers only. Stage and grade carry nothing in any configuration: p 0.12 to 0.63, grade negative everywhere, across every arm in the A1 wave and both frontier arms. Stage reaches 58 donors and grade 60, so the p-floor is stated here too or the negative cannot be read |
+| **Discussion** | the interpretation. Surgical staging is not recoverable from transcriptional state, which is consistent with what patients report -- stage does not predict symptom severity -- and argues for a staging that is biologically grounded rather than anatomical |
+
+**This is the paper's most disruptive claim and it needs its evidence
+airtight.** Two cautions before it is written: the p-floor means we are
+reporting an absence we cannot distinguish from undetectability at 58-60
+donors, and `EndometriosisGrade` reaching only 60 donors is thin. The
+Discussion wording must say "not recoverable from this corpus at this donor
+count", not "not biologically real".
+
+### E leaves Results, except E3
+
+AW: "These are either discussions or hedging. I would not have these in
+results unless we are presenting numbers."
+
+| | goes to |
+|---|---|
+| E1, the donor-memorisation readout at rho +0.943 | **Methods**, inside *Cross-donor agreement*, where it is the justification for the estimator. I had argued for Results and AW overruled it |
+| E2, the same-donor floor | **Methods**, already written into *Cross-donor agreement* |
+| E3, scIB degeneracy | **Results, category A** |
+| E4, the p-floor | **Methods**, already written -- but it is also quoted in C6, because a negative result cannot be read without it |
+
+### F stays out of Results
+
+All six are Discussion limitations, which is where the Discussion plan
+already puts them.
+
+---
+
+## Open questions
+
+1. **Six display items or eight.** If NMI caps Articles at six, two of the
+   eight planned figures merge or go. The victory march needs the frontier
+   plot, the against-the-field panels, the cell-type crops and the cycle
+   crop; that is four, leaving two for the ablations, the disease finding and
+   the confound schematic.
+2. **How much of the victory march can 3,500 words carry** alongside D,
+   which AW wants read properly? D1-D6 plus B2-B3 is eight findings.
+3. **Does the confound schematic (Figure 1) survive** at six display items?
+   It is the one figure a reader needs before any other, and it shows no
+   data.
