@@ -1,80 +1,160 @@
 % =====================================================================
-% DISPLAY ITEMS — NMI allows up to SIX in the main text for an
-% Article. VERBATIM, Content Types: "Display items - up to 6 items
-% (figures and/or tables)." An earlier version of this comment said eight
-% and then ten; both were wrong. Extended Data is capped at TEN
-% separately (Preparing your material: "A maximum of ten Extended Data
-% display items is permitted"), and Supplementary Information is the
-% uncapped tier.
+% DISPLAY ITEMS — six for the main text, and the reason panels are the
+% cheapest real estate in this paper.
 %
-% SO TWO OF THE EIGHT BELOW HAVE TO GO OR MERGE. Reviewers read Extended
-% Data less carefully than the main text, so the six main slots are the
-% real budget and are allocated here rather than discovered at the end.
+% NMI, Content Types, Article: "Main text — up to 3,500 words,
+% EXCLUDING abstract, Methods, references AND FIGURE LEGENDS."
+% "Display items — up to 6 items (figures and/or tables)."
 %
-% This file is the FIGURE LIST, not the figures. Each entry names what
-% the panel shows, which arm it needs, and whether the script that makes
-% it exists yet. The arm matters: a figure built from one arm and
-% captioned as if it were the model is the error we just caught in the
-% crop UMAPs.
+% Nature, Formatting guide: "Each figure legend should begin with a
+% brief title for the whole figure and continue with a short description
+% of each panel... Legends should be fewer than 300 words each." And a
+% composite figure with several panels "usually needs to take about half
+% a page, equivalent to about 600 words, in order for all the elements
+% to be visible".
+%
+% THE STRATEGIC CONSEQUENCE. Legends do not count against the 3,500, so
+% six figures at up to 300 words of legend each is up to 1,800 words of
+% free exposition. A finding that lives in a panel and its legend costs
+% ZERO main-text words; the same finding enumerated in prose costs
+% around 125. We have roughly twenty findings and 2,000 words of
+% Results, so the figures are not illustrations of the prose — they
+% carry findings the prose then points at.
+%
+% What a half-page composite costs is PAGE space, which is the editor's
+% layout problem rather than our word budget. So: every main figure is a
+% composite, panels are used generously, and legends are written to the
+% 300-word limit rather than kept brief.
+%
+% Each figure must be regenerable by one command from a committed
+% script — reproducibility item R5, cheaper to honour while building.
 % =====================================================================
 
 \section*{Display items}
 
-\note{BUDGET: SIX, not eight. Allocation below. Each figure must be regenerable
-by one command from a committed script — that is reproducibility item R5
-and it is cheaper to honour while building than to retrofit.}
+\note{SIX MAIN FIGURES, mapped against RESULTS\_STRUCTURE.md's finding
+labels so nothing is orphaned and nothing is carried twice. Status is
+whether the panel exists today.}
 
-\subsection*{Figure 1 — the confound, and the design}
-\note{Schematic, not data. Why a per-donor offset and a batch effect are
-the same geometric object, and where in the model the two are pulled
-apart. The one figure a reader must understand to read any other. DOES
-NOT EXIST; has to be drawn.}
-
-\subsection*{Figure 2 — the frontier}
-\note{The pre-registered factorial, the curve, and the two reported arms
-marked on it. EXISTS (frontier plot, both arms).}
-
-\subsection*{Figure 3 — \elaj\ against the field}
-\note{Grouped bars, cross-donor agreement and the donor and study costs,
-every panel oriented higher-is-better. EXISTS. Needs the width
-limitation in the caption and \texttt{supervised\_on} populated for the
-\elaj\ rows.}
-
-\subsection*{Figure 4 — the corpus through the latent}
-\note{The whole-corpus UMAP with its cell-type regions marked, as the
-entry point to every crop that follows. EXISTS as
-\texttt{01\_cell\_family}. ARM MUST BE NAMED IN THE CAPTION.}
-
-\subsection*{Figure 5 — grouped by cell type, across tissue}
-\note{The tissue crop. Stromal cells from five tissues together;
-epithelium almost purely endometrial. EXISTS as \texttt{02\_tissue}.}
-
-\subsection*{Figure 6 — the cycle is a cycle}
-\note{THE HEADLINE FIGURE. Cycle-day crop on a cyclic colour map, with
-the displacement numbers (1.07 / 0.98 / 0.39 / 0.34) beside it so the
-visual and the measurement sit in one item. EXISTS as
-\texttt{08\_cycleday}; the displacement panel does not and has to be
+\subsection*{Figure 1 — The confound, and where the model pulls it apart}
+\note{SCHEMATIC, no data. The one figure a reader must understand before
+any other, and the one most at risk now the cap is six --- it shows
+nothing measured, which is the easiest kind to argue away. Keep it: the
+Introduction's central argument is geometric and a sentence cannot do it.
+\\\textbf{a} One biopsy per donor, so every cell of a donor shares one
+cycle phase. \textbf{b} The same quantity drawn as a per-donor offset
+beside a batch effect, which is the same object. \textbf{c} Where in the
+model the two are separated --- adversary on the latent, phase head on
+the latent, decoder given study directly.
+\\CARRIES: the Introduction's paragraph 3. DOES NOT EXIST, has to be
 drawn.}
 
-\subsection*{Figure 7 — disease signal, and where it is not}
-\note{The immune result at 0.77/0.83 against 0.22 corpus-wide, AND the
-duempelmann non-replication in the same figure. Deliberately one item,
-because splitting them would let a reader take the positive without the
-negative. PARTLY EXISTS (\texttt{03\_disease}).}
+\subsection*{Figure 2 — The frontier}
+\note{\textbf{a} The factorial: cross-donor phase against donor
+recovery, six arms, Pareto front drawn. \textbf{b} The same against
+study mixing. \textbf{c} The two knobs separated --- \texttt{lambda\_dab}
+moves the frontier, \texttt{w\_kl\_gauss} travels along it.
+\\CARRIES: B1.
+\\THE LEGEND SOLVES THE ARMS-TABLE PROBLEM. AW ruled no hyperparameter
+table anywhere, and the frontier points still need their coordinates.
+Put each arm's two knob values in the legend, where they cost no
+main-text words and sit next to the point they describe.
+\\EXISTS: frontier plot, both arms, plus the Excel explorer for choosing
+which points appear.}
 
-\subsection*{Figure 8 — ablations}
-\note{C-6 first: the phase classifier removed. Reserved. DOES NOT EXIST
-— the runs have not been done.}
+\subsection*{Figure 3 — \elaj\ against the field}
+\note{THE VICTORY MARCH IN ONE ITEM, six panels, every one
+higher-is-better oriented or marked otherwise.
+\\\textbf{a} Cross-donor menstrual phase, twelve methods, width
+annotated on each bar. \textbf{b} Cross-donor cell family, with
+\emph{supervised-on-this-label} methods hatched --- SCimilarity and
+scANVI. \textbf{c} Donor recovery, lower better. \textbf{d} Study
+mixing, lower better. \textbf{e} The scIB batch metrics flat across all
+methods, which is why c and d are measured our way. \textbf{f} Disease,
+every method, nobody good.
+\\CARRIES: A1, A2, A3, A4, A5, A6, E3. Seven findings, no prose
+enumeration needed --- Results states the claim and points here.
+\\EXISTS as grouped bars; panels b, e, f need building. Caption carries
+the width limitation and the per-method supervision.}
+
+\subsection*{Figure 4 — Disease, and where it is not}
+\note{\textbf{a} Whole-corpus UMAP with cell-type regions marked, the
+entry point for every crop. \textbf{b} Disease crop, immune
+concentration at 0.77/0.83 against 0.22 corpus-wide. \textbf{c} The
+non-replication: marecko beside duempelmann, orderings flipping.
+\textbf{d} Stage and grade at chance across every arm, with donor counts
+on the axis so the floor is visible.
+\\CARRIES: C1 (partly), C4, C5, C6.
+\\DELIBERATELY ONE ITEM: splitting b from c would let a reader take the
+positive without the negative. And d belongs here rather than with the
+ablations --- it is a finding about the labels, not about the model.
+\\PARTLY EXISTS (\texttt{01\_cell\_family}, \texttt{03\_disease}); the
+stage/grade panel does not. ARM MUST BE NAMED IN THE CAPTION.}
+
+\subsection*{Figure 5 — The cycle is a cycle, and it moves what it should}
+\note{THE HEADLINE FIGURE.
+\\\textbf{a} Cycle-day crop on a cyclic colour map --- day 8 through
+15--20 to 25--30 with the ends meeting. \textbf{b} Displacement per cell
+type in units of that type's own scatter: stromal 1.07, epithelial 0.98,
+endothelial 0.39, immune 0.34. \textbf{c} The same four numbers from the
+second frontier arm, identical, which is the robustness claim.
+\textbf{d} The tissue crop: stromal cells from five tissues landing
+together, epithelium almost purely endometrial.
+\\CARRIES: C2, C3, and C1's other half.
+\\THE ARGUMENT THE LEGEND MUST MAKE: the phase head is one linear map
+over the whole latent and was never given cell type, so it cannot have
+produced the split in b. Honest limit in the same legend --- the day
+values come from one cohort.
+\\EXISTS as \texttt{08\_cycleday} and \texttt{02\_tissue}; the
+displacement panels do not.}
+
+\subsection*{Figure 6 — What the latent needs}
+\note{THE FIGURE AN ML READER COMES FOR, and the one most papers do not
+publish.
+\\\textbf{a} The five single-key ablations across the five axes, one
+grouped bar per axis, base marked. \textbf{b} The phase margin split:
+69.5\% supervision, 30.5\% architecture, against chance 0.370.
+\textbf{c} The regulariser result --- \texttt{train\_nb} falling
+0.4140$\rightarrow$0.3772 while \texttt{val\_nb} rises
+0.4083$\rightarrow$0.4256 from epoch 1. \textbf{d} ECS plotted ON
+Figure 2's frontier, showing it travels along rather than expands.
+\textbf{e} The defeated discriminator: adversary loss against donor
+recovery, correlation $+0.883$.
+\\CARRIES: D1, D2, D3, D4, D5, D6, B2, B3.
+\\THE LEGEND CARRIES THE REGISTRATION: predictions were written into each
+config before the runs started, 6 of 11 bands landed, and the misses are
+reported. That is the sentence that makes this figure unusual.
+\\DOES NOT EXIST. The data does --- all five arms are scored.}
 
 % ---------------------------------------------------------------------
 \section*{Extended Data}
-\note{Unlimited, and where the honest overflow goes: the remaining crop
-panels (phase, stage, grade, platform, progesterone), the per-arm
-comparison tables, the sufficient-statistics tables at every coarsening,
-the donor-overlap audit, and the baseline fitting details. Captions here
-carry the detail that the main-text captions cannot afford.}
+\note{TEN MAXIMUM (NMI, Preparing your material). Captions here carry the
+detail main-text captions cannot afford. Allocation, in priority order:
+\\1. The whole-corpus versus cross-donor inversion --- E1, the
+$\rho$ +0.943 table and \texttt{random groups} going best-of-six to
+worst-of-six. The strongest evidence for our own estimator.
+\\2. The same-donor floor --- E2, per label, with the chance rate beside
+it.
+\\3. The remaining crop panels: phase, stage, grade, platform,
+progesterone.
+\\4. The donor-overlap audit --- 17{,}873 cells, 4.3\%, one study pair.
+\\5. Baseline fitting: inductive versus transductive, per method, with
+\texttt{supervised\_on}.
+\\6. Per-arm comparison tables across the full factorial.
+\\7. Sufficient-statistics tables at every coarsening.
+\\8--10. Held.}
 
 \section*{Supplementary Information}
-\note{The accession table, the gene vocabulary and how it was derived,
-the full factorial results, and the seeds. Things a reader consults
-rather than reads.}
+\note{Uncapped, and NMI's stated home for ``information not directly
+related to the description of the main findings, but needed to properly
+understand and replicate the study''. Things a reader consults rather
+than reads:
+\\--- the accession table for all eleven studies;
+\\--- the gene vocabulary and how it was derived from Reactome and GO;
+\\--- the full reconstruction forward pass with every shape, and what
+each of the six learned objects in the head uniquely holds, drawn from
+docs/walkthrough/15-flow-reconstruction.md;
+\\--- the rank bound on the gene-query matrix, cut from Methods;
+\\--- the full factorial results and the seeds;
+\\--- every hyperparameter, per AW's ruling that configuration detail
+goes to Code availability and Supplementary rather than into prose.}
