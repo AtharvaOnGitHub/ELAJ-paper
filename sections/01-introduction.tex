@@ -31,16 +31,10 @@ Pooling, however, creates a critical problem this paper is specifically designed
 to address. Every donor in this corpus was biopsied once, so each contributes
 cells from a single point in the menstrual cycle, and menstrual phase is
 constant within a donor. A quantity that is constant within a donor and
-varies between donors is, geometrically, a per-donor offset --- which is
-exactly the form a batch effect takes. It is thus easy for a naive model to
-conflate batch effects with biological signal, and worse for a model that
-corrects for them: removing the study signal removes the cycle with it, and a
-stronger correction removes more.
-
-A subtle but deliberate choice in this study is to treat this disease as a human 
-health problem rather than a gendered disease. At a scale of hundreds of millions 
-of patients, we believe this to be necessary to bring attention to this problem.
-
+varies between donors is, geometrically, a per-donor offset and in the same form 
+as batch effects. It is thus easy for a naive model to conflate batch effects 
+with biological signal. Left unattended, a worse model removes menstrual cycle 
+information as it tries to remove study signal.
 
 The questions that make a pooled corpus worth assembling are the ones no
 single cohort can reach. What the field has established is consistent:
@@ -71,3 +65,7 @@ Results delivers in order.
 answers.
 \\Held back deliberately --- it promises what Results delivers, and Results
 is notes. Write it once the Results subsections are ordered.}
+
+A subtle but deliberate choice in this study is to treat this disease as a human 
+health problem rather than a gendered disease. At a scale of hundreds of millions 
+of patients, we believe this to be necessary to bring attention to this problem.
