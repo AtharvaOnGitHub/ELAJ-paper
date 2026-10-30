@@ -713,14 +713,81 @@ SOURCE: Thesis §Configuration (72). Hyperparameter detail $\rightarrow$
 Supplementary.}
 
 \subsection*{Cross-donor agreement}
-\note{PURPOSE: the paper's central measurement, and the reason the
-obvious one fails. \textbf{CALLBACK 3} --- a cell's nearest neighbours
-are usually its own donor's cells, and phase is constant within a donor,
-so plain label recovery rewards a model that memorised donors. Discard
-every same-donor neighbour, then score. Shown with the measured contrast
-rather than asserted.\\
-HANDS ON: a number. Is it bigger than chance?\\
-SOURCE: Thesis 05 §Does the latent carry biology it was never given?}
+
+The obvious way to ask whether a latent carries a label is to check whether
+cells agree with their neighbours: take each cell's nearest neighbours in the
+latent and measure how often they share its label. On this corpus that test
+cannot be trusted. A cell's nearest neighbours are predominantly other cells
+from the same donor, and because each donor was biopsied once, every label
+this paper cares about except cell type is constant within a donor. Plain
+neighbour agreement therefore rewards a model that has learnt to recognise
+donors, and rewards it most on exactly the labels where recognising donors is
+indistinguishable from understanding biology.
+
+\elaj\ is measured with the same-donor neighbours removed. For each label,
+the hundred nearest neighbours of every labelled cell are found in the
+sixteen-dimensional latent and collected into a donor-by-donor matrix: entry
+$(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
+$d'$. The diagonal is then discarded --- that discarding is what cross-donor
+means --- and agreement is the share of the remaining neighbour relations
+that join two donors carrying the same label. Chance is the probability that
+two such relations drawn at random would share a label, $\sum_j p_j^2$ over
+the label's shares across donors, and agreement is reported as excess over
+it, $(a - c)/(1 - c)$, so labels with different numbers of levels are
+comparable.
+
+The null is obtained by reassigning labels to donors. Two hundred random
+permutations of the donor-to-label map are scored through the same
+expression, which asks what agreement this latent would produce if the same
+labels had been dealt to different donors --- the appropriate null for a
+quantity constant within a donor. The reported $p$ is the share of
+permutations reaching the observed agreement, counted as
+$(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$.
+
+That construction puts a floor under $p$, and the floor matters for reading
+this paper's negative results. With two hundred permutations the smallest
+attainable value is $1/201$, and more restrictively the number of distinct
+permutations is set by how many donors carry the label at all. Where a label
+reaches only a handful of donors, no arrangement of them can produce a small
+$p$, so a result that is not significant means the test could not detect an
+effect of any size rather than that no effect exists. Disease stage and
+tumour grade are both in that regime here and are reported as undetectable,
+not absent.
+
+Because the labels are constant within donors, the matrix is a sufficient
+statistic: agreement and its null are arithmetic on a 254-by-254 table of
+integers, and the neighbour search that produced it is the only step needing
+the whole corpus in memory. Any later regrouping of a label is recomputed
+from the stored matrix without re-embedding a cell.
+
+\note{PURPOSE: the paper's central measurement, and the reason the obvious
+one fails. CALLBACK to the single-biopsy confound. Absorbs plan item 27, the
+permutation null, which has no independent existence --- it defines what the
+agreement number is compared against.\\
+VERIFIED against \texttt{evaluation/sufficient\_stats.py}:
+\texttt{donor\_adjacency} k=100 with self excluded; \texttt{np.fill\_diagonal}
+to zero before scoring; chance as $\sum p_j^2$ over donor shares;
+excess $(a-c)/(1-c)$, matching \texttt{cross\_group\_agreement} so the two
+are comparable; 200 permutations at seed 24; $p$ and \texttt{p\_floor}
+exactly as written. Per-label neighbour agreement elsewhere uses k=30 --- the
+k=100 here is the donor graph specifically.\\
+\textcolor{elajcoral}{THE DEMONSTRATION IS DELIBERATELY NOT IN THIS
+SUBSECTION, and it is the strongest evidence we hold for it. Across the six
+A1 arms, whole-corpus agreement on a donor-constant label ranks almost
+identically with benchmark donor-kNN recovery --- Spearman $\rho$ +0.943 for
+disease status, +0.829 for phase --- while cell family, the only label that
+varies WITHIN a donor, sits at +0.371 with a spread of 0.003 across every
+arm including randomised gene groups. The cross-donor estimator cuts
+disease's correlation with donor recovery from +0.943 to +0.429, and
+\texttt{random groups} inverts completely: best of six on whole-corpus
+disease, worst of six cross-donor. That is a measurement, so it belongs in
+RESULTS, beside the ablations --- same ruling as the baseline protocol. Full
+tables in axw1008/docs/paper/ABLATIONS.md. If a reviewer challenges the
+estimator, this is the answer.}\\
+NOT WRITTEN: that the 254-by-254 matrix is also what makes the
+sufficient-statistics release useful, which is Code availability's; and the
+$95$th-percentile null excess the code also reports, which no result quotes.}
+
 
 
 \subsection*{Donor and study recovery}
