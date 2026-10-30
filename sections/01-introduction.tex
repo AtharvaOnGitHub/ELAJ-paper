@@ -9,67 +9,74 @@
 
 \section*{Introduction}
 
-A person with endometriosis can often name the week the pain will arrive.
-Tissue resembling the lining of the uterus grows outside it, on the ovaries,
-the peritoneum, the bladder and the bowel, and because that tissue answers to
-the same hormonal cycle as the lining it resembles, it thickens and bleeds on
-the same schedule. The disease affects an estimated ten percent of people of
-reproductive age, which is some 190 million people, and its causes remain
-unknown \citep{who2025endometriosis}. A condition that announces itself on a
-calendar ought to be among the easiest to recognise. The menstrual cycle is
-therefore not a nuisance variable in this disease. It is the axis along which
-the disease moves, and any account of endometrial tissue that cannot locate a
-sample on that axis has discarded the one thing the symptoms follow.
+Pain is a recurring date on a calendar for 190 million people worldwide \citep{who2025endometriosis}. 
+Endometriosis is a disease in which tissue resembling the lining of the 
+uterus grows outside it. Its symptoms include debilitating abdominal pain, 
+disruption or dysregulation of menstrual cycle, heavy periods, infertility, 
+and a whole host of related complications reaching the lungs, heart, and brain. 
+To study this disease, it is critical to take into account the menstrual cycle
+and its effects on the human body.
 
-It takes eleven years. Across 444 patients with surgically confirmed disease,
-the mean interval from first symptom to diagnosis was 11.1 years
-\citep{bontempo2025diagnostic}, and how that figure decomposes matters more
-than the figure itself: six and a half of those years fall after the patient
-has presented to a clinician and asked for help, along a pathway where
-symptoms are suppressed with hormonal treatment and non-specific
-investigations are relied upon \citep{ballard2006delay}. Of the patients who
-were misdiagnosed, 49.5\% were first told their symptoms were caused by a
-mental health disorder --- a disease of the pelvis read as a disease of the
-mind, in about half of cases. This is the local form of something general and
-measured. Women report pain that is more severe, more frequent and longer
-lasting than men's and are treated for it less aggressively; presented with
-the same complaint, clinicians are more likely to prescribe a woman a
-sedative and a man an analgesic \citep{hoffmann2001girl}, and in emergency
-departments patients at the same mean pain score received analgesia less
-often if they were women \citep{chen2008gender}. A meta-analysis of ten
-studies finds misdiagnosis the single largest clinician contribution to
-delay, with general practitioners recording endometriosis as irritable bowel
-syndrome or as stress \citep{li2025factors}.
+Data on this disease is scarce, and the reason is diagnostic rather than
+scientific. There is no non-invasive test. A definitive diagnosis requires
+laparoscopy, which is keyhole surgery under general anaesthetic performed in
+order to look, so a patient must be considered a serious enough candidate to
+be operated on before they can be told what is wrong. Across 444 patients
+with surgically confirmed disease the mean interval from first symptom to
+diagnosis was 11.1 years \citep{bontempo2025diagnostic}. Every confirmed
+sample of diseased tissue therefore comes from an operation, and every cohort
+is small, expensive and assembled one hospital at a time. The largest
+published single-cell study of endometriosis holds tens of donors. That is a
+supply problem no model can solve, and it is upstream of every decision in
+this paper.
 
-That literature is cited here with its own terms because it measured a
-difference between women and men, and the finding is unavailable without
-them. It is the last time this paper will use them. Endometriosis is a
-disease of tissue and of a cycle; it is not a disease of a gender, and
-everyone who has a uterus can have it. The evidence above is precisely why:
-a condition understood as belonging to women has been met with sedatives,
-reassurance and eleven years, and continuing to file it that way is part of
-the mechanism that produced those eleven years rather than a neutral
-description of who is affected. For the remainder of this paper, donors,
-patients and participants are people.
+It also determines what any single-cell study of this disease can be a study
+of. The cohort behind that eleven-year interval was 85.6\% white and 64.5\%
+educated to degree level, so eleven years is the wait for the patients best
+placed to be believed. Because reaching an operation means having been
+believed first, the published single-cell record of endometriosis is a record
+of the believed, and a corpus assembled from it is not a sample of everyone
+who has the disease. Endometriosis is a disease of tissue and of a cycle
+rather than of a gender, and anyone with a uterus can have it; donors,
+patients and participants are described as people throughout this paper.
 
-The delay also decides what any study of this disease can be a study of. The
-cohort behind that eleven-year figure was 85.6\% white and 64.5\% educated to
-degree level, so eleven years is what the wait looks like for the patients
-best placed to be believed. Because diagnosis is surgical, every confirmed
-sample of diseased tissue comes from an operation, and reaching an operation
-means having been believed first. The published single-cell record of
-endometriosis is therefore a record of the believed. Whatever a corpus
-assembled from it samples, it is not everyone who has the disease, and no
-model recovers a patient who was sent home.
+What those cohorts have established is consistent and, taken one at a time,
+bounded. Lesions are not simply displaced endometrium but carry
+transcriptional programmes of their own
+\citep{fonseca2023endometriosis,tan2022singlecell}. The unaffected
+endometrium of an affected person is already altered, so the disease is not
+confined to the lesion
+\citep{duempelmann2026endometrium,shih2022menstrual}. Immune involvement
+recurs across every study that looks for it
+\citep{huang2023immune,chen2022adenomyosis}, and reference atlases of healthy
+endometrium now describe its cell types across the cycle
+\citep{mareckova2024heca}. Each of those results, however, rests on one
+cohort of tens of donors, with its own tissue sites, its own gene panel and
+its own protocol. Questions that need variation across many donors --- how
+cycle phase and disease interact, whether a signature holds outside the
+cohort that found it --- need more donors than any single study has. Pooling
+the published record is the only route to that scale.
 
-\note{PARAGRAPH 4 — what we do about it. Not ``we propose a novel
-architecture''. We make the trade-off explicit and measurable, map the
-frontier between donor-blindness and retained cycle signal, and report
-from a named point on it. Sixteen dimensions and 1.88M parameters are
-mentioned here as a consequence of the design, not as a selling point.}
+Pooling, however, creates a confound that is not a nuisance but the biology
+itself. Every donor in this corpus was biopsied once, so each contributes
+cells from a single point in the menstrual cycle, and menstrual phase is
+constant within a donor. A quantity that is constant within a donor and
+varies between donors is, geometrically, a per-donor offset --- which is
+exactly the form a batch effect takes. Batch correction cannot distinguish
+them, so removing the study signal removes the cycle with it, and a stronger
+correction removes more. This is why integrating endometrial single-cell data
+with standard tools silently discards the signal the field most wants to
+measure: the correction is working as designed, and the design cannot tell
+the two apart.
 
-\note{PARAGRAPH 5 — what the paper contributes, as a short list the
-Results then delivers in order. Flow rule: the last sentence here must
-be the first question Results answers.}
-
-\todo{deferred until \texttt{PUBLICATION\_PLAN} §0 reframing lands}
+\note{PARAGRAPH 6 --- what we do, and the contributions. Not ``we propose a
+novel architecture''. The trade-off is made explicit and measurable: a
+frontier between donor-blindness and retained cycle signal, with every
+result reported from a named point on it. One sentence on why a pretrained
+single-cell foundation model is not the answer either, since an NMI
+readership asks it on the first page. Then the contributions as a short list
+Results delivers in order.
+\\FLOW RULE: the last sentence here must be the first question Results
+answers.
+\\Held back deliberately --- it promises what Results delivers, and Results
+is notes. Write it once the Results subsections are ordered.}
