@@ -31,23 +31,24 @@ Three things matter here and two of them are not what an ML paper expects.
   in Methods than anywhere else, so anything that can defensibly live there
   should.
 
-### The length arithmetic, because it is tighter than it looks
+### The length arithmetic, settled
 
-4,300 words covers summary + Introduction + Results + Discussion at **5-6**
-display items. The figure list allocates **eight**. At ~270 words of page
-equivalent each, two or three extra items cost roughly 540-810 words of text,
-which puts the real body budget near **3,500-3,800**.
+NMI's Content Types page, Article entry: main text **up to 3,500 words,
+excluding abstract, Methods, references and figure legends**. So the 3,500
+covers Introduction + Results + Discussion only, and the abstract sits
+outside it at 150 words unreferenced.
 
 | | words |
 |---|---:|
-| Summary paragraph | 200 |
-| **Introduction** | **750** |
+| **Introduction** | **~750** |
 | Results | ~1,800 |
 | Discussion | ~1,000 |
-| **total** | **3,750** |
+| **total main text** | **3,550** |
 
-So 750 is the allocation below, and the Introduction is the section with the
-most thesis material and therefore the easiest place to overrun.
+An earlier version of this file inferred a tighter budget from Nature's
+generic 4,300-at-5-to-6-display-items figure and then subtracted for our
+eight. That arithmetic is superseded: NMI gives the number directly, and
+separately caps display items at six.
 
 ---
 

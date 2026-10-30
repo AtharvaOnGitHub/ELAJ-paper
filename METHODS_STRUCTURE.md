@@ -19,6 +19,13 @@ budget below is arguable rather than asserted.
 | **NMI**, *AIP and formatting* §6 | **No number.** | "subdivided by short, bold headings referring to methods used. We encourage the inclusion of specific subsections; for example Statistics" |
 | **Nature**, *Formatting guide* | "**As a guideline, the Methods section does not typically exceed 3,000 words.**" | "short bold headings referring to methods used"; subheadings "may be up to 40 characters (including spaces)" |
 
+**SETTLED 30 October 2026.** NMI's Content Types page gives the Article's
+main-text limit as "up to 3,500 words, **excluding abstract, Methods,**
+references and figure legends". So Methods is outside the word count
+altogether: there is no NMI cap on it, and Nature's 3,000 is advisory for a
+section NMI does not count. The allocation below stands as a discipline
+rather than a limit.
+
 So **3,000 is Nature's generic guideline and NMI states no cap of its own.**
 Treated below as a target to argue against, not a wall. The allocation comes
 to **3,400**, and the four candidates for the missing 400 are named at the

@@ -8,44 +8,44 @@ memory.
 
 ---
 
-## How NMI structures a Results section
+## What NMI actually specifies, confirmed
 
-**The structure rule, and I am confident of it** — two independent sources
-agree, both summarising nature.com:
+Verbatim from `Nature_websites/NMI_Content_Types.pdf`, the **Article** entry,
+retrieved 30 October 2026. This is NMI's own spec and by AW's rule it
+overrides Nature's generic guide wherever it speaks:
 
-> Articles should be divided as follows: **Introduction (without heading),
-> Results, Discussion, and Methods. Results and Methods should be divided by
+> Main text -- up to **3,500 words**, excluding abstract, Methods, references
+> and figure legends.
+> Abstract -- up to **150 words, unreferenced**.
+> Display items -- up to **6 items** (figures and/or tables).
+> Article should be divided as follows: Introduction (without heading),
+> Results, Discussion, Methods. **Results and Methods should be divided by
 > topical subheadings; the Discussion does not contain subheadings.**
+> References -- as a guideline, we typically recommend up to 50.
 
-So: our Results carries topical subheadings and our Discussion must not. The
-current Discussion plan is four unheaded paragraphs, which already complies.
+### What this changes
 
-**The numbers, and these need your eyes rather than mine.** nature.com's
-content-types page sits behind an authentication redirect from this machine,
-so I could not read it directly. What a search of it reports for **Articles**:
+**Methods is excluded from the word count entirely**, which settles the
+question the Methods tracker has carried since the start: there is no NMI cap
+on Methods, and Nature's 3,000-word guideline is advisory only.
 
-| | reported for NMI Articles | what we have been working from |
-|---|---|---|
-| main text | **3,500 words**, excluding abstract, Methods, references, figure legends | 4,300 (Nature generic, 8pp at 5-6 items) |
-| abstract | **150 words, UNREFERENCED** | 200 words, fully referenced (Nature generic) |
-| display items | **6** | 8 |
-| references | ~50 | 50 |
+**The main-text budget is 3,500 for Introduction + Results + Discussion**,
+with the abstract outside it. That is roomier than the 3,750-including-abstract
+figure the earlier plans used.
 
-**⚠️ If that abstract line is right, I corrected you in the wrong
-direction.** Your original header said "NMI allows up to 200 words, no
-citations" and I overwrote it with "fully referenced" on the strength of
-Nature's generic formatting guide, which says exactly that for Nature
-Articles. NMI's own Article spec appears to say 150 and unreferenced. The
-local PDFs do not settle it — they are the AIP, initial-submission,
-preparing-material and production pages, and none of them carries the Article
-word and figure spec. **Please check the content-types page while logged in**;
-if it says 150 unreferenced, your instinct was right and the abstract note
-needs reverting.
+| | words |
+|---|---:|
+| Introduction, as written | 485 |
+| Discussion | ~1,000 |
+| **Results** | **~2,000** |
+| total main text | 3,485 |
 
-Two knock-on effects if the numbers hold: the figure list allocates **eight**
-display items against a cap of **six**, and the main-text budget is 3,500
-*excluding* the abstract, which is roomier for Results than my earlier
-arithmetic allowed.
+**Six display items, not eight.** `06-display-items.tex` allocated eight and
+is corrected. Two of the eight merge or go, and the Extended Data cap of ten
+is separate.
+
+**The abstract is 150 words and unreferenced.** AW had this right and my
+29 October correction to "fully referenced" is withdrawn.
 
 ---
 
@@ -268,13 +268,15 @@ already puts them.
 
 ## Open questions
 
-1. **Six display items or eight.** If NMI caps Articles at six, two of the
-   eight planned figures merge or go. The victory march needs the frontier
-   plot, the against-the-field panels, the cell-type crops and the cycle
-   crop; that is four, leaving two for the ablations, the disease finding and
-   the confound schematic.
-2. **How much of the victory march can 3,500 words carry** alongside D,
-   which AW wants read properly? D1-D6 plus B2-B3 is eight findings.
-3. **Does the confound schematic (Figure 1) survive** at six display items?
-   It is the one figure a reader needs before any other, and it shows no
-   data.
+1. **Which two figures go.** Six is confirmed. The victory march needs the
+   frontier plot, the against-the-field panels, the cell-type crops and the
+   cycle crop --- four. That leaves **two** slots for: the ablations, the
+   disease finding, and the confound schematic (Figure 1), which is the one
+   figure a reader needs before any other and which shows no data. Three
+   candidates, two slots.
+2. **Results has ~2,000 words** for the victory march (A1-A4, E3, B1,
+   C1-C6) plus D (D1-D6 and B2-B3, eight findings). That is sixteen findings
+   in 2,000 words, or 125 words each. Something has to be grouped rather
+   than enumerated.
+3. **Does the Discussion have room** for C6's interpretation, F1-F6, and the
+   cut Introduction material at ~1,000 words with no subheadings permitted?

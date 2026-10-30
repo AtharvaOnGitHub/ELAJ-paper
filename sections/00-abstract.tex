@@ -1,20 +1,21 @@
 % =====================================================================
-% ABSTRACT — Nature calls this the SUMMARY PARAGRAPH, and its rules are
-% not the ones an ML abstract usually follows. Verbatim, Nature
-% Formatting guide: "Articles start with a fully referenced summary
-% paragraph, ideally of no more than 200 words, which is separate from
-% the main text and avoids numbers, abbreviations, acronyms or
-% measurements unless essential. It is aimed at readers outside the
-% discipline."
+% ABSTRACT — NMI's own spec for an Article, verbatim from Content Types
+% (Nature_websites/NMI_Content_Types.pdf, retrieved 30 October 2026):
 %
-% FULLY REFERENCED. An earlier version of this header and its note both
-% said "no citations, unreferenced", which is the opposite of the rule
-% and would have been corrected by the editorial office.
+%     "Abstract – up to 150 words, unreferenced."
 %
-% AND ALMOST NO NUMBERS. The cell count, the parameter count and the
-% latent width all fail the "unless essential" test — they are what the
-% Introduction and Results are for. At most one measurement survives
-% here, and only if the headline claim cannot be stated without it.
+% 150 WORDS AND NO CITATIONS. This is NMI's number and it overrides
+% Nature's generic guide, which asks Articles for "a fully referenced
+% summary paragraph, ideally of no more than 200 words". AW had this
+% right from the start; I overwrote it with the Nature generic rule on
+% 29 October and the correction is withdrawn.
+%
+% Nature's STRUCTURE advice still applies where NMI is silent, and it is
+% worth following even unreferenced: basic-level introduction to the
+% field, then background and rationale, then the main conclusions
+% ("Here we show"), then the findings in general context. So does its
+% advice to avoid "numbers, abbreviations, acronyms or measurements
+% unless essential", aimed at readers outside the discipline.
 %
 % Written LAST. It is the compression of the paper, so it cannot be
 % written before the paper has a settled claim.
@@ -22,28 +23,22 @@
 
 \begin{abstract}
 \noindent
-\note{NATURE'S PRESCRIBED STRUCTURE, which this must follow rather than
-the five-job shape an earlier draft of this note proposed:
-\\(a) two or three sentences of basic-level introduction to the field,
-for a reader outside it — endometriosis is common, diagnosed late, and
-read by eye from biopsies;
-\\(b) a brief account of the background and rationale — the single-cell
-studies that exist are small and share no design, so pooling is the only
-route to power, and pooling creates a confound that is the biology
-itself: each donor is biopsied once, so menstrual phase is constant
-within a donor and takes the same geometric form as a batch effect,
-which means the standard correction removes the signal;
-\\(c) a statement of the main conclusions, introduced by ``Here we
-show'' or its equivalent — the trade-off is made explicit and
-measurable as a frontier, and a model at a named point on it is blind to
-the donor while still holding the cycle;
-\\(d) two or three sentences putting the findings in general context —
-any single-biopsy design makes the biology collinear with the sample, so
-this is not endometriosis-specific tooling.
-\\REFERENCES REQUIRED throughout, which for (a) and (b) means the
-prevalence and diagnostic-delay sources and the eleven corpus studies.
-NO methods detail, no hedging, and the word ``novel'' does not appear.
-Nature publishes an annotated example of a summary paragraph; follow it.}
+\note{150 WORDS, UNREFERENCED. Four jobs, in Nature's prescribed order:
+\\(a) the field, for a reader outside it --- endometriosis is common,
+diagnosed late, and its symptoms follow the menstrual cycle;
+\\(b) background and rationale --- the single-cell studies that exist are
+small and share no design, so pooling is the only route to power, and
+pooling creates a confound that is the biology itself: one biopsy per donor
+makes cycle phase constant within a donor and geometrically identical to a
+batch effect, so the standard correction removes the signal;
+\\(c) the main conclusions, introduced by ``Here we show'' or its
+equivalent --- the trade-off is made explicit and measurable as a frontier,
+and a model at a named point on it is the least donor-identifiable
+representation tested while holding the most cycle signal;
+\\(d) general context --- any single-biopsy design makes the biology
+collinear with the sample, so this is not endometriosis-specific tooling.
+\\AT 150 WORDS something has to go, and it is the numbers. No methods
+detail, no hedging, and the word ``novel'' does not appear.}
 
-\todo{write last, after §0 reframing fixes the claim}
+\todo{write last, after the Results subsections are ordered}
 \end{abstract}
