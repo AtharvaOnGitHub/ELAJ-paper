@@ -1,0 +1,72 @@
+% =====================================================================
+%  ELAJ — manuscript for Nature Machine Intelligence
+%
+%  Atharva Waghmare
+%
+%  Build:  latexmk -pdf main.tex
+%  or:     bash build.sh          (adds MacTeX to PATH first)
+%
+%  STRUCTURE MIRRORS Thesis/: main.tex + preamble.tex + sections/.
+%
+%  THE ORDER BELOW IS NATURE'S, NOT OURS. Nature journals run the
+%  manuscript as: Abstract → Introduction (unheaded) → Results →
+%  Discussion → Methods → Data and Code availability → References →
+%  Acknowledgements → Author contributions → Competing interests →
+%  figure legends → Extended Data → Supplementary Information.
+%  Methods sits AFTER the references in the published article and is
+%  NOT counted against the word limit, which is why it is being written
+%  first and why it carries the detail.
+%
+%  NMI shape for an Article: main text about 3,500 words (abstract 200,
+%  introduction ~750, results ~2,000, discussion ~1,000 at the outside),
+%  up to eight display items, everything else in Extended Data.
+%
+%  WHAT IS WRITTEN AND WHAT IS NOT. Every section is \input so the whole
+%  shape renders and the flow can be read off one PDF. Sections whose
+%  prose is not written contain purposes in grey \note{} and nothing
+%  else; the main text is deliberately held until the claim is settled.
+% =====================================================================
+
+\documentclass[11pt, a4paper]{article}
+
+\input{preamble}
+
+\title{\vspace{-2em}\elaj: \note{title pending — §0 reframing}}
+\author{Atharva Waghmare}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% =====================================================================
+%  ABSTRACT — 200 words, written last
+% =====================================================================
+\input{sections/00-abstract}
+
+% =====================================================================
+%  MAIN TEXT — skeleton only. Framing is deliberately deferred until
+%  the biological results land; see docs/paper/OUTSTANDING.md.
+% =====================================================================
+\input{sections/01-introduction}
+\input{sections/02-results}
+\input{sections/03-discussion}
+
+% =====================================================================
+%  METHODS — after the references in the published article, not counted
+%  against the main-text limit. Written first.
+% =====================================================================
+\input{sections/04-methods}
+
+% =====================================================================
+%  MANDATORY STATEMENTS, ACKNOWLEDGEMENTS, DISPLAY ITEMS
+% =====================================================================
+\input{sections/05-backmatter}
+\input{sections/06-display-items}
+
+% =====================================================================
+%  REFERENCES
+% =====================================================================
+% \bibliography{references}
+
+\end{document}

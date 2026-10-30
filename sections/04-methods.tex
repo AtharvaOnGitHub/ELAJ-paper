@@ -1,0 +1,812 @@
+% =====================================================================
+% METHODS
+%
+% FLAT HEADINGS, which is what Nature asks for: "subdivided by short bold
+% headings referring to methods used", each at most 40 characters. There
+% is no nesting and no numbering in the submitted document. The group
+% names below (THE CORPUS, INPUT REPRESENTATION, ...) are LaTeX comments
+% only -- they are how we navigate the file, not structure in the paper.
+%
+% WHAT THE GREY NOTES ARE FOR. Each one states what its passage DOES --
+% the question it answers, what it establishes, and what the next passage
+% needs from it. Read end to end they are the spine of the section, so
+% the flow can be judged before any of it is written. Provenance and
+% word counts come last in each note, not first.
+%
+% ARROWS between groups name the question being handed forward.
+%
+% WORD BUDGET: ~3,500 target. Allocation: corpus 500 . input 500 .
+% encoder 450 . latent 150 . decoder 700 . objective 450 .
+% evaluation 550 . reporting 200.
+%
+% THE SINGLE-BIOPSY CONFOUND IS A THREAD, NOT A SUBSECTION. Stated in the
+% Introduction, then called back wherever it forces a choice:
+%   CALLBACK 1  donor-level splitting      (Study selection)
+%   CALLBACK 2  the adversarial head       (Decoder)
+%   CALLBACK 3  cross-donor evaluation     (Evaluation)
+% =====================================================================
+
+\section{Methods}
+
+The methods section elaborates on the full \elaj pipeline. Starting from 
+the data and its representation, we deconstruct all major architectural 
+choices made in the model, and finally close with optimisation and 
+efficiency measures. The results, ablation studies, and discussions are 
+separated as this section only details the hypotheses for the choices made 
+and not the outcome of those choices.
+
+% =====================================================================
+%  THE CORPUS  -- budget 500.
+% =====================================================================
+
+\subsection*{Study selection}
+
+The corpus used in this project is a complete record of publicly 
+available single-cell data for endometriosis. It combines eleven
+single-cell and single-nucleus studies, 1{,}577{,}728 cells, 254 donors
+and six anatomical sites.
+
+The search followed the PRISMA 2020 reporting guideline. Five public
+archives were queried automatically: OmicsDI, NCBI GEO, BioStudies and
+ArrayExpress, CELLxGENE Discover, and the Human Cell Atlas Data Portal.
+The term \texttt{endometriosis} was matched against title, description
+and keyword fields over the fifteen years preceding the search. A sixth
+archive, CNGBdb, was searched by hand.
+
+A record had to satisfy three conditions to enter the corpus: the data
+had to be of or contain single-cell RNA sequencing information; the
+sample had to be biopsied human tissue; and the data had to be
+relevant to endometriosis. The last constraint was left understated to
+accommodate relevant studies that are not necessarily of endometriosis
+patients. These studies were either of adenomyosis or of a normal 
+physiological state. Adenomyosis was added because it is 
+pathophysiologically related to endometriosis. Physiologically stable 
+tissue was included to augment the control samples from other studies.
+
+The corpus was de-duplicated by donor by referencing the paper published
+for each dataset. Each donor was given a unique identifier. Tissue site
+was mapped to UBERON terms and disease state to MONDO terms, so that a 
+cell's origin is recorded in a standard form other datasets in the 
+corpus can follow. No correction was applied to the expression values 
+themselves.
+
+Every study identifies the sample each cell came from, so every cell can
+be traced to a donor. The corpus was split into training, validation and
+test partitions targeting a 70/15/15 ratio, with every cell from a donor
+placed entirely in one partition. Cells from one donor share a genotype,
+a hormonal state, a handling protocol and in most cases a single biopsy,
+so a cell-level split would place near-duplicates on both sides and
+measure the model on cells it had effectively already seen. One study
+pair deposits the same fifteen people under two sets of identifiers,
+which the split could not detect; 17{,}873 held-out cells, 4.3\% of the
+held-out set, therefore share a donor with training.
+
+
+\todo{PRISMA figure. Its own display item, or panel (a) of a composite
+Figure 1. Nature counts items not panels, so a composite costs nothing in
+the item budget and only costs text length.}
+
+\note{DONE. Establishes the corpus as a complete published record for endometriosis rather than a convenience sample, and states what was and was not done to the data --- identifiers unified, ontologies applied, expression left alone.}
+
+\subsection*{Gene vocabulary}
+
+The datasets in this corpus cover a heterogeneous set of genes. Gene
+names are also not stable.
+
+In an effort to standardise, every gene was resolved against the HGNC 
+approved symbol set, with anything unresolved dropped and recorded against 
+its study of origin. An alias pointing to two different approved symbols 
+is ambiguous, and resolving it would mean guessing; all such aliases were 
+dropped, removing 1{,}452 mappings.
+
+With the names settled, the set of genes the model reads still has to be
+chosen. The selection used here is derived from Reactome or Gene Ontology 
+(GO) pathway groups.  A fixed vocabulary of 15{,}496 genes was taken as those 
+annotated to at least one Reactome or GO pathway, on the reasoning that a
+gene worth modelling is one known to participate in a biological process. 
+This has added benefits apparent in the encoder later. Restricted to this 
+vocabulary, the proportion of genes a pair of studies holds in common 
+rises from 64–96\% to 87–98\%.
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{The corpus is
+one object with a chosen vocabulary. How does a cell's counts over that
+vocabulary become something a transformer can read?}}
+
+% =====================================================================
+%  INPUT REPRESENTATION  -- budget 500. NOT YET SEEDED.
+% =====================================================================
+
+\note{DONE. Settles the feature axis: what the genes are called, then which of them the model reads --- chosen from pathway annotation without looking at expression, which is the defence against having picked genes that flatter the model.}
+
+\subsection*{Gene tokens}
+
+A cell is passed to the model as a single datapoint: a sequence of
+tokens, one per gene in the fixed vocabulary.
+
+Each token is the sum of two parts. The first is a learned identity
+embedding ($e_i$). This is a vector unique to a gene fixed for all cells. 
+The objective of this embedding is to encode which gene we are referring 
+to. It is a $d_{\text{token}}$ dimensional vector.
+
+The second part encodes the magnitude of a gene's expression in a cell 
+($c_i$). Gene expression in the raw input data is a number representing 
+the occurrence of a gene in a given cell. This one-dimensional value is 
+first library-normalised to a target sum of $10^4$ and log-transformed. 
+The transformed value still needs to be projected to $d_{\text{token}}$
+dimensions from one. To project it without collapsing all genes onto a 
+single direction, we multiply the transformed value by a learnable 
+square matrix of size $d_{\text{token}}$ ($A$) which is shared across 
+all genes. The resultant scaled matrix ($c_i A$) is then multiplied by 
+the gene identity vector to get a $d_{\text{token}}$ dimensional vector 
+for gene expression. A gene token is therefore computed as:
+
+\begin{equation}
+\text{token}_i \;=\; e_i + c_i A e_i .
+\label{eq:token}
+\end{equation}
+
+By using the gene identity vector in projecting gene expression values
+we are able to avoid a trivial low-dimensional projection. The directions
+of each gene expression value naturally differ because the gene identity
+embedding is unique per gene. A trivial projection would collapse a
+cell's entire expression profile onto a single line. Conversely, a 
+per-gene learned expression embedding would also allow unique gene 
+directions but introduce roughly 500{,}000 parameters to the model. 
+Through this method we get away with a single matrix of roughly 1{,}000 
+parameters and the identity and expression stay separable by construction.
+
+\note{DONE. What a gene looks like to the model: an identity embedding plus a count scaled along a direction that gene owns, kept separable so the next passage can replace one half and leave the other.}
+
+\subsection*{Unmeasured genes and the sentinel}
+
+Every entry in the corpus is marked as one of three things: a count, a 
+measured zero, or not measured in this study. The third case is stored 
+explicitly because zero is a value of expression and non-measured genes
+cannot be assumed to have a value. None of the models compared in this paper 
+carries an input state for a gene that was not assayed. While it can be 
+argued that most entires in the raw counts are zero and thus it would 
+make little difference to the model, we found it important to specify 
+unmeasured genes to the model as a Did Not Sample (DNS) sentinel.
+
+DNS sentinel is a distinct and reserved learned vector in place of a 
+value embedding. Crucially, it does not impact the identity embedding of a 
+gene. Which means it doesn't interfere with what a gene is, only how much it 
+is measured. Unmeasured genes are also excluded from the reconstruction loss, 
+since there is no observation to score a prediction against. This allows the 
+model to develop a holistic and true understanding of a cell. More details 
+about how much it affects the outcome are in the ablation studies section 
+under results.
+
+\note{DONE. Three states rather than two, and why the third cannot be recovered from a cell at all without knowing which study it came from.}
+
+\subsection*{Pathway gene grouping}
+
+Self-attention compares every token with every other token, so its cost
+grows with the square of the sequence length. One token per gene over
+15{,}496 genes is roughly 240 million pairs for a single cell. That is
+where the parameters and the compute of most single-cell transformers go,
+and it is why those models need to be trained on tens of millions of cells. 
+This corpus has 1.58 million cells.
+
+Previous models have either reduced the number of genes studied, compressed 
+their input representation in a lossy manner, or just used a very large 
+corpus. None of these are transferable to this model. Reducing the number 
+of genes to the top two or three thousand most variable genes assumes that the 
+genes that vary the most are the most relevant to the disease. We do not have 
+any reason to believe this assumption holds for endometriosis. A lossy 
+compression for input representation comes with similar assumptions.
+
+Instead, we used the partitioning available through the Reactome and GO 
+hierarchies and cut them into 44 groups. The hypothesis being that genes 
+that work together biologically would have more interesting interactions 
+and interactions between groups of genes would be more relevant than 
+between individual genes belonging to different groups. Following this idea, 
+attention is first run within each group and attention across groups is 
+run afterwards. Consequently, attention work falls from 240 million pairs 
+to 5.72 million, a reduction of 97.6\%, and no data-losing assumptions 
+have been made.
+
+Apart from parameter efficiency, gene grouping also increases the effective
+subspace in which gene identity lives. Each group is processed independently, and
+no cross-group gene interactions are attended to. The gene space is 
+therefore block diagonal, one block per group, and the dimension actually 
+available to represent a gene is the token width times the number of groups,
+$32 \times 44 = 1{,}408$, rather than the token width alone. For
+comparison, Gene2vec, which is the conventional off-the-shelf gene
+embedding, uses 512 dimensions. Effectively, a 32-dimensional token here
+is a slice of a gene space nearly three times wider than the standard one. The 
+derivation is given in Supplementary Note 1.
+
+The reason it is an effective space and the reason it is able to encode 
+more information is the same: the block diagonal nature of the gene space 
+matrix. Since a block diagonal matrix is a special case of a regular matrix, 
+what each block contains is critical to expressing all genes. That is why 
+the pathway grouping is relevant. Without that, we would be restricting the 
+gene space to block diagonal and getting nothing in return. This is tested 
+through an ablation study.
+
+\note{DONE. The cost argument and the inductive-bias argument as one decision, because the partition arrived free with the vocabulary. \textcolor{elajcoral}{Still open: 1.08M and 47.6M are formula estimates, not measured --- the log reports only the whole model at 1{,}883{,}986.}}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A cell is now
+44 groups of tokens. What reads a group, and what does it hand on?}}
+
+% =====================================================================
+%  ENCODER  -- budget 450. Needs MORE than the thesis has: the funnel,
+%  and how information is squeezed.
+% =====================================================================
+
+\subsection*{Group encoders}
+
+Each group is read by its own transformer: two layers of multi-head
+self-attention, four heads, operating on that group's input tokens at width
+32. Within a group, attention models what any two genes are doing 
+together in a cell. The summary of interactions inside each group is 
+collected in a CLS token. What leaves the stage is essentially a summary of 
+each group. 
+
+Notably, this is the first and most stark compression in the model. A cell 
+enters as 15{,}496 gene tokens and 44 summary tokens are created. A 350-fold 
+reduction. Additionally, a learned CLS token reads the group through a single
+query, and what it carries away is a weighted combination of what
+that one query attended to. Which is to say, it is a lossy form of compression. A 
+weighted average discards the shape of a distribution. To recover more 
+information, \elaj{} concatenates eight order statistics computed over the 
+group's gene tokens to the learned token. The mean, the standard deviation, 
+the minimum, the three quartiles, the maximum, and the mean of the top four 
+are the statistics appended. Each statistic becomes its own summary token 
+rather than being folded into one wide vector, so the next stage sees them 
+separately.
+
+A group therefore hands on nine summary tokens instead of one, and the
+hypothesis being made is explicit: a single learned query is a lossy
+readout of a group of genes, and that order statistics recover part of
+what the averaging throws away. Ablation C-4 removes the eight statistics
+and keeps the learned token alone, taking what each group contributes from
+288 numbers back to 32.
+
+Now, a cell enters as 15{,}496 gene tokens and leaves this stage as 396 
+summary tokens. A reduction of roughly 39-fold achieved without attending 
+across the vocabulary and without dropping a gene.
+
+\note{DONE. What happens inside one pathway, and the hypothesis that order statistics recover part of what a single learned query averages away --- described precisely enough that ablation C-4 means something.}
+
+\subsection*{Cell aggregation}
+
+Up to this point the model has only looked at genes within different 
+pathways independently. The second stage asks how the groups relate to one 
+another.
+
+The 396 group summaries are assembled into one sequence together with a
+learnable cell summary token appended. The second stage of the encoder 
+is a transformer with two layers, four heads, and width 64. The learned 
+cell summary token is the first representation of the complete cell 
+inside the model.
+
+The purpose of this stage is to allow the model to understand interaction 
+between the individually studied gene groups. The hypothesis being that 
+at this stage the model learns biologically relevant cellular information 
+from an analysis of known pathway groups.
+
+The lossy compression objection raised one level down applies here too. 
+Consequently, the same remedy is applied again: order statistics are 
+computed over the group-token positions and merged with the cell token. 
+The merge projects back to width 64 rather than widening the output.
+
+A cell therefore leaves the encoder as a single vector of width 64,
+narrowed from 15{,}496 gene tokens through 396 group summaries.
+
+\note{DONE. The second narrowing, and what the stage is for: the groups were read independently, so something has to relate them. The lossy-readout objection is raised a second time here because the same remedy answers it, and because the measured loss is worse at this level than at the group one.}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A cell is one
+vector of width 64. What does the model keep when it is forced to describe
+that cell in sixteen numbers?}}
+
+% =====================================================================
+%  THE LATENT  -- budget 150.
+% =====================================================================
+
+\subsection*{Latent space}
+
+The latent is where the model's most compressed understanding of a cell 
+is calculated. Everything before it works to populate it, and everything 
+after it exists to check that what was put there is worth having. \elaj 
+being a CVAE, its latent space is the main component of interpretation.
+
+As with most CVAEs, \elaj compresses information into a Gaussian subspace. 
+In practice, it is sixteen Gaussian distributions: sixteen means and 
+sixteen variances. Compared to baselines, a sixteen dimensional subspace 
+is tiny. We arrived at this experimentally rather than theoretically. More 
+details are given in the results section.
+
+\note{DONE. The bottleneck. Width is stated and its justification deferred to Results, which is the right place for it --- the frontier is a result, and Nature keeps results out of Methods. \textcolor{elajcoral}{The circular branch is still not mentioned; the code supports it and no reported arm uses it. Two sentences if a thesis reader would notice the absence.}}
+
+\subsection*{Decoder conditioning}
+
+Being a CVAE, \elaj passes metadata about a cell to the decoder. Only the 
+deocder is conditioned in this model. Most importantly, the study a cell 
+belongs to and the platform used for sequencing that cell, both of which 
+help the model identify and isolate non-biological information, are 
+passed as learned embeddings. Tissue is encoded into four levels: 
+compartment, organ, tissue type, microsite. The combined metadata 
+information is appended to the 64-dimensional projection of the 
+16-dimensional latent space to give a combined 112-dimensional vector 
+per cell to the decoder.
+
+This whole exercise is done to remove batch effects and non-biologically 
+relevant information from the latent. The exception is tissue details.
+Tissue, referring to the site of biopsy, is provided to the decoder to 
+remove the most obvious grouping of cells. Endometriosis is more than 
+tissue identification. To uncover the biological signal beyond tissue, 
+we remove the need to model tissue information.
+
+Crucially, disease information is not given to the decoder. A decoder 
+told which cells are diseased will not rely on the latent for the signal 
+that separates a normal cell from a diseased one, which is 
+counterproductive to understanding the through the latent space. Every 
+disease result in this paper is therefore structure the model was never 
+shown. However, one study is the sole source of both adenomyosis and 
+myometrium in this corpus, so for those 49{,}606 cells the study 
+embedding is also a disease indicator. Claims about adenomyosis are 
+therefore selectively made.
+
+\note{PURPOSE: what the latent is relieved of, and the one omission every
+disease claim rests on.\\
+DROPPED FROM THE PAPER ENTIRELY: the $+0.883$ correlation between the
+discriminator's loss and donor recovery. It is a measurement, so Methods is
+the wrong place for it either way, and it diagnoses the undersized
+discriminator retired in October 2026 rather than anything a reported arm
+does. No forward pointer remains.\\
+DROPPED IN THE EDIT, listed so the choice is visible rather than lost: the
+encoder sees none of the covariates; the decoder needs a study id at
+inference on a new study, though the encoder and latent do not; scVI as the
+precedent and the citation that comes with it.\\
+NOT WRITTEN, implementation rather than method: a decoder built to expect a
+covariate and handed nothing raises rather than falling back to a narrower
+context; the three covariate tables together hold 1{,}968 parameters.\\
+\textcolor{elajcoral}{OPEN: the reported arm runs \texttt{d\_study} 16
+\emph{and} \texttt{lambda\_dab} 168, which the commit history frames as two
+opposite-end fixes for the same contradiction. Needs one sentence on why
+both; the decision is not recorded anywhere I could find.}}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{The decoder
+knows where the cell came from. Now it has to produce 15{,}496 numbers from
+sixteen.}}
+
+\subsection*{Reconstruction head}
+
+The decoder of \elaj consists of 4 heads. The first, and the model’s 
+primary objective, is reconstruction.
+
+The reconstruction head turns the 112-dimensional context into one
+predicted expression level for every gene the cell's study measures.
+Between 13{,}144 and 15{,}056 genes are predicted, depending on the
+study's DNS count. An output layer holding one row of weights per gene
+would do this in 1{,}007{,}240 parameters, and would learn each gene's
+response in isolation. \elaj scores genes against the cell instead, in
+122{,}825 parameters.
+
+\textbf{The design.} Each gene is given a 64-dimensional query vector,
+derived from the 32-dimensional identity embedding the encoder uses as
+input. The projections are unique per pathway group, making the 
+weight and bias an accumulation of common information among genes in 
+each group. This is what allows two genes in different groups to have 
+similar identity embeddings without being confused for one another.
+
+The cell context is read into two things: a 64-dimensional vector that 
+scores against the gene query, and a scalar that scales the resulting 
+profile. A gene's predicted log-expression is then given as:
+\begin{equation*}
+\log \mu_{ig} \;=\; \frac{(W_k c_i) \cdot q_g}{\sqrt{64}}
+\;\big(\mathbf{w}^\top W_v c_i\big) \;+\; b ,
+\end{equation*}
+where $q_g$ is gene $g$'s query, $c_i$ is cell $i$'s context, and $W_k$,
+$W_v$, $\mathbf{w}$, and $b$ are learned. $(\mathbf{w}^\top W_v c_i)$ is a
+scalar value. Since there is no per-gene value vector of the kind a regular
+attention layer would have, this is a bilinear scoring layer, closest in
+form to scGPT's masked-value-prediction head.
+
+\textbf{No per-gene baseline.} Every term above is multiplied by something
+belonging to the cell, so no parameter gives a gene a constant expression
+level. Most count decoders end in a per-gene linear layer whose bias
+supplies exactly that, making the average expression profile free; here it
+has to be delivered through the latent or the covariates.
+
+\textbf{From scores to counts.} Capture depth varies by an order of 
+magnitude across this corpus. So instead of asking the model to recreate 
+the exact counts, we pose a simpler problem: predict how much each gene 
+contributes to the total count of the cell. The model gets library size, 
+total count of genes in a cell, as input for this task.
+
+\textbf{The likelihood and the target.} The model predicts the mean 
+count of each gene, and the observed counts are scored against a negative 
+binomial with one dispersion learned per gene. The loss is the mean 
+negative log-likelihood over all cells and all measured genes, so every 
+reconstruction figure in this paper is in nats per gene. Genes hidden 
+from the encoder during training are still demanded of the decoder, 
+which makes this masked autoencoding.
+
+\note{PURPOSE: plan item 13 --- gene queries against a cell context, and
+why not a per-gene output layer, argued in parameters --- plus item 14's
+likelihood. Every passage now answers ``what does the paper claim that
+needs this''.\\
+CUT, and the reason is the same for all three: nothing the paper claims
+depends on them.
+(a) THE RANK ARGUMENT, two paragraphs on $\operatorname{rank}(Q)$ bounding
+the profile space at 64 of 15{,}496. No arm tests it; a1\_randgroups
+permutes group membership, which is the partition and not the projection.
+And it is a liability: \texttt{val\_nb} 0.4024 against a study-mean
+baseline of 0.4315 is a 6.5\% improvement, so advertising a 64-dimensional
+ceiling hands a reviewer a candidate explanation for our weakest number
+that we cannot rule out. The per-group choice is kept, argued directly
+instead.
+(b) THE QUERY BIAS becoming a per-pathway offset under per-group
+projections while a shared one leaves it inert. True and neat, but it
+justifies nothing we report.
+(c) PANEL-RELATIVE PROFILES --- normalising over the measured genes makes a
+predicted profile relative to the study's panel, so one cell state through
+two panels gives two sets of proportions. No claim in the paper compares
+reconstructions across studies; the comparisons are all on latents.\\
+TO SUPPLEMENTARY NOTE: the full forward pass with every shape, and what
+each of the six learned objects uniquely holds. Drawn from
+docs/walkthrough/15-flow-reconstruction.md.\\
+DROPPED ON AW'S RULING, do not re-propose: the no-cell-index clause. My
+case was weak and the rebuttal is right --- nobody asks whether a model
+leaks to its decoder, and the evidence the bottleneck holds is already the
+latent's own metrics (cell-family kNN 0.994 on sixteen dimensions is not
+what an empty latent produces), so an architectural guarantee adds nothing
+a reader needs. The code keeps the record: run 49817807 concatenated the
+encoder's per-cell group summary into the query and both latent branches
+collapsed to zero information.\\
+COLLISIONS: the old no-cell-index clause was \emph{Bottleneck integrity}'s
+subject and is one clause here; sentinel exclusion from the loss is under
+\emph{Unmeasured genes and the sentinel}; the reliance measurement belongs
+to \emph{Bottleneck integrity} and only its architectural reason is given
+here; masking depends on a subsection that does not exist (item 22b in
+METHODS\_STRUCTURE.md).\\
+NOT WRITTEN, implementation: the per-group initialisation and its
+$\sqrt{44}$; the algebraic fold that avoids ${\sim}918$ MB of activations
+per forward at batch 256; fp32 forcing under bfloat16 autocast; the three
+index spaces a gene lives in; and two dead ends --- $b$ is one constant
+across genes that the normalisation cancels exactly, and
+$\mathbf{w}^\top W_v$ collapses to a single 112-number vector, so 7{,}232
+parameters realise 112 degrees of freedom.\\
+\textcolor{elajcoral}{OPEN: the droplet-overdispersion claim needs a
+citation, and the parameter figures are arithmetic from the code rather
+than read from a log.}}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A reconstruction
+exists. What stops it being produced WITHOUT the latent?}}
+
+\subsection*{Adversarial study removal head}
+
+The second head of the decoder is an adversarial network designed to 
+actively remove batch information from the latent. The network is trained to 
+predict the study that a cell came from given the latent. It is given the 
+latent means rather than sampling from the gaussian space. This 
+removes variational noise that the adversarial head does not need to model. 
+To make it an adversarial network, during backpropagation the gradient is 
+reversed before reaching the latent, making discriminator performance a 
+pressure against batch information.
+
+Two weights govern this. One is the share of total loss attributed to the 
+discriminator which governs how much the model optimises for discrimination. 
+The other is the scaling factor of the reversed gradient. This determines 
+how much the discriminator affects the encoder. It is the second that 
+traces the frontier reported in this paper. 
+
+As with any adversarial network, the discriminator's capacity is a sensitive 
+hyperparameter. A strong discriminator prevents the model from learning 
+anything while a weaker one is easily fooled by the encoder. The failure 
+mode of a weaker discriminator is described in results. \elaj uses a 
+discriminator with three linear layers of width 256, with a leaky rectifier, no
+dropout, and layer normalisation after each layer.
+
+\note{PURPOSE: the term that makes \texttt{lambda\_dab} a knob, so the one
+head the paper's central result rests on.\\
+AW REMOVED, as artefacts of our own earlier errors rather than method: that
+a defeated discriminator is not evidence of an invariant latent, with the
+$+0.883$ correlation; and that single-study batches do not handicap a
+row-wise discriminator. Both answer objections to designs we no longer run.
+The $+0.883$ figure now appears nowhere in the paper, and
+\emph{Decoder conditioning}'s forward pointer to it has been dropped
+rather than redirected.\\
+NOT WRITTEN, deliberately: the discriminator's parameter count, since it is
+discarded after training and is not part of the released model; and the
+LeakyReLU slope 0.01 and the circular inputs arriving as $(\cos,\sin)$
+pairs, which matter only when \texttt{n\_circular} $> 0$ and no reported arm
+has it.\\
+\textcolor{elajcoral}{OPEN: \texttt{lambda\_dab} is not comparable across
+the October 2026 discriminator change, so any number quoted from an arm
+before it must say so.}}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{One term pushes
+structure OUT of the latent. The next two decide what stays in.}}
+
+\subsection*{Elastic cell similarity head}
+
+The third head of the decoder is a selective pressure head adapted from 
+scGPT. Notably, this head acts pairwise on the cell embeddings within a 
+batch and not against one cell. Every pair of cells is checked against a 
+cosine similarity threshold of 0.8. Pairs falling below the threshold are 
+pushed away from each other while cells that clear the threshold are pulled 
+closer together and pairs at or below zero cosine are left untouched. 
+
+In practice this acts as a sharpening term and its purpose is to make a 
+collapsed latent expensive. A single undifferentiated cloud is as 
+uninformative as clear study-sectioned clouds. This head stretches 
+dissimilar cells in a batch while simultaneously pushing similar cells 
+together. Crucially, every pair is drawn from one study because a batch is 
+composed of one study by construction. A cross-study pair of the same cell 
+type with a low cosine because of batch effects would be driven further 
+apart instead of closer. That puts unnecessary pressure on the adversarial 
+head. Confined to one study the term can sharpen within-study structure, 
+which helps gather biologically similar cells together.
+
+\note{PURPOSE: the anti-collapse pressure, and the one term whose sign has to
+be stated or a reader will assume the opposite. The paper needs it because
+the A1 ablation shows removing it improves every biology axis and worsens
+every cost axis --- a frontier-traversing knob rather than an expanding one
+--- and that result is unreadable without knowing which way the term pushes.\\
+HEADING: withdrawn. The subsection now sits inside AW's framing of the
+decoder as four heads, which makes ``head'' the consistent label even though
+this term holds no parameters.\\
+NOT WRITTEN: the cross-study buffer variant, built and never used by a
+reported arm; and the self-pair handling, which differs from scGPT's by a
+factor $(B-1)/B$, or 0.4\% of the effective weight at batch 256.}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Both terms so
+far shape the latent without being told anything. One term is told.}}
+
+\subsection*{Menstrual-phase head}
+
+The fourth head is the only head other than reconstruction that introduces
+new information in the model rather than moulding existing information. 
+Cycle phase is among the largest sources of biological variation in
+endometrium. The menstrual phase head is a linear classifier 
+that reads the Gaussian latent means and predicts the cell's 
+menstrual-cycle phase.
+
+The reconstruction head has no pressure to isolate menstrual cycle. Each 
+donor contributes a single biopsy in this corpus which is a data confound 
+that needs to be taken into consideration. That relates directly to the
+adversarial head as it acts against menstrual cycle information simply 
+because it has the same geometric form as a study effect. The menstrual 
+phase head gives that trade-off a second side, so moving the adversarial 
+strength traces a frontier rather than erasing both at once.
+
+However, a head with hidden layers would learn how to separate the latent
+nonlinearly which doesn't necessarily make the latent more informative. 
+Instead \elaj uses a single linear map that puts the separation pressure 
+directly on the latent, creating a more interpretable subspace. 
+
+Notably, \elaj is only semi-supervised on menstrual phase because 
+512{,}101 of 1{,}161{,}472 training cells have menstrual phase metadata.
+Unlabelled cells are not penalised. The effects of this head are quantified
+through ablation studies described in results.
+
+Menstrual phase is the only label the model is given. Cell type, disease 
+status, stage and grade have no head in any configuration reported here, 
+so every result on those is unsupervised.
+
+\note{FOR THE DISCUSSION, cut from here as a significance claim and because it credits the wrong component --- phase is endometrial physiology, not endometriosis, and what tailors \elaj to the disease is the corpus and the pathway vocabulary: \emph{supervising cycle phase is what makes this a model of endometrium rather than a generic single-cell autoencoder}.\\
+PURPOSE: the fourth head, argued as a design choice with a measured
+benefit. Earlier drafts hedged in every paragraph as though supervision
+needed excusing; the argument is that phase is real biology the rest of the
+objective cannot reach, and that the adversarial head would remove it if
+nothing asked for it.\\
+THE REGULARISER CLAIM IS MEASURED: on a1\_nophase, \texttt{train\_nb} falls
+0.4140 $\rightarrow$ 0.3772 over eight epochs while \texttt{val\_nb} rises
+0.4083 $\rightarrow$ 0.4256, diverging from epoch 1. Removing the head also
+costs every biology axis, phase worst but cell family and disease too. The
+numbers belong in \emph{Ablations}; stated here only as ``measured by
+removing it''.\\
+VERIFIED: 512{,}101 of 1{,}161{,}472, from the benchmark log's
+``Harmonised menstrual phase'' line on the train split.
+\textcolor{elajcoral}{NOT verified: four of eleven studies, and the
+91-of-184-donor figure registered in METHODS\_STRUCTURE.md item 20, which
+stays out until it is read off a log. Coverage differs by split --- val is
+101{,}479 of 190{,}976, 53\% against train's 44\% --- so any figure quoted
+must name its split.}\\
+NOT WRITTEN: weight 40 and label smoothing 0.05, which belong in the
+objective's weight table; that the head reads \texttt{mu\_gauss} alone
+rather than the circular block, indistinguishable from ``the Gaussian
+means'' while no reported arm has a circular branch; and that the head is
+discarded after training.\\
+COLLISION: the 69.5\% figure for how much of the phase margin the head
+supplies is a result and belongs in \emph{Ablations}.}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Five terms
+exist. What does the sum look like?}}
+
+\subsection*{Composite objective}
+
+The four heads are trained together through one loss value. 
+Reconstruction acts over all genes with weight 1 while every other 
+term is weighted against it as:
+\begin{equation*}
+\mathcal{L} \;=\; \mathcal{L}_{\text{nb}}
+\;+\; \frac{1}{G}\Big[\,
+\beta(t)\, w_{\text{kl}}\, \mathcal{L}_{\text{kl}}
+\;+\; w_{\text{ecs}}\, \mathcal{L}_{\text{ecs}}
+\;+\; w_{\text{dab}}\, \mathcal{L}_{\text{dab}}
+\;+\; w_{\text{cls}}\, \mathcal{L}_{\text{cls}}
+\,\Big] ,
+\end{equation*}
+with $w_{\text{kl}}$ 1, $w_{\text{ecs}}$ 50, $w_{\text{dab}}$ 0.5 and
+$w_{\text{cls}}$ 40. Reconstruction is a mean over genes while the four
+bracketed terms are per-cell quantities, so each is divided by the number of 
+genes that batch's study measured ($G$).
+
+The price on the latent is the usual one: the Kullback--Leibler divergence
+between each cell's posterior and a unit Gaussian, summed over the sixteen
+dimensions and averaged over cells. $\beta(t)$ ramps it linearly from zero
+over the first 5\% of training steps, reaching 0.5, because until
+reconstruction is established the latent holds nothing worth paying for and
+a full price collapses it first. $w_{\text{kl}}$ is the second of the
+paper's two knobs: at a fixed adversarial strength it moves the model along
+the frontier rather than displacing the frontier itself.
+information cost and is described next.
+
+$\lambda_{\text{dab}}$ is absent from this sum, which is deliberate. It
+scales the gradient as it is reversed on the way to the encoder, so it
+governs how much of the adversarial loss the latent feels while leaving the
+discriminator's own training untouched. That is the knob which traces the
+frontier, and it is set to 168 in the reported arm. Only the first two 
+terms are the model's own objective. Checkpoint selection and early 
+stopping read reconstruction alone.
+
+\note{PURPOSE: how the four heads combine, as one equation inside the
+story. Two earlier drafts failed in opposite directions --- one discussed
+the objective at length without ever writing it, the other became two
+display blocks and a symbol table with no argument in them.\\
+SIMPLIFIED FOR THE REPORTED ARM, all three verified absent from
+p1\_dab168\_kl1: the circular branch's KL at \texttt{w\_kl\_circ} 2
+(\texttt{n\_circular} 0), the drain's KL charged at the Gaussian weight
+(\texttt{d\_drain} 0), and the contrastive term \texttt{w\_cce}, which needs
+two augmented views. \texttt{composite.py} carries all three, so if any
+reported arm ever has one, this equation is wrong for it.\\
+NOT WRITTEN: the per-term definitions, since each is the standard loss for
+the head that owns it and those subsections give them; that
+$\mathcal{L}_{\text{dab}}$ stays in the graph because an untrained
+discriminator reports chance whatever the latent holds; and the
+fourteen-fold volatility figure behind the selection sentence, which is a
+measurement and belongs in \emph{Checkpoint selection} if anywhere.\\
+HISTORY, kept only because it makes older logs readable: before 28 September
+2026 the per-cell terms were not divided by $G$, so each silently carried a
+weight of $G_\text{meas}$ --- $\lambda_{\text{dab}} \times w_{\text{dab}}
+\times G$ was about 70 at v1\_pool, 140 through r4 to r8 and 1{,}400 at r2,
+and \texttt{w\_cce} 0.05 was an effective 700. Every reported arm post-dates
+the fix, so the paper needs no comparability note.\\
+MERGED IN, AW's call: \emph{Latent information cost} was a separate
+subsection and is now the one paragraph above. The KL is a standard VAE
+term, so only the three things a reader cannot infer survived --- that it is
+summed over dimensions and averaged over cells, the anneal that defines
+$\beta(t)$, and $w_{\text{kl}}$ as knob two.\\
+DROPPED IN THAT MERGE: the free-bits floor of 0.25 nats per dimension,
+which the project believes inert on this corpus and which I never
+re-measured on the reported arm --- it was a paragraph reporting that a
+guard does nothing, and it goes to Code availability with the rest of the
+configuration; and the measured case for dividing by $G$, which is that
+undivided the Gaussian branch ran at an effective 469 and the circular one
+at 1{,}875, against the 1--20 range where posterior collapse is a
+documented risk, and that run 50132670 collapsed exactly so, circular
+branch first. That evidence belongs in a rebuttal if a reviewer presses on
+the division.\\
+VERIFIED from \texttt{composite.py} and the reported arm's config:
+\texttt{beta\_max} 0.5, \texttt{warmup\_fraction} 0.05,
+\texttt{w\_kl\_gauss} 1.0, \texttt{free\_bits} 0.25. The module
+docstring still says the KL ``ramps 0 to 1 over the first 20\%'', true when
+both were hardcoded and now stale --- a code fix, not a paper one.\\
+SOURCE: \texttt{composite.py} 300--407. Thesis §Objective is revised beyond
+use --- four terms, none of these weights.}
+
+\subsection*{Optimisation}
+\note{PURPOSE: how a run is executed, kept short. AdamW, $10^{-3}$, batch
+256, bf16, cosine over a 20-epoch horizon chosen for its SHAPE rather
+than its length --- the horizon sets how long the learning rate stays
+high, and early stopping is what ends a run. Per-study batch construction
+and domain-specific normalisation are two sentences here rather than
+headings of their own, per your note that most training-procedure
+material is statements belonging inside other passages.\\
+HANDS ON: runs finish. Which checkpoint is the model?\\
+SOURCE: Thesis §Configuration (72). Hyperparameter detail $\rightarrow$
+Supplementary.}
+
+\subsection*{Cross-donor agreement}
+\note{PURPOSE: the paper's central measurement, and the reason the
+obvious one fails. \textbf{CALLBACK 3} --- a cell's nearest neighbours
+are usually its own donor's cells, and phase is constant within a donor,
+so plain label recovery rewards a model that memorised donors. Discard
+every same-donor neighbour, then score. Shown with the measured contrast
+rather than asserted.\\
+HANDS ON: a number. Is it bigger than chance?\\
+SOURCE: Thesis 05 §Does the latent carry biology it was never given?}
+
+
+\subsection*{Donor and study recovery}
+\note{PURPOSE: define the two costs, so the frontier has both its axes
+before it is plotted. These are the quantities a good model should fail
+at.\\
+HANDS ON: both axes exist. What does the latent's shape look like under
+them?\\
+SOURCE: Thesis 05 §Study mixing.}
+
+
+
+\subsection*{Whole-corpus embedding}
+\note{PURPOSE: licence the paper's discovery half. Once the model is
+fixed, nothing is being selected, and the metadata read below was never
+an input --- so there is nothing a held-out split protects against for
+these labels, and all 1{,}577{,}728 cells can be embedded and read
+together. Phase is the exception, governed by the head. Also the region
+procedure: every cell takes the cell family of its 25 nearest LABELLED
+neighbours searched in the sixteen dimensions, not in the UMAP, because a
+bounding box assumes each family occupies one convex patch and immune
+cells do not.\\
+SOURCE: new.}
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Everything
+measurable has been measured. What has to be declared?}}
+
+% =====================================================================
+%  REPORTING  -- budget 200. NOT YET SEEDED.
+% =====================================================================
+
+
+
+\subsection*{Use of large language models}
+\note{PURPOSE: \textbf{REQUIRED BY NMI} --- ``Use of an LLM should be
+properly documented in the Methods section.'' What was used, for what,
+and what it did not do.\\
+SOURCE: Thesis Appendix A, rewritten to that requirement.}
+
+\subsection*{Data availability}
+
+This study analysed previously published data and generated no new primary
+data. All datasets are publicly available: Gene Expression Omnibus
+accessions GSE266265, GSE247695, GSE214411, GSE218044, GSE213216, GSE203191
+and GSE179640; ArrayExpress accession E-MTAB-14039; and CellxGene Discover
+collections \texttt{9ddea8d9} and \texttt{968885c5}.
+\textcolor{elajcoral}{[li et al.\ accession]}
+
+\note{PURPOSE: mandatory, and no longer than the atlas papers write it ---
+no new data, then the accessions. An earlier draft explained the CellxGene
+route, listed the two datasets we excluded, and promised not to redistribute
+processed matrices; none of that is what this statement is for.\\
+\textcolor{elajcoral}{TWO ACCESSIONS NOT SETTLED.}
+(1) \textbf{li\_2025:} GSE276193 is that study's \emph{bulk} RNA-seq; its
+scRNA-seq is in CNGBdb under CNP0006183. We hold 45,803 single cells from it
+and the screening sheet records the tissue as follicular fluid and mouse
+ovary, neither endometrium. Verify the h5ad before writing anything --- if
+it is not endometrium this is a corpus problem, not a citation one.
+(2) \textbf{GSE213216:} accession right, citation wrong --- the PDF on file
+is Pei et al.\ 2023, a re-analysis that used it, not the original
+submission.\\
+ON RECORD, needs no sentence unless an editor asks: shih\_2022's deposit
+note says ``available from the corresponding authors on request'' for its
+other materials while the single-cell data sit openly in GSE203191;
+garcia-alonso's CellxGene collections are the open component, not the
+controlled-access E-MTAB-10287. Both in DATA\_PROVENANCE.md.}
+
+\subsection*{Code availability}
+
+All code for data preparation, model training and evaluation is available at
+\textcolor{elajcoral}{[repository URL]} under an
+\textcolor{elajcoral}{[MIT]} licence.
+
+\note{PURPOSE: mandatory, one sentence, which is what the field writes.
+An earlier draft listed what the release contains and pinned four library
+versions; the repository carries both.\\
+\textcolor{elajcoral}{THREE PREREQUISITES, ALL INFRASTRUCTURE, NONE WRITING.}
+(1) No public repository --- \texttt{origin} is a university GitLab course
+project a reviewer cannot open, \texttt{old-repo} a stale GitHub mirror.
+(2) No licence file: no LICENSE, LICENCE or COPYING in the tree, so the code
+is technically all-rights-reserved, which contradicts this statement.
+(3) No tags and no DOI --- \texttt{git tag} is empty, so nothing identifies
+the commit that produced the reported arm. A GitHub release at that commit
+through the Zenodo integration mints one if we want it; the statement does
+not need it.\\
+ABSORBS by AW's ruling: every hyperparameter, the retired compute
+subsection, and \emph{Latent geometry}'s sufficient-statistics rationale.
+Versions, verified and not in prose: PyTorch 2.7.1, CUDA 12.6.0, Python
+3.12, scikit-learn 1.9.0, pinned in \texttt{src/requirements.txt}.}

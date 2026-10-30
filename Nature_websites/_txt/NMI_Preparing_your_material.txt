@@ -1,0 +1,118 @@
+25/10/26, 3:48 PM
+Preparing your material | Nature Machine Intelligence
+Page 1 of 4
+https://www.nature.com/natmachintell/submission-guidelines/preparing-your-submission
+nature 
+ nature machine intelligence 
+ submission guidelines 
+ preparing your material
+Submission Guidelines
+Editorial Process &
+Peer Review
+Preparing your
+material
+Formatting your initial
+submission
+Writing and language
+AIP and formatting
+ORCID
+Production process
+Publishing options
+Matters Arising
+Presubmission
+enquiries
+Double-anonymized
+peer review
+Preparing your material
+MAKE SURE YOUR SUBMISSION IS COMPLETE
+What your submission should include
+Manuscript file [including Methods, Figures and Extended
+Data if applicable]
+Cover letter 
+Supplementary Information – optional; see details below.
+Manuscript file
+The manuscript file must contain:
+1. Names and affiliations of all co-authors (if you choose
+double-anonymized peer review, you should put this
+information in the cover letter). The primary affiliation for
+each author should be the institution where the majority of
+their work was done. If an author has subsequently moved,
+the current address may also be stated. Large Language
+Models (LLMs), such as ChatGPT, do not currently satisfy
+our authorship criteria. Notably an attribution of authorship
+carries with it accountability for the work, which cannot be
+View all journals
+Saved research
+Search
+Log in
+Content
+About
+Publish
+Sign up for alerts
+RSS feed
+
+25/10/26, 3:48 PM
+Preparing your material | Nature Machine Intelligence
+Page 2 of 4
+https://www.nature.com/natmachintell/submission-guidelines/preparing-your-submission
+effectively applied to LLMs. Use of an LLM should be
+properly documented in the Methods section (and if a
+Methods section is not available, in a suitable alternative
+part) of the manuscript.
+2. A detailed description of the findings of the work, including
+sufficient information on methods and materials which
+would enable replication of the study by a fellow expert. 
+3. A reference list.
+4. OPTIONAL Extended Data – Extended Data figures and
+tables are online-only display items that provide essential
+background to the main paper but are not included as main
+display items due to space constraints or being of interest
+only to specialists. A maximum of ten Extended Data
+display items is permitted. 
+Methods & Protocols
+The Methods section should be written as concisely as possible
+but should contain all elements necessary to allow interpretation
+and replication of the results. The Methods sections of all
+original research papers will appear in all online versions. 
+Authors are encouraged to deposit the step-by-step protocols
+used in their study to www.protocols.io, an open repository of
+scientific protocols of Springer Nature. Protocols deposited by
+the authors will be linked to the online Methods section upon
+publication.
+Cover letter
+
+25/10/26, 3:48 PM
+Preparing your material | Nature Machine Intelligence
+Page 3 of 4
+https://www.nature.com/natmachintell/submission-guidelines/preparing-your-submission
+The cover letter should explain the importance of the work, and
+why you consider it appropriate for the diverse readership of
+Nature Machine Intelligence. 
+The cover letter should: 
+1. Disclose details of any related manuscripts that all authors
+have under consideration or in press elsewhere.
+2. Let us know whether you have had any prior discussions
+with a Nature Machine Intelligence editor about the work
+described in the manuscript.
+3. If choosing double-anonymized peer review, include the
+affiliation and contact information for all authors (instead of
+putting it in the manuscript file). 
+4. OPTIONAL. Provide the name and institution of reviewers
+you would like to recommend and/or people you would like
+to be excluded from peer review (explaining why).
+5. The cover letter is not seen by peer reviewers.
+Supplementary Information
+Any information (including display items) not directly related to
+the description of the main findings, but needed to properly
+understand and replicate the study, should be included
+in supplementary information files.
+Only Supplementary Information that is relevant to the
+conclusions of the paper should be included.
+The Supplementary Information document will be sent to peer
+
+25/10/26, 3:48 PM
+Preparing your material | Nature Machine Intelligence
+Page 4 of 4
+https://www.nature.com/natmachintell/submission-guidelines/preparing-your-submission
+Nature Machine Intelligence (Nat Mach Intell) ISSN 2522-5839 (online)
+reviewers alongside the manuscript file. 

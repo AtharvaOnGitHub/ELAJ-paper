@@ -1,0 +1,44 @@
+% =====================================================================
+% INTRODUCTION — NMI prints this with no heading of its own, running
+% straight from the abstract. Roughly 600–800 words, four or five
+% paragraphs. Accessible to a reader from either side: a machine
+% learning reader who has never heard of the secretory phase, and a
+% clinician who has never trained an autoencoder.
+%
+% HIGH-LEVEL ONLY. Paragraph-by-paragraph breakdown comes after the
+% flow below is approved.
+% =====================================================================
+
+\section*{Introduction}
+
+\note{PARAGRAPH 1 — the disease, and why it is a computational problem
+and not only a clinical one. Prevalence, diagnostic delay, the fact that
+lesions are read by eye from biopsies. What a reader needs to know about
+endometriosis to follow the rest, and nothing more. Participants are
+people with a uterus; this is a human health problem.}
+
+\note{PARAGRAPH 2 — the data situation. Eleven public studies, no shared
+panel, no shared protocol, cohorts of tens of donors each. Why pooling
+is the only route to statistical power here, and why pooling is also
+what breaks the standard tooling.}
+
+\note{PARAGRAPH 3 — THE CONFOUND, which is the intellectual core of the
+paper and the thing a reader must understand before any result means
+anything. Each donor was biopsied once. Menstrual phase is therefore
+constant within a donor, and a per-donor offset is geometrically the same
+object as a batch effect. Batch correction cannot tell them apart, so
+removing the batch removes the cycle. State plainly that this is not a
+technical caveat: it is the reason naive integration of endometrial data
+silently discards the biology people want.}
+
+\note{PARAGRAPH 4 — what we do about it. Not ``we propose a novel
+architecture''. We make the trade-off explicit and measurable, map the
+frontier between donor-blindness and retained cycle signal, and report
+from a named point on it. Sixteen dimensions and 1.88M parameters are
+mentioned here as a consequence of the design, not as a selling point.}
+
+\note{PARAGRAPH 5 — what the paper contributes, as a short list the
+Results then delivers in order. Flow rule: the last sentence here must
+be the first question Results answers.}
+
+\todo{deferred until \texttt{PUBLICATION\_PLAN} §0 reframing lands}

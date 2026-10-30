@@ -1,0 +1,101 @@
+% =====================================================================
+%  ELAJ — paper preamble
+%
+%  Adapted from Thesis/preamble.tex. What carries over and what does not:
+%
+%    KEPT   the palette, the \elaj macro, \todo/\note, booktabs, natbib,
+%           the caption style, amsmath + bm
+%    DROPPED two-column, extreport at 9pt, chapter machinery, the crest,
+%           the float-fraction relaxations that two columns needed
+%    ADDED  line numbers and 1.5 spacing for review, because this is a
+%           drafting document that a supervisor and then a reviewer marks
+%           up. Both come off for submission by flipping \draftmode.
+%
+%  Nature Machine Intelligence takes LaTeX at submission and typesets from
+%  the accepted manuscript, so this file is for US, not for them. It is
+%  deliberately plain: no journal class, nothing that would have to be
+%  unpicked later.
+% =====================================================================
+
+\usepackage[a4paper, margin=2.5cm]{geometry}
+\usepackage[british]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% ---- Maths ----------------------------------------------------------
+\usepackage{xspace}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bm}
+
+% ---- Figures and tables ---------------------------------------------
+\usepackage{graphicx}
+\graphicspath{{figures/}}
+\usepackage{booktabs}           % \toprule \midrule \bottomrule, never \hline
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage[font=small,labelfont=bf,justification=justified,
+            singlelinecheck=false,skip=6pt]{caption}
+\usepackage{subcaption}
+\usepackage{float}
+
+% ---- Colour ---------------------------------------------------------
+\usepackage[dvipsnames]{xcolor}
+% Matched to the project's figures so the document and the plots read as
+% one system.
+\definecolor{elajink}{HTML}{22223B}
+\definecolor{elajteal}{HTML}{2A9D8F}
+\definecolor{elajcoral}{HTML}{E76F51}
+\definecolor{elajmuted}{HTML}{8D99AE}
+
+% ---- References and links -------------------------------------------
+\usepackage[
+  colorlinks=true,
+  linkcolor=elajink,
+  citecolor=elajteal,
+  urlcolor=elajteal,
+  breaklinks=true,
+]{hyperref}
+\usepackage{url}
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{unsrtnat}
+
+% ---- Drafting apparatus ---------------------------------------------
+% Set \draftmodefalse before submitting: it removes line numbers, the
+% extra leading, and every \todo and \note in one switch.
+\newif\ifdraftmode
+\draftmodetrue
+
+\usepackage{setspace}
+\usepackage{lineno}
+\ifdraftmode
+  \onehalfspacing
+  \linenumbers
+  \renewcommand\linenumberfont{\normalfont\tiny\sffamily\color{elajmuted}}
+\fi
+
+% ---- Headings -------------------------------------------------------
+\usepackage[explicit]{titlesec}
+\titleformat{\section}{\normalfont\Large\bfseries\color{elajink}}{\thesection}{1em}{#1}
+\titleformat{\subsection}{\normalfont\large\bfseries\color{elajink}}{\thesubsection}{1em}{#1}
+\titleformat{\subsubsection}{\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{#1}
+\titlespacing*{\section}{0pt}{2.2ex plus 1ex minus .2ex}{1.2ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.8ex plus 1ex minus .2ex}{0.9ex plus .2ex}
+
+% ---- Project macros --------------------------------------------------
+% Set in Comfortaa at 88% of the surrounding size, which cap-matches it to
+% newtx. Loaded by family name rather than by package so nothing here can
+% disturb the body font. See Thesis/preamble.tex for the measurement.
+\makeatletter
+\newcommand{\elaj}{{\fontfamily{comfortaa}%
+  \fontsize{\the\dimexpr\f@size pt*88/100\relax}{\f@baselineskip}\selectfont
+  \textls[150]{ELAJ}}\xspace}
+\makeatother
+\newcommand{\scrnaseq}{scRNA-seq\xspace}
+\newcommand{\snrnaseq}{snRNA-seq\xspace}
+
+% \color inside a group, NOT \textcolor: \textcolor is not \long, so a blank
+% line inside a note would end the paragraph mid-argument and abort the build.
+\newcommand{\todo}[1]{\ifdraftmode{\color{elajcoral}\small\bfseries[TODO: #1]}\fi}
+\newcommand{\note}[1]{\ifdraftmode{\color{elajmuted}\small\itshape[#1]}\fi}

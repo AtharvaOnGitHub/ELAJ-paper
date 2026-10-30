@@ -1,0 +1,23 @@
+# LaTeX build artefacts — all regenerable by ./build.sh
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.synctex.gz
+*.synctex(busy)
+*.nav
+*.snm
+*.vrb
+
+# The built PDF. Regenerable from source by ./build.sh, and a 550 KB binary
+# that changes on every build would dominate the history of a repo whose
+# point is tracking prose. Drop this line if you would rather have the
+# compiled draft travel with the commits.
+main.pdf
+
+# macOS
+.DS_Store

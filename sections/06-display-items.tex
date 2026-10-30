@@ -1,0 +1,77 @@
+% =====================================================================
+% DISPLAY ITEMS — NMI allows up to eight in the main text for an
+% Article. Everything else is Extended Data, which NMI caps at TEN --- an
+% earlier version of this comment said unlimited, which is wrong (NMI,
+% Preparing your material: "A maximum of ten Extended Data display items
+% is permitted"). Supplementary Information is the uncapped tier. Reviewers
+% read Extended Data less carefully than the main text, so the eight main
+% slots are the real budget and are allocated here rather than discovered
+% at the end.
+%
+% This file is the FIGURE LIST, not the figures. Each entry names what
+% the panel shows, which arm it needs, and whether the script that makes
+% it exists yet. The arm matters: a figure built from one arm and
+% captioned as if it were the model is the error we just caught in the
+% crop UMAPs.
+% =====================================================================
+
+\section*{Display items}
+
+\note{BUDGET: eight. Allocation below. Each figure must be regenerable
+by one command from a committed script — that is reproducibility item R5
+and it is cheaper to honour while building than to retrofit.}
+
+\subsection*{Figure 1 — the confound, and the design}
+\note{Schematic, not data. Why a per-donor offset and a batch effect are
+the same geometric object, and where in the model the two are pulled
+apart. The one figure a reader must understand to read any other. DOES
+NOT EXIST; has to be drawn.}
+
+\subsection*{Figure 2 — the frontier}
+\note{The pre-registered factorial, the curve, and the two reported arms
+marked on it. EXISTS (frontier plot, both arms).}
+
+\subsection*{Figure 3 — \elaj\ against the field}
+\note{Grouped bars, cross-donor agreement and the donor and study costs,
+every panel oriented higher-is-better. EXISTS. Needs the width
+limitation in the caption and \texttt{supervised\_on} populated for the
+\elaj\ rows.}
+
+\subsection*{Figure 4 — the corpus through the latent}
+\note{The whole-corpus UMAP with its cell-type regions marked, as the
+entry point to every crop that follows. EXISTS as
+\texttt{01\_cell\_family}. ARM MUST BE NAMED IN THE CAPTION.}
+
+\subsection*{Figure 5 — grouped by cell type, across tissue}
+\note{The tissue crop. Stromal cells from five tissues together;
+epithelium almost purely endometrial. EXISTS as \texttt{02\_tissue}.}
+
+\subsection*{Figure 6 — the cycle is a cycle}
+\note{THE HEADLINE FIGURE. Cycle-day crop on a cyclic colour map, with
+the displacement numbers (1.07 / 0.98 / 0.39 / 0.34) beside it so the
+visual and the measurement sit in one item. EXISTS as
+\texttt{08\_cycleday}; the displacement panel does not and has to be
+drawn.}
+
+\subsection*{Figure 7 — disease signal, and where it is not}
+\note{The immune result at 0.77/0.83 against 0.22 corpus-wide, AND the
+duempelmann non-replication in the same figure. Deliberately one item,
+because splitting them would let a reader take the positive without the
+negative. PARTLY EXISTS (\texttt{03\_disease}).}
+
+\subsection*{Figure 8 — ablations}
+\note{C-6 first: the phase classifier removed. Reserved. DOES NOT EXIST
+— the runs have not been done.}
+
+% ---------------------------------------------------------------------
+\section*{Extended Data}
+\note{Unlimited, and where the honest overflow goes: the remaining crop
+panels (phase, stage, grade, platform, progesterone), the per-arm
+comparison tables, the sufficient-statistics tables at every coarsening,
+the donor-overlap audit, and the baseline fitting details. Captions here
+carry the detail that the main-text captions cannot afford.}
+
+\section*{Supplementary Information}
+\note{The accession table, the gene vocabulary and how it was derived,
+the full factorial results, and the seeds. Things a reader consults
+rather than reads.}

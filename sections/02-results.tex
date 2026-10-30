@@ -1,0 +1,231 @@
+% =====================================================================
+% RESULTS — the bulk of the main text, ~2,000 words. NMI expects short
+% declarative subsection headings that state the finding, not the
+% activity: "The latent separates donors without erasing the cycle",
+% never "Evaluation of latent structure".
+%
+% TWO KINDS OF SUBSECTION, and they have different rules (see
+% docs/paper/OUTSTANDING.md §"The results section has two subsections"):
+%   BENCHMARK  — ELAJ against named baselines on a stated metric.
+%                Every number needs an interval.
+%   DISCOVERY  — what the latent holds when the whole corpus is read
+%                through it. Not a competition; no baseline column.
+%
+% HIGH-LEVEL ONLY below.
+% =====================================================================
+
+\section*{Results}
+
+% ---------------------------------------------------------------------
+\subsection*{The frontier}
+\note{BENCHMARK. The pre-registered factorial and the curve it traces.
+The two knobs and what each does; why the reported models sit where they
+sit; the two arms at $\lambda_\text{dab}=168$. This subsection exists so
+that every later number has a named model behind it. Display item:
+the frontier plot. $\rightarrow$ hands on: is a point on this frontier
+actually competitive?\\
+OWED HERE, and \emph{Adversarial study removal head} in Methods already
+points forward to it --- ``the failure mode of a weaker discriminator is
+described in results''. Nothing in this section carries it yet.
+
+THE FINDING: a discriminator driven to chance accuracy is NOT evidence
+that the latent is free of study. The encoder can hide study from a weak
+classifier instead of discarding it, and the tell is that the adversary's
+loss correlated \textbf{+0.883} with donor kNN recovery --- the two should
+move against each other if the term were working. Measured at m3\_study\_raw;
+recorded independently in LEVERS.md (graded evidence B, standing alone from
+the confounded \texttt{lambda\_dab} 140$\rightarrow$7 change in the same
+step), SCOREBOARD.md and RETRAIN\_EXPECTATIONS.md.
+
+WHY IT EARNS SPACE: ``our adversary converged to chance, therefore batch
+effect is removed'' is reported as evidence in published single-cell work.
+This is a measurement that the inference is unsound, which makes it the most
+transferable negative result the project holds. Two sentences, and it also
+motivates \texttt{d\_study} 16 --- the decoder had no other route to
+study-specific expression, so the encoder was supplying it.
+
+IF IT STAYS OUT, the forward reference in Methods must go with it.}
+
+\subsection*{\elaj\ against the field}
+\note{BENCHMARK. Sixteen dimensions against scVI, scANVI, PCA, and the
+foundation models, on cross-donor agreement and the donor/study costs.
+Width is declared as a limitation here, not buried. Foundation models
+received no private information and were not fine-tuned. Display item:
+the grouped-bar panels. $\rightarrow$ hands on: the model compresses
+well, so what did it keep?}
+
+% ---------------------------------------------------------------------
+\subsection*{Reading 1.58 million cells as sixteen numbers}
+\note{DISCOVERY, and the pivot of the paper. Why the train/val/test split
+stops being the right frame once the model is fixed: nothing is being
+selected any more, so the whole corpus can be embedded and read. State
+what was and was not given to the model, because every claim after this
+depends on that line. $\rightarrow$ hands on: what does the geometry
+group by?}
+
+\subsection*{The model groups cells by what they are, not where they came
+from}
+\note{DISCOVERY. The crop figures. One UMAP of the corpus, cut to each
+cell type's region; stromal cells from five tissues land together, and
+most of the cells in each region carried no cell-type label at all, so a
+per-family plot could not have shown this. Claim stays at the level the
+approximation supports: the model groups largely by cell type and each
+region roughly represents one. No purity percentages. Display item:
+tissue and cell-family crops.}
+
+\subsection*{The cycle is a cycle, and it moves only the cells it should}
+\note{DISCOVERY, and the headline. Cycle displacement in units of each
+cell type's own width: stromal 1.07, epithelial 0.98, endothelial 0.39,
+immune 0.34, and identical across both arms. THE ARGUMENT: the phase head
+is a single linear map over the whole latent and was never told about
+cell types, so it cannot have produced this split — the structure is in
+the data, recovered. Then the continuity: day 8 through 15--20 to 25--30
+with the ends meeting, read off a cyclic colour map rather than inferred.
+Display item: cycle-day crop. Honest limit stated here, not in a footnote
+— the day values come from one cohort.}
+
+\subsection*{Disease signal concentrates in the immune compartment}
+\note{DISCOVERY. 0.77/0.83 inside marecko's immune cells against 0.22
+corpus-wide, rank 1 of 4 in both arms. And the negative result in the
+same breath: duempelmann's families sit at 0.19--0.29 with the ordering
+flipping between arms, so this does not replicate across cohorts. The
+non-replication is reported as a result, not as a caveat.}
+
+% ---------------------------------------------------------------------
+\subsection*{What the latent needs in order to work}
+\note{BENCHMARK, ablations. C-6 first and most prominently — the phase
+classifier removed — because every reported arm is semi-supervised and a
+reviewer will ask whether the cycle result is simply the supervision
+played back. Then the others that survive triage. Each is one variable
+against a named base.}
+
+
+% ---------------------------------------------------------------------
+%  Moved here from 04-methods.tex on 30 October 2026, where it had been
+%  parked since 27 October while the wave was fresh. Nature keeps
+%  results out of Methods; Methods now carries one sentence saying the
+%  ablations were single-key changes against one base.
+%
+%  EVERY NUMBER BELOW IS FROM THE VALIDATION SPLIT. The benchmark is a
+%  different estimator on different cells -- phase reads 0.8406 on val
+%  against 0.7346 on the benchmark for the SAME checkpoint. Directions
+%  are reliable, values are not transferable, and the two must never be
+%  quoted side by side. Benchmark figures and the whole-corpus
+%  comparison are both in axw1008/docs/paper/ABLATIONS.md.
+% ---------------------------------------------------------------------
+
+% =====================================================================
+%  ABLATIONS -- RESULTS MATERIAL, PARKED HERE WHILE IT IS FRESH.
+%  Written 27 October 2026, the day the wave landed. It does NOT belong
+%  in Methods: Nature keeps results out of that section. Methods gets one
+%  sentence saying the ablations were single-key changes against one base;
+%  this passage moves to Results when that section is started.
+%
+%  GAPS MARKED \todo ARE WAITING ON THE BENCHMARK SCORING PASS. Every
+%  number below is from the VALIDATION split, which is a different
+%  estimator on different cells -- phase reads 0.8406 there against the
+%  benchmark's 0.7346 for the same checkpoint. Directions are reliable;
+%  values are not transferable.
+% =====================================================================
+
+
+
+Five models were trained, each removing exactly one component from
+\elaj{} and changing nothing else: the menstrual-phase head, the elastic
+cell similarity term, the order statistics in the group readout, the
+sentinel marking unmeasured genes, and the pathway grouping, replaced by
+a random partition of the same group sizes. All five completed, and all
+five hold 1{,}883{,}986 parameters --- the pooled statistics are computed
+rather than learned, so removing them frees none. Each was scored exactly
+as the reported model was, and each is read against that model rather
+than against the others.
+
+\todo{FIGURE: Outputs/figures/frontier\_a1/. The ablations are drawn as
+their own family in their own colour, because they are counterfactuals
+and must not read as candidate models. The reconstruction panel is the
+one that carries the grouping result.}
+
+\paragraph{The phase head supplies most of the phase signal, and not all
+of it.}
+Cross-donor phase agreement falls from 0.735 to 0.481 when the head is
+removed, against a chance level of 0.370. The head therefore accounts for
+roughly seventy per cent of the margin over chance and the architecture
+for the remaining thirty. Cell family agreement moves by 0.003 over the
+same change, so the model is otherwise intact. The claim this supports is
+neither that menstrual phase emerges from the architecture nor that it is
+simply supervised: a linear head trained on 44\% of cells supplies about
+seventy per cent of the signal, and what remains is carried by a model
+that was never told which cells those were.
+
+Removing the head also removes the only thing holding the model's
+generalisation together. Training reconstruction continues to improve
+while validation reconstruction worsens from the first epoch onward, and
+the adversarial classifier reads held-out studies increasingly well over
+the same span, so the reported checkpoint is the first epoch. The head is
+acting as a regulariser as much as a supervisor.
+
+\paragraph{Elastic cell similarity moves along the frontier rather than
+extending it.}
+Removing it improves every biological axis --- cell family, phase and
+disease --- and worsens every cost axis, with study mixing rising from
+0.604 to 0.683 and donor identifiability from 0.519 to 0.552. A term
+carrying the largest weight in the objective might be expected to buy
+biological structure; it does not. What it buys is study mixing, paid for
+in biology, which makes it the same kind of control as the weight on the
+latent's information cost rather than an independent improvement.
+
+\paragraph{The order statistics carry menstrual phase.}
+Replacing the nine summary tokens a group hands on with the learned token
+alone costs 0.096 of cross-donor phase agreement while moving cell family
+by 0.002. Phase is a property of the shape of a pathway's expression
+distribution, which a weighted average discards and order statistics
+retain; cell type is not, and does not move.
+
+\paragraph{The sentinel keeps study identity out of the latent.}
+Without it, study mixing rises from 0.604 to 0.626 and study purity from
+0.640 to 0.660: the study becomes easier to recover from the latent.
+A gene a study never measured, recorded as a zero, is zero in every cell
+that study contributed, and a model given no way to tell that constant
+from a measured silence can learn it as though it were biology. The
+sentinel does not conceal which genes a study assayed --- it is an
+explicit mark, and if anything makes the panel more legible. What it does
+is deny that panel a route into the latent, because sentinel positions
+are excluded from the reconstruction loss and zeros are not.
+
+\paragraph{The pathway grouping costs reconstruction and buys biology.}
+Genes reassigned at random to groups of identical sizes, leaving
+parameter count, attention cost and every other setting untouched,
+produced the best reconstruction of any model trained in this project,
+over the longest run and with the most stable training curves: training
+and validation descending together and converging smoothly. Judged on its
+optimisation the model had converged well. Judged on its latent it had
+not. Cross-donor cell family agreement fell from 0.982 to 0.961 and
+cross-donor disease agreement from 0.336 to 0.270, the largest biological
+loss of any arm on any axis.
+
+The partition drawn from Reactome and Gene Ontology therefore makes
+reconstruction harder and the latent more biological, and the two move in
+opposite directions within a single run. The quantity the model optimises
+is not the quantity the model is for, and these two numbers are the
+clearest statement of that this work can make.
+
+\paragraph{Disease stage and grade carry no recoverable signal.}
+No arm, including the reported model, reaches significance on either
+label: stage ranges from 0.080 to 0.219 at $p$ between 0.12 and 0.33, and
+grade is negative in every configuration. This is a property of the
+labels rather than a result of any ablation, and it bounds what the
+latent can be asked about severity.
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A trained
+model and a fixed protocol. What question is asked of the latent, and why
+can the obvious measurement not answer it?}}
+
+% =====================================================================
+%  EVALUATION  -- budget 550. NOT YET SEEDED. Source is Thesis 05
+%  §Evaluation framework, which I had wrongly marked as new.
+% =====================================================================
+
+\todo{ordering of the six subsections above is the thing to review; the
+chain is frontier $\rightarrow$ competitive $\rightarrow$ so read it all
+$\rightarrow$ cell type $\rightarrow$ cycle $\rightarrow$ disease
+$\rightarrow$ what carries it}

@@ -1,0 +1,102 @@
+25/10/26, 3:39 PM
+Production process | Nature Machine Intelligence
+Page 1 of 3
+https://www.nature.com/natmachintell/submission-guidelines/production-process
+nature 
+ nature machine intelligence 
+ submission guidelines 
+ production process
+Submission Guidelines
+Editorial Process &
+Peer Review
+Preparing your
+material
+Formatting your initial
+submission
+Writing and language
+AIP and formatting
+ORCID
+Production process
+Publishing options
+Matters Arising
+Presubmission
+enquiries
+Double-anonymized
+peer review
+Production process
+Below are the production steps that follow the acceptance of a
+manuscript for publication in Nature Machine Intelligence. Key
+contact points for authors are marked with an asterisk (*).
+1 – Preparation
+Your manuscript and associated files are exported to our
+production system and assigned a Digital Object Identifier (DOI).
+Your manuscript files are quality checked to ensure they meet
+the basic technical requirements for publication. We may
+contact you if there are issues preventing us processing your
+manuscript. Please follow our AIP and formatting guidelines and
+guidance from your manuscript’s handling editor – it will help
+ensure your manuscript passes smoothly through production.
+Your manuscript text is converted into structured XML. Your
+images are resized and standard journal styles are applied to
+text and other graphic elements.
+The structured text and prepared figures are copy edited by a
+subject specialist for clarity, readability, consistency, accuracy
+View all journals
+Saved research
+Search
+Log in
+Content
+About
+Publish
+Sign up for alerts
+RSS feed
+
+25/10/26, 3:39 PM
+Production process | Nature Machine Intelligence
+Page 2 of 3
+https://www.nature.com/natmachintell/submission-guidelines/production-process
+and adherence to journal style.
+A draft pdf layout in the journal article template is prepared.
+2 – License to Publish and Open Access
+payment*
+You will now be contacted by our Author Service team who will
+help create the relevant license to publish for your article. For
+journals that allow publication using an Open Access License,
+you will be able to choose this option now and either pay an
+Article Publication Charge (APC) or instigate an eligibility check
+if you believe that your institute is covered under an existing
+transformative agreement. Please note, we cannot send out your
+manuscript proof until this stage is complete.
+3 – Proofing*
+We will send an electronic proof of your article to the
+corresponding author. This allows you to review your prepared
+manuscript and address any copy editing queries. Please make
+any corrections and respond to queries within the e.proof tool
+rather than marking up the PDF.
+4 – Finalisation
+Any e-proof amendments you have suggested will be reviewed
+by a copy editing specialist before implementation. A set of
+additional proof quality checks will also be performed and we
+will contact you if any further clarifications are required.
+All content changes and final production quality checks are
+completed.
+
+25/10/26, 3:39 PM
+Production process | Nature Machine Intelligence
+Page 3 of 3
+https://www.nature.com/natmachintell/submission-guidelines/production-process
+Nature Machine Intelligence (Nat Mach Intell) ISSN 2522-5839 (online)
+5 – Scheduling*
+Your article is assigned a publication date and the Nature Press
+Office is notified so that they can include it in their list of
+forthcoming publications. Research articles are typically
+published AOP (Advance Online Publication) ahead of the
+journal issue, and you will be notified six calendar days before
+publication. For commissioned content, and any research
+articles that publish on the date the journal issue goes live, you
+will be notified 48 hours before publication.
+6 - Publication
+Your article is sent to our central data repository, which
+coordinates the final stages of publication.
+Metadata feeds to third party repositories are completed.
+Your article is published in Nature Machine Intelligence.
