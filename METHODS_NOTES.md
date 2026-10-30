@@ -279,37 +279,64 @@ use --- four terms, none of these weights.
 
 ## Cross-donor agreement
 
-PURPOSE: the paper's central measurement, and the reason the obvious
-one fails. CALLBACK to the single-biopsy confound. Absorbs plan item 27, the
-permutation null, which has no independent existence --- it defines what the
-agreement number is compared against.
+PURPOSE: the paper's central measurement, and the reason the obvious one
+fails. Opens on AW's two lines about the single biopsy, which are the right
+entry point. Absorbs plan item 27, the permutation null, which has no
+independent existence -- it defines what the agreement number is compared
+against.
 
-VERIFIED against `evaluation/sufficient_stats.py`:
-`donor_adjacency` k=100 with self excluded; `np.fill_diagonal`
-to zero before scoring; chance as `sum p_j^2` over donor shares;
-excess `(a-c)/(1-c)`, matching `cross_group_agreement` so the two
-are comparable; 200 permutations at seed 24; `p` and `p_floor`
-exactly as written. Per-label neighbour agreement elsewhere uses k=30 --- the
-k=100 here is the donor graph specifically.
+RE-SEEDED 30 October 2026, because AW asked what ties the claim together and
+the honest answer was nothing. The old version asserted "a cell's nearest
+neighbours are predominantly other cells from the same donor" and stopped.
+The mechanism now runs as four steps: a single biopsy makes each label a
+donor property; so asking about labels is asking about donors; so every
+same-donor neighbour is an automatic match; so plain agreement rests on a
+floor equal to the same-donor share -- and that floor is one the model can
+raise by memorising donors.
 
-THE DEMONSTRATION IS DELIBERATELY NOT IN THIS
-SUBSECTION, and it is the strongest evidence we hold for it. Across the six
-A1 arms, whole-corpus agreement on a donor-constant label ranks almost
-identically with benchmark donor-kNN recovery --- Spearman rho +0.943 for
-disease status, +0.829 for phase --- while cell family, the only label that
-varies WITHIN a donor, sits at +0.371 with a spread of 0.003 across every
-arm including randomised gene groups. The cross-donor estimator cuts
-disease's correlation with donor recovery from +0.943 to +0.429, and
-`random groups` inverts completely: best of six on whole-corpus
-disease, worst of six cross-donor. That is a measurement, so it belongs in
-RESULTS, beside the ablations --- same ruling as the baseline protocol. Full
-tables in axw1008/docs/paper/ABLATIONS.md. If a reviewer challenges the
-estimator, this is the answer.
+MEASURED FOR THE RE-SEED, from `p1_dab168_kl1_full/donor_adjacency.csv`,
+whose diagonal the code keeps for exactly this purpose. Decomposing the one
+matrix two ways, k=100:
 
-NOT WRITTEN: that the 254-by-254 matrix is also what makes the
+| label | plain | cross-donor | same-donor share | free share of the agreement |
+|---|---:|---:|---:|---:|
+| menstrual phase | 0.8418 | 0.7502 | 36.7% | 43.6% |
+| disease_status | 0.6311 | 0.4769 | 29.5% | 46.7% |
+| Endometriosis_stage | 0.8552 | 0.6287 | 61.0% | 71.3% |
+| EndometriosisGrade | 0.5043 | 0.3358 | 25.4% | 50.3% |
+| severity | 0.5896 | 0.3732 | 34.5% | 58.6% |
+
+Against a donor-blind chance rate of `sum_d p_d^2`: disease 0.60%, phase
+1.11%, severity 1.16%, stage 3.05%. So same-donor neighbours are
+over-represented 49x, 33x, 30x and 20x respectively.
+
+**"predominantly" WAS FALSE AND IS GONE.** 36.7% is not a majority, and a
+reviewer could have caught it. The replacement claim is stronger anyway: not
+that most neighbours are same-donor, but that they are twenty to fifty times
+over-represented, and that each one is a free match.
+
+TWO FACTUAL ERRORS OF MINE, FIXED IN THE SAME PASS. (1) "a 254-by-254 table"
+-- the matrix is per label and is indexed by patient_id, so it is at most 269
+rows, and in practice 269 for disease status, 142 for menstrual phase, 118
+for severity, 60 for grade and 58 for stage. 254 is the count of true people,
+which is not what the matrix is built on. Now written as "at most one row per
+donor". (2) "tumour grade" -- it is endometriosis grade; there is no tumour
+in this corpus.
+
+VERIFIED against `evaluation/sufficient_stats.py`: `donor_adjacency` k=100
+with self excluded; `np.fill_diagonal` to zero before scoring; chance as
+`sum p_j^2` over donor shares; excess `(a-c)/(1-c)`, matching
+`cross_group_agreement` so the two are comparable; 200 permutations at seed
+24; `p` and `p_floor` exactly as written. Per-label neighbour agreement
+elsewhere uses k=30 -- the k=100 here is the donor graph specifically.
+
+NOT WRITTEN: that the donor matrix is also what makes the
 sufficient-statistics release useful, which is Code availability's; and the
-`95`th-percentile null excess the code also reports, which no result quotes.
+95th-percentile null excess the code also reports, which no result quotes.
 
+ALSO BEWARE, cost me a wrong answer once: in pandas, `df.lt` is the
+less-than method, so a column named `lt` is unreachable by attribute access
+and comparisons against it silently compare a Series to a bound method.
 ## Data availability
 
 PURPOSE: mandatory, and no longer than the atlas papers write it ---
