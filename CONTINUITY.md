@@ -118,6 +118,15 @@ shape and whether it is per cell, per gene, per group — is in
 cost ELAJ ~0.09 excess and PCA nothing, because the least-clumped model
 loses most cells. Check which way a proposal cuts before making it.
 
+**7b. I add a measurement that cuts against us without checking which way
+it cuts.** This is failure mode 6 wearing a different hat. I put per-cohort
+disease p-values into `[4]` — 0.3433, 0.0697, 1.000 — reading them as a
+caveat on our own pooled 0.3364. They are 16, 18 and 2 donors against 269,
+and the null-width problem I had just written up says a test that small
+detects nothing. So I printed a power artefact as if it were evidence
+against us. **Before reporting a number that weakens a claim, check whether
+it is measuring the thing or measuring the sample size.**
+
 **7a. I overstate damage.** On 2 November I called the baseline table's
 problems a set of three faults and used words like "invalid" and "in
 danger". Two of the three were deliberate design, recorded as settled in
@@ -160,6 +169,14 @@ a strong one. Do not wrap it in apology.
   the scalar and the threshold curve as the robustness object. `t=1` is the
   maximum-coverage choice and the one that does not preferentially keep
   well-mixed cells.
+- **No per-study numbers for any metadata in the latent.** AW, 2 November,
+  and he says he has ruled this before: *"we already assumed that the latent
+  mixes studies properly. So per-study numbers are a way of shooting yourself
+  in your own leg."* Restricting a test to one cohort cuts donors from 269 to
+  16/18/2, where the permutation null itself reaches 0.42, so a per-cohort
+  non-result is undetectability, not absence. Cross-cohort **replication** of
+  a pattern is a different thing and stays.
+- **No further calculation** unless a reviewer asks or something is wrong.
 - **Results `[2]` is deleted.** Merged into `[1]` on 2 November; its
   material lives in `[1]`'s note. Subsections are now `[1]`–`[5]`.
 
