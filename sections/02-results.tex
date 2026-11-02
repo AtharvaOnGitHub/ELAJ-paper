@@ -152,7 +152,7 @@ No purity percentages.
 \\$\rightarrow$ hands on: what does the geometry do with time?}
 
 % ---------------------------------------------------------------------
-\subsection*{[3] The cycle is a cycle, and it moves only the cells it should}
+\subsection*{[3] The menstrual cycle appears as a closed trajectory, separating stromal and epithelial cells most}
 
 The decoder is conditioned on study, platform and tissue alone. Cycle day,
 serum progesterone, cell type and disease status were never inputs, and
@@ -160,33 +160,41 @@ menstrual phase was the only supervised label, reaching the latent through a
 single linear map over all sixteen dimensions.
 
 Cross-donor agreement on menstrual phase was high on held-out donors, at twice
-the chance rate (0.7346 against 0.370; $n=195{,}879$; $p=0.005$, the
-permutation floor), and remained high when all 1{,}577{,}728 cells were
-embedded and read together (0.6796 across 142 donors; $p=0.005$).
+the chance rate (0.7346 against chance of 0.370; $n_{\text{cells}}=195{,}879$; $p=0.005$), and 
+remained high when all 1{,}577{,}728 cells were read together (0.6796 across
+142 donors; $p=0.005$). Agreement here, and everywhere below, is the fraction
+of a cell's hundred nearest latent neighbours that share its label once every
+neighbour drawn from the same donor has been discarded; Methods sets out the
+estimator and why a same-donor neighbour cannot be counted on this corpus.
 
-The cycle did not displace every cell type equally. Measured between the
-proliferative and secretory centroids in units of each cell type's own
-scatter, stromal and epithelial cells moved by about a full width (1.07 and
-0.98) while endothelial and immune cells moved by roughly a third of one (0.39
-and 0.34) (Fig.~2a). The arm trained at the higher information cost reproduced
-both the ordering and the gap between the two pairs (1.07, 0.99, 0.54 and
-0.29), though the two smaller values themselves were not stable between arms
-(Fig.~2b).
+The menstrual cycle did not separate every cell type equally. Within one cell
+family, the proliferative cells and the secretory cells each occupy a cloud in
+the sixteen-dimensional latent, and what is reported is the distance between
+the two clouds' centres expressed in units of how far a typical cell of that
+family sits from its own centre: a value of one means the two centres stand one
+such distance apart, and dividing this way allows families of very different
+size to be compared. By that measure the two centres stood about one unit apart
+in stromal and in epithelial cells (1.07 and 0.98) and about a third of a unit
+apart in endothelial and immune cells (0.39 and 0.34) (Fig.~2a). The arm
+trained at the higher information cost reproduced both the ordering and the gap
+between the two pairs (1.07, 0.99, 0.54 and 0.29), though the two smaller
+values themselves were not stable between arms (Fig.~2b).
 
 Supervision supplied most of that phase signal: removing the phase head
 reduced cross-donor agreement to 0.4812, leaving 30.5\% of the margin over
 chance.
 
 Two continuous quantities that were never model inputs tracked the latent more
-closely than any quality-control measure did, by a real but modest margin.
-Epithelial pseudotime and serum progesterone correlated at 0.58 and 0.47 with
-the best-correlated of the sixteen dimensions, against 0.34 for mitochondrial
-fraction, 0.34 for genes detected, 0.25 for total counts and 0.14 for doublet
-score under the identical procedure.
+closely than any technical measure did, though the margin was modest. Taking
+the strongest correlation each achieved with any single one of the sixteen
+dimensions, epithelial pseudotime and serum progesterone reached 0.58 and 0.47,
+against a range of 0.14 to 0.34 for four quality-control measures treated
+identically --- the highest of those being the fraction of mitochondrial
+reads.
 
 Cycle day was recorded for under a third of the corpus (466{,}176 cells,
 29.6\%), in one cohort of 60 donors who each contributed a single day between
-day 5 and day 30, 22 of those 26 days being represented. Advancing through
+day 5 and day 30, with 22 of those 26 days being represented. Advancing through
 those days one at a time moved the dense region of the embedding progressively
 and returned it to where it began (Fig.~2c--e).
 
@@ -263,6 +271,29 @@ claim rather than an activity --- ``Eye2Gene generalizes across IRD
 clinics'', ``COMET accurately predicted days to the onset of labour'',
 ``PlantRNA-FM reveals superior performance''. The placeholders here are
 already in that form.
+\\
+\\\textcolor{elajcoral}{METHODS GAP, OPENED BY THE POINTER ADDED HERE.
+\emph{Cross-donor agreement} covers the neighbour estimator, so that pointer
+is good. The centroid separation does \textbf{not} have a Methods home ---
+nothing in \texttt{04-methods.tex} mentions a centroid or a scatter. Its
+definition is in \texttt{analyse\_cells.py}: for each group, scatter is the
+root-mean-square distance of its cells from its own centroid; the denominator
+is the mean of the two groups' scatters; \texttt{over\_scatter} is the
+centroid distance over that. The code's own reason for dividing: ``a centroid
+distance of 1.2 between clouds that are each 4 wide is not a separation, and
+the raw number hides that''. Either a short Methods subsection carries this
+or the Results definition above stands alone --- it cannot be pointed at
+until one exists.}
+\\HEADING CHANGED. ``The cycle is a cycle, and it moves only the cells it
+should'' was carrying two claims and an opinion. ``is a cycle'' meant the
+trajectory closes (C3); ``only the cells it should'' meant the separation
+concentrates in stromal and epithelial cells (C2) \emph{and} asserted that we
+know which cells ought to move. Alternatives if the current one is too long:
+``The cycle closes, and separates stromal and epithelial cells most'';
+``A closed cycle, unequally distributed across cell types''.
+\\``DISPLACE'' REPLACED BY ``SEPARATE'' THROUGHOUT. Nothing moves. The
+measurement compares two groups of cells sitting in fixed positions, so
+displacement implied a motion that was never measured.
 \\$\rightarrow$ hands on: time is in there. What about the disease?}
 
 % ---------------------------------------------------------------------
