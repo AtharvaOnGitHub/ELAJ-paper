@@ -7,10 +7,14 @@
 % "The latent separates donors without erasing the cycle", never
 % "Evaluation of latent structure".
 %
-% SIX SUBSECTIONS, ~330 WORDS EACH, and the arithmetic matters: six
+% FIVE SUBSECTIONS, ~400 WORDS EACH, and the arithmetic matters: six
 % figures carry 24 of the 32 findings between their panels and legends,
 % and legends do not count against the 3,500. So prose states a claim
 % and points at a panel. It does not enumerate.
+%
+% [2] "against the field" was MERGED INTO [1] on 2 November 2026. Its
+% material is in [1]'s note, suspended until the unified scoring run
+% returns. Subsections were renumbered; AW retitles on the editing pass.
 %
 % Finding labels (A1, C2, D3 ...) are RESULTS_STRUCTURE.md's.
 % Overlap between subsections is expected to shift once prose exists.
@@ -72,65 +76,65 @@ The numbers above support both and the Discussion can say so.
 legend carries each arm's two values.
 \\\textcolor{elajcoral}{OPEN: ``registered in its configuration file before
 training'' is checkable only if the repository is public. Code availability
-has to be real before this sentence is.}}
-
-
-\subsection*{[2] \elaj\ against the field}
-
-
-\elaj\ was compared with nine methods on the same held-out donors: a
-sixteen-component principal component decomposition, scVI, scANVI, Harmony,
-Scanorama, and four pretrained single-cell foundation models. Methods that
-can be fitted inductively were fitted on the training donors and applied to
-held-out ones; the rest are reported as transductive. Supervision is declared
-per method, and \elaj's is menstrual phase (Fig.~3).
-
-Cross-donor phase agreement was higher for \elaj\ than for any other method
-tested, at 0.7346 against 0.7053 for scVI, 0.6971 for scANVI and 0.6906 for
-the principal component decomposition; chance was 0.370. The four foundation
-models, at between 256 and 3{,}072 dimensions, reached 0.6449, 0.6255, 0.4869
-and 0.4372.
-
-Study mixing was 0.4712 for \elaj\ and between 0.6284 and 0.8076 for the
-others, and donor recovery was lower for \elaj\ than for any other method
-tested.
-
-Cell family agreement was 0.9841 for \elaj, against 0.9896 for SCimilarity
-and 0.9835 for scANVI, both of which were supervised on cell type, and 0.9868
-for the principal component decomposition, which was not.
-
-Cross-donor disease agreement did not exceed 0.3787 for \elaj. Three
-baselines exceeded that figure, to a maximum of 0.4486.
-
-\note{CARRIES A1, A2, A3, A4, A5, A6, E3. FIGURE 3. 212 words.
-\\RESEEDED flat. The first draft opened ``a representation that forgets
-donors is easy to build and worthless'', asserted ``width is not what
-produces this'', and closed by calling the disease figure a result about the
-disease. All three are Discussion and are moved there.
-\\A4 IS NOW A FACT RATHER THAN A CLAIM: the foundation models' dimensions
-and their phase figures are stated side by side and the reader draws the
-inference. The width argument --- that a sixteen-component decomposition
-beats a 512-dimensional model on the same axis --- belongs in the Discussion.
-\\A5: the two methods above us on cell family were supervised on that label;
-PCA was not, and is 0.003 above. All four figures are given so the ordering
-is visible without a word like ``matched'' doing the work.
-\\VERIFIED against each method's \texttt{benchmark.csv}. Phase: \elaj\
-0.7346, scVI 0.7053, scANVI 0.6971, PCA 0.6906, scFoundation 0.6449,
-SCimilarity 0.6255, Scanorama 0.5737, Harmony 0.5155, scGPT 0.4869,
-Geneformer 0.4372. Mixing: \elaj\ 0.4712, scGPT 0.6284, Geneformer 0.6388,
-scANVI 0.6964, scVI 0.7161, SCimilarity 0.7171, PCA 0.7804, scFoundation
-0.8076.
+has to be real before this sentence is.}
+\\
+\\\textbf{[2] WAS MERGED IN HERE, 2 November 2026}, on AW's ruling. Its
+prose is deleted rather than kept, because every number in it is waiting on
+the unified scoring run. What it has to carry is below.
+\\ALSO CARRIES A1, A2, A3, A4, A5, A6, E3. SECOND FIGURE: Fig.~3.
+\\WHAT THE SUBSECTION STATES, once the numbers land: \elaj\ against nine
+methods on the same held-out donors --- a sixteen-component principal
+component decomposition, scVI, scANVI, Harmony, Scanorama, and four
+pretrained foundation models. Inductive methods fitted on training donors
+and applied to held-out ones; the rest reported as transductive. Supervision
+declared per method, and \elaj's is menstrual phase.
+\\REGISTER, settled: flat. The deleted draft opened ``a representation that
+forgets donors is easy to build and worthless'', asserted ``width is not what
+produces this'', and called the disease figure a result about the disease.
+All three are Discussion. A4 is stated as a fact --- the foundation models'
+dimensions and their phase figures side by side, reader draws the inference.
+A5 gives all four figures so the ordering is visible without a word like
+``matched'' doing the work, with the supervision column beside it.
+\\
+\\\textcolor{elajcoral}{EVERY FIGURE BELOW IS SUSPENDED pending the unified
+run. \texttt{audit/NUMBERS.md} traced each one on 2 November:
+\\\quad $\bullet$ 0.4712 (study mixing) is the \textbf{train split}
+(\texttt{p1\_dab168\_kl1\_train}). Held out it is 0.6043, against scGPT's
+0.6284, so ``far better than anything else'' does not survive as written.
+\\\quad $\bullet$ 0.7053 and 0.6971 (scVI, scANVI phase) are the
+\texttt{fm\_*} runs' figures; this arm's own file gives 0.7017 and 0.6943.
+Both are valid, from different runs, and may not be quoted together.
+\\\quad $\bullet$ 0.9841 (cell family) is \texttt{p1\_dab7\_kl30}'s. This arm
+is \textbf{0.9820}.
+\\\quad $\bullet$ 0.9868 is \texttt{scvi / knn-agreement / cell family} ---
+a different method on a different test. PCA's cross-donor family in this
+arm is 0.9865.
+\\\quad $\bullet$ 0.3787 and 0.4486 are \textbf{per-cohort} figures
+(\texttt{disease-xdonor / marecko\_2024}), not pooled, and ours is the train
+split. Pooled, this arm is 0.3364 against scFoundation's 0.4024. The A6
+claim holds either way; the numbers change.
+\\\quad $\bullet$ Harmony and Scanorama have no valid source at all. Their
+only rows are \texttt{r8\_all}, which scores \elaj\ at phase 0.1161 and PCA
+at 0.2856 on a third of the cells.}
+\\
 \\\textcolor{elajcoral}{E3 STILL HAS NO HOME. The scIB batch metrics are
 degenerate here --- \texttt{ilisi\_knn} exactly 0.0000 and
 \texttt{pcr\_batch} exactly 1.0000 for PCA, scVI, scANVI and \elaj\ alike,
 \texttt{kbet} 0.000--0.025 for all --- which is why study is measured by kNN
 purity. In a flat register it fits as one more measurement sentence here, or
-it goes to Methods. A scIB-literate reviewer will ask.}}
-
+it goes to Methods. A scIB-literate reviewer will ask.}
+\\
+\\\textcolor{elajcoral}{COVERAGE. From this point on, cross-donor agreement
+is reported at $t=1$ --- every labelled cell with at least one cross-donor
+neighbour, 88.2\% of them --- with the coverage figure beside the scalar and
+the threshold curve as the robustness object. $t=1$ is the maximum-coverage
+choice and the one that does not preferentially keep well-mixed cells.
+Methods' \emph{Cross-donor agreement} still describes the single-scalar
+version and has to be rewritten.}}
 
 
 % ---------------------------------------------------------------------
-\subsection*{[3] Reading 1.58 million cells as sixteen numbers}
+\subsection*{[2] Reading 1.58 million cells as sixteen numbers}
 \note{CARRIES C1. FIGURE 1e--g.
 \\THE PIVOT OF THE PAPER, and the licence for everything after it. Once the
 model is fixed nothing is being selected, and the metadata read below was
@@ -148,7 +152,7 @@ No purity percentages.
 \\$\rightarrow$ hands on: what does the geometry do with time?}
 
 % ---------------------------------------------------------------------
-\subsection*{[4] The cycle is a cycle, and it moves only the cells it should}
+\subsection*{[3] The cycle is a cycle, and it moves only the cells it should}
 \note{CARRIES C2, C3. FIGURE 2. THE HEADLINE.
 \\C2, AND THE ARGUMENT MATTERS MORE THAN THE NUMBERS: displacement in units
 of each cell type's own scatter --- stromal 1.07, epithelial 0.98,
@@ -172,7 +176,7 @@ for the result.}
 \\$\rightarrow$ hands on: time is in there. What about the disease?}
 
 % ---------------------------------------------------------------------
-\subsection*{[5] Disease signal, and where it is not}
+\subsection*{[4] Disease signal, and where it is not}
 \note{CARRIES C4, C5, C6. FIGURE 4.
 \\C4: 0.77 / 0.83 inside marecko's immune cells against 0.22 corpus-wide,
 rank 1 of 4 in both arms.
@@ -192,7 +196,7 @@ a reviewer holding our own p-floor argument would take apart.
 \\$\rightarrow$ hands on: which parts of the model are load-bearing?}
 
 % ---------------------------------------------------------------------
-\subsection*{[6] What the latent needs in order to work}
+\subsection*{[5] What the latent needs in order to work}
 \note{CARRIES D1--D6, B2, B3. FIGURE 5.
 \\AW: ``these are the results that a true ML researcher would actually want
 to read properly. The fact that we have them and we want to publish them is

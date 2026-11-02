@@ -37,43 +37,196 @@ cross-donor phase, cell family and disease are **higher is better**.
 | scgpt | 512 | — | 0.4869 | 0.6284 | 0.5630 | 0.9840 | 0.3473 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
 | geneformer | 256 | — | 0.4372 | 0.6388 | 0.5421 | 0.9023 | 0.3713 | `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` |
 
+## D1--D6 — the ablations
+
+Six arms, one scoring pass, ELAJ only. Each is a single-key change
+against `p1_dab168_kl1`. No baseline appears in any of these files,
+so the gene policy and the baseline re-scoring do not reach them.
+
+| arm | family ↑ | phase ↑ | disease ↑ | donor ↓ | mixing ↓ | source |
+|---|---:|---:|---:|---:|---:|---|
+| **BASE** | 0.9820 | 0.7346 | 0.3364 | 0.5188 | 0.6043 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
+| -phase head | 0.9794 | 0.4812 | 0.3170 | 0.3754 | 0.5305 | `Outputs/Benchmarks/a_series/a1_nophase/benchmark.csv` |
+| -ECS | 0.9837 | 0.7397 | 0.3638 | 0.5520 | 0.6829 | `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` |
+| -statistics | 0.9798 | 0.6384 | 0.3225 | 0.4943 | 0.5955 | `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` |
+| -sentinel | 0.9816 | 0.7308 | 0.3615 | 0.5207 | 0.6260 | `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` |
+| random groups | 0.9606 | 0.6780 | 0.2698 | 0.5323 | 0.6327 | `Outputs/Benchmarks/a_series/a1_randgroups/benchmark.csv` |
+
+**Deltas against BASE**, for the claims that are stated as changes:
+
+| arm | Δ family | Δ phase | Δ disease | Δ donor | Δ mixing |
+|---|---:|---:|---:|---:|---:|
+| -phase head | -0.0026 | -0.2534 | -0.0194 | -0.1434 | -0.0738 |
+| -ECS | +0.0017 | +0.0051 | +0.0274 | +0.0332 | +0.0786 |
+| -statistics | -0.0022 | -0.0962 | -0.0139 | -0.0245 | -0.0088 |
+| -sentinel | -0.0004 | -0.0038 | +0.0251 | +0.0019 | +0.0217 |
+| random groups | -0.0214 | -0.0566 | -0.0666 | +0.0135 | +0.0284 |
+
+Chance on cross-donor menstrual phase is **0.370**, carried in the
+benchmark's own `note` column. D1's split of the phase margin is
+therefore (0.7346 − 0.370) against (0.4812 − 0.370) = **30.5%** of the
+margin surviving the head's removal, so the head supplies
+**69.5%**.
+
+## D2 and A7 — reconstruction, from the training metrics
+
+`val_nb` and `train_nb` are mean negative-binomial loss per cell;
+**lower is better**. The reported checkpoint is `argmin val_nb`,
+which reproduces ABLATIONS.md's `best ep` column for every arm.
+
+| arm | epochs | best ep | train_nb @best | val_nb @best | train_nb @last | val_nb @last | source |
+|---|---:|---:|---:|---:|---:|---:|---|
+| **BASE** | 10 | 4 | 0.3785 | 0.4024 | 0.3762 | 0.4100 | `Outputs/p_series/p1_dab168_kl1/metrics.csv` |
+| -phase head | 8 | 0 | 0.4140 | 0.4083 | 0.3772 | 0.4256 | `Outputs/a_series/a1_nophase/metrics.csv` |
+| -ECS | 10 | 4 | 0.3789 | 0.4004 | 0.3761 | 0.4146 | `Outputs/a_series/a1_noecs/metrics.csv` |
+| -statistics | 10 | 4 | 0.3791 | 0.3979 | 0.3760 | 0.4043 | `Outputs/a_series/a1_clsonly/metrics.csv` |
+| -sentinel | 11 | 5 | 0.3777 | 0.4005 | 0.3758 | 0.4164 | `Outputs/a_series/a1_nodns/metrics.csv` |
+| random groups | 18 | 12 | 0.3756 | 0.3911 | 0.3748 | 0.3919 | `Outputs/a_series/a1_randgroups/metrics.csv` |
+
+**D2 reads down the `-phase head` row, not across to BASE.** Without the
+head, `val_nb` is best at **epoch 0** and worsens monotonically from
+epoch 1 while `train_nb` keeps falling — the held-out split is paid for
+the training split from the first epoch onward. BASE's `val_nb`
+improves to epoch 4 before it turns. Both trajectories are in the
+table above; quoting 0.4083 as a BASE value would be wrong, it is the
+`-phase head` arm's best.
+
+**A7's study-mean reference (0.4315) is not in any file read here.**
+It is a computed baseline, not a logged metric, and must be
+re-derived from the code that produced it before it becomes prose.
+
+## C6 — surgical stage and grade, across every arm
+
+Cross-donor excess agreement and its permutation p. Negative excess
+means neighbours agree *less* than chance.
+
+| arm | stage | p | grade | p | source |
+|---|---:|---:|---:|---:|---|
+| BASE | +0.1313 | 0.3035 | -0.0414 | 0.4975 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
+| -phase head | +0.1535 | 0.1194 | -0.0227 | 0.4378 | `Outputs/Benchmarks/a_series/a1_nophase/benchmark.csv` |
+| -ECS | +0.2190 | 0.1990 | -0.0438 | 0.5224 | `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` |
+| -statistics | +0.0918 | 0.2886 | -0.0358 | 0.4726 | `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` |
+| -sentinel | +0.0799 | 0.3284 | -0.0549 | 0.5423 | `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` |
+| random groups | +0.1161 | 0.3234 | -0.0723 | 0.6269 | `Outputs/Benchmarks/a_series/a1_randgroups/benchmark.csv` |
+
+Across all 6 arms: stage +0.0799 to +0.2190 at p 0.1194 to 0.3284; grade is **negative in every arm**, -0.0723 to -0.0227, at p 0.4378 to 0.6269.
+
+A negative result cannot be read without the p-floor, which is set by
+donor count and belongs in the same sentence (Methods, *Permutation
+testing*).
+
+## C2 — cycle displacement by cell type
+
+`over_scatter` from `phase_within_family.csv`: the distance between
+two phase centroids **divided by that cell type's own spread**, so
+the four numbers are comparable across types of different size. The
+row quoted is `proliferative → secretory`, the widest separation
+available in all four types.
+
+| arm | stromal | epithelial | endothelial | immune | source |
+|---|---:|---:|---:|---:|---|
+| `p1_dab168_kl1` | 1.0677 | 0.9824 | 0.3918 | 0.3409 | `Outputs/analysis/p1_dab168_kl1/phase_within_family.csv` |
+| `p1_dab168_kl30` | 1.0685 | 0.9899 | 0.5429 | 0.2861 | `Outputs/analysis/p1_dab168_kl30/phase_within_family.csv` |
+
+The ordering is stromal > epithelial ≫ endothelial ≈ immune, and the
+phase head is one linear map over the whole latent that was never
+given cell type.
+
+## C4 and C5 — disease displacement by study and cell type
+
+`over_scatter` from `disease_within_family.csv`, label
+`case_vs_control`. C4 is the marecko immune cell; C5 is that the
+pattern does not hold in duempelmann.
+
+**`p1_dab168_kl1`** — `Outputs/analysis/p1_dab168_kl1/disease_within_family.csv`
+
+| study | endothelial | epithelial | immune | stromal | max |
+|---|---:|---:|---:|---:|---:|
+| duempelmann_2026 | 0.2333 | 0.2112 | **0.2892** | 0.2063 | immune |
+| marecko_2024 | 0.5756 | 0.6094 | **0.7732** | 0.4276 | immune |
+
+**`p1_dab168_kl30`** — `Outputs/analysis/p1_dab168_kl30/disease_within_family.csv`
+
+| study | endothelial | epithelial | immune | stromal | max |
+|---|---:|---:|---:|---:|---:|
+| duempelmann_2026 | **0.2664** | 0.2515 | 0.1908 | 0.2163 | endothelial |
+| marecko_2024 | 0.5069 | 0.5057 | **0.8321** | 0.5697 | immune |
+
+**Where the maximum sits, per arm:**
+
+- **duempelmann_2026** — **not stable**: `p1_dab168_kl1` → immune, `p1_dab168_kl30` → endothelial. Range across both arms 0.1908 to 0.2892.
+- **marecko_2024** — **immune** in every arm. Range across both arms 0.4276 to 0.8321.
+
+C4 is the marecko immune cell, and it is the maximum in both arms at a
+magnitude no other stratum reaches. C5 is duempelmann, where the
+displacement is roughly a third of marecko's **and** the leading family
+is not the same in the two arms — so the non-replication is both in
+magnitude and in ordering, and prose may say so.
+
+`reference_scales.csv` in the same folders carries the whole-corpus
+cell-family distances that these are read against.
+
+
 ## Numbers in the prose that this script cannot account for
 
-- `0.3787` — **no source found**
-- `0.4486` — **no source found**
-- `0.4712` — **no source found**
-- `0.6971` — **no source found**
-- `0.7053` — **no source found**
-- `0.9868` — **no source found**
+- `0.3787` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/elaj_train_cpu/benchmark.csv` — elaj / disease-xdonor / marecko_2024
+    - `Outputs/Benchmarks/p1_dab168_kl1_train/benchmark.csv` — elaj / disease-xdonor / marecko_2024
+- `0.4486` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scfoundation / disease-xdonor / marecko_2024
+- `0.4712` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/elaj_train_cpu/benchmark.csv` — elaj / study-mixing / all studies
+    - `Outputs/Benchmarks/p1_dab168_kl1_train/benchmark.csv` — elaj / study-mixing / all studies
+- `0.6971` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/axis_m6_drain/benchmark.csv` — scanvi / cross-donor / menstrual phase
+    - `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` — scanvi / cross-donor / menstrual phase
+    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scanvi / cross-donor / menstrual phase
+    - … and 2 more on reported axes
+- `0.7053` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/axis_m6_drain/benchmark.csv` — scvi / cross-donor / menstrual phase
+    - `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` — scvi / cross-donor / menstrual phase
+    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scvi / cross-donor / menstrual phase
+    - … and 2 more on reported axes
+- `0.9868` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` — scvi / knn-agreement / cell family
+    - `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` — scvi / knn-agreement / cell family
+    - `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` — scvi / knn-agreement / cell family
+    - … and 21 more on reported axes
 
-## ⚠ SCORING RUNS ARE NOT COMPARABLE WITH EACH OTHER
+## Which cross-method rows may be quoted together
 
-The same baseline scores differently in different runs, on different cell
-counts, so a table that draws its rows from more than one run is invalid.
-Cross-donor menstrual phase for three baselines that appear in several:
+Two things differ between scoring runs and only one of them is a fault.
 
-| run | pca | scvi | scanvi | cells scored (pca) |
-|---|---:|---:|---:|---:|
-| `p1_dab168_kl1` | 0.6906 | 0.7017 | 0.6943 | 166,836 |
-| `fm_*` (four runs) | 0.6457 | 0.7053 | 0.6971 | 173,887 |
-| `r8_all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |
+**Not a fault: the gene policy.** Baselines are fit on `all30962`, the
+union gene set, and ELAJ on its own filtered 15,496. That is deliberate --
+the baselines are not handed a vocabulary we constructed. A baseline scored
+under `all` instead of `all30962` is a different experiment, so the two
+cannot be mixed in one table, but neither is wrong.
 
-**Three consequences.**
+**Not a fault: `n_cells` differing per method.** Cross-donor agreement is
+measured only on cells with at least one cross-donor neighbour, and that
+count is a property of the embedding. A better-mixed latent scores more
+cells. Coverage is reported beside every scalar rather than folded into
+it.
 
-1. The head-to-head that is internally valid is the reported arm's own
-   file: `elaj`, `pca`, `scanvi`, `scvi`, all at width 16. Nothing else is
-   in it.
-2. The four foundation models live only in the `fm_*` runs. Those runs are
-   internally consistent and carry their own `pca`/`scvi`/`scanvi`
-   reference columns, so a foundation-model comparison must be quoted
-   against THOSE references, not against the reported arm's.
-3. `harmony` and `scanorama` appear only in `r8_all`, scored on 52,712 to
-   69,209 cells against p1's 166,836 to 195,879. That is the older, smaller
-   corpus. They are not usable in this paper without a re-score.
+**A fault: `r8_all` and `r8_inductive` are obsolete.** They score ELAJ at
+phase 0.1161 and PCA at 0.2856 on 52,712 to 69,209 cells, against 166,836
+to 195,879 in the p-series. `harmony` and `scanorama` have no other
+source, so both rows are unusable until the unified run returns.
 
-Even within one run, `n_cells` differs per method, because each method's
-latent covers a different set of cells. That is expected and is not the
-problem here; the problem is comparing across runs.
+Same cross-donor phase, three runs:
+
+| run | gene policy | pca | scvi | scanvi | cells scored (pca) |
+|---|---|---:|---:|---:|---:|
+| `p1_dab168_kl1` | `all` | 0.6906 | 0.7017 | 0.6943 | 166,836 |
+| `fm_*` (four runs) | `all30962` | 0.6457 | 0.7053 | 0.6971 | 173,887 |
+| `r8_all` | `all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |
+
+Until the unified run lands, the internally valid head-to-head is the
+reported arm's own file for `elaj`/`pca`/`scvi`/`scanvi` at width 16, and
+the `fm_*` files for the foundation models against THEIR own reference
+columns. The unified run replaces all of it with one gene policy, one cell
+set and one code path across nine methods.
 
 ## Not yet auditable
 

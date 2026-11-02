@@ -39,6 +39,40 @@ def read(path: Path, method: str) -> dict:
     row["supervised_on"] = ", ".join(sorted(sup)) or "—"
     return row
 
+# ---------------------------------------------------------------------------
+# The ELAJ-only findings: ablations (D1-D7) and whole-corpus geometry (C1-C5).
+# These never cross a method boundary, so the baseline re-scoring does not
+# touch them. They were previously listed under "not yet auditable" and taken
+# on trust from project documents; they are re-derived here instead.
+# ---------------------------------------------------------------------------
+
+ABL = {"p1_dab168_kl1":  ("BASE",          "Outputs/Benchmarks/p1_dab168_kl1",
+                          "Outputs/p_series/p1_dab168_kl1"),
+       "a1_nophase":     ("-phase head",   "Outputs/Benchmarks/a_series/a1_nophase",
+                          "Outputs/a_series/a1_nophase"),
+       "a1_noecs":       ("-ECS",          "Outputs/Benchmarks/a_series/a1_noecs",
+                          "Outputs/a_series/a1_noecs"),
+       "a1_clsonly":     ("-statistics",   "Outputs/Benchmarks/a_series/a1_clsonly",
+                          "Outputs/a_series/a1_clsonly"),
+       "a1_nodns":       ("-sentinel",     "Outputs/Benchmarks/a_series/a1_nodns",
+                          "Outputs/a_series/a1_nodns"),
+       "a1_randgroups":  ("random groups", "Outputs/Benchmarks/a_series/a1_randgroups",
+                          "Outputs/a_series/a1_randgroups")}
+
+def label_rows(path: Path, test: str) -> dict:
+    """Every (label -> value) for one test, ELAJ rows only."""
+    b = pd.read_csv(path)
+    b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
+    e = b[(b.mm == "elaj") & (b.test == test)]
+    return dict(zip(e.label, e.value.astype(float)))
+
+def best_epoch(metrics: Path) -> tuple:
+    """Checkpoint selection is argmin val_nb -- verified against the 'best ep'
+    column of ABLATIONS.md for all six arms. Returns (epoch, row, last row)."""
+    m = pd.read_csv(metrics)
+    i = int(m["val_nb"].idxmin())
+    return int(m.loc[i, "epoch"]), m.loc[i], m.iloc[-1], len(m)
+
 arms, base = {}, {}
 for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/p1_*/benchmark.csv"))):
     name = Path(f).parent.name
@@ -86,10 +120,207 @@ for k, (r, f) in sorted(base.items(), key=lambda x: -x[1][0]["phase"]):
                  f"| {g(r['mixing'])} | {g(r['donor'])} | {g(r['family'])} "
                  f"| {g(r['disease'])} | `{rel(f)}` |")
 
+# =========================================================================
+# D1-D7 — the ablations. One scoring pass, 28 October, ELAJ only, native
+# gene policy. Nothing here crosses a method boundary.
+# =========================================================================
+extra = set()
+
+lines += ["", "## D1--D6 — the ablations", "",
+          "Six arms, one scoring pass, ELAJ only. Each is a single-key change",
+          "against `p1_dab168_kl1`. No baseline appears in any of these files,",
+          "so the gene policy and the baseline re-scoring do not reach them.", "",
+          "| arm | family ↑ | phase ↑ | disease ↑ | donor ↓ | mixing ↓ | source |",
+          "|---|---:|---:|---:|---:|---:|---|"]
+abl = {}
+for key, (label, bdir, rdir) in ABL.items():
+    bf = ROOT / bdir / "benchmark.csv"
+    if not bf.exists():
+        lines.append(f"| {label} | — | — | — | — | — | **missing** `{bdir}` |"); continue
+    xd  = label_rows(bf, "cross-donor")
+    dis = label_rows(bf, "disease-xdonor")
+    don = label_rows(bf, "knn-agreement")
+    mix = label_rows(bf, "study-mixing")
+    r = {"family":  xd.get("cell family", float("nan")),
+         "phase":   xd.get("menstrual phase", float("nan")),
+         "disease": dis.get("all studies (pooled)", float("nan")),
+         "donor":   don.get("patient_id", float("nan")),
+         "mixing":  mix.get("all studies", float("nan")),
+         "stage":   xd.get("Endometriosis_stage", float("nan")),
+         "grade":   xd.get("EndometriosisGrade", float("nan"))}
+    xdp = label_rows(bf, "cross-donor-p")
+    r["stage_p"] = xdp.get("Endometriosis_stage", float("nan"))
+    r["grade_p"] = xdp.get("EndometriosisGrade", float("nan"))
+    abl[key] = (label, r)
+    for v in r.values():
+        if not pd.isna(v): extra.add(f"{v:.4f}")
+    bold = "**" if label == "BASE" else ""
+    lines.append(f"| {bold}{label}{bold} | {r['family']:.4f} | {r['phase']:.4f} "
+                 f"| {r['disease']:.4f} | {r['donor']:.4f} | {r['mixing']:.4f} "
+                 f"| `{rel(bf)}` |")
+
+if "p1_dab168_kl1" in abl:
+    b = abl["p1_dab168_kl1"][1]
+    lines += ["", "**Deltas against BASE**, for the claims that are stated as changes:", "",
+              "| arm | Δ family | Δ phase | Δ disease | Δ donor | Δ mixing |",
+              "|---|---:|---:|---:|---:|---:|"]
+    for key, (label, r) in abl.items():
+        if label == "BASE": continue
+        d = [r[k] - b[k] for k in ("family", "phase", "disease", "donor", "mixing")]
+        for v in d: extra.add(f"{abs(v):.4f}")
+        lines.append(f"| {label} | " + " | ".join(f"{v:+.4f}" for v in d) + " |")
+    lines += ["", "Chance on cross-donor menstrual phase is **0.370**, carried in the",
+              "benchmark's own `note` column. D1's split of the phase margin is",
+              f"therefore ({b['phase']:.4f} − 0.370) against "
+              f"({abl['a1_nophase'][1]['phase']:.4f} − 0.370) = "
+              f"**{(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370)*100:.1f}%** of the",
+              "margin surviving the head's removal, so the head supplies",
+              f"**{100-(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370)*100:.1f}%**.", ""]
+    extra.add(f"{(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370):.4f}")
+
+# -------------------------------------------------------------------------
+# D2 and A7 — reconstruction, from the training metrics rather than the
+# benchmark. Checkpoint selection is argmin val_nb, which reproduces the
+# "best ep" column of ABLATIONS.md for all six arms.
+# -------------------------------------------------------------------------
+lines += ["## D2 and A7 — reconstruction, from the training metrics", "",
+          "`val_nb` and `train_nb` are mean negative-binomial loss per cell;",
+          "**lower is better**. The reported checkpoint is `argmin val_nb`,",
+          "which reproduces ABLATIONS.md's `best ep` column for every arm.", "",
+          "| arm | epochs | best ep | train_nb @best | val_nb @best | train_nb @last | val_nb @last | source |",
+          "|---|---:|---:|---:|---:|---:|---:|---|"]
+for key, (label, bdir, rdir) in ABL.items():
+    mf = ROOT / rdir / "metrics.csv"
+    if not mf.exists():
+        lines.append(f"| {label} | — | — | — | — | — | — | **missing** `{rdir}` |"); continue
+    ep, bestrow, lastrow, n = best_epoch(mf)
+    for v in (bestrow.train_nb, bestrow.val_nb, lastrow.train_nb, lastrow.val_nb):
+        extra.add(f"{v:.4f}")
+    bold = "**" if label == "BASE" else ""
+    lines.append(f"| {bold}{label}{bold} | {n} | {ep} | {bestrow.train_nb:.4f} "
+                 f"| {bestrow.val_nb:.4f} | {lastrow.train_nb:.4f} "
+                 f"| {lastrow.val_nb:.4f} | `{rel(mf)}` |")
+lines += ["", "**D2 reads down the `-phase head` row, not across to BASE.** Without the",
+          "head, `val_nb` is best at **epoch 0** and worsens monotonically from",
+          "epoch 1 while `train_nb` keeps falling — the held-out split is paid for",
+          "the training split from the first epoch onward. BASE's `val_nb`",
+          "improves to epoch 4 before it turns. Both trajectories are in the",
+          "table above; quoting 0.4083 as a BASE value would be wrong, it is the",
+          "`-phase head` arm's best.", "",
+          "**A7's study-mean reference (0.4315) is not in any file read here.**",
+          "It is a computed baseline, not a logged metric, and must be",
+          "re-derived from the code that produced it before it becomes prose.", ""]
+
+# -------------------------------------------------------------------------
+# C6 / D7 — stage and grade. Reported as an absence, so the p-floor and the
+# donor count have to travel with the numbers.
+# -------------------------------------------------------------------------
+lines += ["## C6 — surgical stage and grade, across every arm", "",
+          "Cross-donor excess agreement and its permutation p. Negative excess",
+          "means neighbours agree *less* than chance.", "",
+          "| arm | stage | p | grade | p | source |", "|---|---:|---:|---:|---:|---|"]
+for key, (label, r) in abl.items():
+    lines.append(f"| {label} | {r['stage']:+.4f} | {r['stage_p']:.4f} "
+                 f"| {r['grade']:+.4f} | {r['grade_p']:.4f} "
+                 f"| `{rel(ROOT / ABL[key][1] / 'benchmark.csv')}` |")
+st = [r["stage"] for _, r in abl.values()]; stp = [r["stage_p"] for _, r in abl.values()]
+gr = [r["grade"] for _, r in abl.values()]; grp = [r["grade_p"] for _, r in abl.values()]
+lines += ["", f"Across all {len(abl)} arms: stage {min(st):+.4f} to {max(st):+.4f} "
+              f"at p {min(stp):.4f} to {max(stp):.4f}; grade is **negative in every "
+              f"arm**, {min(gr):+.4f} to {max(gr):+.4f}, at p {min(grp):.4f} to "
+              f"{max(grp):.4f}.",
+          "", "A negative result cannot be read without the p-floor, which is set by",
+          "donor count and belongs in the same sentence (Methods, *Permutation",
+          "testing*).", ""]
+
+# -------------------------------------------------------------------------
+# C2, C4, C5 — whole-corpus geometry. Outputs/analysis/<arm>/, ELAJ only.
+# over_scatter is a centroid distance divided by the stratum's own spread,
+# so it is already in units of the cells' own width.
+# -------------------------------------------------------------------------
+ANALYSIS = ROOT / "Outputs/analysis"
+ARMS_A = ["p1_dab168_kl1", "p1_dab168_kl30"]
+
+lines += ["## C2 — cycle displacement by cell type", "",
+          "`over_scatter` from `phase_within_family.csv`: the distance between",
+          "two phase centroids **divided by that cell type's own spread**, so",
+          "the four numbers are comparable across types of different size. The",
+          "row quoted is `proliferative → secretory`, the widest separation",
+          "available in all four types.", "",
+          "| arm | stromal | epithelial | endothelial | immune | source |",
+          "|---|---:|---:|---:|---:|---|"]
+for a in ARMS_A:
+    f = ANALYSIS / a / "phase_within_family.csv"
+    if not f.exists():
+        lines.append(f"| `{a}` | — | — | — | — | **missing** |"); continue
+    d = pd.read_csv(f)
+    d = d[(d.label == "phase") & (d["from"] == "proliferative") & (d.to == "secretory")]
+    v = dict(zip(d.stratum, d.over_scatter.astype(float)))
+    for x in v.values(): extra.add(f"{x:.4f}")
+    lines.append(f"| `{a}` | " + " | ".join(f"{v.get(k, float('nan')):.4f}" for k in
+                 ("stromal", "epithelial", "endothelial", "immune")) + f" | `{rel(f)}` |")
+lines += ["", "The ordering is stromal > epithelial ≫ endothelial ≈ immune, and the",
+          "phase head is one linear map over the whole latent that was never",
+          "given cell type.", ""]
+
+lines += ["## C4 and C5 — disease displacement by study and cell type", "",
+          "`over_scatter` from `disease_within_family.csv`, label",
+          "`case_vs_control`. C4 is the marecko immune cell; C5 is that the",
+          "pattern does not hold in duempelmann.", ""]
+FAMS = ("endothelial", "epithelial", "immune", "stromal")
+top, span = {}, {}
+for a in ARMS_A:
+    f = ANALYSIS / a / "disease_within_family.csv"
+    if not f.exists(): continue
+    d = pd.read_csv(f)
+    d = d[d.label == "case_vs_control"]
+    lines += [f"**`{a}`** — `{rel(f)}`", "",
+              "| study | " + " | ".join(FAMS) + " | max |",
+              "|---|" + "---:|" * (len(FAMS) + 1)]
+    for study in sorted(d.study.unique()):
+        row = d[d.study == study]
+        v = dict(zip(row.family, row.over_scatter.astype(float)))
+        for x in v.values(): extra.add(f"{x:.4f}")
+        hi = max(v, key=v.get)
+        top[(a, study)] = hi
+        span[(a, study)] = (min(v.values()), max(v.values()))
+        cells = ["—" if pd.isna(v.get(k, float("nan")))
+                 else (f"**{v[k]:.4f}**" if k == hi else f"{v[k]:.4f}") for k in FAMS]
+        lines.append(f"| {study} | " + " | ".join(cells) + f" | {hi} |")
+    lines.append("")
+
+# Which family ranks first is READ OFF the table above, never asserted. The
+# first version of this section claimed immune led in both arms of both
+# studies; the kl30 duempelmann row it had just printed says endothelial.
+studies = sorted({st for _, st in top})
+lines.append("**Where the maximum sits, per arm:**")
+lines.append("")
+for st in studies:
+    seen = [top[(a, st)] for a in ARMS_A if (a, st) in top]
+    rng  = [span[(a, st)] for a in ARMS_A if (a, st) in top]
+    lo, hi = min(r[0] for r in rng), max(r[1] for r in rng)
+    stable = len(set(seen)) == 1
+    lines.append(f"- **{st}** — " +
+                 (f"**{seen[0]}** in every arm" if stable else
+                  "**not stable**: " + ", ".join(f"`{a}` → {top[(a, st)]}"
+                                                 for a in ARMS_A if (a, st) in top)) +
+                 f". Range across both arms {lo:.4f} to {hi:.4f}.")
+    extra.add(f"{lo:.4f}"); extra.add(f"{hi:.4f}")
+lines += ["", "C4 is the marecko immune cell, and it is the maximum in both arms at a",
+          "magnitude no other stratum reaches. C5 is duempelmann, where the",
+          "displacement is roughly a third of marecko's **and** the leading family",
+          "is not the same in the two arms — so the non-replication is both in",
+          "magnitude and in ordering, and prose may say so.", "",
+          "`reference_scales.csv` in the same folders carries the whole-corpus",
+          "cell-family distances that these are read against.", ""]
+
+derived_extra = extra
+
 derived = set()
 for r, _ in list(arms.values()) + list(base.values()):
     for k in TESTS:
         if not pd.isna(r[k]): derived.add(f"{r[k]:.4f}")
+derived |= derived_extra
 NOT_FROM_BENCHMARK = {
     "0.370": "chance rate for menstrual phase, printed in the benchmark `note` column",
     "0.3700": "same",
@@ -103,36 +334,71 @@ for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):
     v4 = f"{float(v):.4f}"
     if v4 in derived or v in NOT_FROM_BENCHMARK: continue
     unaccounted.append(v)
+# An unaccounted decimal has two very different causes and the report has to
+# tell them apart: a value that exists nowhere is a typo or an invention, and
+# a value that exists in a run we are not quoting from is a mixed table.
+SWEEP = {}
+for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/**/benchmark.csv"), recursive=True)):
+    b = pd.read_csv(f)
+    b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
+    for _, rw in b.iterrows():
+        try: key = f"{float(rw['value']):.4f}"
+        except (TypeError, ValueError): continue
+        # Rank hits so a coincidental match on an scib metric cannot outrank a
+        # match on one of the five axes the paper actually reports.
+        onaxis = any(rw["test"] == t for t, _, _ in TESTS.values())
+        SWEEP.setdefault(key, []).append(
+            (0 if onaxis else 1, f"`{rel(f)}` — {rw['mm']} / {rw['test']} / {rw['label']}"))
+
 if unaccounted:
     for v in sorted(set(unaccounted)):
-        lines.append(f"- `{v}` — **no source found**")
+        hits = sorted(SWEEP.get(f"{float(v):.4f}", []))
+        onaxis = [h for r, h in hits if r == 0]
+        if not hits:
+            lines.append(f"- `{v}` — **exists in no benchmark file. Typo or invention.**")
+        elif not onaxis:
+            lines.append(f"- `{v}` — appears only on metrics this paper does not "
+                         f"report ({len(hits)} occurrences). Treat as **unsourced**.")
+        else:
+            lines.append(f"- `{v}` — real, on a reported axis, but **from a file "
+                         f"this table does not quote**:")
+            for h in onaxis[:3]:
+                lines.append(f"    - {h}")
+            if len(onaxis) > 3:
+                lines.append(f"    - … and {len(onaxis)-3} more on reported axes")
 else:
     lines.append("None. Every decimal in the Results prose matches a value "
                  "re-derived above, or is a chance rate carried in the "
                  "benchmark's own `note` column.")
-lines += ["", "## ⚠ SCORING RUNS ARE NOT COMPARABLE WITH EACH OTHER", "",
-  "The same baseline scores differently in different runs, on different cell",
-  "counts, so a table that draws its rows from more than one run is invalid.",
-  "Cross-donor menstrual phase for three baselines that appear in several:", "",
-  "| run | pca | scvi | scanvi | cells scored (pca) |", "|---|---:|---:|---:|---:|",
-  "| `p1_dab168_kl1` | 0.6906 | 0.7017 | 0.6943 | 166,836 |",
-  "| `fm_*` (four runs) | 0.6457 | 0.7053 | 0.6971 | 173,887 |",
-  "| `r8_all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |", "",
-  "**Three consequences.**", "",
-  "1. The head-to-head that is internally valid is the reported arm's own",
-  "   file: `elaj`, `pca`, `scanvi`, `scvi`, all at width 16. Nothing else is",
-  "   in it.",
-  "2. The four foundation models live only in the `fm_*` runs. Those runs are",
-  "   internally consistent and carry their own `pca`/`scvi`/`scanvi`",
-  "   reference columns, so a foundation-model comparison must be quoted",
-  "   against THOSE references, not against the reported arm's.",
-  "3. `harmony` and `scanorama` appear only in `r8_all`, scored on 52,712 to",
-  "   69,209 cells against p1's 166,836 to 195,879. That is the older, smaller",
-  "   corpus. They are not usable in this paper without a re-score.", "",
-  "Even within one run, `n_cells` differs per method, because each method's",
-  "latent covers a different set of cells. That is expected and is not the",
-  "problem here; the problem is comparing across runs.", "",
-  "## Not yet auditable", "",
+lines += ["", "## Which cross-method rows may be quoted together", "",
+  "Two things differ between scoring runs and only one of them is a fault.", "",
+  "**Not a fault: the gene policy.** Baselines are fit on `all30962`, the",
+  "union gene set, and ELAJ on its own filtered 15,496. That is deliberate --",
+  "the baselines are not handed a vocabulary we constructed. A baseline scored",
+  "under `all` instead of `all30962` is a different experiment, so the two",
+  "cannot be mixed in one table, but neither is wrong.", "",
+  "**Not a fault: `n_cells` differing per method.** Cross-donor agreement is",
+  "measured only on cells with at least one cross-donor neighbour, and that",
+  "count is a property of the embedding. A better-mixed latent scores more",
+  "cells. Coverage is reported beside every scalar rather than folded into",
+  "it.", "",
+  "**A fault: `r8_all` and `r8_inductive` are obsolete.** They score ELAJ at",
+  "phase 0.1161 and PCA at 0.2856 on 52,712 to 69,209 cells, against 166,836",
+  "to 195,879 in the p-series. `harmony` and `scanorama` have no other",
+  "source, so both rows are unusable until the unified run returns.", "",
+  "Same cross-donor phase, three runs:", "",
+  "| run | gene policy | pca | scvi | scanvi | cells scored (pca) |",
+  "|---|---|---:|---:|---:|---:|",
+  "| `p1_dab168_kl1` | `all` | 0.6906 | 0.7017 | 0.6943 | 166,836 |",
+  "| `fm_*` (four runs) | `all30962` | 0.6457 | 0.7053 | 0.6971 | 173,887 |",
+  "| `r8_all` | `all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |", "",
+  "Until the unified run lands, the internally valid head-to-head is the",
+  "reported arm's own file for `elaj`/`pca`/`scvi`/`scanvi` at width 16, and",
+  "the `fm_*` files for the foundation models against THEIR own reference",
+  "columns. The unified run replaces all of it with one gene policy, one cell",
+  "set and one code path across nine methods.", ""]
+
+lines += ["## Not yet auditable", "",
           "These are quoted in subsection notes but not yet in prose, and come",
           "from project documents rather than from a `benchmark.csv` read here.",
           "**Each must be re-derived before it becomes prose.**", "",
