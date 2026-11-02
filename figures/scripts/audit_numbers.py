@@ -171,14 +171,35 @@ if "p1_dab168_kl1" in abl:
         d = [r[k] - b[k] for k in ("family", "phase", "disease", "donor", "mixing")]
         for v in d: extra.add(f"{abs(v):.4f}")
         lines.append(f"| {label} | " + " | ".join(f"{v:+.4f}" for v in d) + " |")
-    lines += ["", "Chance on cross-donor menstrual phase is **0.370**, carried in the",
-              "benchmark's own `note` column. D1's split of the phase margin is",
-              f"therefore ({b['phase']:.4f} − 0.370) against "
-              f"({abl['a1_nophase'][1]['phase']:.4f} − 0.370) = "
-              f"**{(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370)*100:.1f}%** of the",
-              "margin surviving the head's removal, so the head supplies",
-              f"**{100-(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370)*100:.1f}%**.", ""]
-    extra.add(f"{(abl['a1_nophase'][1]['phase']-0.370)/(b['phase']-0.370):.4f}")
+    # CHANCE IS ALREADY REMOVED. endo_model/evaluation/sufficient_stats.py:
+    #   excess = (observed - chance) / (1 - chance)
+    # so a cross-donor value is a chance-corrected quantity on [., 1], and a
+    # NEGATIVE one is possible (grade is -0.0414, which a raw rate could not
+    # be). Subtracting a chance rate from it a second time is what produced
+    # the 69.5/30.5 split in ABLATIONS.md and in Results. The right
+    # decomposition is the ratio of the two excesses.
+    nh = abl["a1_nophase"][1]["phase"]
+    kept = nh / b["phase"]
+    lines += ["", "**D1, recomputed.** Cross-donor values are already "
+              "chance-corrected, so the phase margin splits as a ratio of the "
+              "two excesses, not as a difference from a chance rate:",
+              "", f"- base {b['phase']:.4f}, head removed {nh:.4f}",
+              f"- **{kept*100:.1f}%** of the chance-corrected signal survives "
+              f"removing the head, so the head accounts for **{(1-kept)*100:.1f}%** "
+              "and the architecture for the rest.",
+              "", "The superseded figure was 30.5% surviving and 69.5% from the "
+              f"head, from ({nh:.4f} - 0.370)/({b['phase']:.4f} - 0.370). That "
+              "subtracted chance from numbers chance had already been taken out "
+              "of. 0.370 is the chance rate of a different measurement, the "
+              "plain whole-corpus phase grouping in `grouped_agreement.csv`.",
+              "", "**The comparator for a cross-donor value is its own "
+              "permutation null**, carried in the benchmark `note` column as "
+              "`null95`: 0.18 for menstrual phase, 0.06 for cell family, 0.12 "
+              "for grade, 0.42 for stage. Stage's 0.1313 sits below its own "
+              "null95, which is why its p is 0.303.", ""]
+    for v in (kept, 1 - kept):
+        extra.add(f"{v:.4f}"); extra.add(f"{v:.3f}")
+    extra.update({"0.18", "0.06", "0.12", "0.42", "0.1800", "0.0600", "0.1200", "0.4200"})
 
 # -------------------------------------------------------------------------
 # D2 and A7 — reconstruction, from the training metrics rather than the

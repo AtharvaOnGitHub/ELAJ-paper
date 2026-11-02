@@ -160,24 +160,26 @@ map over all sixteen dimensions. Other related metadata variables such as cycle
 day, serum progesterone, cell type and disease status were never provided as 
 inputs to the model.
 
-Cycle day was recorded for under a third of the corpus (466{,}176 cells,
-29.6\%), in one cohort of 60 donors who each contributed a single day between
-day 5 and day 30, with 22 individual days being represented. Advancing through
-the days one at a time showed a dense mass of cells being progressively 
-arranged in the latent space. As the cycle returned to where it began, so did
-that region, showing the cycle to be closed in the latent space (Fig.~5a).
+Cycle day, recorded for 466{,}176 cells in only one cohort of 60 donors 
+representing 22 days between day 5 and 30, showed up in the latent space. 
+Advancing through the days one at a time showed a dense mass of cells being 
+progressively arranged in the latent space. As the cycle returned to where it 
+began, so did that region, showing the cycle to be closed in the latent space 
+(Fig.~5a).
 
 Cross-donor agreement, defined in Methods as the fraction of a cell's hundred 
-nearest latent neighbours that share its label once every neighbour drawn from 
-the same donor has been discarded, shows how well the model understands 
-menstrual phase in general. Cross-donor agreement on menstrual phase was high 
-on held-out donors, at twice the chance rate (0.7346 against chance of 0.370; 
-$n_{\text{cells}}=195{,}879$; $p=0.005$), and remained high when all 
-1{,}577{,}728 cells were read together (0.6796 across 142 donors; $p=0.005$). 
+nearest latent neighbours that share its label after removing same-donor cells,
+shows how well the model understands menstrual phase in general. Cross-donor 
+agreement is reported as an excess over chance, so zero is chance and one is
+perfect. On held-out donors it was 0.7346 for menstrual phase, against a
+permutation null whose 95th percentile was 0.18
+($n_{\text{cells}}=195{,}879$; $p=0.005$, the floor), and it remained high
+when all 1{,}577{,}728 cells were read together (0.6796 across 142 donors;
+$p=0.005$). 
 
-Supervision supplied most of that phase signal: removing the phase head
-reduced cross-donor agreement to 0.4812, leaving 30.5\% of the margin over
-chance.
+Removing the phase head reduced that agreement to 0.4812, so just under
+two-thirds of the signal survived the loss of supervision (65.5\%) and the
+head accounted for the remaining third.
 
 Epithelial pseudotime and serum progesterone correlated highly (0.58 and 0.47, 
 respectively) with the single best-matched of the sixteen
@@ -307,80 +309,74 @@ already in that form.
 % ---------------------------------------------------------------------
 \subsection*{[4] Disease signal, and where it is not}
 
-Within marecko\_2024, case and control cells were separated most in the immune
-compartment, where the displacement between their centroids reached
-three-quarters of that compartment's own width (0.77), ahead of epithelial,
-endothelial and stromal cells (0.61, 0.58 and 0.43) (Fig.~4a). The immune
-compartment led again, and by more, in the arm at the higher information cost
-(0.83). For scale, whole-corpus separations between cell families measured
-identically span 0.76 for epithelial against stromal cells to 1.53 for
-endothelial against immune.
+Disease status carried a real but weak signal. Pooled across studies,
+cross-donor agreement on it reached 0.3364 on held-out cells
+($n_{\text{cells}}=172{,}740$), and within each cohort taken on its own it
+was weaker still, at 0.135 in marecko\_2024, 0.064 in duempelmann\_2026 and
+0.000 in lin\_2023. Read across all 1{,}577{,}728 cells, agreement on disease
+severity in each study's own vocabulary reached 0.2655 over 118 donors and 67
+label levels ($p=0.005$), the largest donor count any disease label in this
+corpus supports.
 
-The pattern did not carry to the second cohort. In duempelmann\_2026 every
-family fell to roughly a quarter of a width (0.19--0.29 across both arms), and
-the leading compartment was not the same in the two arms: immune in one,
-endothelial in the other (Fig.~4b).
+Surgical staging was not recoverable on held-out donors. Stage, recorded for
+58 donors in a single cohort, reached an agreement of 0.1313, which is below
+the 95th percentile of its own permutation null (0.42) and not significant
+($p=0.3035$). Across the whole corpus, which includes the donors the model
+was trained on, the same label reached 0.332 and was significant
+($p=0.005$). Grade, recorded for 60 donors in a different single cohort, was
+negative on held-out donors ($-$0.0414; null 0.12; $p=0.4975$) and near zero
+across the corpus (0.0263; $p=0.408$); it remained negative in all six
+ablated configurations, between $-$0.0227 and $-$0.0723. Cell family and
+menstrual phase, measured the same way on the same cells, both reach the
+permutation floor of 0.005 (Fig.~4d).
 
-Cross-donor neighbour agreement on disease status, a different measurement
-that discards same-donor neighbours, was modest pooled across studies (0.3364;
-$n=172{,}740$) and weaker within each cohort taken separately (0.135 in
-marecko\_2024, 0.064 in duempelmann\_2026, 0.000 in lin\_2023). Agreement on
-disease severity in each study's own vocabulary, read across all 1{,}577{,}728
-cells and 118 donors, was comparable (0.2655; $p=0.005$).
+Where disease signal did appear, it appeared in one compartment of one
+cohort. Within marecko\_2024 the immune cells separated case from control
+more than any other cell family did, and the same compartment led again in
+the arm trained at the higher information cost (Fig.~4b). The pattern did not
+carry to duempelmann\_2026, where the separation was roughly a third as large
+and the leading compartment was not even the same in the two arms
+(Fig.~4c).
 
-Surgical staging was not recoverable on held-out donors. Stage, recorded for 58
-donors in a single cohort, reached a cross-donor agreement of $+$0.1313 but
-came nowhere near significance ($p=0.3035$); across the whole corpus, which
-includes the donors the model was trained on, it was both larger and
-significant ($+$0.332; $p=0.005$). Grade, recorded for 60 donors in a
-different single cohort, was negative on held-out donors ($-$0.0414;
-$p=0.4975$) and near zero across the corpus ($+$0.0263; $p=0.408$), and
-remained negative in all six ablated configurations ($-$0.0227 to $-$0.0723;
-$p$ between 0.4378 and 0.6269). Cell family and menstrual phase, by contrast,
-both reach the permutation floor of 0.005 (Fig.~4c).
-
-\note{CARRIES C4, C5, C6. FIGURE 4. 300 words.
-\\SEEDED 2 November 2026, every figure re-derived through
-\texttt{audit/NUMBERS.md}.
-\\\textbf{THREE CORRECTIONS TO THIS NOTE'S EARLIER CONTENT.}
-\\(1) ``0.22 corpus-wide'' \textbf{has no source}. It was duempelmann's
-stromal value, 0.2063, described as a corpus figure. There is no whole-corpus
-case/control reference in \texttt{reference\_scales.csv} --- it carries cell
-family and study only. The yardstick in the prose is the cell-family scale
-(0.7630--1.5292), which is a real row in that file and makes the 0.77
-interpretable.
-\\(2) C5's ordering \emph{does} flip, and the flip is named: immune in
-\texttt{kl1}, endothelial in \texttt{kl30}. An earlier draft of the audit
-asserted immune led in both and the table it had just printed said otherwise.
-\\(3) \textcolor{elajcoral}{``STAGE CARRIES NOTHING IN ANY CONFIGURATION'' IS
-NOT SUPPORTABLE AND A REVIEWER WILL FIND IT.} Whole-corpus cross-donor stage
-is $+$0.332 at $p = 0.005$ --- significant --- against $+$0.1313 at
-$p = 0.3035$ held out
-(\texttt{Outputs/validate/p1\_dab168\_kl1\_full/validation.csv}). Both are in
-the prose. The defensible claim is narrower and stronger: stage is recoverable
-among the donors the model trained on and not among held-out ones, which is
-the pattern E1 documents for donor-constant labels, not biology. Grade is
-negative or near zero either way.
-\\FOR THE DISCUSSION, per AW: that surgical staging is not recoverable from
-transcriptional state at this donor count and from these cohorts, which is
-consistent with stage not predicting symptom severity, and argues for a
-staging grounded in biology rather than anatomy. The wording is ``not
-recoverable from this corpus at this donor count'', never ``not biologically
-real''.
-\\\textcolor{elajcoral}{EACH LABEL IS ONE COHORT. Stage exists only in
-marecko\_2024 (58 donors) and grade only in duempelmann\_2026 (60), against
-269 donors for disease status. So the limit is single-cohort as well as
-small-$n$, and the prose says ``in a single cohort'' twice on purpose.}
-\\\textcolor{elajcoral}{THE TWO DISEASE MEASUREMENTS MUST NOT BE CONFLATED.
-Centroid displacement (0.77) and cross-donor neighbour agreement (0.135) are
-different quantities on the same cohort, and a reader who takes them as the
-same will read the subsection as self-contradictory. The prose names the
-difference in the clause that introduces the second.}
-\\C4/C5 SHARE ONE FIGURE AND ONE SUBSECTION deliberately: splitting them
+\note{CARRIES C4 and C5 THROUGH FIGURE 4 ONLY, and C6 in prose. FIGURE 4.
+242 words.
+\\REWRITTEN 2 November 2026 to match [3]: claim in words, numbers in
+parentheses, no em-dashes, ordered so the disruptive finding is second
+rather than last.
+\\\textbf{THE \texttt{over\_scatter} RATIOS ARE GONE FROM HERE TOO.} C4 and
+C5 were carried by 0.77/0.83 and 0.19--0.29, which are the same statistic AW
+cut from [3] on 2 November: a centroid distance over a root-mean-square
+radius, sound only if the cloud is a filled isotropic ball. Keeping them in
+[4] after cutting them from [3] would have been inconsistent, and a reviewer
+who accepted the cut once would ask about it. Both findings are now stated
+without magnitudes and read off Fig.~4b and 4c. There is no robust
+replacement number: the cross-donor estimator breaks down by study, not by
+cell family, so a per-compartment figure does not exist and, per AW's
+ruling, is not being computed.
+\\ORDER: the weak-but-real disease signal first, because the negative cannot
+be read without it; stage and grade second, as the most disruptive finding
+in the subsection; the compartment result third, because it is the one with
+no numbers and is carried by the figure.
+\\\textcolor{elajcoral}{STAGE IS SIGNIFICANT ON THE WHOLE CORPUS AND NOT ON
+HELD-OUT DONORS, and both are in the prose. 0.332 at $p=0.005$ against
+0.1313 at $p=0.3035$. Any wording that says stage carries nothing
+\emph{anywhere} contradicts \texttt{validation.csv} and a reviewer will find
+it. The Discussion reading, per AW: not recoverable from this corpus at this
+donor count, never ``not biologically real''. The whole-corpus figure is the
+memorisation pattern E1 documents for donor-constant labels.}
+\\EACH LABEL IS ONE COHORT, which is a second limit beyond small $n$: stage
+exists only in marecko\_2024 and grade only in duempelmann\_2026, against
+269 donors for disease status. Said once in the prose for each.
+\\THE TWO DISEASE MEASUREMENTS ARE NOT THE SAME QUANTITY and the prose no
+longer invites the confusion, because only one of them now carries numbers.
+\\C4 AND C5 SHARE ONE FIGURE AND ONE PARAGRAPH deliberately: splitting them
 would let a reader take the positive without the negative.
+\\\textcolor{elajcoral}{FOR THE DISCUSSION: that surgical staging is not
+recoverable from transcriptional state at this donor count and from these
+cohorts, which is consistent with stage not predicting symptom severity, and
+argues for a staging grounded in biology rather than anatomy.}
 \\$\rightarrow$ hands on: which parts of the model are load-bearing?}
 
-% ---------------------------------------------------------------------
 \subsection*{[5] What the latent needs in order to work}
 \note{CARRIES D1--D6, B2, B3. FIGURE 5.
 \\AW: ``these are the results that a true ML researcher would actually want

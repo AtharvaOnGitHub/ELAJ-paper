@@ -28,6 +28,13 @@ and legends are written to the 300-word limit rather than kept brief.
 
 **Each figure must be regenerable by one command from a committed script.**
 
+**Every cross-donor value in this file is an excess over chance**, computed
+as `(agreement − chance) / (1 − chance)` in
+`endo_model/evaluation/sufficient_stats.py`. Zero is chance, one is perfect,
+and a negative value is possible. **Never subtract a chance rate from one of
+them.** The comparator a panel should draw is the permutation null's 95th
+percentile, carried per row in the benchmark's own `note` column.
+
 ---
 
 ## Status vocabulary
@@ -121,9 +128,9 @@ width limitation and the per-method supervision.
 | panel | type of vis | purpose | matching prose | supports / numbers |
 |---|---|---|---|---|
 | a | whole-corpus UMAP, cell-type regions outlined | the entry point every crop below refers back to | Results [2] | cross-donor cell family 0.9807 whole corpus, 0.9820 held out |
-| b | UMAP crop, coloured case against control, marecko | disease separation concentrates in the immune compartment | Results [4] ¶1 | immune 0.77 against 0.61 / 0.58 / 0.43; 0.83 in the second arm |
-| c | the same crop for duempelmann, beside b | the non-replication, in magnitude and in which family leads | Results [4] ¶2 | 0.19–0.29 across both arms; immune leads in `kl1`, endothelial in `kl30` |
-| d | dot or bar per arm, donor count on the axis | stage and grade at chance in every configuration, with the donor count visible so the p-floor can be read | Results [4] ¶4 | stage +0.1313 at p 0.3035 held out, +0.332 at p 0.005 whole corpus; grade −0.0414 at p 0.4975; 58 and 60 donors against 269 |
+| b | UMAP crop, coloured case against control, marecko | disease separation concentrates in the immune compartment | Results [4] ¶3 | **no number**. The `over_scatter` ratios were cut with the [3] paragraph; the panel carries the claim |
+| c | the same crop for duempelmann, beside b | the non-replication, in magnitude and in which family leads | Results [4] ¶3 | **no number**, same reason as b. The leading family differs between arms and the panel must show both |
+| d | dot or bar per arm, **null95 band drawn behind each point**, donor count on the axis | stage and grade against their own permutation nulls, so a reader sees why 0.1313 is not significant | Results [4] ¶2 | stage 0.1313 against null95 0.42, p 0.3035 held out; 0.332 at p 0.005 whole corpus; grade −0.0414 against null95 0.12, p 0.4975; 58 and 60 donors against 269 |
 
 **Carries:** C1 in part, C4, C5, C6.
 
@@ -146,7 +153,7 @@ The headline figure. Panel letters follow the Results paragraph order.
 
 | panel | type of vis | purpose | matching prose | supports / numbers |
 |---|---|---|---|---|
-| a | UMAP crop on a cyclic colour map | the cycle is continuous and closes | Results [3] ¶2 | 466,176 cells, 29.6% of the corpus, one cohort, 60 donors, one day each, days 5–30 with 22 present |
+| a | UMAP crop on a cyclic colour map | the cycle is continuous and closes | Results [3] ¶2 | 466,176 cells, one cohort, 60 donors, 22 days between day 5 and 30 |
 | b | small multiples, one UMAP per cell family, coloured by phase | phase does not separate every cell type equally. Read off the picture, not off a ratio | **none — figure only** | no number. C2 is carried visually and the claim is the ordering, not a magnitude |
 | c | the same small multiples, second frontier arm | the ordering reproduces at a different information cost | **none — figure only** | no number |
 | d | UMAP crop coloured by tissue | stromal cells from five tissues land together; epithelium is almost purely endometrial | Results [2] | cross-donor cell family 0.9807 whole corpus |
@@ -187,7 +194,7 @@ not publish.
 | panel | type of vis | purpose | matching prose | supports / numbers |
 |---|---|---|---|---|
 | a | grouped bars, five axes, base marked | the five single-key ablations against the base | Results [5] | family 0.9606–0.9837, phase 0.4812–0.7397, disease 0.2698–0.3638, donor 0.3754–0.5520, mixing 0.5305–0.6829 |
-| b | stacked bar or annotated axis | the phase margin splits into supervision and architecture | Results [5] | 0.7346 → 0.4812 against chance 0.370: 69.5% head, 30.5% architecture |
+| b | stacked bar or annotated axis | the phase margin splits into supervision and architecture | Results [5] | 0.7346 → 0.4812, both already chance-corrected: **65.5% architecture, 34.5% head**. Do not subtract 0.370 |
 | c | two lines per arm, train against val by epoch | without the phase head the model pays the held-out split for the training split from epoch 1 | Results [5] | `-phase head`: `val_nb` best at epoch 0 (0.4083) rising to 0.4256 while `train_nb` falls 0.4140 → 0.3772. BASE turns at epoch 4 (0.4024) |
 | d | the ablation points drawn ON Figure 2's frontier | ECS travels along the frontier rather than expanding it | Results [5] | family +0.0017, phase +0.0051, disease +0.0274 against donor +0.0332, mixing +0.0786 |
 | e | scatter, one point per arm, correlation annotated | a defeated discriminator is not evidence that a latent is study-free | Results [5] | adversary loss against donor kNN +0.883 at m3; against study kNN +0.890 at m2_cls40 |

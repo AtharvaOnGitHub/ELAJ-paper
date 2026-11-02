@@ -62,11 +62,14 @@ so the gene policy and the baseline re-scoring do not reach them.
 | -sentinel | -0.0004 | -0.0038 | +0.0251 | +0.0019 | +0.0217 |
 | random groups | -0.0214 | -0.0566 | -0.0666 | +0.0135 | +0.0284 |
 
-Chance on cross-donor menstrual phase is **0.370**, carried in the
-benchmark's own `note` column. D1's split of the phase margin is
-therefore (0.7346 − 0.370) against (0.4812 − 0.370) = **30.5%** of the
-margin surviving the head's removal, so the head supplies
-**69.5%**.
+**D1, recomputed.** Cross-donor values are already chance-corrected, so the phase margin splits as a ratio of the two excesses, not as a difference from a chance rate:
+
+- base 0.7346, head removed 0.4812
+- **65.5%** of the chance-corrected signal survives removing the head, so the head accounts for **34.5%** and the architecture for the rest.
+
+The superseded figure was 30.5% surviving and 69.5% from the head, from (0.4812 - 0.370)/(0.7346 - 0.370). That subtracted chance from numbers chance had already been taken out of. 0.370 is the chance rate of a different measurement, the plain whole-corpus phase grouping in `grouped_agreement.csv`.
+
+**The comparator for a cross-donor value is its own permutation null**, carried in the benchmark `note` column as `null95`: 0.18 for menstrual phase, 0.06 for cell family, 0.12 for grade, 0.42 for stage. Stage's 0.1313 sits below its own null95, which is why its p is 0.303.
 
 ## D2 and A7 — reconstruction, from the training metrics
 
