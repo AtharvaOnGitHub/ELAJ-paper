@@ -118,6 +118,14 @@ shape and whether it is per cell, per gene, per group — is in
 cost ELAJ ~0.09 excess and PCA nothing, because the least-clumped model
 loses most cells. Check which way a proposal cuts before making it.
 
+**7a. I overstate damage.** On 2 November I called the baseline table's
+problems a set of three faults and used words like "invalid" and "in
+danger". Two of the three were deliberate design, recorded as settled in
+this very file. AW: *"the intensity of your words is overstated… this is
+ELAJ's best foot forward. We are not hedging, we are showing what our model
+is capable of and it genuinely punches leagues above its weight class."*
+Re-derive, then position. Do not pre-grieve a number that has not landed.
+
 **7. I hedge.** He has flagged it twice, most recently on C6. "Not
 recoverable from this corpus at this donor count" is a *precise* claim and
 a strong one. Do not wrap it in apology.
@@ -141,6 +149,19 @@ a strong one. Do not wrap it in apology.
   adenomyosis-specific claim is supportable" is withdrawn.
 - **E1 (the rho +0.943 donor-memorisation finding) goes to Methods**, not
   Results. I argued for Results and was overruled.
+- **Gene policy is not a fault.** Baselines get `all30962`; ELAJ gets its
+  own filtered 15,496. Deliberate — they are not handed a vocabulary we
+  built. I re-raised this as a fault on 2 November after recording it as
+  settled here. Do not raise it again.
+- **Per-method `n_cells` differing is not a fault either.** It is the
+  coverage axis, which is why we report a distribution.
+- **Cross-donor agreement is reported at `t=1`** — every labelled cell with
+  at least one cross-donor neighbour, 88.2% of them — with coverage beside
+  the scalar and the threshold curve as the robustness object. `t=1` is the
+  maximum-coverage choice and the one that does not preferentially keep
+  well-mixed cells.
+- **Results `[2]` is deleted.** Merged into `[1]` on 2 November; its
+  material lives in `[1]`'s note. Subsections are now `[1]`–`[5]`.
 
 ---
 
@@ -159,8 +180,15 @@ coverage beside every scalar. AW's framing, which is right: coverage is a
 separate axis, like mean and variance, not something to fold into one
 number.
 
-**Results `[2]` is not corrected** and should not be until the unified run
-lands — its six wrong numbers are all about to be replaced.
+**Results `[2]` is gone**, merged into `[1]`. Its six suspended figures and
+the audit's verdict on each are in `[1]`'s note.
+
+**The ablations and the whole-corpus geometry are writable now.** D1–D6 and
+C1–C6 cross no method boundary, so the unified run does not touch them, and
+`audit/NUMBERS.md` re-derives all of them from the files. AW's words:
+*"the ablations are non-questionables… that means we could write the
+ablation and model-understanding parts of the results. Good to keep in mind
+as the immediate low hanging fruit."* That is subsections `[4]` and `[5]`.
 
 **Open question nobody has answered:** where E3 goes — the scIB batch
 metrics being degenerate on this corpus.
