@@ -154,40 +154,46 @@ No purity percentages.
 % ---------------------------------------------------------------------
 \subsection*{[3] The cycle is a cycle, and it moves only the cells it should}
 
-The decoder is conditioned on study, platform and tissue. Cycle day, serum
-progesterone, cell type and disease status were not inputs. Menstrual phase
-was supervised, through a single linear map over the whole sixteen-dimensional
-latent.
+The decoder is conditioned on study, platform and tissue alone. Cycle day,
+serum progesterone, cell type and disease status were never inputs, and
+menstrual phase was the only supervised label, reaching the latent through a
+single linear map over all sixteen dimensions.
 
-Cross-donor phase agreement on held-out donors was 0.7346 against a chance
-rate of 0.370, over 195{,}879 cells, at the smallest attainable permutation
-$p$ of 0.005. Over all 1{,}577{,}728 cells it was 0.6796, across 142 donors
-and 723{,}599 cells, at the same $p$.
+Cross-donor agreement on menstrual phase was high on held-out donors, at twice
+the chance rate (0.7346 against 0.370; $n=195{,}879$; $p=0.005$, the
+permutation floor), and remained high when all 1{,}577{,}728 cells were
+embedded and read together (0.6796 across 142 donors; $p=0.005$).
 
-Displacement between the proliferative and secretory centroids, expressed in
-units of each cell type's own scatter, was 1.07 for stromal cells, 0.98 for
-epithelial, 0.39 for endothelial and 0.34 for immune. In the arm at the higher
-information cost the same four quantities were 1.07, 0.99, 0.54 and 0.29. The
-ordering was the same in both; the two smaller values were not (Fig.~2a, b).
+The cycle did not displace every cell type equally. Measured between the
+proliferative and secretory centroids in units of each cell type's own
+scatter, stromal and epithelial cells moved by about a full width (1.07 and
+0.98) while endothelial and immune cells moved by roughly a third of one (0.39
+and 0.34) (Fig.~2a). The arm trained at the higher information cost reproduced
+both the ordering and the gap between the two pairs (1.07, 0.99, 0.54 and
+0.29), though the two smaller values themselves were not stable between arms
+(Fig.~2b).
 
-Removing the phase head reduced cross-donor phase agreement from 0.7346 to
-0.4812, leaving 30.5\% of the margin over chance.
+Supervision supplied most of that phase signal: removing the phase head
+reduced cross-donor agreement to 0.4812, leaving 30.5\% of the margin over
+chance.
 
-Two continuous quantities that were not model inputs were correlated against
-the latent, taking the largest absolute correlation over its sixteen
-dimensions: 0.58 for epithelial pseudotime and 0.47 for serum progesterone.
-The same procedure applied to four quality-control measures gave 0.34 for
-mitochondrial fraction, 0.34 for genes detected, 0.25 for total counts and
-0.14 for doublet score.
+Two continuous quantities that were never model inputs tracked the latent more
+closely than any quality-control measure did, by a real but modest margin.
+Epithelial pseudotime and serum progesterone correlated at 0.58 and 0.47 with
+the best-correlated of the sixteen dimensions, against 0.34 for mitochondrial
+fraction, 0.34 for genes detected, 0.25 for total counts and 0.14 for doublet
+score under the identical procedure.
 
-Cycle day was recorded for 466{,}176 cells, 29.6\% of the corpus, in one
-cohort of 60 donors. Each donor contributed a single day, between day 5 and
-day 30, with 22 of those 26 days represented. Colouring those cells by day and
-advancing one day at a time moved the dense region of the embedding
-progressively and returned it to its starting position (Fig.~2c--e).
+Cycle day was recorded for under a third of the corpus (466{,}176 cells,
+29.6\%), in one cohort of 60 donors who each contributed a single day between
+day 5 and day 30, 22 of those 26 days being represented. Advancing through
+those days one at a time moved the dense region of the embedding progressively
+and returned it to where it began (Fig.~2c--e).
 
-Among a cell's hundred nearest neighbours, 0.327 shared its donor, against a
-chance rate of 0.006.
+Donor identity nonetheless remained strongly local: a third of a cell's
+hundred nearest neighbours came from its own donor (0.327 against a chance
+rate of 0.006, a 54-fold enrichment), which is why every agreement figure
+above discards same-donor neighbours.
 
 \note{CARRIES C2, C3. FIGURE 2. THE HEADLINE. 290 words.
 \\SEEDED 2 November 2026, every figure re-derived through
@@ -223,44 +229,76 @@ measurement has to be made first.}
 \\\textcolor{elajcoral}{DAY VALUES ARE ONE COHORT, 60 DONORS, ONE DAY EACH.
 Stated in the prose rather than footnoted. Days 20, 24, 25 and 28 are absent
 entirely.}
+\\
+\\\textbf{REGISTER CHANGED 2 November 2026, checked against five NMI
+Articles with full text} (PlantRNA-FM 2024; deep latent variable path
+modelling 2025; GEMS 2025; COMET 2025; Eye2Gene 2025).
+\\WHAT THE CHECK FOUND. NMI Results prose is number-dense: 3.2 to 22 numeric
+values per 100 words. AW's reading --- numbers in the figures, adjectives in
+the prose --- is not the NMI norm, and my first seed at 8--9 per 100 words
+was already mid-range. But his complaint about density was right and the
+cause was different: my numbers were \emph{unattached}. ``was 1.07 for
+stromal cells, 0.98 for epithelial'' is four bare values with no verb of
+finding, so the reader has to redo the comparison.
+\\THE PATTERN THE READABLE PAPERS USE, and the one adopted here: the claim is
+in words, the number sits in a parenthesis or a subordinate clause, and a
+figure panel is named. COMET, the lowest-density of the five: ``was strong,
+indicating that COMET can make highly accurate predictions in small cohorts
+with high-dimensional data ($r = 0.868$, 95\% CI [0.825, 0.900],
+$P = 3.9 \times 10^{-53}$, r.m.s.e. $= 16.0$) (Fig.~2c)''. Eye2Gene:
+``attained an overall top-five accuracy (81.7--86.0\%)''.
+\\I ALSO OVER-FLATTENED. All five interpret inside Results --- GEMS:
+``enabling accurate prediction of test data point labels through simple
+memorization''; COMET: ``which may contribute to its superior performance''.
+Springer's ``do not interpret'' is the generic guide and NMI's own Articles
+do not read that way. The line kept here: \textbf{the immediate reading of a
+number stays in Results; the argument about what it means for the field goes
+to the Discussion.} Four such arguments per subsection are still parked in
+these notes.
+\\DENSITY NOW: [3] 8.3 per 100 words, a figure reference every 124 words;
+[4] 12.9 and every 98. NMI's own range is 3.2--22 at one reference per
+150--200 words, so both sit inside it.
+\\HEADINGS CONFIRMED, not changed: every heading in all five papers is a
+claim rather than an activity --- ``Eye2Gene generalizes across IRD
+clinics'', ``COMET accurately predicted days to the onset of labour'',
+``PlantRNA-FM reveals superior performance''. The placeholders here are
+already in that form.
 \\$\rightarrow$ hands on: time is in there. What about the disease?}
 
 % ---------------------------------------------------------------------
 \subsection*{[4] Disease signal, and where it is not}
 
-Within each study and cell type separately, the distance between the case and
-control centroids was measured in units of that stratum's own scatter. In
-marecko\_2024 the largest value was the immune compartment, at 0.77, against
-0.61 for epithelial, 0.58 for endothelial and 0.43 for stromal cells. In the
-arm at the higher information cost the immune compartment was again the
-largest, at 0.83 (Fig.~4a).
+Within marecko\_2024, case and control cells were separated most in the immune
+compartment, where the displacement between their centroids reached
+three-quarters of that compartment's own width (0.77), ahead of epithelial,
+endothelial and stromal cells (0.61, 0.58 and 0.43) (Fig.~4a). The immune
+compartment led again, and by more, in the arm at the higher information cost
+(0.83). For scale, whole-corpus separations between cell families measured
+identically span 0.76 for epithelial against stromal cells to 1.53 for
+endothelial against immune.
 
-For scale, the separations between whole-corpus cell-family centroids,
-measured the same way, run from 0.76 for epithelial against stromal cells to
-1.53 for endothelial against immune.
+The pattern did not carry to the second cohort. In duempelmann\_2026 every
+family fell to roughly a quarter of a width (0.19--0.29 across both arms), and
+the leading compartment was not the same in the two arms --- immune in one,
+endothelial in the other (Fig.~4b).
 
-In duempelmann\_2026 the same four strata gave 0.23, 0.21, 0.29 and 0.21, and
-in the second arm 0.27, 0.25, 0.19 and 0.22. The largest value was the immune
-compartment in the first arm and the endothelial compartment in the second
-(Fig.~4b).
+Cross-donor neighbour agreement on disease status, a different measurement
+that discards same-donor neighbours, was modest pooled across studies (0.3364;
+$n=172{,}740$) and weaker within each cohort taken separately (0.135 in
+marecko\_2024, 0.064 in duempelmann\_2026, 0.000 in lin\_2023). Agreement on
+disease severity in each study's own vocabulary, read across all 1{,}577{,}728
+cells and 118 donors, was comparable (0.2655; $p=0.005$).
 
-Cross-donor agreement on disease status, which discards same-donor neighbours
-and is not the same measurement, was 0.3364 pooled across studies on 172{,}740
-held-out cells, and 0.135, 0.064 and 0.000 within marecko\_2024,
-duempelmann\_2026 and lin\_2023 taken separately. Across all 1{,}577{,}728
-cells, agreement on disease severity in each study's own vocabulary was 0.2655
-over 118 donors and 67 label levels, at a permutation $p$ of 0.005.
-
-Surgical stage was recorded for 58 donors in a single cohort. Cross-donor
-agreement on it was $+$0.1313 on held-out donors at $p = 0.3035$, and $+$0.332
-across the whole corpus at $p = 0.005$. Surgical grade was recorded for 60
-donors in a single, different cohort; cross-donor agreement was $-$0.0414 on
-held-out donors at $p = 0.4975$, and $+$0.0263 across the whole corpus at
-$p = 0.408$. Across the six ablated configurations, held-out stage ranged from
-$+$0.0799 to $+$0.2190 at $p$ between 0.1194 and 0.3284, and held-out grade was
-negative in every one, between $-$0.0227 and $-$0.0723, at $p$ between 0.4378
-and 0.6269. The smallest attainable $p$ on this test is 0.005, which cell
-family and menstrual phase both reach.
+Surgical staging was not recoverable on held-out donors. Stage, recorded for 58
+donors in a single cohort, reached a cross-donor agreement of $+$0.1313 but
+came nowhere near significance ($p=0.3035$); across the whole corpus, which
+includes the donors the model was trained on, it was both larger and
+significant ($+$0.332; $p=0.005$). Grade, recorded for 60 donors in a
+different single cohort, was negative on held-out donors ($-$0.0414;
+$p=0.4975$) and near zero across the corpus ($+$0.0263; $p=0.408$), and
+remained negative in all six ablated configurations ($-$0.0227 to $-$0.0723;
+$p$ between 0.4378 and 0.6269). Cell family and menstrual phase, by contrast,
+both reach the permutation floor of 0.005 (Fig.~4c).
 
 \note{CARRIES C4, C5, C6. FIGURE 4. 300 words.
 \\SEEDED 2 November 2026, every figure re-derived through
