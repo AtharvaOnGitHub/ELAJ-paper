@@ -19,115 +19,110 @@
 \section*{Results}
 
 % ---------------------------------------------------------------------
-\subsection*{[1] The frontier, and a model on it}
+\subsection*{[1] The \elaj frontier}
 
-Removing the study a cell came from and keeping the phase of its donor's
-cycle are, in this corpus, the same operation pulling in opposite
-directions. Rather than fix a compromise, we varied the two terms that
-control it and measured where each setting lands: the strength of the
-adversarial pressure on the latent, and the price the latent pays for what
-it stores. Six models, three adversarial strengths at two latent prices,
-registered before any of them was trained.
 
-The two knobs do different things (Fig.~1b, c). Raising the adversarial
-strength from the weakest setting moves the whole trade-off: donor recovery
-falls from 0.5837 to 0.5188 while cross-donor phase is unchanged at 0.7346
-against 0.7337. Raising it further buys nothing --- at the strongest setting
-donor recovery is 0.5277, no better, and phase has fallen to 0.7146. The
-adversary therefore pays until it stops paying, and the point where it stops
-is visible rather than assumed. The latent price behaves differently. Making
-the latent expensive drives donor recovery down to 0.3975 and study mixing to
-0.5129, the lowest of any model we trained, and takes cross-donor phase down
-with it to 0.6033. It does not move the trade-off; it slides a model along
-it.
+Six models were trained, varying the adversarial weight over three values at
+each of two settings of the latent's information cost. Predictions for each
+were registered in its configuration file before training began. All six were
+scored on held-out donors for cross-donor agreement on menstrual phase and
+cell family, and for donor and study recovery (Fig.~1b, c).
 
-Everything reported below comes from one of these six, the model at the
-middle adversarial strength and the cheap latent. It recovers phase across
-donors at 0.7346 against a chance rate of 0.370, recovers cell family at
-0.9820, and leaves donor identity at 0.5188 and study mixing at 0.6043. It
-is not the most donor-blind model on the frontier and it is not the most
-biologically faithful; it is the point at which neither has been sacrificed
-to the other, and it is named here so that every number in the rest of this
-paper has a model behind it.
+At the lower information cost, raising the adversarial weight from the lowest
+to the middle value reduced donor recovery from 0.5837 to 0.5188 and study
+mixing from 0.7183 to 0.6043, while cross-donor phase agreement was 0.7346
+against 0.7337 and cell family 0.9820 against 0.9829. Raising it to the
+highest value gave donor recovery 0.5277, study mixing 0.6530 and phase
+0.7146.
 
-\note{CARRIES B1. FIGURE 1b, 1c. 318 words.
-\\WHAT I CHOSE TO LEAD WITH, and it is arguable: the finding that
-\texttt{lambda\_dab} 7$\rightarrow$168 is free and 168$\rightarrow$336 is
-not. It is in the numbers, it was not in the plan, and it makes the
-pre-registration mean something --- we did not pick 168 after seeing the
-answer, we predicted a range and 168 landed in it.
-\\NUMBERS, all from each arm's own \texttt{benchmark.csv}, cross-donor,
-held out:
-\\\quad \texttt{dab7\_kl1} \ 0.5837 / 0.7183 / 0.7337 / 0.9829
-\\\quad \texttt{dab168\_kl1} \ 0.5188 / 0.6043 / \textbf{0.7346} / 0.9820
-\\\quad \texttt{dab336\_kl1} \ 0.5277 / 0.6530 / 0.7146 / 0.9779
-\\\quad \texttt{dab7\_kl30} \ 0.5389 / 0.7381 / 0.6791 / 0.9841
-\\\quad \texttt{dab168\_kl30} \ 0.3975 / 0.5129 / 0.6033 / 0.9565
-\\\quad \texttt{dab336\_kl30} \ 0.4154 / 0.5474 / 0.5922 / 0.9553
-\\(donor $\downarrow$ / mixing $\downarrow$ / phase $\uparrow$ / family $\uparrow$)
-\\NOT WRITTEN: the knob names. \texttt{lambda\_dab} and
-\texttt{w\_kl\_gauss} are Methods' vocabulary and the sentence reads better
-without them; Fig.~1's legend carries each arm's two values, which is where
-AW ruled the arms table should live.
-\\\textcolor{elajcoral}{OPEN: ``registered before any of them was trained''
-needs the configs to show it. They do --- each carries its prediction in the
-description field --- but if a reviewer asks for evidence the answer is a
-repository link, so Code availability has to be real by then.}}
+Raising the information cost reduced donor recovery and study mixing at every
+adversarial weight, to a minimum of 0.3975 and 0.5129, and reduced
+cross-donor phase agreement to between 0.5922 and 0.6791 and cell family to
+between 0.9553 and 0.9841.
+
+All results below are reported from the model at the middle adversarial
+weight and the lower information cost: cross-donor phase agreement 0.7346
+against a chance rate of 0.370, cell family 0.9820, donor recovery 0.5188 and
+study mixing 0.6043.
+
+\note{CARRIES B1. FIGURE 1b, 1c. 213 words.
+\\RESEEDED 2 November 2026 on AW's ruling, and he was right. Springer
+Nature's own authoring guidance: ``In the Results section, simply state what
+you found, but do not interpret the results or discuss their implications.''
+The first draft opened with an argument about what the two terms do to each
+other and closed on why this arm was chosen. Both are Discussion.
+\\MOVED TO THE DISCUSSION, where they are findings worth keeping: that the
+adversary buys donor-blindness at no cost in phase up to the middle weight
+and nothing beyond it, so the frontier moves and then stops; and that the
+information cost slides a model along the trade-off rather than moving it.
+The numbers above support both and the Discussion can say so.
+\\FULL PER-ARM FIGURES, from each arm's own \texttt{benchmark.csv}
+(donor $\downarrow$ / mixing $\downarrow$ / phase $\uparrow$ / family $\uparrow$):
+\\\quad \texttt{dab7\_kl1} 0.5837 / 0.7183 / 0.7337 / 0.9829
+\quad \texttt{dab168\_kl1} 0.5188 / 0.6043 / 0.7346 / 0.9820
+\\\quad \texttt{dab336\_kl1} 0.5277 / 0.6530 / 0.7146 / 0.9779
+\quad \texttt{dab7\_kl30} 0.5389 / 0.7381 / 0.6791 / 0.9841
+\\\quad \texttt{dab168\_kl30} 0.3975 / 0.5129 / 0.6033 / 0.9565
+\quad \texttt{dab336\_kl30} 0.4154 / 0.5474 / 0.5922 / 0.9553
+\\NOT WRITTEN: the knob names, which are Methods' vocabulary; Fig.~1's
+legend carries each arm's two values.
+\\\textcolor{elajcoral}{OPEN: ``registered in its configuration file before
+training'' is checkable only if the repository is public. Code availability
+has to be real before this sentence is.}}
+
 
 \subsection*{[2] \elaj\ against the field}
 
-A sixteen-dimensional representation that forgets donors is easy to build
-and worthless; one that keeps the cycle while doing so is the claim. We
-compared against eleven methods on held-out donors: linear decomposition,
-two variational models, two batch-correction tools, and four pretrained
-single-cell foundation models (Fig.~3).
 
-No other method tested holds as much of the cycle. Cross-donor phase
-agreement reaches 0.7346 against 0.7053 for scVI, 0.6971 for scANVI and
-0.6906 for a sixteen-component linear decomposition, with chance at 0.370.
-At the same time no other method discards as much of where a cell came
-from: study mixing is 0.4712 against 0.6284 for the nearest competitor, and
-donor recovery is lower than every method we tested. The two are usually
-traded against one another, and the comparison was designed so that they
-could be seen separately.
+\elaj\ was compared with eleven methods on the same held-out donors: a
+sixteen-component principal component decomposition, scVI, scANVI, Harmony,
+Scanorama, and four pretrained single-cell foundation models. Methods that
+can be fitted inductively were fitted on the training donors and applied to
+held-out ones; the rest are reported as transductive. Supervision is declared
+per method, and \elaj's is menstrual phase (Fig.~3).
 
-Width is not what produces this. The four foundation models carry between
-sixteen and a hundred and ninety-two times our dimensions and sit near chance
-on phase --- 0.4869 at five hundred and twelve dimensions, 0.4372 at two
-hundred and fifty-six --- while a sixteen-component linear decomposition of
-the same data reaches 0.6906. Cell family is the one axis on which we are
-matched rather than ahead, at 0.9841 against 0.9896 and 0.9835 for the two
-methods that were trained on cell-type labels; supervision is declared per
-method in the figure, and ours is the menstrual phase.
+Cross-donor phase agreement was higher for \elaj\ than for any other method
+tested, at 0.7346 against 0.7053 for scVI, 0.6971 for scANVI and 0.6906 for
+the principal component decomposition; chance was 0.370. The four foundation
+models, at between 256 and 3{,}072 dimensions, reached 0.6449, 0.6255, 0.4869
+and 0.4372.
 
-Disease is where every method including ours is weak. Our best cross-donor
-figure is 0.3787 and three of the baselines reach higher, none of them
-convincingly. That a representation can carry the cycle and cell identity
-this well while carrying disease this poorly is a result about the disease
-rather than about any one model, and we return to it below.
+Study mixing was 0.4712 for \elaj\ and between 0.6284 and 0.8076 for the
+others, and donor recovery was lower for \elaj\ than for any other method
+tested.
 
-\note{CARRIES A1, A2, A3, A4, A5, A6, E3. FIGURE 3. 331 words.
-\\VERIFIED against each method's own \texttt{benchmark.csv}: phase ELAJ
+Cell family agreement was 0.9841 for \elaj, against 0.9896 for SCimilarity
+and 0.9835 for scANVI, both of which were supervised on cell type, and 0.9868
+for the principal component decomposition, which was not.
+
+Cross-donor disease agreement did not exceed 0.3787 for \elaj. Three
+baselines exceeded that figure, to a maximum of 0.4486.
+
+\note{CARRIES A1, A2, A3, A4, A5, A6, E3. FIGURE 3. 212 words.
+\\RESEEDED flat. The first draft opened ``a representation that forgets
+donors is easy to build and worthless'', asserted ``width is not what
+produces this'', and closed by calling the disease figure a result about the
+disease. All three are Discussion and are moved there.
+\\A4 IS NOW A FACT RATHER THAN A CLAIM: the foundation models' dimensions
+and their phase figures are stated side by side and the reader draws the
+inference. The width argument --- that a sixteen-component decomposition
+beats a 512-dimensional model on the same axis --- belongs in the Discussion.
+\\A5: the two methods above us on cell family were supervised on that label;
+PCA was not, and is 0.003 above. All four figures are given so the ordering
+is visible without a word like ``matched'' doing the work.
+\\VERIFIED against each method's \texttt{benchmark.csv}. Phase: \elaj\
 0.7346, scVI 0.7053, scANVI 0.6971, PCA 0.6906, scFoundation 0.6449,
-SCimilarity 0.6255, scanorama 0.5737, harmony 0.5155, scGPT 0.4869,
-Geneformer 0.4372. Mixing ELAJ 0.4712, scGPT 0.6284, Geneformer 0.6388,
+SCimilarity 0.6255, Scanorama 0.5737, Harmony 0.5155, scGPT 0.4869,
+Geneformer 0.4372. Mixing: \elaj\ 0.4712, scGPT 0.6284, Geneformer 0.6388,
 scANVI 0.6964, scVI 0.7161, SCimilarity 0.7171, PCA 0.7804, scFoundation
-0.8076. Family ELAJ 0.9841, SCimilarity 0.9896 (supervised), PCA 0.9868,
-scANVI 0.9835 (supervised), scVI 0.9828.
-\\A5 IS WRITTEN AS ``MATCHED RATHER THAN AHEAD'' per AW. The two methods
-above us were supervised on the label being scored; PCA at 0.9868 was not,
-and sits 0.003 above us, which the word ``matched'' covers honestly.
-\\\textcolor{elajcoral}{E3 IS NOT IN THE PROSE and I could not place it
-without breaking the paragraph. The scIB batch metrics are degenerate on
-this corpus --- \texttt{ilisi\_knn} exactly 0.0000 and \texttt{pcr\_batch}
-exactly 1.0000 for PCA, scVI, scANVI and \elaj\ alike, \texttt{kbet}
-0.000--0.025 for all --- which is why study is measured by kNN purity. It
-needs a home: one sentence here, a figure panel, or Methods. A scIB-literate
-reviewer will ask.}
-\\NOT WRITTEN: method names for the batch-correction tools in the opening
-sentence, since harmony and scanorama are near the bottom on both axes and
-naming them there would promise a comparison the paragraph does not make.
-\\$\rightarrow$ hands on: the model compresses well. What did it keep?}
+0.8076.
+\\\textcolor{elajcoral}{E3 STILL HAS NO HOME. The scIB batch metrics are
+degenerate here --- \texttt{ilisi\_knn} exactly 0.0000 and
+\texttt{pcr\_batch} exactly 1.0000 for PCA, scVI, scANVI and \elaj\ alike,
+\texttt{kbet} 0.000--0.025 for all --- which is why study is measured by kNN
+purity. In a flat register it fits as one more measurement sentence here, or
+it goes to Methods. A scIB-literate reviewer will ask.}}
+
 
 
 % ---------------------------------------------------------------------
