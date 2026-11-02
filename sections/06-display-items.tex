@@ -93,11 +93,25 @@ stage/grade panel does not. ARM MUST BE NAMED IN THE CAPTION.}
 
 \subsection*{Figure 5 — The cycle is a cycle, and it moves what it should}
 \note{THE HEADLINE FIGURE.
-\\\textbf{a} Cycle-day crop on a cyclic colour map --- day 8 through
-15--20 to 25--30 with the ends meeting. \textbf{b} Displacement per cell
-type in units of that type's own scatter: stromal 1.07, epithelial 0.98,
-endothelial 0.39, immune 0.34. \textbf{c} The same four numbers from the
-second frontier arm, identical, which is the robustness claim.
+\\\textbf{a} Cycle-day crop on a cyclic colour map, day 8 through
+15--20 to 25--30 with the ends meeting. \textbf{b} The same embedding
+split into one panel per cell family, each coloured by phase, so the
+gradient visible in stromal and epithelial cells and absent in
+endothelial and immune ones is read off the picture. \textbf{c} The same
+four panels from the second frontier arm.
+\\\textcolor{elajcoral}{PANEL b WAS A BAR OF RATIOS AND IS NOT ANY MORE.
+AW cut the matching Results paragraph on 2 November because
+\texttt{over\_scatter} divides a centroid distance by a root-mean-square
+radius, which describes a cloud only if the cloud is a filled isotropic
+ball. The panel inherited that assumption whole. The per-cell-type
+panels carry the same finding without it, and the material exists
+already: \texttt{movie\_cycle\_by\_celltype.py} renders exactly these
+facets. Endothelial was dropped from the animation on AW's earlier
+ruling; decide whether the still keeps four panels or three.
+\\The claim the panels support is ``phase does not separate every cell
+type equally'', which is weaker than the ratios implied and is all the
+figure needs. A number for it would have to be cross-donor phase
+agreement within each family, which has not been computed.}
 \textbf{d} The tissue crop: stromal cells from five tissues landing
 together, epithelium almost purely endometrial.
 \\CARRIES: C2, C3, and C1's other half.
@@ -149,12 +163,12 @@ progesterone.
 related to the description of the main findings, but needed to properly
 understand and replicate the study''. Things a reader consults rather
 than reads:
-\\--- the accession table for all eleven studies;
-\\--- the gene vocabulary and how it was derived from Reactome and GO;
-\\--- the full reconstruction forward pass with every shape, and what
+\\$\bullet$ the accession table for all eleven studies;
+\\$\bullet$ the gene vocabulary and how it was derived from Reactome and GO;
+\\$\bullet$ the full reconstruction forward pass with every shape, and what
 each of the six learned objects in the head uniquely holds, drawn from
 docs/walkthrough/15-flow-reconstruction.md;
-\\--- the rank bound on the gene-query matrix, cut from Methods;
-\\--- the full factorial results and the seeds;
-\\--- every hyperparameter, per AW's ruling that configuration detail
+\\$\bullet$ the rank bound on the gene-query matrix, cut from Methods;
+\\$\bullet$ the full factorial results and the seeds;
+\\$\bullet$ every hyperparameter, per AW's ruling that configuration detail
 goes to Code availability and Supplementary rather than into prose.}

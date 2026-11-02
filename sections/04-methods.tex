@@ -543,7 +543,7 @@ cells agree with their neighbours: take each cell's nearest neighbours in the
 latent and measure how often they share its label. On this corpus that test
 cannot be trusted, and the reason is the paragraph above. If a label belongs
 to the donor, then asking whether a cell's neighbours share its label is
-asking whether they come from donors carrying that label --- and a cell's own
+asking whether they come from donors carrying that label, and a cell's own
 donor carries it by definition. Every neighbour drawn from the same donor is
 an automatic match, scored whether or not the latent encodes anything about
 the label at all.
@@ -551,7 +551,7 @@ the label at all.
 Plain agreement therefore rests on a floor set by how many of a cell's
 neighbours come from its own donor, and on this corpus that floor is high.
 Among the hundred nearest neighbours of a labelled cell, between a quarter
-and three-fifths belong to the same donor depending on the label --- 37\% for
+and three-fifths belong to the same donor depending on the label: 37\% for
 menstrual phase, 29\% for disease status, 61\% for stage. A latent carrying
 no donor information at all would give the chance rate, the probability that
 two cells drawn at random share a donor, which is between 0.6\% and 3.1\%
@@ -563,15 +563,15 @@ the score: of the agreement a plain measurement reports, between 44\% and
 Worse, it is a floor the model can raise. A model that learns to recognise
 donors increases the share of its own donor among each cell's neighbours and
 improves its own score, so ranking models by plain agreement partly ranks
-them by how well they memorised the donor --- the opposite of what this
+them by how well they memorised the donor, the opposite of what this
 paper is measuring.
 
 \elaj\ is measured with the same-donor neighbours removed. For each label,
 the hundred nearest neighbours of every labelled cell are found in the
 sixteen-dimensional latent and collected into a donor-by-donor matrix: entry
 $(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
-$d'$. The diagonal is then discarded --- that discarding is what cross-donor
-means --- and agreement is the share of the remaining neighbour relations
+$d'$. The diagonal is then discarded (that discarding
+is what cross-donor means), and agreement is the share of the remaining neighbour relations
 that join two donors carrying the same label. Chance is the probability that
 two such relations drawn at random would share a label, $\sum_j p_j^2$ over
 the label's shares across donors, and agreement is reported as excess over
@@ -581,7 +581,7 @@ comparable.
 The null is obtained by reassigning labels to donors. Two hundred random
 permutations of the donor-to-label map are scored through the same
 expression, which asks what agreement this latent would produce if the same
-labels had been dealt to different donors --- the appropriate null for a
+labels had been dealt to different donors, the appropriate null for a
 quantity constant within a donor. The reported $p$ is the share of
 permutations reaching the observed agreement, counted as
 $(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$.

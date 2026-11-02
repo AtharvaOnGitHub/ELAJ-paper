@@ -152,58 +152,84 @@ No purity percentages.
 \\$\rightarrow$ hands on: what does the geometry do with time?}
 
 % ---------------------------------------------------------------------
-\subsection*{[3] The menstrual cycle appears as a closed trajectory, separating stromal and epithelial cells most}
+\subsection*{[3] The menstrual cycle through \elaj}
 
-The decoder is conditioned on study, platform and tissue alone. Cycle day,
-serum progesterone, cell type and disease status were never inputs, and
-menstrual phase was the only supervised label, reaching the latent through a
-single linear map over all sixteen dimensions.
+The decoder is conditioned on study, platform and tissue alone. Menstrual phase 
+was the only supervised label, provided to the latent through a single linear 
+map over all sixteen dimensions. Other related metadata variables such as cycle 
+day, serum progesterone, cell type and disease status were never provided as 
+inputs to the model.
 
-Cross-donor agreement on menstrual phase was high on held-out donors, at twice
-the chance rate (0.7346 against chance of 0.370; $n_{\text{cells}}=195{,}879$; $p=0.005$), and 
-remained high when all 1{,}577{,}728 cells were read together (0.6796 across
-142 donors; $p=0.005$). Agreement here, and everywhere below, is the fraction
-of a cell's hundred nearest latent neighbours that share its label once every
-neighbour drawn from the same donor has been discarded; Methods sets out the
-estimator and why a same-donor neighbour cannot be counted on this corpus.
-
-The menstrual cycle did not separate every cell type equally. Within one cell
-family, the proliferative cells and the secretory cells each occupy a cloud in
-the sixteen-dimensional latent, and what is reported is the distance between
-the two clouds' centres expressed in units of how far a typical cell of that
-family sits from its own centre: a value of one means the two centres stand one
-such distance apart, and dividing this way allows families of very different
-size to be compared. By that measure the two centres stood about one unit apart
-in stromal and in epithelial cells (1.07 and 0.98) and about a third of a unit
-apart in endothelial and immune cells (0.39 and 0.34) (Fig.~2a). The arm
-trained at the higher information cost reproduced both the ordering and the gap
-between the two pairs (1.07, 0.99, 0.54 and 0.29), though the two smaller
-values themselves were not stable between arms (Fig.~2b).
+Cross-donor agreement, defined in Methods as the fraction of a cell's hundred 
+nearest latent neighbours that share its label once every neighbour drawn from 
+the same donor has been discarded, shows how well the model understands 
+menstrual phase in general. Cross-donor agreement on menstrual phase was high 
+on held-out donors, at twice the chance rate (0.7346 against chance of 0.370; 
+$n_{\text{cells}}=195{,}879$; $p=0.005$), and remained high when all 
+1{,}577{,}728 cells were read together (0.6796 across 142 donors; $p=0.005$). 
 
 Supervision supplied most of that phase signal: removing the phase head
 reduced cross-donor agreement to 0.4812, leaving 30.5\% of the margin over
 chance.
 
-Two continuous quantities that were never model inputs tracked the latent more
-closely than any technical measure did, though the margin was modest. Taking
-the strongest correlation each achieved with any single one of the sixteen
-dimensions, epithelial pseudotime and serum progesterone reached 0.58 and 0.47,
-against a range of 0.14 to 0.34 for four quality-control measures treated
-identically --- the highest of those being the fraction of mitochondrial
-reads.
+Epithelial pseudotime and serum progesterone correlated highly (0.58 and 0.47, 
+respectively) with any single dimension in the \elaj latent space. This was 
+calibrated against four measures with a range of correlation between 0.14 and 
+0.34 with the highest being the fraction of mitochondrial reads.
 
 Cycle day was recorded for under a third of the corpus (466{,}176 cells,
 29.6\%), in one cohort of 60 donors who each contributed a single day between
-day 5 and day 30, with 22 of those 26 days being represented. Advancing through
-those days one at a time moved the dense region of the embedding progressively
-and returned it to where it began (Fig.~2c--e).
+day 5 and day 30, with 22 individual days being represented. Advancing through
+the days one at a time showed a dense mass of cells being progressively 
+arranged in the latent space. As the cycle returned to where it began, so did
+that region, showing the cycle to be closed in the latent space (Fig.~5c--e).
 
 Donor identity nonetheless remained strongly local: a third of a cell's
 hundred nearest neighbours came from its own donor (0.327 against a chance
 rate of 0.006, a 54-fold enrichment), which is why every agreement figure
 above discards same-donor neighbours.
 
-\note{CARRIES C2, C3. FIGURE 2. THE HEADLINE. 290 words.
+\note{CARRIES C3, and C2 NOW ONLY THROUGH FIGURE 5. THE HEADLINE.
+\\\textbf{PARAGRAPH 3 CUT 2 November 2026 on AW's ruling, and he is right on
+the statistics.} The cut paragraph reported
+\texttt{over\_scatter}: centroid distance over the mean of the two groups'
+root-mean-square radii. That denominator describes a cloud only if the cloud
+is roughly a filled isotropic ball. If a group's cells sit on a shell, a ring
+or an elongated ridge, its centroid falls in a low-density region and the
+r.m.s.\ radius is not a width of anything. Three further ways the ratio
+misleads, none of them visible in the number: a bimodal family inflates the
+denominator and deflates the ratio; the metric is Euclidean on the raw latent,
+whose dimensions do not carry equal variance; and separation along a direction
+of small scatter scores the same as separation along a direction of large
+scatter. AW: ``the numbers are a weak representation of the information''.
+\\WHERE C2 LIVES NOW: Figure 5, as per-cell-type panels rather than a bar of
+ratios. The ratio panel inherits every objection above, so it is replaced
+there too. See that figure's note.
+\\\textcolor{elajcoral}{IF A NUMBER IS WANTED FOR C2, the robust one is
+cross-donor phase agreement computed \emph{within each cell family} --- the
+same estimator as the headline, neighbour-based, no assumption about cloud
+shape. IT DOES NOT EXIST YET. It is computable from
+\texttt{Outputs/cells/p1\_dab168\_kl1/} on the Mac, but that is a build and
+needs AW's go-ahead first.}
+\\FIGURE NUMBERS CORRECTED HERE: the cycle is Figure 5 in
+\texttt{06-display-items.tex}, not Figure 2, which is the frontier. [1] still
+points at ``Fig.~1b, c'' for the frontier and should point at Figure 2; left
+alone because [1] is suspended pending the unified run.
+\\\textcolor{elajcoral}{PARAGRAPH 6, donor locality, DUPLICATES METHODS.
+\emph{Cross-donor agreement} already states ``between a quarter and
+three-fifths belong to the same donor depending on the label, 37\% for
+menstrual phase'' and ``twenty to fifty times over-represented''. Keeping it
+in Results spends 40 words restating the justification for an estimator the
+reader was already sent to Methods for. Candidate cut.}
+\\\textcolor{elajcoral}{ONE MEANING ERROR IN THE EDIT, not fixed because it
+is not spelling. CURRENT: ``correlated highly (0.58 and 0.47, respectively)
+with any single dimension''. PROPOSED: ``with the single best-matched of the
+sixteen dimensions''. WHY: the statistic is the maximum $|r|$ over the
+sixteen dimensions, so ``any'' reads as ``all of them'', which is false and
+inflates the claim. It is also the reason the four controls sit at 0.14--0.34
+rather than near zero, so a reader who reproduces 0.47 without that clause
+will think something was hidden.}
+\\290 words before the cut, 232 after.
 \\SEEDED 2 November 2026, every figure re-derived through
 \texttt{audit/NUMBERS.md}. Flat register: no sentence here says what any of
 it means. Four readings belong in the Discussion and are listed below.
@@ -271,29 +297,6 @@ claim rather than an activity --- ``Eye2Gene generalizes across IRD
 clinics'', ``COMET accurately predicted days to the onset of labour'',
 ``PlantRNA-FM reveals superior performance''. The placeholders here are
 already in that form.
-\\
-\\\textcolor{elajcoral}{METHODS GAP, OPENED BY THE POINTER ADDED HERE.
-\emph{Cross-donor agreement} covers the neighbour estimator, so that pointer
-is good. The centroid separation does \textbf{not} have a Methods home ---
-nothing in \texttt{04-methods.tex} mentions a centroid or a scatter. Its
-definition is in \texttt{analyse\_cells.py}: for each group, scatter is the
-root-mean-square distance of its cells from its own centroid; the denominator
-is the mean of the two groups' scatters; \texttt{over\_scatter} is the
-centroid distance over that. The code's own reason for dividing: ``a centroid
-distance of 1.2 between clouds that are each 4 wide is not a separation, and
-the raw number hides that''. Either a short Methods subsection carries this
-or the Results definition above stands alone --- it cannot be pointed at
-until one exists.}
-\\HEADING CHANGED. ``The cycle is a cycle, and it moves only the cells it
-should'' was carrying two claims and an opinion. ``is a cycle'' meant the
-trajectory closes (C3); ``only the cells it should'' meant the separation
-concentrates in stromal and epithelial cells (C2) \emph{and} asserted that we
-know which cells ought to move. Alternatives if the current one is too long:
-``The cycle closes, and separates stromal and epithelial cells most'';
-``A closed cycle, unequally distributed across cell types''.
-\\``DISPLACE'' REPLACED BY ``SEPARATE'' THROUGHOUT. Nothing moves. The
-measurement compares two groups of cells sitting in fixed positions, so
-displacement implied a motion that was never measured.
 \\$\rightarrow$ hands on: time is in there. What about the disease?}
 
 % ---------------------------------------------------------------------
@@ -310,7 +313,7 @@ endothelial against immune.
 
 The pattern did not carry to the second cohort. In duempelmann\_2026 every
 family fell to roughly a quarter of a width (0.19--0.29 across both arms), and
-the leading compartment was not the same in the two arms --- immune in one,
+the leading compartment was not the same in the two arms: immune in one,
 endothelial in the other (Fig.~4b).
 
 Cross-donor neighbour agreement on disease status, a different measurement
