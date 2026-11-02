@@ -91,36 +91,41 @@ ablations --- it is a finding about the labels, not about the model.
 \\PARTLY EXISTS (\texttt{01\_cell\_family}, \texttt{03\_disease}); the
 stage/grade panel does not. ARM MUST BE NAMED IN THE CAPTION.}
 
-\subsection*{Figure 5 — The cycle is a cycle, and it moves what it should}
-\note{THE HEADLINE FIGURE.
+\subsection*{Figure 5 — The menstrual cycle through \elaj}
+\note{THE HEADLINE FIGURE. Panels reordered so the letters match the
+Results paragraph order after AW's reorder of [3].
 \\\textbf{a} Cycle-day crop on a cyclic colour map, day 8 through
-15--20 to 25--30 with the ends meeting. \textbf{b} The same embedding
-split into one panel per cell family, each coloured by phase, so the
-gradient visible in stromal and epithelial cells and absent in
-endothelial and immune ones is read off the picture. \textbf{c} The same
-four panels from the second frontier arm.
-\\\textcolor{elajcoral}{PANEL b WAS A BAR OF RATIOS AND IS NOT ANY MORE.
-AW cut the matching Results paragraph on 2 November because
-\texttt{over\_scatter} divides a centroid distance by a root-mean-square
-radius, which describes a cloud only if the cloud is a filled isotropic
-ball. The panel inherited that assumption whole. The per-cell-type
-panels carry the same finding without it, and the material exists
-already: \texttt{movie\_cycle\_by\_celltype.py} renders exactly these
-facets. Endothelial was dropped from the animation on AW's earlier
-ruling; decide whether the still keeps four panels or three.
-\\The claim the panels support is ``phase does not separate every cell
-type equally'', which is weaker than the ratios implied and is all the
-figure needs. A number for it would have to be cross-donor phase
-agreement within each family, which has not been computed.}
-\textbf{d} The tissue crop: stromal cells from five tissues landing
+15--20 to 25--30 with the ends meeting. The closure is the finding and
+this panel is the only place it is shown.
+\\\textbf{b} The same embedding split into one panel per cell family,
+each coloured by phase, so the gradient visible in stromal and
+epithelial cells and absent in endothelial and immune ones is read off
+the picture.
+\\\textbf{c} The same panels from the second frontier arm.
+\\\textbf{d} The tissue crop: stromal cells from five tissues landing
 together, epithelium almost purely endometrial.
-\\CARRIES: C2, C3, and C1's other half.
+\\CARRIES: C3 and C1's other half in a and d; C2 in b and c, and
+\emph{only} there.
 \\THE ARGUMENT THE LEGEND MUST MAKE: the phase head is one linear map
 over the whole latent and was never given cell type, so it cannot have
-produced the split in b. Honest limit in the same legend --- the day
-values come from one cohort.
-\\EXISTS as \texttt{08\_cycleday} and \texttt{02\_tissue}; the
-displacement panels do not.}
+produced the split in b. Honest limit in the same legend, the day values
+come from one cohort of 60 donors contributing one day each.
+\\\textcolor{elajcoral}{PANEL b WAS A BAR OF \texttt{over\_scatter}
+RATIOS AND IS NOT ANY MORE. AW cut the matching Results paragraph on 2
+November: that statistic divides a centroid distance by a
+root-mean-square radius, which describes a cloud only if the cloud is a
+filled isotropic ball. The panel inherited the assumption whole. The
+per-cell-family panels carry the same claim without it, and
+\texttt{movie\_cycle\_by\_celltype.py} already renders these facets.
+\\The claim b supports is ``phase does not separate every cell type
+equally'', which is weaker than the ratios implied and is all the figure
+needs. No number accompanies it: AW's ruling of 2 November is that no
+further calculation is done unless a reviewer asks.
+\\Endothelial was dropped from the animation on AW's earlier ruling.
+DECIDE whether the still keeps four families or three.}
+\\EXISTS: a as \texttt{08\_cycleday}, d as \texttt{02\_tissue}, b and c
+as frames from \texttt{movie\_cycle\_by\_celltype.py} that need
+compositing into a still. ARM MUST BE NAMED IN THE CAPTION.}
 
 \subsection*{Figure 6 — What the latent needs}
 \note{THE FIGURE AN ML READER COMES FOR, and the one most papers do not
