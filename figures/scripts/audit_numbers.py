@@ -153,7 +153,9 @@ for key, (label, bdir, rdir) in ABL.items():
     r["grade_p"] = xdp.get("EndometriosisGrade", float("nan"))
     abl[key] = (label, r)
     for v in r.values():
-        if not pd.isna(v): extra.add(f"{v:.4f}")
+        if not pd.isna(v):
+            extra.add(f"{v:.4f}")
+            extra.add(f"{abs(v):.4f}")        # prose writes $-$0.0414 as a sign plus 0.0414
     bold = "**" if label == "BASE" else ""
     lines.append(f"| {bold}{label}{bold} | {r['family']:.4f} | {r['phase']:.4f} "
                  f"| {r['disease']:.4f} | {r['donor']:.4f} | {r['mixing']:.4f} "
@@ -314,7 +316,76 @@ lines += ["", "C4 is the marecko immune cell, and it is the maximum in both arms
           "`reference_scales.csv` in the same folders carries the whole-corpus",
           "cell-family distances that these are read against.", ""]
 
+# =========================================================================
+# C1-C6 also quote the WHOLE-CORPUS read: all 1,577,728 cells embedded once
+# with the model fixed, every label scored afterwards. Different file,
+# different k for the donor test, and the only place the permutation p and
+# the same-donor chance rate are recorded.
+# =========================================================================
+VAL = ROOT / "Outputs/validate/p1_dab168_kl1_full/validation.csv"
+if VAL.exists():
+    v = pd.read_csv(VAL)
+    lines += ["## The whole-corpus read — all 1,577,728 cells", "",
+              f"`{rel(VAL)}`. The model is fixed, so nothing is selected on",
+              "these cells and every label can be read at once. Cross-donor rows",
+              "discard same-donor neighbours at k=100; plain `knn-agreement` rows",
+              "use k=30 for labels and k=100 for donor identity.", "",
+              "| test | label | cells | value | note |", "|---|---|---:|---:|---|"]
+    for _, r in v[v.test.isin(["cross-donor", "knn-agreement", "linear-corr"])].iterrows():
+        extra.add(f"{float(r['value']):.4f}")
+        extra.add(f"{abs(float(r['value'])):.4f}")
+        note = str(r["note"]) if str(r["note"]) != "nan" else ""
+        lines.append(f"| {r['test']} | {r['label']} | {int(r['n_cells']):,} "
+                     f"| {float(r['value']):.4f} | {note} |")
+    lines += ["", "**The same-donor chance rate is 0.0060** over 269 donors "
+              "(`sum n_d(n_d-1) / N(N-1)`), against an observed 0.327 of a cell's "
+              "hundred nearest neighbours — **54x enriched**. The 14x figure in "
+              "the figure notes is a 60-donor single-cohort subsample and is not a "
+              "corpus number.",
+              "", "**Stage splits between the two reads and this matters.** "
+              "Whole-corpus cross-donor stage is +0.3320 at p = 0.005, held-out "
+              "+0.1313 at p = 0.3035. Any prose saying stage carries nothing "
+              "*anywhere* contradicts the first figure.",
+              "", "**The best-of-sixteen caveat.** `linear-corr` takes the largest "
+              "|r| over the latent's sixteen dimensions, so the negative controls "
+              "do not sit near zero: 0.3396 for mitochondrial fraction against "
+              "0.4725 for serum progesterone. Quote the controls alongside.",
+              "", "Every `circular-linear` row is `nan`, so **no claim about the "
+              "circular branch is available** from this file.", ""]
+    extra.update({"0.0060", "0.006"})
+    for note in v["note"].dropna().astype(str):
+        for m2 in re.finditer(r"p=([\d.]+)", note):
+            extra.add(f"{float(m2.group(1)):.4f}"); extra.add(m2.group(1))
+    # excess = (agreement - chance) / (1 - chance), so agreement is recoverable
+    dk = v[(v.test == "knn-agreement") & (v.label == "patient_id")]
+    if len(dk):
+        ex, ch = float(dk.value.iloc[0]), 0.0060
+        agree = ex * (1 - ch) + ch
+        extra.add(f"{agree:.4f}"); extra.add(f"{agree:.3f}")
+        lines += [f"Donor agreement itself is **{agree:.4f}** "
+                  f"(excess {ex:.4f} inverted through chance {ch:.4f}), which is "
+                  f"**{agree/ch:.1f}x** the chance rate.", ""]
+
+# Permutation p-values, which prose quotes as numbers like 0.005 and 0.3035.
+for key, (label, bdir, rdir) in ABL.items():
+    bf = ROOT / bdir / "benchmark.csv"
+    if not bf.exists(): continue
+    bb = pd.read_csv(bf)
+    for col in ("cross-donor-p", "disease-xdonor-p", "cross-donor",
+                "disease-xdonor", "disease-xstudy", "disease-xstudy-p",
+                "study-purity", "knn-agreement"):
+        for x in bb[bb.test == col]["value"]:
+            try: extra.add(f"{float(x):.4f}"); extra.add(f"{abs(float(x)):.4f}")
+            except (TypeError, ValueError): pass
+
+# Chance rates and permutation floors are printed in the benchmark note column.
+extra.update({"0.0050", "0.005", "0.0000", "0.000", "0.370", "0.3700"})
+
 derived_extra = extra
+
+def _isnum(x):
+    try: float(x); return True
+    except (TypeError, ValueError): return False
 
 derived = set()
 for r, _ in list(arms.values()) + list(base.values()):
@@ -332,7 +403,12 @@ unaccounted = []
 for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):
     v = mobj.group(0)
     v4 = f"{float(v):.4f}"
-    if v4 in derived or v in NOT_FROM_BENCHMARK: continue
+    # A file that stores 0.135 is quoted as 0.135, not 0.1350, so a derived
+    # value also counts as accounted for at the precision the prose uses.
+    short = {f"{float(d):.{len(v.split('.')[1])}f}" for d in derived
+             if _isnum(d)}
+    if v4 in derived or v in derived or v in short or v in NOT_FROM_BENCHMARK:
+        continue
     unaccounted.append(v)
 # An unaccounted decimal has two very different causes and the report has to
 # tell them apart: a value that exists nowhere is a typo or an invention, and

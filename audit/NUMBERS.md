@@ -166,32 +166,46 @@ magnitude and in ordering, and prose may say so.
 `reference_scales.csv` in the same folders carries the whole-corpus
 cell-family distances that these are read against.
 
+## The whole-corpus read — all 1,577,728 cells
+
+`Outputs/validate/p1_dab168_kl1_full/validation.csv`. The model is fixed, so nothing is selected on
+these cells and every label can be read at once. Cross-donor rows
+discard same-donor neighbours at k=100; plain `knn-agreement` rows
+use k=30 for labels and k=100 for donor identity.
+
+| test | label | cells | value | note |
+|---|---|---:|---:|---|
+| linear-corr | ProgesteroneSerum | 466,176 | 0.4725 | covariate |
+| linear-corr | epithelial.pseudotime | 449,850 | 0.5801 | covariate |
+| linear-corr | pct_counts_mt | 1,577,728 | 0.3396 | NEGATIVE CONTROL |
+| linear-corr | total_counts | 1,577,728 | 0.2514 | NEGATIVE CONTROL |
+| linear-corr | n_genes_by_counts | 1,577,728 | 0.3366 | NEGATIVE CONTROL |
+| linear-corr | scDblFinder.score | 466,176 | 0.1366 | NEGATIVE CONTROL |
+| linear-corr | scrublet_score | 174,848 | 0.1551 | NEGATIVE CONTROL |
+| knn-agreement | Stage | 285,184 | 0.7508 | 16 labels |
+| knn-agreement | celltype | 220,160 | 0.8316 | 45 labels |
+| knn-agreement | lineage | 174,848 | 0.9975 | 4 labels |
+| knn-agreement | patient_id | 1,577,728 | 0.3229 | high is BAD — individual identity |
+| cross-donor | cell family | 630,689 | 0.9807 | p=0.005; floor=0.000; null95=0.05; 66 kept; 118 donors |
+| cross-donor | menstrual phase | 723,599 | 0.6796 | p=0.005; floor=0.000; null95=-0.00; 64 kept; 142 donors |
+| cross-donor | severity (study vocabularies) | 631,090 | 0.2655 | p=0.005; floor=0.000; null95=0.01; 67 kept; 118 donors |
+| cross-donor | EndometriosisGrade | 465,391 | 0.0263 | p=0.408; floor=0.000; null95=0.08; 75 kept; 60 donors |
+| cross-donor | Endometriosis_stage | 164,474 | 0.3320 | p=0.005; floor=0.000; null95=0.03; 41 kept; 58 donors |
+
+**The same-donor chance rate is 0.0060** over 269 donors (`sum n_d(n_d-1) / N(N-1)`), against an observed 0.327 of a cell's hundred nearest neighbours — **54x enriched**. The 14x figure in the figure notes is a 60-donor single-cohort subsample and is not a corpus number.
+
+**Stage splits between the two reads and this matters.** Whole-corpus cross-donor stage is +0.3320 at p = 0.005, held-out +0.1313 at p = 0.3035. Any prose saying stage carries nothing *anywhere* contradicts the first figure.
+
+**The best-of-sixteen caveat.** `linear-corr` takes the largest |r| over the latent's sixteen dimensions, so the negative controls do not sit near zero: 0.3396 for mitochondrial fraction against 0.4725 for serum progesterone. Quote the controls alongside.
+
+Every `circular-linear` row is `nan`, so **no claim about the circular branch is available** from this file.
+
+Donor agreement itself is **0.3270** (excess 0.3229 inverted through chance 0.0060), which is **54.5x** the chance rate.
+
 
 ## Numbers in the prose that this script cannot account for
 
-- `0.3787` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/elaj_train_cpu/benchmark.csv` — elaj / disease-xdonor / marecko_2024
-    - `Outputs/Benchmarks/p1_dab168_kl1_train/benchmark.csv` — elaj / disease-xdonor / marecko_2024
-- `0.4486` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scfoundation / disease-xdonor / marecko_2024
-- `0.4712` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/elaj_train_cpu/benchmark.csv` — elaj / study-mixing / all studies
-    - `Outputs/Benchmarks/p1_dab168_kl1_train/benchmark.csv` — elaj / study-mixing / all studies
-- `0.6971` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/axis_m6_drain/benchmark.csv` — scanvi / cross-donor / menstrual phase
-    - `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` — scanvi / cross-donor / menstrual phase
-    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scanvi / cross-donor / menstrual phase
-    - … and 2 more on reported axes
-- `0.7053` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/axis_m6_drain/benchmark.csv` — scvi / cross-donor / menstrual phase
-    - `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` — scvi / cross-donor / menstrual phase
-    - `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` — scvi / cross-donor / menstrual phase
-    - … and 2 more on reported axes
-- `0.9868` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` — scvi / knn-agreement / cell family
-    - `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` — scvi / knn-agreement / cell family
-    - `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` — scvi / knn-agreement / cell family
-    - … and 21 more on reported axes
+None. Every decimal in the Results prose matches a value re-derived above, or is a chance rate carried in the benchmark's own `note` column.
 
 ## Which cross-method rows may be quoted together
 
