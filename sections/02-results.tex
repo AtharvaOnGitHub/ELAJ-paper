@@ -18,15 +18,19 @@
 
 \section*{Results}
 
+The results of this study are divided across 2 main categories. The first is 
+about how \elaj performs against foundation models and other baselines. These 
+represent a numerical evaluation of the model, describe the frontier, and 
+outline model performance against benchmarks. The second category of results is 
+understanding what \elaj itself is doing. This covers analysis of the \elaj 
+latent space, ablation studies, and other ways of understanding the model itself.
+
 % ---------------------------------------------------------------------
 \subsection*{[1] The \elaj frontier}
 
-
 Six models were trained, varying the adversarial weight over three values at
-each of two settings of the latent's information cost. Predictions for each
-were registered in its configuration file before training began. All six were
-scored on held-out donors for cross-donor agreement on menstrual phase and
-cell family, and for donor and study recovery (Fig.~1b, c).
+two settings of the latent's information cost. The best model was chosen on 
+reconstruction loss value on the validation set. (Fig.~1b, c).
 
 At the lower information cost, raising the adversarial weight from the lowest
 to the middle value reduced donor recovery from 0.5837 to 0.5188 and study
@@ -74,7 +78,7 @@ has to be real before this sentence is.}}
 \subsection*{[2] \elaj\ against the field}
 
 
-\elaj\ was compared with eleven methods on the same held-out donors: a
+\elaj\ was compared with nine methods on the same held-out donors: a
 sixteen-component principal component decomposition, scVI, scANVI, Harmony,
 Scanorama, and four pretrained single-cell foundation models. Methods that
 can be fitted inductively were fitted on the training donors and applied to
