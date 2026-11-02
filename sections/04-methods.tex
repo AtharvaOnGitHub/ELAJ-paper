@@ -602,6 +602,96 @@ at most one row per donor, and the neighbour search that produced it is the
 only step needing the whole corpus in memory. Any later regrouping of a label
 is recomputed from the stored matrix without re-embedding a cell.
 
+The construction is a permutation test of assortativity on a fixed graph.
+The statistic is the share of edges joining same-label nodes, which is the
+enumerative mixing coefficient of \citet{newman2003mixing} computed on a
+donor graph rather than its usual node graph; significance by permuting group
+identities against an unchanged proximity structure is the procedure of
+\citet{anderson2001permanova}; and permuting at the level of the donor rather
+than the cell is what \citet{squair2021confronting} prescribe, since donors
+and not cells are the independent replicates in a multi-donor single-cell
+study.
+
+\note{THIS SUBSECTION IS NOT REVIEWED. AW, 2 November 2026. Everything
+below was established by reading
+\texttt{endo\_model/evaluation/sufficient\_stats.py} on 2 November and is
+recorded here because the prose depends on it and because one error had
+already propagated out of it. The same material is in
+\texttt{axw1008/docs/paper/CROSS\_DONOR\_ESTIMATOR.md}.
+\\
+\\\textbf{WHAT THE TEST IS, IN ITS OWN VARIABLES.}
+\\\quad $\bullet$ \texttt{matrix} is donor $\times$ donor. Entry $(d,d')$
+counts how many of donor $d$'s cells' hundred nearest neighbours belong to
+donor $d'$.
+\\\quad $\bullet$ \texttt{np.fill\_diagonal(matrix, 0.0)} deletes the
+same-donor relations. \textbf{The off-diagonal is the cross-donor part};
+zeroing the diagonal is what makes it so. An earlier draft of this note had
+that backwards.
+\\\quad $\bullet$ \texttt{lab} holds \emph{one label per donor}, which is
+only legitimate because the label is donor-constant.
+\\\quad $\bullet$ \texttt{agree(assignment)} is
+\texttt{(m * same).sum() / total}: of every cross-donor neighbour relation,
+the share joining two donors with the same label.
+\\\quad $\bullet$ \texttt{observed = agree(lab)}.
+\\
+\\\textbf{THE HYPOTHESES.} $H_0$: the latent's donor-level geometry is
+unrelated to the label, so the observed agreement is what any assignment of
+these labels to these donors would give. $H_1$: donors sharing a label sit
+closer, so their cells fall in each other's neighbourhoods more often.
+\\
+\\\textbf{WHAT IS PERMUTED, AND WHAT IS NOT.} The embedding and the
+neighbour graph are computed once and never change. Cells do not move and
+donor membership does not change. Only \texttt{lab} is permuted: the same
+labels are dealt to the same donors in a different order. The donor is the
+exchangeable unit because the label is constant within one, so nothing below
+donor level can carry information about it; permuting cell labels would break
+that constancy and build a null so weak that everything would pass.
+\\
+\\\textbf{\texttt{chance} AND THE NULL ARE NOT THE SAME THING, AND ONLY ONE
+IS CALIBRATED.} \texttt{chance} is $\sum_j p_j^2$ over the label's shares
+\emph{across donors}, weighting every donor equally. But \texttt{observed}
+weights each donor pair by the neighbour relations between them, so large and
+tightly-clustered donors dominate it. The two are computed under different
+weightings, which makes \texttt{excess} $= (a-c)/(1-c)$ a descriptive effect
+size with an approximate correction rather than a calibrated one.
+\textbf{The permutation $p$ is the inferential statistic}, because it
+recomputes under the same weighting.
+\\
+\\\textcolor{elajcoral}{\textbf{LOOPHOLES, WORST FIRST. These belong in the
+Discussion's limitations, not here.}
+\\1. \textbf{\texttt{excess} is not comparable across labels, which was the
+stated purpose of normalising it.} The null's own 95th percentile, carried in
+the benchmark \texttt{note} column, tracks donor count: 0.06 at 34 donors
+(cell family), 0.18 at 36 (phase), 0.12 at 18 (grade), \textbf{0.42 at 16}
+(stage). Reassigning sixteen donors' labels at random reaches 0.42, so
+reading 0.1313 and 0.7346 on one scale is wrong.
+\\2. \textbf{$p$ is one-sided} --- \texttt{(null >= observed).sum()}. It can
+never establish a significantly \emph{negative} value, so grade's
+$-$0.0414 is ``not positive'', never ``negative''.
+\\3. \textbf{For a label spanning several studies the permutation is too
+permissive.} Disease status covers 269 donors across eleven studies and some
+cohorts are entirely cases, so permuting across all of them destroys the
+label--study association and the null never sees the study structure partly
+producing the observed agreement. This is visible in our own numbers: pooled
+disease status is significant at $p=0.005$, and inside each cohort, where the
+permutation is necessarily within-study, nothing is
+($p=0.3433$, $0.0697$, $1.000$). Stage and grade are unaffected because every
+labelled donor for each sits in one cohort.
+\\4. \textbf{The permutation is unstratified by donor size}, so one draw can
+hand a label to donors carrying very different adjacency mass. A size-matched
+permutation would give a tighter null.
+\\5. $k=100$ is a free choice the statistic depends on, with no sensitivity
+analysis.
+\\6. $p$ floors at $1/201$, so 0.005 means ``nothing in two hundred beat
+it'', not a measured small probability.}
+\\
+\\\textcolor{elajcoral}{\textbf{A CLAIM IN THE PROSE ABOVE IS WRONG AND
+NEEDS CUTTING ON REVIEW.} ``the number of distinct permutations is set by how
+many donors carry the label at all'' is not the binding constraint at 16 to
+60 donors, where the number of distinct assignments is astronomical. What
+binds is the \emph{width} of the null, which is loophole 1. The p-floor
+argument should be made that way instead, and it is the stronger version.}}
+
 
 
 

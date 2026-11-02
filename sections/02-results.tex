@@ -167,15 +167,18 @@ progressively arranged in the latent space. As the cycle returned to where it
 began, so did that region, showing the cycle to be closed in the latent space 
 (Fig.~5a).
 
-Cross-donor agreement, defined in Methods as the fraction of a cell's hundred 
-nearest latent neighbours that share its label after removing same-donor cells,
-shows how well the model understands menstrual phase in general. Cross-donor 
-agreement is reported as an excess over chance, so zero is chance and one is
-perfect. On held-out donors it was 0.7346 for menstrual phase, against a
-permutation null whose 95th percentile was 0.18
-($n_{\text{cells}}=195{,}879$; $p=0.005$, the floor), and it remained high
-when all 1{,}577{,}728 cells were read together (0.6796 across 142 donors;
-$p=0.005$). 
+Cross-donor agreement, defined in Methods, is the share of a cell's hundred
+nearest latent neighbours that carry its label, counting only the neighbours
+belonging to other donors, and rescaled so that zero is the agreement the
+label's frequencies alone would produce and one is perfect. Significance is
+assessed by reassigning the same labels to different donors two hundred times
+and recomputing \cite{newman2003mixing,anderson2001permanova}, the donor being
+the unit that can be exchanged when a label is constant within one
+\cite{squair2021confronting}. On held-out donors, agreement on menstrual phase
+was 0.7346 across 36 donors ($n_{\text{cells}}=195{,}879$), and no permutation
+reached it ($p=0.005$, the smallest value two hundred permutations can return).
+It remained high when all 1{,}577{,}728 cells were read together, at 0.6796
+across 142 donors ($p=0.005$). 
 
 Removing the phase head reduced that agreement to 0.4812, so just under
 two-thirds of the signal survived the loss of supervision (65.5\%) and the
@@ -309,26 +312,30 @@ already in that form.
 % ---------------------------------------------------------------------
 \subsection*{[4] Disease signal, and where it is not}
 
-Disease status carried a real but weak signal. Pooled across studies,
-cross-donor agreement on it reached 0.3364 on held-out cells
-($n_{\text{cells}}=172{,}740$), and within each cohort taken on its own it
-was weaker still, at 0.135 in marecko\_2024, 0.064 in duempelmann\_2026 and
-0.000 in lin\_2023. Read across all 1{,}577{,}728 cells, agreement on disease
+Disease status reached significance only when cohorts were pooled. Across the
+pooled held-out cells, cross-donor agreement on it was 0.3364
+($n_{\text{cells}}=172{,}740$; $p=0.005$). Measured inside each cohort
+separately, which keeps each study's donors with their own labels, it was
+0.1350 in marecko\_2024 over sixteen labelled donors ($p=0.3433$) and 0.0636
+in duempelmann\_2026 over eighteen ($p=0.0697$); lin\_2023 contributes two
+labelled donors, for which the smallest attainable $p$ is 1.000 and the test
+returns nothing. Read across all 1{,}577{,}728 cells, agreement on disease
 severity in each study's own vocabulary reached 0.2655 over 118 donors and 67
 label levels ($p=0.005$), the largest donor count any disease label in this
 corpus supports.
 
-Surgical staging was not recoverable on held-out donors. Stage, recorded for
-58 donors in a single cohort, reached an agreement of 0.1313, which is below
-the 95th percentile of its own permutation null (0.42) and not significant
-($p=0.3035$). Across the whole corpus, which includes the donors the model
-was trained on, the same label reached 0.332 and was significant
-($p=0.005$). Grade, recorded for 60 donors in a different single cohort, was
-negative on held-out donors ($-$0.0414; null 0.12; $p=0.4975$) and near zero
-across the corpus (0.0263; $p=0.408$); it remained negative in all six
-ablated configurations, between $-$0.0227 and $-$0.0723. Cell family and
-menstrual phase, measured the same way on the same cells, both reach the
-permutation floor of 0.005 (Fig.~4d).
+Surgical staging was not recoverable on held-out donors. Stage is recorded in
+one cohort only, and sixteen of its donors fall in the held-out split; their
+agreement was 0.1313, lower than reassigning the same stages to different
+donors produces, and not significant ($p=0.3035$). Across the whole corpus,
+where the same label spans 58 donors and includes those the model was trained
+on, it reached 0.332 and was significant ($p=0.005$). Grade is recorded in a
+different single cohort, with eighteen donors held out; agreement there was
+negative ($-$0.0414; $p=0.4975$) and near zero across the corpus over 60
+donors (0.0263; $p=0.408$). It remained negative in all six ablated
+configurations, between $-$0.0227 and $-$0.0723. Cell family and menstrual
+phase, measured the same way on the same cells, both reach the permutation
+floor of 0.005 (Fig.~4d).
 
 Where disease signal did appear, it appeared in one compartment of one
 cohort. Within marecko\_2024 the immune cells separated case from control
