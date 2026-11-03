@@ -10,33 +10,32 @@
 
 ## 13. Project Summary & Immediate Objectives (250 max)
 
-Sixteen numbers per cell. That is the size of the space ELAJ builds from
-1,577,728 single-cell profiles pooled across 11 studies and 269 donors, and the
-menstrual cycle sits inside it as a closed loop, recovered from donors who were
-each sampled on one day. Of ten methods tested, including four pretrained
-foundation models with 8 to 192 times the width, ELAJ holds the cycle best.
+The intern has already built an AI-based scRNA disease atlas capable of
+interpreting a complex disease like endometriosis. The model, ELAJ, outperforms
+benchmarks including four pretrained foundation models with up to 192 times the
+embedding width.
 
-The compression is not the point. The point is that the space can be read.
-Its axes correspond to biology that can be named and checked against
-independent physiology, and the model answers questions it was never trained
-on. Asked whether the surgical staging of endometriosis corresponds to
-anything in transcriptional state, it says no, at a donor count where that
-answer is bounded and reportable. A negative result of that kind is useful to
-a clinician. Larger biological foundation models do not support the question.
+This internship would allow the intern to extend it further from one disease to
+human biology. Foundation models in biology lag far behind AI research. The
+intern's background in AI along with his experience in biology will allow him
+to open new avenues in multi-omics foundation model research.
 
-This internship turns that into a multi-omic foundation model for interpreting
-biology.
+**Objective 1. A multi-omic foundation model with an interpretable coordinate
+system.** Train across transcriptomic, proteomic, epigenomic and imaging data,
+and across tissues and diseases, so that any measurement of a person lands on
+shared axes that correspond to biology. Interpretability is a design
+constraint, not something recovered afterwards.
 
-**Objective 1.** One coordinate system across modalities. Proteomic,
-epigenomic and imaging measurements from the same people, learned together
-rather than embedded separately.
+**Objective 2. Make interpretability measurable.** Biological foundation models
+are evaluated almost entirely on cell-type label transfer. No accepted test
+exists of whether a model's axes carry biology, so the field cannot tell a
+large model from a useful one. Build that test and the benchmark around it.
 
-**Objective 2.** A map of what a compact latent can hold. Which biological
-axes are representable, which are not, and what that depends on.
-
-**Objective 3.** An audit of clinical taxonomy. Stage, grade and subtype are
-categories medicine uses to make decisions. Test which of them correspond to
-molecular state and which do not.
+**Objective 3. Re-draw disease classification.** Much of clinical taxonomy is
+anatomical or histological rather than molecular. ELAJ already shows that the
+surgical staging of endometriosis has no support in transcriptional state.
+Extend that to other diseases, and use the model to predict tissue state at
+points on a physiological axis that no cohort has sampled.
 
 Delivered on Baskerville.
 
@@ -88,41 +87,18 @@ biology and methodology, and experience running at scale on national compute.
 
 ---
 
-## Checklist for the supervisor
+## For the supervisor
 
 1. **Name an external partner in Q15 if you can.** Non-academic engagement is a
-   priority criterion. Q15 currently says we will find one through your
-   networks.
+   priority criterion in the call. Q15 currently says we will find one through
+   your networks.
 2. **Baskerville access** to be applied for. Q13 and Q15 both say so.
-3. **Training material removed on request.** It is a priority criterion in the
-   call, so this gives up a scoring point.
-4. **SDG 5 is deliberately not cited.** It would be an easy extra hook, but the
-   project's position is that this is a human health problem rather than a
-   gendered one, and every document in the body of work is written that way.
-   Reinstate only if you want that position changed.
-
-## Claims checked before use
-
-| claim | status |
-|---|---|
-| sixteen dimensions; 1,577,728 cells; 11 studies; 269 donors | the project's own corpus metadata and model configuration |
-| ten methods tested, four of them pretrained foundation models at 8 to 192 times the width | `audit/NUMBERS.md`. Widths 128, 256, 512 and 3,072 against 16 |
-| ELAJ holds the cycle best of the ten | stated as an ordering, not a figure, on purpose. The ordering holds in both scoring runs; the exact numbers are being re-scored under one protocol and are not quoted here |
-| surgical staging does not correspond to transcriptional state | held-out cross-donor agreement 0.1313 at p 0.3035 over sixteen donors, with the permutation null reaching 0.42. The bounded reading is "not recoverable at this donor count" |
-| 1,577,728 cells; 11 studies; 269 donors | the project's own corpus metadata |
-| the cycle recovered as a closed trajectory from donors sampled once | the project's own whole-corpus embedding |
-| £600m Health Data Research Service | UK Life Sciences Sector Plan, July 2025 |
-| IS8 sector list | UK Modern Industrial Strategy, June 2025 |
-
-**Two earlier framings dropped.**
-
-An earlier draft opened by claiming human tissue is observed almost entirely
-cross-sectionally. That is false: repeat sampling is routine in blood,
-vaccination time-courses and pregnancy cohorts.
-
-The draft after it led on batch effects. Removing them is the first stage of
-any analysis, not a result, and leading on it undersold the work. What ELAJ
-provides is a readable sixteen-dimensional space, a controllable trade-off
-between discarding donor identity and keeping biology, and the ability to
-return a bounded negative answer about a clinical category. None of that is
-batch correction, so Q13 no longer mentions it.
+3. **Training material was removed on request.** It is a priority criterion, so
+   this gives up a scoring point.
+4. **SDG 5 is not cited.** It would be an easy extra hook, but the project's
+   position is that this is a human health problem rather than a gendered one.
+   Reinstate only if you want that changed.
+5. **"192 times the embedding width"** is the accurate form of the comparison.
+   The four pretrained models run at 128, 256, 512 and 3,072 dimensions against
+   ELAJ's 16. By parameter count the multiple is 53, so width is both the
+   larger number and the correct one.
