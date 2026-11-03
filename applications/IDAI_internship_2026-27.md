@@ -43,47 +43,49 @@ Delivered on Baskerville.
 
 ## 14. Alignment with the UK Government Industrial Strategy (IS8) (150 max)
 
-**Life Sciences.** The Life Sciences Sector Plan commits up to £600 million to
-a Health Data Research Service so population-scale health data can be used for
-research. Data of that size is only useful if something can read it. A model
-whose axes correspond to named biology lets a clinical question be put to
-pooled data directly, including questions with negative answers, such as
-whether a diagnostic category has molecular support. That is a different
-capability from prediction, and it is the one the sector plan's data assets
-will need.
+**Life Sciences.** The Life Sciences Sector Plan commits up to £600 million to a
+Health Data Research Service. That buys the data. It does not buy the ability to
+read it. A model whose axes correspond to named biology can be asked a clinical
+question directly, and can answer that a diagnostic category has no molecular
+basis. ELAJ already does this for the surgical staging of endometriosis. Doing
+it across omics is how national health data becomes interpretable rather than
+merely available, and that capability is the gap between the sector plan's
+ambition and its data.
 
-**Digital and Technologies.** Interpretable representation learning across data
-types is a core AI problem, and the work is built on UK national compute.
+**Digital and Technologies.** Interpretable multi-omic representation learning
+is an open problem in AI, not an application of it. The UK holds the data assets
+and the compute to lead on it.
 
-**UN Sustainable Development Goals.** SDG 3 directly, and SDG 10, since
-conditions that need invasive sampling to study stay data-poor and are the
-hardest to interpret.
+**UN Sustainable Development Goals.** SDG 3 directly, and SDG 10, since the
+diseases that require surgery to study are the least understood.
 
 ---
 
 ## 15. Expected Value & Path Forward (200 max)
 
-**To the research.** This opens a line of work with three separable parts: a
-representation shared across measurement types, a result on which biology a
-compact latent can carry, and a method for testing whether clinical categories
-have molecular support. Each can be published alone and each suits a different
-funder.
+**To the research.** This starts a programme rather than extending a paper. It
+produces a representation shared across measurement types, a standard for
+judging whether a biological foundation model carries biology at all, and a
+method for testing clinical categories against molecular state. Each stands
+alone, each publishes, and together they define a direction the group can own
+early.
 
-**To the intern.** A move from a finished MSc project into doctoral research on
-a problem already demonstrated at 1.58 million cells, with results in both
-biology and methodology, and experience running at scale on national compute.
+**To the intern.** The route from a finished MSc project into a funded PhD, on
+work already proven at 1.58 million cells, with first-authored results in both
+biology and methodology and experience at scale on national compute.
 
 **Path forward.**
 
-1. *Grants.* Objective 1 suits MRC or Wellcome, since it needs several data
-   types from the same people. Objective 2 suits UKRI or EPSRC as foundational
-   work on representation. Objective 3 suits NIHR, because it asks whether the
-   categories used in clinical decisions hold up. Together they fund the
-   intern's PhD.
-2. *Collaborations.* Cohorts with several measurement types on the same people
-   are the first requirement, and we will use the supervisor's networks to find
-   a partner holding one. Biobank and atlas consortia follow.
-3. *Compute.* We will apply for Baskerville access.
+1. *Grants.* Objective 1 goes to MRC or Wellcome, since it requires several data
+   types from the same people. Objective 2 goes to UKRI or EPSRC as foundational
+   work on representation. Objective 3 goes to NIHR, because it asks whether the
+   categories clinicians decide with hold up. Three applications, one PhD
+   funded.
+2. *Collaborations.* The first requirement is a cohort carrying several
+   measurement types on the same people, which the supervisor's networks reach.
+   Biobank and atlas consortia follow, and they need interpretable models as
+   much as we do.
+3. *Compute.* Baskerville, applied for on award.
 
 ---
 
