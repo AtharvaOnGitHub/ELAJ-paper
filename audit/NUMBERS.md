@@ -27,13 +27,11 @@ cross-donor phase, cell family and disease are **higher is better**.
 | method | width | supervised on | phase ↑ | mixing ↓ | donor ↓ | family ↑ | disease ↑ | source |
 |---|---:|---|---:|---:|---:|---:|---:|---|
 | **elaj** | 16 | menstrual phase | 0.7346 | 0.6043 | 0.5188 | 0.9820 | 0.3364 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| scvi | 16 | — | 0.7017 | 0.7309 | 0.6734 | 0.9821 | 0.3627 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| scanvi | 16 | cell family | 0.6943 | 0.7182 | 0.6741 | 0.9835 | 0.3482 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| pca | 16 | — | 0.6906 | 0.8239 | 0.6877 | 0.9865 | 0.3619 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
+| scvi | 16 | — | 0.7053 | 0.7379 | 0.6888 | 0.9828 | 0.3689 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
+| scanvi | 16 | cell family | 0.6971 | 0.7240 | 0.6893 | 0.9832 | 0.3481 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
+| pca | 16 | — | 0.6457 | 0.8435 | 0.6923 | 0.9866 | 0.3640 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
 | scfoundation | 3072 | — | 0.6449 | 0.8076 | 0.7675 | 0.9832 | 0.4024 | `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` |
 | scimilarity | 128 | cell family | 0.6255 | 0.7171 | 0.6516 | 0.9896 | 0.3646 | `Outputs/Benchmarks/fm_scimilarity/benchmark.csv` |
-| scanorama | 100 | — | 0.5737 | — | 0.8223 | 0.9760 | — | `Outputs/Benchmarks/r8_all/benchmark.csv` |
-| harmony | 50 | — | 0.5155 | — | 0.6949 | 0.9442 | — | `Outputs/Benchmarks/r8_all/benchmark.csv` |
 | scgpt | 512 | — | 0.4869 | 0.6284 | 0.5630 | 0.9840 | 0.3473 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
 | geneformer | 256 | — | 0.4372 | 0.6388 | 0.5421 | 0.9023 | 0.3713 | `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` |
 
@@ -206,44 +204,62 @@ Every `circular-linear` row is `nan`, so **no claim about the circular branch is
 Donor agreement itself is **0.3270** (excess 0.3229 inverted through chance 0.0060), which is **54.5x** the chance rate.
 
 
+## Methods with no valid source
+
+- harmony: no valid source; only r8_all, which is excluded (obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346)
+- scanorama: no valid source; only r8_all, which is excluded (obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346)
+
+**A missing row is left missing.** Earlier versions filled these from whichever file had them, which is how `r8_all` got into a table beside the p-series.
+
+## Files excluded from the manifest, and why
+
+| file | reason |
+|---|---|
+| `baseline_latents` | latent dumps, not a scoring run |
+| `elaj_train_cpu` | train split |
+| `p1_dab168_kl1_train` | train split |
+| `r8_all` | obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346 |
+| `r8_inductive` | same corpus as r8_all |
+
+The narrow `all` rows for `pca`, `scvi` and `scanvi` in `p1_dab168_kl1` are excluded too, not as obsolete but as a different experiment: baselines are reported on the full 30,962-gene axis, so the 15,496-gene rows answer a question this paper does not ask.
+
+
 ## Numbers in the prose that this script cannot account for
 
 None. Every decimal in the Results prose matches a value re-derived above, or is a chance rate carried in the benchmark's own `note` column.
 
-## Which cross-method rows may be quoted together
+## How the field table is sourced
 
-Two things differ between scoring runs and only one of them is a fault.
+Eight of the ten methods were already scored correctly. Nothing needed
+re-running; what was wrong was which file each row was read from.
 
-**Not a fault: the gene policy.** Baselines are fit on `all30962`, the
-union gene set, and ELAJ on its own filtered 15,496. That is deliberate --
-the baselines are not handed a vocabulary we constructed. A baseline scored
-under `all` instead of `all30962` is a different experiment, so the two
-cannot be mixed in one table, but neither is wrong.
+**The corpus is identical across every source in the manifest**, verified
+from the runs' own logs: 416,256 held-out cells, with 176,803 cells
+labelled for cell family, 224,211 for menstrual phase and 108,288 for cell
+cycle phase. The reported arm and all four `fm_*` runs agree on all three.
 
-**Not a fault: `n_cells` differing per method.** Cross-donor agreement is
-measured only on cells with at least one cross-donor neighbour, and that
-count is a property of the embedding. A better-mixed latent scores more
-cells. Coverage is reported beside every scalar rather than folded into
-it.
+**The four `fm_*` runs are one baseline pass.** `pca`, `scvi` and
+`scanvi` hold bit-identical values and cell counts in all four files, so
+those jobs scored the baselines once and added one pretrained model each.
+Any one of the four is the source for the shared rows.
 
-**A fault: `r8_all` and `r8_inductive` are obsolete.** They score ELAJ at
-phase 0.1161 and PCA at 0.2856 on 52,712 to 69,209 cells, against 166,836
-to 195,879 in the p-series. `harmony` and `scanorama` have no other
-source, so both rows are unusable until the unified run returns.
+**ELAJ's row is unaffected by the baselines' gene axis.** It reads the
+vocabulary its checkpoint was trained against whatever the baselines are
+given, on the same cells, so its row from the narrow run stands beside the
+wide baselines. That is why the wrapper documents `--no-elaj` for a wide
+pass: re-embedding would reproduce the same row.
 
-Same cross-donor phase, three runs:
+**The two gene policies are a choice, not a conflict.** `pca`, `scvi` and
+`scanvi` were scored twice, on 15,496 genes in the reported arm and on
+30,962 in the `fm_*` runs. Baselines are reported on the full axis, so the
+wide rows are used and the narrow ones are discarded. Both are valid; only
+one answers this paper's question.
 
-| run | gene policy | pca | scvi | scanvi | cells scored (pca) |
-|---|---|---:|---:|---:|---:|
-| `p1_dab168_kl1` | `all` | 0.6906 | 0.7017 | 0.6943 | 166,836 |
-| `fm_*` (four runs) | `all30962` | 0.6457 | 0.7053 | 0.6971 | 173,887 |
-| `r8_all` | `all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |
+**Differing `n_cells` per method is coverage, not a fault.** Cross-donor
+agreement is measured only on cells with at least one cross-donor
+neighbour, and that count is a property of the embedding.
 
-Until the unified run lands, the internally valid head-to-head is the
-reported arm's own file for `elaj`/`pca`/`scvi`/`scanvi` at width 16, and
-the `fm_*` files for the foundation models against THEIR own reference
-columns. The unified run replaces all of it with one gene policy, one cell
-set and one code path across nine methods.
+**`r8_all` is the one genuine fault**, and it costs exactly two rows.
 
 ## Not yet auditable
 

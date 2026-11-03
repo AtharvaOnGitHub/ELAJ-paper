@@ -22,6 +22,27 @@ if [ "${1:-}" = "clean" ]; then
     rm -f main.bbl main.synctex.gz
 fi
 
+# THE NUMBERS ARE CHECKED BEFORE THE PDF EXISTS, not after. On 3 November the
+# audit was found to have been drawing baseline rows from whichever benchmark
+# file a glob reached first, and the only reason it was caught was a reader
+# noticing. A check that runs when someone remembers is not a check, so both
+# scripts run here and a failure stops the build.
+#
+#   SKIP_NUMBER_CHECK=1 bash build.sh   to build anyway, deliberately.
+PY=/Users/atharvawaghmare/miniconda3/envs/elaj/bin/python
+if [ -z "${SKIP_NUMBER_CHECK:-}" ] && [ -x "$PY" ]; then
+    echo "Checking every number in Results against its source..."
+    "$PY" figures/scripts/audit_numbers.py >/dev/null || {
+        echo "audit_numbers.py FAILED. Run it directly for the detail." >&2
+        exit 1
+    }
+    "$PY" figures/scripts/verify_numbers.py >/dev/null || {
+        echo "verify_numbers.py FAILED. Run it directly for the detail." >&2
+        exit 1
+    }
+    echo "  both number checks passed."
+fi
+
 # -halt-on-error so a broken macro fails loudly rather than dropping into
 # the interactive prompt and hanging. -interaction=nonstopmode for the same
 # reason. latexmk handles the bibtex and rerun passes itself.

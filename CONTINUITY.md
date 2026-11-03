@@ -88,6 +88,20 @@ model should fail at". Four times. A paper that explains why it is *not*
 guilty invites the reader to wonder. If the evidence already lives
 elsewhere, say nothing.
 
+**2a. I let the audit become unsound and did not notice for three days.**
+`audit_numbers.py` chose each baseline's row by taking whichever benchmark
+file a glob reached first. Every number it printed was real; the table was
+still invalid, because `pca` came from the narrow gene policy while the
+foundation models came from the wide one. **The script even printed "SCORING
+RUNS ARE NOT COMPARABLE" directly beneath the table it had built by mixing
+them.** AW: *"If audits are not sacrosanct then nothing is worth a penny."*
+The fixes, all three structural: an explicit source manifest with no
+globbing and no fallback; a second independent implementation
+(`verify_numbers.py`, stdlib only, pins every rounded number to a named row
+and fails on ambiguity); and `build.sh` runs both, so a PDF cannot be
+produced with an unsourced number in it. **A check that runs when someone
+remembers is not a check.**
+
 **2. I assert numbers without re-deriving them.** I took max/min across
 every benchmark file instead of reading the reported arm's own row. The
 audit caught six wrong figures, and **every one flattered us**: study
@@ -117,6 +131,14 @@ shape and whether it is per cell, per gene, per group — is in
 **6. I propose fixes that penalise us.** The intersection idea would have
 cost ELAJ ~0.09 excess and PCA nothing, because the least-clumped model
 loses most cells. Check which way a proposal cuts before making it.
+
+**7c. I plan expensive work before checking whether it is needed.** I was a
+keystroke from a day of GPU re-embedding four foundation models whose scores
+were already computed and saved. Two greps against logs I already had settled
+it: the corpus is identical across the runs, so eight of ten rows were
+already valid and only harmony and scanorama needed anything. AW caught it by
+asking "why are we running so many more GPU tasks?". **Before proposing
+compute, check what the existing outputs already contain.**
 
 **7b. I add a measurement that cuts against us without checking which way
 it cuts.** This is failure mode 6 wearing a different hat. I put per-cohort

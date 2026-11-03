@@ -78,17 +78,73 @@ for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/p1_*/benchmark.csv"))):
     name = Path(f).parent.name
     if not name.endswith("_train"):
         arms[name] = (read(Path(f), "elaj"), f)
-# BASELINES COME FROM THE REPORTED ARM'S OWN FILE FIRST. An earlier version
-# took whichever glob hit first, which mixed scorings from different runs and
-# made three correct numbers look unaccounted for.
-REPORTED = ROOT / "Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv"
-for f in [str(REPORTED)] + sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/*/benchmark.csv"))):
-    if "_train" in Path(f).parent.name: continue      # train-split scorings
-    b = pd.read_csv(f); b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
-    for meth in sorted(b.mm.unique()):
-        if meth == "elaj" or meth in base: continue
-        r = read(Path(f), meth)
-        if not pd.isna(r["phase"]): base[meth] = (r, f)
+# ─────────────────────────────────────────────────────────────────────────
+# AN EXPLICIT MANIFEST, BECAUSE GLOBBING IS WHAT BROKE THIS AUDIT.
+#
+# The version before this one took each baseline from whichever benchmark file
+# a glob reached first. Every number it printed was real, and the table was
+# still invalid: `pca` arrived from the reported arm on the narrow 15,496-gene
+# policy while the foundation models arrived from the fm_* runs on the wide
+# 30,962-gene one, so the comparison it displayed had never been run as one
+# experiment. The script even printed a warning that the runs were not
+# comparable, directly underneath the table built by mixing them.
+#
+# So each row now NAMES its file and its (gene_policy, fit_on) key. A missing
+# key is an error. Nothing falls back to another file, and no file outside
+# this dict can contribute a number.
+# ─────────────────────────────────────────────────────────────────────────
+MANIFEST = {
+    # method:        (benchmark.csv,                    gene_policy,  fit_on)
+    "pca":          ("fm_scgpt",                        "all30962",   "train"),
+    "scvi":         ("fm_scgpt",                        "all30962",   "train"),
+    "scanvi":       ("fm_scgpt",                        "all30962",   "train"),
+    "scgpt":        ("fm_scgpt",                        "native", "pretrained"),
+    "geneformer":   ("fm_baseline+Geneformer",          "native", "pretrained"),
+    "scfoundation": ("fm_scfoundation",                 "native", "pretrained"),
+    "scimilarity":  ("fm_scimilarity",                  "native", "pretrained"),
+    # harmony and scanorama have NO valid source. Their only rows are r8_all,
+    # an obsolete corpus on which ELAJ scores 0.1161 against 0.7346 here. They
+    # are reported as missing until the wide transductive pass returns, and
+    # they are deliberately not filled in from r8_all.
+}
+EXCLUDED = {
+    "r8_all": "obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346",
+    "r8_inductive": "same corpus as r8_all",
+    "p1_dab168_kl1_train": "train split",
+    "elaj_train_cpu": "train split",
+    "baseline_latents": "latent dumps, not a scoring run",
+}
+
+def read_keyed(path: Path, method: str, policy: str, fit: str) -> dict:
+    """One method's row set, by exact key. No key, no row."""
+    b = pd.read_csv(path)
+    b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
+    e = b[(b.mm == method)
+          & (b.gene_policy.fillna("").astype(str) == policy)
+          & (b.fit_on.fillna("").astype(str) == fit)]
+    if e.empty:
+        raise KeyError(f"{method}/{policy}/{fit} absent from {rel(path)}")
+    row = {}
+    for k, (t, l, _) in TESTS.items():
+        s = e[(e.test == t) & (e.label == l)]["value"]
+        row[k] = float(s.iloc[0]) if len(s) else float("nan")
+    w = e["width"].dropna()
+    row["width"] = int(w.max()) if len(w) else None
+    sup = {str(x) for x in e["supervised_on"].dropna() if str(x) != "nan"}
+    row["supervised_on"] = ", ".join(sorted(sup)) or "—"
+    row["fit_on"] = fit or "transductive"
+    return row
+
+MISSING_METHODS = []
+for meth, (run, policy, fit) in MANIFEST.items():
+    f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
+    try:
+        base[meth] = (read_keyed(f, meth, policy, fit), str(f))
+    except (KeyError, FileNotFoundError) as exc:
+        MISSING_METHODS.append(f"{meth}: {exc}")
+for meth in ("harmony", "scanorama"):
+    MISSING_METHODS.append(f"{meth}: no valid source; only r8_all, which is "
+                           f"excluded ({EXCLUDED['r8_all']})")
 
 def rel(p): return os.path.relpath(p, ROOT)
 lines = ["# Results numbers, and where each one comes from", "",
@@ -408,6 +464,26 @@ def _isnum(x):
     try: float(x); return True
     except (TypeError, ValueError): return False
 
+lines += ["", "## Methods with no valid source", ""]
+if MISSING_METHODS:
+    for m in MISSING_METHODS:
+        lines.append(f"- {m}")
+    lines += ["", "**A missing row is left missing.** Earlier versions filled "
+              "these from whichever file had them, which is how `r8_all` got "
+              "into a table beside the p-series.", ""]
+else:
+    lines += ["None. Every method in the manifest resolved.", ""]
+
+lines += ["## Files excluded from the manifest, and why", "",
+          "| file | reason |", "|---|---|"]
+for k, why in sorted(EXCLUDED.items()):
+    lines.append(f"| `{k}` | {why} |")
+lines += ["", "The narrow `all` rows for `pca`, `scvi` and `scanvi` in "
+          "`p1_dab168_kl1` are excluded too, not as obsolete but as a "
+          "different experiment: baselines are reported on the full "
+          "30,962-gene axis, so the 15,496-gene rows answer a question this "
+          "paper does not ask.", ""]
+
 derived = set()
 for r, _ in list(arms.values()) + list(base.values()):
     for k in TESTS:
@@ -424,11 +500,12 @@ unaccounted = []
 for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):
     v = mobj.group(0)
     v4 = f"{float(v):.4f}"
-    # A file that stores 0.135 is quoted as 0.135, not 0.1350, so a derived
-    # value also counts as accounted for at the precision the prose uses.
-    short = {f"{float(d):.{len(v.split('.')[1])}f}" for d in derived
-             if _isnum(d)}
-    if v4 in derived or v in derived or v in short or v in NOT_FROM_BENCHMARK:
+    # EXACT TO FOUR DECIMALS, OR NOT ACCOUNTED. An earlier version accepted a
+    # prose number that matched any derived value at the prose's own
+    # precision, which at two decimals let unrelated quantities vouch for each
+    # other. Rounded numbers are checked by verify_numbers.py, which pins each
+    # one to a named row instead of searching for something that matches.
+    if v4 in derived or v in derived or v in NOT_FROM_BENCHMARK:
         continue
     unaccounted.append(v)
 # An unaccounted decimal has two very different causes and the report has to
@@ -467,33 +544,31 @@ else:
     lines.append("None. Every decimal in the Results prose matches a value "
                  "re-derived above, or is a chance rate carried in the "
                  "benchmark's own `note` column.")
-lines += ["", "## Which cross-method rows may be quoted together", "",
-  "Two things differ between scoring runs and only one of them is a fault.", "",
-  "**Not a fault: the gene policy.** Baselines are fit on `all30962`, the",
-  "union gene set, and ELAJ on its own filtered 15,496. That is deliberate --",
-  "the baselines are not handed a vocabulary we constructed. A baseline scored",
-  "under `all` instead of `all30962` is a different experiment, so the two",
-  "cannot be mixed in one table, but neither is wrong.", "",
-  "**Not a fault: `n_cells` differing per method.** Cross-donor agreement is",
-  "measured only on cells with at least one cross-donor neighbour, and that",
-  "count is a property of the embedding. A better-mixed latent scores more",
-  "cells. Coverage is reported beside every scalar rather than folded into",
-  "it.", "",
-  "**A fault: `r8_all` and `r8_inductive` are obsolete.** They score ELAJ at",
-  "phase 0.1161 and PCA at 0.2856 on 52,712 to 69,209 cells, against 166,836",
-  "to 195,879 in the p-series. `harmony` and `scanorama` have no other",
-  "source, so both rows are unusable until the unified run returns.", "",
-  "Same cross-donor phase, three runs:", "",
-  "| run | gene policy | pca | scvi | scanvi | cells scored (pca) |",
-  "|---|---|---:|---:|---:|---:|",
-  "| `p1_dab168_kl1` | `all` | 0.6906 | 0.7017 | 0.6943 | 166,836 |",
-  "| `fm_*` (four runs) | `all30962` | 0.6457 | 0.7053 | 0.6971 | 173,887 |",
-  "| `r8_all` | `all` | 0.2856 | 0.6046 | 0.6331 | 65,820 |", "",
-  "Until the unified run lands, the internally valid head-to-head is the",
-  "reported arm's own file for `elaj`/`pca`/`scvi`/`scanvi` at width 16, and",
-  "the `fm_*` files for the foundation models against THEIR own reference",
-  "columns. The unified run replaces all of it with one gene policy, one cell",
-  "set and one code path across nine methods.", ""]
+lines += ["", "## How the field table is sourced", "",
+  "Eight of the ten methods were already scored correctly. Nothing needed",
+  "re-running; what was wrong was which file each row was read from.", "",
+  "**The corpus is identical across every source in the manifest**, verified",
+  "from the runs' own logs: 416,256 held-out cells, with 176,803 cells",
+  "labelled for cell family, 224,211 for menstrual phase and 108,288 for cell",
+  "cycle phase. The reported arm and all four `fm_*` runs agree on all three.",
+  "", "**The four `fm_*` runs are one baseline pass.** `pca`, `scvi` and",
+  "`scanvi` hold bit-identical values and cell counts in all four files, so",
+  "those jobs scored the baselines once and added one pretrained model each.",
+  "Any one of the four is the source for the shared rows.", "",
+  "**ELAJ's row is unaffected by the baselines' gene axis.** It reads the",
+  "vocabulary its checkpoint was trained against whatever the baselines are",
+  "given, on the same cells, so its row from the narrow run stands beside the",
+  "wide baselines. That is why the wrapper documents `--no-elaj` for a wide",
+  "pass: re-embedding would reproduce the same row.", "",
+  "**The two gene policies are a choice, not a conflict.** `pca`, `scvi` and",
+  "`scanvi` were scored twice, on 15,496 genes in the reported arm and on",
+  "30,962 in the `fm_*` runs. Baselines are reported on the full axis, so the",
+  "wide rows are used and the narrow ones are discarded. Both are valid; only",
+  "one answers this paper's question.", "",
+  "**Differing `n_cells` per method is coverage, not a fault.** Cross-donor",
+  "agreement is measured only on cells with at least one cross-donor",
+  "neighbour, and that count is a property of the embedding.", "",
+  "**`r8_all` is the one genuine fault**, and it costs exactly two rows.", ""]
 
 lines += ["## Not yet auditable", "",
           "These are quoted in subsection notes but not yet in prose, and come",
@@ -508,4 +583,12 @@ lines += ["## Not yet auditable", "",
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text("\n".join(lines) + "\n")
 print(f"wrote {rel(OUT)}  ({len(arms)} arms, {len(base)} baselines)")
-print(f"unaccounted decimals in prose: {sorted(set(unaccounted)) or 'none'}")
+for m in MISSING_METHODS:
+    print(f"  no source: {m}")
+bad = sorted(set(unaccounted))
+print(f"unaccounted decimals in prose: {bad or 'none'}")
+if bad:
+    print("\nFAILED. A number in the Results prose matches no value this "
+          "script derived.\nRounded values are pinned in verify_numbers.py; "
+          "run that too.")
+    sys.exit(1)
