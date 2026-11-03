@@ -1,122 +1,129 @@
 # IDAI Student Internships 2026/27 — answers for Q12–Q15
 
-Drafted 3 November 2026. Every figure here is from the project's own
-audited outputs or a verified public source; nothing is estimated.
-**Three things need the supervisor's confirmation before submission —
-see "Must be confirmed" at the end.**
+Redrafted 3 November 2026 at the altitude IDAI actually funds. The past-projects
+list sets the register: *"Towards a Foundation Model for Cross-Species Molecular
+Perturbations"*, *"AI-Driven Accelerated Qualification of Fusion Reactor
+Materials"*, *"From Ambulatory Data to Clinical Prediction"*. These are
+direction-setting proposals, not eight-week work plans, and one 2025 project is
+recorded as having unlocked £62k of industrial funding. The first draft of this
+form was scoped to what was already finished; this one is not.
+
+**Biology leads. The AI is the instrument, not the subject.**
 
 ---
 
 ## 12. Project Title
 
-**Biology that looks like batch: an open framework for pooling single-cell
-cohorts, built on 1.58 million endometriosis cells**
+**AI for Endometriosis: Towards a Transferable Molecular Clock for a Cyclical
+Disease Sampled Once**
 
-*Alternatives if a shorter title is wanted:*
-- Telling biology from batch effect in pooled single-cell health data
-- Donor-confounded signal: measuring what batch correction removes
+*Alternatives:*
+- AI for Endometriosis: Recovering the Menstrual Cycle from Single-Snapshot Cohorts
+- AI for Endometriosis *(plain, if the form prefers it)*
+- AI for Human Biology: Reading Time from Cross-Sectional Tissue Atlases *(if a
+  broader framing is wanted)*
 
 ---
 
 ## 13. Project Summary & Immediate Objectives (250 max)
 
-In human tissue studies each donor is normally sampled once. Any trait that is
-constant within a donor — menstrual-cycle phase, disease stage, treatment
-history — is then geometrically identical to a batch effect, so the correction
-methods that make pooled atlases usable can remove the biology along with the
-artefact. No standard metric distinguishes the two.
+Endometriosis is a cyclical disease that medicine only ever measures
+acyclically. Diagnosis requires surgery, so every tissue sample is one day of a
+roughly month-long process, and each donor is sampled once. Two questions
+central to the disease are therefore unanswered: whether the menstrual cycle
+itself is altered in endometriosis, and why candidate biomarkers repeatedly fail
+to replicate between cohorts.
 
-The intern has built and trained ELAJ, a 1.9-million-parameter conditional
-variational autoencoder, on 1,577,728 single-cell profiles pooled from 11
-endometriosis studies and 269 donors, and has shown this trade-off can be
-traced as an explicit, controllable frontier rather than assumed away. A
-manuscript is in preparation.
+The intern has pooled 1,577,728 single-cell profiles from 11 studies and 269
+donors and trained a model in which menstrual-cycle structure survives the
+removal of donor and study identity. That representation is the instrument. This
+internship uses it to ask the biology.
 
-This sprint converts that project's methodological core into a reusable asset.
-Three immediate objectives:
+**Objective 1 — a molecular clock.** Cycle day is recorded for one cohort only
+(466,176 cells, 60 donors, days 5–30). We will learn to infer cycle position
+from transcriptome alone and transfer it to the remaining ten cohorts, placing
+every donor on a common timeline for the first time.
 
-1. **Release** an open, documented, installable evaluation package implementing
-   the donor-level permutation estimator the project developed, including three
-   corrections identified during write-up: study-stratified permutation,
-   explicit coverage reporting, and comparability across labels with few donors.
-2. **Quantify where standard batch metrics fail** on donor-confounded data. On
-   this corpus several widely used scIB metrics are exactly degenerate across
-   four different methods — a transferable negative result the package will
-   detect automatically.
-3. **Demonstrate transfer** on one public atlas outside endometriosis sharing
-   the one-sample-per-donor design.
+**Objective 2 — is the diseased cycle a different cycle?** With all donors on
+one clock, test whether affected tissue is phase-shifted, flattened, or
+decoupled from circulating progesterone. This is a transcriptome-scale test of
+progesterone resistance, a long-standing clinical observation never examined at
+this scale.
 
-This is interdisciplinary, data-intensive research with AI as the core
-discipline and reproducible measurement as the contribution, delivered on
-Baskerville and released openly for reuse.
+**Objective 3 — is biomarker failure a timing artefact?** Test whether published
+endometriosis signatures are phase-dependent in this corpus.
+
+Interdisciplinary, data-intensive, and delivered on Baskerville. Ambitious by
+design: each objective is a grant, and the clock is a reusable asset.
 
 ---
 
 ## 14. Alignment with the UK Government Industrial Strategy (IS8) (150 max)
 
-**Life Sciences, primarily.** The Life Sciences Sector Plan commits up to
-£600 million to a Health Data Research Service to make population-scale data
-assets usable by academic and industrial researchers. Making fragmented
-cohorts poolable without destroying the biology inside them is precisely the
-bottleneck that investment confronts, and this project delivers a measurement
-framework for it. The clinical need is acute: endometriosis affects around 190
-million people worldwide, has no non-invasive diagnostic test, and the mean
-interval from first symptom to surgical diagnosis is 11.1 years.
+**Life Sciences.** The Life Sciences Sector Plan commits up to £600 million to a
+Health Data Research Service to make population-scale health data usable for
+research. Endometriosis is exactly the case that investment must serve and
+currently cannot: around 190 million people affected worldwide, no non-invasive
+diagnostic test, and a mean interval from first symptom to surgical diagnosis of
+11.1 years. Fragmented surgical cohorts cannot be pooled usefully while the
+biology of interest is confounded with the cohort. A transferable molecular
+clock would let any future biopsy be positioned in cycle time from its
+transcriptome, which is a precondition for a phase-aware diagnostic.
 
-**Digital and Technologies, secondarily.** The deliverable is foundational AI
-methodology — an open, reusable evaluation standard for confounded
-representation learning — rather than a single-disease result, and it is
-applicable wherever human-subject data is pooled across sites.
+**Digital and Technologies.** Recovering a temporal process from subjects each
+observed once is a general AI capability, applicable wherever human data is
+pooled across sites, and it is being built here on UK national compute.
 
 ---
 
 ## 15. Expected Value & Path Forward (200 max)
 
-**To the research.** The project's transferable contribution is currently
-locked inside one paper. This sprint releases it as tooling other groups can
-apply, and the cross-disease demonstration provides the pilot data a
-methodology grant requires. Both strengthen the manuscript under preparation.
+**To the research.** The project currently has a representation; this internship
+turns it into an instrument that answers clinical questions. Each objective is
+independently publishable, and together they establish a new line of work on
+cycle-resolved disease biology rather than extending an existing paper.
 
-**To the intern.** A first-authored software and methods release, experience
-running at scale on national compute, and a direct route from MSc project to
-funded doctoral research.
+**To the intern.** A route from MSc project to funded doctoral research, first-
+authored biological results rather than only methodological ones, and experience
+at scale on national compute.
 
-**Path forward.** Three concrete routes, in order of readiness.
+**Path forward.**
 
-1. *Grant applications.* The generalisation result is designed as pilot data
-   for an EPSRC/UKRI methodology application on measurement under confounding,
-   and for an MRC or Wellcome application on endometriosis — a condition whose
-   research funding is widely recognised as disproportionate to its burden.
-2. *Collaborations.* The eleven source cohorts are an existing, concrete basis
-   for approaching their authors; and we will approach third-sector partners
-   in this disease area as co-sponsors, which the scheme explicitly invites.
-3. *Training material.* The donor-confounding problem is general and poorly
-   known. We will produce an IDAI tutorial and notebook on it, reusable across
-   the University's health-data community.
+1. *Grants.* Objective 2 is designed as pilot data for an MRC or Wellcome
+   application on cycle dysregulation in endometriosis, and Objective 1 for a
+   UKRI methodology application on recovering temporal structure from
+   cross-sectional atlases. Both are routes to funding the intern's PhD.
+2. *Collaborations.* The clock's natural next experiment needs prospectively
+   cycle-dated samples, which requires a clinical partner. We will use the
+   supervisor's networks to secure one, and will approach the authors of the
+   eleven source cohorts, with whom there is already a concrete basis.
+3. *Compute.* We will apply for Baskerville access for delivery.
 
 ---
 
 ## Must be confirmed before submission
 
-1. **Baskerville.** The scheme gives priority to proposals using the
-   Baskerville NCR. The project's training to date has run on BlueBEAR, not
-   Baskerville. Q13 and Q15 as written commit the sprint to Baskerville — only
-   keep that if the access is in place or obtainable.
-2. **External partner.** Evidence of non-academic engagement is a priority
-   criterion and we have none to name. Q15 says we *will approach* third-sector
-   partners, which is honest. If a partner can be named now, say so there
-   instead — it is the single biggest available uplift to the score.
-3. **Training-material commitment.** Also a priority criterion, and Q15
-   commits to it. Only keep it if it will be delivered.
+1. **External partner.** Still the single biggest available uplift, and still
+   unnamed. Q15 commits to securing one through the supervisor's networks, which
+   is honest. If anyone can be named now, name them there.
+2. **Baskerville.** Q13 and Q15 commit to it and Q15 says access will be applied
+   for, which matches the position.
+3. **Removed on request:** the training-material commitment. It is a priority
+   criterion in the call, so dropping it gives up a scoring point — flagging
+   that, not arguing it.
 
 ## Sources for the figures used
 
 | figure | source |
 |---|---|
 | 1,577,728 cells; 11 studies; 269 donors | the project's own corpus metadata |
-| 1.9M parameters, 16 latent dimensions | the project's model configuration |
-| scIB metrics exactly degenerate across four methods | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| 190 million people worldwide | WHO, endometriosis fact sheet |
-| 11.1 years to diagnosis, 444 patients | Bontempo 2025, cited in the manuscript |
+| 466,176 cells, 60 donors, days 5–30, one cohort | the project's own corpus metadata |
+| 190 million people worldwide | WHO endometriosis fact sheet, updated 15 Oct 2025 |
+| 11.1 years to diagnosis | Bontempo & Schiff 2025, *BMJ Open Quality* 14, e003121 |
 | £600m Health Data Research Service | UK Life Sciences Sector Plan, July 2025 |
 | IS8 sector list | UK Modern Industrial Strategy, June 2025 |
+
+Progesterone resistance is described as a long-standing clinical observation
+rather than cited, because the claim here is only that it is well known and
+untested at this scale. If a reference is wanted in the form, one should be
+added.
