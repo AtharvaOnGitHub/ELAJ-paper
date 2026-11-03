@@ -15,13 +15,12 @@
 ## 13. Project Summary & Immediate Objectives (250 max)
 
 Pooling human data from many sources means removing the effect of the source.
-Each site recruits its own people, so the biology of interest is rarely spread
-evenly across sites, and the correction takes some of that biology out with the
-artefact. This is documented and it is not specific to any one measurement
-technology. The hardest version is a trait fixed for a person, such as cycle
-phase, age or disease stage, where that person appears in one cohort only. The
-trait and the cohort then have the same shape and no standard method separates
-them.
+Each site recruits its own people, so the biology is rarely spread evenly across
+sites, and the correction takes some of that biology out with the artefact. This
+is documented and holds whatever the measurement technology. The hardest version
+is a trait fixed for a person, such as cycle phase, age or disease stage, where
+that person appears in one cohort only. The trait and the cohort then have the
+same shape and no standard method separates them.
 
 The intern has shown this can be solved in a hard case. Pooling 1,577,728
 single-cell profiles from 11 studies and 269 donors, the model recovered the
@@ -108,7 +107,7 @@ biology and methodology, and experience running at scale on national compute.
 
 | claim | status |
 |---|---|
-| batch correction removes real biology when the trait is uneven across batches | Nygaard, Rødland & Hovig, *Biostatistics* **17**(1), 29–39, doi:10.1093/biostatistics/kxv027. Verified on PMC. Add as a citation if the form allows one |
+| batch correction removes real biology when the trait is uneven across batches | Nygaard, Rødland & Hovig, *Biostatistics* **17**(1), 29-39, doi:10.1093/biostatistics/kxv027. Verified on PMC. Add as a citation if the form allows one |
 | 1,577,728 cells; 11 studies; 269 donors | the project's own corpus metadata |
 | the cycle recovered as a closed trajectory, cycle survives donor and study removal | the project's own whole-corpus embedding and benchmark |
 | £600m Health Data Research Service | UK Life Sciences Sector Plan, July 2025 |
