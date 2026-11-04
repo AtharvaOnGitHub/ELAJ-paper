@@ -49,6 +49,56 @@ percentile, carried per row in the benchmark's own `note` column.
 
 ---
 
+## The mapping, and why it is a mapping
+
+Six figures, twenty-odd findings, ~2,000 words of Results. A finding that
+lives in a panel and its legend costs **zero** main-text words; enumerated in
+prose it costs about 125. So the figures are not illustrations of the prose.
+They are where the findings that prose cannot hold are gathered.
+
+**What a figure is for here.** Each one clumps the evidence for something the
+Results cannot say succinctly, usually because the claim is about *structure*
+across many methods or arms rather than about one number. A reader should be
+able to reach the conclusion from the panel. They should not be told it
+inside the panel.
+
+**What that forbids.** No callouts, no arrows pointing at the good news, no
+annotation naming our own arm as the hero, no title that states the result.
+The legend defines the axes and the symbols. The data does the rest, and it
+stays open to a reader who disagrees with us.
+
+| figure | the thing prose cannot say | findings |
+|---|---|---|
+| **1** | that a donor-constant trait and a batch effect are the same geometric object | Introduction ¶3 |
+| **2** | that two knobs move a model along a trade-off, and in different directions | B1 |
+| **3** | that across ten methods the axes trade against each other, and one point sits in the corner | A1, A2, A4, A5, A6, E3 |
+| **4** | where disease signal sits and where it fails to reappear | C1 part, C4, C5, C6 |
+| **5** | that the cycle closes, and that it separates two cell families and not the other two | C2, C3, C1 part |
+| **6** | what each component is load-bearing for, across five single-key changes | D1–D6, B2, B3 |
+
+**Prose today points at:** `[1]`→1b, `[3]`→5a, `[4]`→4b, 4c, 4d. `[2]` and
+`[5]` are unwritten. `[1]`'s reference is stale: the frontier is Figure 2.
+
+---
+
+## What changed in the findings, and what the figures now have to carry
+
+Settled on 4 November, from the completed field table. These supersede the
+earlier per-axis claims and they change what Figures 3 and 6 must show.
+
+| was | is now | consequence for the figure |
+|---|---|---|
+| A1 "best at phase" | **ELAJ is the only method that is simultaneously highest on phase and lowest on donor recovery.** No method reaches either | a **scatter** of phase against donor, ten methods. The reader sees the corner. Bars cannot show a joint claim |
+| A2 "we remove study signal best" | **Harmony removes it best, and pays in cycle signal** — 0.4168 against PCA's 0.8435 while phase falls 0.6457 → 0.6186 | mixing against phase, same scatter treatment. Harmony's position *is* the argument |
+| A6 "disease is weak for everyone" | **disease score tracks donor memorisation**, ρ +0.721, p 0.019 across ten methods; phase does not, ρ +0.176 | disease against donor recovery, ten points. The trend is the finding |
+| A4 "foundation models are near chance" | **width anti-correlates with phase**, ρ −0.650, p 0.042 | phase against width, log x |
+| A5 "we lose cell type" | **the axis is saturated**: spread 0.0873, nine of ten above 0.98 | shown by the shared y-range, not argued |
+| B2 "+0.883 at one arm" | **positive in 25 of 28 arms, median +0.615** | a distribution, not two numbers |
+| C2 ratios in prose | **figure only**, no magnitudes anywhere | per-cell-family panels |
+| C4/C5 ratios in prose | **figure only** | crops side by side |
+
+---
+
 ## Figure 1 — The confound, and where the model pulls it apart
 
 Schematic. No data anywhere in it. The one figure a reader must understand
