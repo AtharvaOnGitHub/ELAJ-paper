@@ -59,6 +59,10 @@ SOURCES = {
     "geneformer":   (BENCH / "fm_baseline+Geneformer/benchmark.csv", "native", "pretrained", ""),
     "scfoundation": (BENCH / "fm_scfoundation/benchmark.csv", "native", "pretrained", ""),
     "scimilarity":  (BENCH / "fm_scimilarity/benchmark.csv", "native", "pretrained", ""),
+    "harmony":   (BENCH / "wide_transductive/benchmark.csv", "all30962", "",
+                  "wide axis, transductive: cannot be fitted inductively"),
+    "scanorama": (BENCH / "wide_transductive/benchmark.csv", "all30962", "",
+                  "as harmony"),
 }
 # Deliberately absent: r8_all and r8_inductive (obsolete corpus, ELAJ scores
 # 0.1161 there), p1_dab168_kl1_train and elaj_train_cpu (train split), and the

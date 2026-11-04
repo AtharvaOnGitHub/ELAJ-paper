@@ -102,10 +102,12 @@ MANIFEST = {
     "geneformer":   ("fm_baseline+Geneformer",          "native", "pretrained"),
     "scfoundation": ("fm_scfoundation",                 "native", "pretrained"),
     "scimilarity":  ("fm_scimilarity",                  "native", "pretrained"),
-    # harmony and scanorama have NO valid source. Their only rows are r8_all,
-    # an obsolete corpus on which ELAJ scores 0.1161 against 0.7346 here. They
-    # are reported as missing until the wide transductive pass returns, and
-    # they are deliberately not filled in from r8_all.
+    # Scored 4 November on the wide axis, same corpus, TRANSDUCTIVE: neither
+    # method can be fitted on the training donors and applied to held-out
+    # ones, so both saw the held-out cells while fitting. That is an advantage
+    # the table must declare per method, not a detail.
+    "harmony":      ("wide_transductive",               "all30962",   ""),
+    "scanorama":    ("wide_transductive",               "all30962",   ""),
 }
 EXCLUDED = {
     "r8_all": "obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346",
@@ -142,9 +144,7 @@ for meth, (run, policy, fit) in MANIFEST.items():
         base[meth] = (read_keyed(f, meth, policy, fit), str(f))
     except (KeyError, FileNotFoundError) as exc:
         MISSING_METHODS.append(f"{meth}: {exc}")
-for meth in ("harmony", "scanorama"):
-    MISSING_METHODS.append(f"{meth}: no valid source; only r8_all, which is "
-                           f"excluded ({EXCLUDED['r8_all']})")
+
 
 def rel(p): return os.path.relpath(p, ROOT)
 lines = ["# Results numbers, and where each one comes from", "",
