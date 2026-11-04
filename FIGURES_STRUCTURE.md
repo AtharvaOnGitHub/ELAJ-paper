@@ -67,56 +67,75 @@ annotation naming our own arm as the hero, no title that states the result.
 The legend defines the axes and the symbols. The data does the rest, and it
 stays open to a reader who disagrees with us.
 
-| figure | the thing prose cannot say | findings |
-|---|---|---|
-| **1** | that a donor-constant trait and a batch effect are the same geometric object | Introduction ¶3 |
-| **2** | that two knobs move a model along a trade-off, and in different directions | B1 |
-| **3** | that across ten methods the axes trade against each other, and one point sits in the corner | A1, A2, A4, A5, A6, E3 |
-| **4** | where disease signal sits and where it fails to reappear | C1 part, C4, C5, C6 |
-| **5** | that the cycle closes, and that it separates two cell families and not the other two | C2, C3, C1 part |
-| **6** | what each component is load-bearing for, across five single-key changes | D1–D6, B2, B3 |
+**AW's reading of NMI convention**, from going through the journal's papers:
 
-**Prose today points at:** `[1]`→1b, `[3]`→5a, `[4]`→4b, 4c, 4d. `[2]` and
-`[5]` are unwritten. `[1]`'s reference is stale: the frontier is Figure 2.
+- Fig 1 is always the overview: *what did we do*. Not the biggest challenge,
+  not the most critical datapoint. Absolute terms.
+- Fig 2 is a result or the architecture, depending on whether Fig 1 carried
+  architecture.
+- Figs 3 and 4 are results, often multi-panelled. One had ten panels.
+- Often Fig 1 is architecture in the first panels and headline results in the
+  last, a dumbed-down representation of the model.
+- "I would stray away from study here. At most I'd say we squeeze in one
+  graph for study in fig 1."
 
----
-
-## What changed in the findings, and what the figures now have to carry
-
-Settled on 4 November, from the completed field table. These supersede the
-earlier per-axis claims and they change what Figures 3 and 6 must show.
-
-| was | is now | consequence for the figure |
-|---|---|---|
-| A1 "best at phase" | **ELAJ is the only method that is simultaneously highest on phase and lowest on donor recovery.** No method reaches either | a **scatter** of phase against donor, ten methods. The reader sees the corner. Bars cannot show a joint claim |
-| A2 "we remove study signal best" | **Harmony removes it best, and pays in cycle signal** — 0.4168 against PCA's 0.8435 while phase falls 0.6457 → 0.6186 | mixing against phase, same scatter treatment. Harmony's position *is* the argument |
-| A6 "disease is weak for everyone" | **disease score tracks donor memorisation**, ρ +0.721, p 0.019 across ten methods; phase does not, ρ +0.176 | disease against donor recovery, ten points. The trend is the finding |
-| A4 "foundation models are near chance" | **width anti-correlates with phase**, ρ −0.650, p 0.042 | phase against width, log x |
-| A5 "we lose cell type" | **the axis is saturated**: spread 0.0873, nine of ten above 0.98 | shown by the shared y-range, not argued |
-| B2 "+0.883 at one arm" | **positive in 25 of 28 arms, median +0.615** | a distribution, not two numbers |
-| C2 ratios in prose | **figure only**, no magnitudes anywhere | per-cell-family panels |
-| C4/C5 ratios in prose | **figure only** | crops side by side |
+**Figure 1 is decided. Figures 2–6 are not.** What follows for 2–6 is a
+proposal written by Claude, never ruled on. It is kept because the panels in
+it exist or are costed, not because it is agreed.
 
 ---
 
-## Figure 1 — The confound, and where the model pulls it apart
+## Figure 1 — decided, in AW's words
 
-Schematic. No data anywhere in it. The one figure a reader must understand
-before any other, and the one most at risk now the cap is six: it shows
-nothing measured, which is the easiest kind for an editor to cut. It stays
-because the Introduction's central argument is geometric and a sentence
-cannot carry it.
+> "I don't see how the architecture could be split by panels. Instead I would
+> give the architecture a long and wide panel a, give frontier panel b, UMAP
+> by cell family panel c, UMAP by study as panel d, and UMAP by cycle day as
+> panel e."
 
-| panel | type of vis | purpose | matching prose | supports / numbers |
-|---|---|---|---|---|
-| a | schematic, cells grouped under one donor | one biopsy per donor, so every cell of a donor shares one cycle phase | Introduction ¶3 | none. 254 people, 11 studies, one biopsy each is the only quantity |
-| b | schematic, two offsets drawn side by side | the per-donor phase offset and a batch effect are the same geometric object | Introduction ¶3 | none |
-| c | schematic, model block diagram | where the two are separated: adversary on the latent, phase head on the latent, decoder given study directly | Introduction ¶3, Methods *Decoder conditioning* | none |
+> "Okay let's try this: make the frontier 2 panels. Choose 2 good plots and
+> draw the pareto front. Then put all three UMAPs in the bottom row. Also the
+> architecture panel would be like a butterfly with the latent in the middle,
+> pathway groups expanding on one side and heads expanding on the other."
 
-**Status: draw.** `figures/scripts/figure1.py` exists and produces a first
-version. Open items carried from the 2 November session: whitespace between
-rows 1 and 2; panel d undecided; the `similarity` and `reconstruction` boxes
-clip; the spider's `cell type` label is wrong.
+| panel | what it is |
+|---|---|
+| **a** | the architecture, one long wide panel across the top. **Butterfly**: the latent in the middle, the pathway groups expanding on one side, the heads expanding on the other. Shows the main architectural choices we made, **not only the ones ablated** |
+| **b, c** | the frontier, two panels, two chosen plots, **Pareto front drawn** |
+| **d, e, f** | three UMAPs on the bottom row: **cell family**, **study**, **cycle day** |
+
+**Why the architecture gets a whole panel and not a corner:** "for any AI
+paper, the architecture is our baby… I don't wish to squeeze the architecture
+into a single section of a panel in an AI paper."
+
+**Open on this figure:**
+
+1. **The spider chart.** Proposed as "one spider chart showing how ELAJ does
+   against some baselines", drawn, and left undecided: "I don't think we look
+   that bad in the chart, we are high or dominant on all axes… I see the
+   argument that we are undersold because it shows the gap being smaller…
+   Let's explore this panel further." Alternatives were invited and none was
+   chosen.
+2. **Whitespace between the first two rows**, unresolved.
+
+**Status:** `figures/scripts/figure1.py` exists and renders. Known defects
+carried from the last session: the whitespace above, the clipped
+`similarity` and `reconstruction` boxes, and the spider's `cell type` label.
+
+---
+
+## Figures 2–6 — PROPOSAL ONLY, not ruled on
+
+Written by Claude. It conflicts with Figure 1 in at least two places and
+needs AW's decision before anything is drawn:
+
+- the frontier is **Figure 1 panels b and c**, so a separate "Figure 2 — the
+  frontier" is a duplicate;
+- the cycle-day UMAP is **Figure 1 panel f**, so "Figure 5 — the cycle"
+  overlaps it;
+- Figure 1 is listed below as a confound schematic with no data, which is
+  **not** what was decided.
+
+What follows is kept for the panel inventory and the build status only.
 
 ---
 

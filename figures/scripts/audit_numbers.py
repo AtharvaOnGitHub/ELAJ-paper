@@ -484,6 +484,40 @@ lines += ["", "The narrow `all` rows for `pca`, `scvi` and `scanvi` in "
           "30,962-gene axis, so the 15,496-gene rows answer a question this "
           "paper does not ask.", ""]
 
+# THE CROSS-METHOD CORRELATIONS. Derived from the field table above, so they
+# move with it: if a method's row changes, so do these, and the prose is
+# re-checked against the new value rather than the one it was written from.
+from scipy.stats import spearmanr as _sp
+_rows = [r for r, _ in [arms["p1_dab168_kl1"]] + list(base.values())]
+_dn = [r["donor"] for r in _rows]
+lines += ["", "## Across the ten methods", "",
+          "Spearman, donor recovery against each biology axis. One point per",
+          "method, from the field table above.", "",
+          "| axis | rho | p |", "|---|---:|---:|"]
+for _lab, _k in (("menstrual phase", "phase"), ("cell family", "family"),
+                 ("disease", "disease")):
+    _v = [r[_k] for r in _rows]
+    _ok = [(x, y) for x, y in zip(_dn, _v) if not (pd.isna(x) or pd.isna(y))]
+    if len(_ok) < 3: continue
+    _r, _p = _sp([x for x, _ in _ok], [y for _, y in _ok])
+    lines.append(f"| {_lab} | {_r:+.3f} | {_p:.3f} |")
+    for _x in (_r, abs(_r), _p):
+        extra.add(f"{_x:.4f}"); extra.add(f"{_x:.3f}"); extra.add(f"{_x:.2f}")
+_w = [r["width"] for r in _rows]
+_ph = [r["phase"] for r in _rows]
+_r, _p = _sp(_w, _ph)
+lines += [f"| width vs menstrual phase | {_r:+.3f} | {_p:.3f} |", "",
+          f"Spread per axis across the ten: " + ", ".join(
+              f"{_l} {max(x) - min(x):.4f}" for _l, x in
+              (("phase", _ph), ("donor", _dn),
+               ("family", [r["family"] for r in _rows]),
+               ("disease", [r["disease"] for r in _rows if not pd.isna(r["disease"])]))) + ".", ""]
+for _x in (_r, abs(_r), _p):
+    extra.add(f"{_x:.4f}"); extra.add(f"{_x:.3f}"); extra.add(f"{_x:.2f}")
+for _l, _x in (("phase", _ph), ("donor", _dn)):
+    extra.add(f"{max(_x) - min(_x):.4f}")
+derived_extra |= extra
+
 derived = set()
 for r, _ in list(arms.values()) + list(base.values()):
     for k in TESTS:

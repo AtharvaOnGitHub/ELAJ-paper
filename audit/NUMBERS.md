@@ -223,6 +223,21 @@ None. Every method in the manifest resolved.
 The narrow `all` rows for `pca`, `scvi` and `scanvi` in `p1_dab168_kl1` are excluded too, not as obsolete but as a different experiment: baselines are reported on the full 30,962-gene axis, so the 15,496-gene rows answer a question this paper does not ask.
 
 
+## Across the ten methods
+
+Spearman, donor recovery against each biology axis. One point per
+method, from the field table above.
+
+| axis | rho | p |
+|---|---:|---:|
+| menstrual phase | +0.176 | 0.627 |
+| cell family | +0.409 | 0.241 |
+| disease | +0.721 | 0.019 |
+| width vs menstrual phase | -0.650 | 0.042 |
+
+Spread per axis across the ten: phase 0.2974, donor 0.2704, family 0.0873, disease 0.0926.
+
+
 ## Numbers in the prose that this script cannot account for
 
 None. Every decimal in the Results prose matches a value re-derived above, or is a chance rate carried in the benchmark's own `note` column.

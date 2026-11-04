@@ -299,6 +299,40 @@ else:
 # The corpus size also appears rounded to millions in a heading.
 DERIVED.append((1_577_728 / 1e6, "corpus cells in millions, 1,577,728 / 1e6"))
 
+# The cross-method correlations, recomputed here from this file's own
+# manifest rather than imported, so the two scripts can disagree.
+try:
+    from scipy.stats import spearmanr
+    _field = {}
+    for _m, _e in SOURCES.items():
+        if _e[0] is None: continue
+        _rows = {}
+        for _r in rows(_e[0]):
+            _mm = re.sub(r"__.*", "", _r.get("method") or "")
+            if _mm != _m: continue
+            if (_r.get("gene_policy") or "") != (_e[1] or ""): continue
+            if (_r.get("fit_on") or "") != (_e[2] or ""): continue
+            _rows[(_r["test"], _r["label"])] = _r["value"]
+        if _rows: _field[_m] = _rows
+    def _col(t, l):
+        return [float(v[(t, l)]) for v in _field.values() if (t, l) in v
+                and v[(t, l)] not in ("", None)]
+    _dn = _col("knn-agreement", "patient_id")
+    for _lab, _t, _l in (("phase", "cross-donor", "menstrual phase"),
+                         ("family", "cross-donor", "cell family"),
+                         ("disease", "disease-xdonor", "all studies (pooled)")):
+        _v = _col(_t, _l)
+        if len(_v) == len(_dn) and len(_dn) >= 3:
+            _r, _p = spearmanr(_dn, _v)
+            for _x in (_r, abs(_r), _p):
+                DERIVED.append((_x, f"Spearman across {len(_dn)} methods, "
+                                    f"donor recovery vs {_lab}"))
+            DERIVED.append((max(_v) - min(_v),
+                            f"spread of {_lab} across {len(_v)} methods"))
+    DERIVED.append((max(_dn) - min(_dn), "spread of donor recovery"))
+except Exception as _exc:
+    fail(f"cross-method correlations could not be computed: {_exc}")
+
 CONSTANTS = {
     1577728: "corpus cells, metadata",
     1161472: "train-split cells, benchmark log",
@@ -334,6 +368,12 @@ PINNED = {
     "0.332": ("validation.csv", "cross-donor/Endometriosis_stage"),
     "65.5": ("share of chance-corrected", ""),
     "1.58": ("corpus cells in millions", ""),
+    # The cross-method correlations and their p-values. Rounded in prose, so
+    # pinned to the axis they belong to rather than searched for.
+    "0.721": ("donor recovery vs disease", ""),
+    "0.019": ("donor recovery vs disease", ""),
+    "0.176": ("donor recovery vs phase", ""),
+    "0.63":  ("donor recovery vs phase", ""),
 }
 
 def pinned_source(raw: str, dp: int):
