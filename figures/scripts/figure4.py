@@ -13,8 +13,13 @@ same embedding restricted to one family at a time, same colours, same axes.
 
 No magnitudes anywhere. That is the ruling and it is also the honest form:
 the claim is which families separate, not by how much.
+SUBMISSION RESOLUTION. 200 dpi is for reading on screen while the
+design is settled. For the manuscript set FIGDPI=600 or higher:
+AW does not want blurred or messy images, and a rasterised scatter
+of 400,000 points at 200 dpi will not survive print.
 """
 from __future__ import annotations
+import os
 from pathlib import Path
 import numpy as np, pandas as pd
 import matplotlib
@@ -41,23 +46,24 @@ m = meta.iloc[idx].reset_index(drop=True)
 # coarse names drops most of the labelled cells and makes secretory almost
 # vanish. Collapse by prefix into the four cycle stages, in cycle order,
 # because the point is a gradient and alphabetical order scrambles it.
-PH = ["menstrual", "proliferative", "periovulatory", "secretory"]
-COL = dict(zip(PH, ["#8d7fb5", "#4c78a8", "#e0a458", "#c25b56"]))
-
-def coarse(v):
-    v = str(v)
-    for stage in PH:
-        if v.startswith(stage):
-            return stage
-    return "other"
-
-phase = m["menstrual phase"].map(coarse)
+# The animation's own five groups and palette, in cycle order. `menstrual`
+# is 162 cells of 400,000 and is folded into proliferative rather than drawn
+# as a level nobody can see.
+COARSE = {"menstrual": "proliferative",
+          "proliferative_early": "proliferative", "proliferative": "proliferative",
+          "proliferative_late": "proliferative", "periovulatory": "periovulatory",
+          "secretory_early": "secretory early", "secretory_early_mid": "secretory early",
+          "secretory_mid": "secretory late", "secretory_late": "secretory late"}
+PH = ["proliferative", "periovulatory", "secretory early", "secretory late"]
+COL = dict(zip(PH, ["#D9A441", "#3A7D5D", "#2F6690", "#6D2E46"]))
+phase = m["menstrual phase"].map(COARSE)
+SHUF = np.random.default_rng(1).permutation(len(m))
 print("phase levels kept:",
       {k: int(v) for k, v in phase.value_counts().items()})
 
 fig, axes = plt.subplots(len(ARMS), len(FAMS) + 1,
                          figsize=(180 * MM, 86 * MM))
-plt.subplots_adjust(left=.055, right=.995, top=.90, bottom=.015,
+plt.subplots_adjust(left=.055, right=.995, top=.875, bottom=.015,
                     hspace=.10, wspace=.03)
 
 for r, (arm, armlab) in enumerate(ARMS):
@@ -66,15 +72,16 @@ for r, (arm, armlab) in enumerate(ARMS):
         ax = axes[r, c]
         ax.set_xticks([]); ax.set_yticks([])
         for s in ax.spines.values(): s.set_visible(False)
-        ax.scatter(xy[:, 0], xy[:, 1], s=.4, c=GHOST, lw=0, rasterized=True,
-                   zorder=1)
+        ax.scatter(xy[:, 0], xy[:, 1], s=.4, c=GHOST, lw=0, alpha=.55,
+                   rasterized=True, zorder=1)
         sel = (phase.isin(PH)).to_numpy()
         if c > 0:
             sel &= (m["cell family"] == fam).to_numpy()
-        for p in PH:
-            k = sel & (phase == p).to_numpy()
-            ax.scatter(xy[k, 0], xy[k, 1], s=.5, c=COL[p], lw=0,
-                       rasterized=True, zorder=2)
+        # shuffled z-order, so no phase paints over the one before it
+        keep = SHUF[sel[SHUF]]
+        rgb = np.array([COL[z] for z in phase.to_numpy()[keep]])
+        ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.45,
+                   rasterized=True, zorder=2)
         if r == 0:
             ax.set_title(fam, fontsize=6.6, pad=3)
         if c == 0:
@@ -89,6 +96,6 @@ fig.legend(handles=[Line2D([], [], lw=0, marker="o", ms=4, color=COL[p],
                    + [Line2D([], [], lw=0, marker="o", ms=4, color=GHOST,
                              label="unlabelled or other phase")],
            ncol=4, fontsize=6.0, frameon=False, loc="upper left",
-           bbox_to_anchor=(.055, .995), columnspacing=1.4, handletextpad=.4)
-fig.savefig(OUT / "figure4.png", dpi=200)
+           bbox_to_anchor=(.055, 1.005), columnspacing=1.4, handletextpad=.4)
+fig.savefig(OUT / "figure4.png", dpi=int(os.environ.get("FIGDPI", 200)))
 print(f"wrote figure4.png — {len(ARMS)} arms x {len(FAMS) + 1} panels")

@@ -14,8 +14,13 @@ through layout, which is the thing a figure must not do.
 REPRODUCIBILITY. The subsample is default_rng(24).choice(n, 400_000) then
 sorted, and the cache is keyed on sample size alone, so changing the seed or
 the count silently invalidates it.
+SUBMISSION RESOLUTION. 200 dpi is for reading on screen while the
+design is settled. For the manuscript set FIGDPI=600 or higher:
+AW does not want blurred or messy images, and a rasterised scatter
+of 400,000 points at 200 dpi will not survive print.
 """
 from __future__ import annotations
+import os
 from pathlib import Path
 import numpy as np, pandas as pd
 import matplotlib
@@ -38,47 +43,74 @@ m = meta.iloc[idx].reset_index(drop=True)
 assert len(m) == len(xy), f"{len(m)} rows against {len(xy)} points"
 
 CAT = plt.get_cmap("tab10").colors
+
+# PHASE IS GROUPED AS THE ANIMATION GROUPED IT. Nine harmonised levels
+# collapse to five in cycle order, with the animation's own palette, so the
+# two tell the same story in the same colours.
+COARSE = {"menstrual": "menstrual",
+          "proliferative_early": "proliferative", "proliferative": "proliferative",
+          "proliferative_late": "proliferative", "periovulatory": "periovulatory",
+          "secretory_early": "secretory early", "secretory_early_mid": "secretory early",
+          "secretory_mid": "secretory late", "secretory_late": "secretory late"}
+PHASE_ORDER = ["menstrual", "proliferative", "periovulatory",
+               "secretory early", "secretory late"]
+PHASE_COL = ["#8C2F39", "#D9A441", "#3A7D5D", "#2F6690", "#6D2E46"]
+m["phase group"] = m["menstrual phase"].map(COARSE)
+
+# ONE RANDOM Z-ORDER, SHARED BY EVERY PANEL. Drawing one class at a time
+# puts the last class on top of all the others: disease status is 42%
+# eutopic, not 100%, and it only looked that way because `eutopic` sorts
+# last and painted over control, ectopic and adenomyosis. Interleaving the
+# points removes the artefact without touching the data.
+SHUF = np.random.default_rng(1).permutation(len(m))
+
 PANELS = [
-    ("cell family", "cell family", "cat"),
-    ("study", "study", "cat"),
-    ("tissue", "tissue", "cat"),
-    ("menstrual phase", "menstrual phase", "cat"),
-    ("cycle day", "CycleDay", "cyc"),
-    ("serum progesterone", "ProgesteroneSerum", "seq"),
-    ("disease status", "disease_status", "cat"),
-    ("surgical stage", "Endometriosis_stage", "cat"),
-    ("grade", "EndometriosisGrade", "cat"),
+    ("cell family", "cell family", "cat", None),
+    ("study", "study", "cat", None),
+    ("tissue", "tissue", "cat", None),
+    ("menstrual phase", "phase group", "cat", (PHASE_ORDER, PHASE_COL)),
+    ("cycle day", "CycleDay", "seq", None),
+    ("serum progesterone", "ProgesteroneSerum", "seq", None),
+    ("disease status", "disease_status", "cat", None),
+    ("surgical stage", "Endometriosis_stage", "cat", None),
+    ("grade", "EndometriosisGrade", "cat", None),
 ]
 
 fig, axes = plt.subplots(3, 3, figsize=(180 * MM, 168 * MM))
 plt.subplots_adjust(left=.012, right=.988, top=.962, bottom=.012,
                     hspace=.20, wspace=.03)
 
-for ax, (title, col, kind) in zip(axes.ravel(), PANELS):
+for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values(): s.set_visible(False)
     v = m[col]
     ok = v.notna().to_numpy()
-    # unlabelled cells stay, in near-white, so every panel shows the same mass
-    ax.scatter(xy[~ok, 0], xy[~ok, 1], s=.6, c="#ededed", lw=0,
+    ax.scatter(xy[~ok, 0], xy[~ok, 1], s=.5, c="#ededed", lw=0, alpha=.55,
                rasterized=True, zorder=1)
     if kind == "cat":
-        levels = sorted(v.dropna().unique(), key=str)
-        for i, lv in enumerate(levels):
-            k = (v == lv).to_numpy()
-            ax.scatter(xy[k, 0], xy[k, 1], s=.6, c=[CAT[i % 10]], lw=0,
-                       rasterized=True, zorder=2)
-        handles = [Line2D([], [], lw=0, marker="o", ms=3, color=CAT[i % 10],
-                          label=str(lv)[:18]) for i, lv in enumerate(levels)]
+        levels, cols = (override if override else
+                        (sorted(v.dropna().unique(), key=str),
+                         [CAT[i % 10] for i in range(v.nunique())]))
+        lut = {lv: cols[i] for i, lv in enumerate(levels)}
+        keep = SHUF[ok[SHUF]]                       # shuffled, labelled only
+        rgb = np.array([lut.get(z, (1, 1, 1)) for z in v.to_numpy()[keep]])
+        ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.40,
+                   rasterized=True, zorder=2)
+        handles = [Line2D([], [], lw=0, marker="o", ms=3, color=lut[lv],
+                          label=str(lv)[:18]) for lv in levels]
         ncol = 2 if len(levels) > 5 else 1
         ax.legend(handles=handles, fontsize=4.0, frameon=False, ncol=ncol,
                   loc="lower left", handletextpad=.3, columnspacing=.6,
                   borderpad=.1, labelspacing=.25)
     else:
+        # viridis for both continuous panels, perceptually uniform and the
+        # same scale shape, so cycle day and progesterone are comparable by
+        # eye rather than by a colour-map difference.
         x = pd.to_numeric(v, errors="coerce").to_numpy()
-        cmap = "twilight" if kind == "cyc" else "viridis"
-        sc = ax.scatter(xy[ok, 0], xy[ok, 1], s=.6, c=x[ok], cmap=cmap, lw=0,
-                        rasterized=True, zorder=2)
+        keep = SHUF[ok[SHUF]]
+        sc = ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=x[keep],
+                        cmap="viridis", lw=0, alpha=.45, rasterized=True,
+                        zorder=2)
         cb = fig.colorbar(sc, ax=ax, fraction=.035, pad=.01)
         cb.ax.tick_params(labelsize=4.2, length=1.5, color=SOFT)
         cb.outline.set_visible(False)
@@ -90,5 +122,5 @@ for ax, letter in zip(axes.ravel(), "abcdefghi"):
     ax.text(.012, .985, letter, transform=ax.transAxes, fontsize=9,
             fontweight="bold", va="top", ha="left")
 
-fig.savefig(OUT / "figure3.png", dpi=200)
+fig.savefig(OUT / "figure3.png", dpi=int(os.environ.get("FIGDPI", 200)))
 print(f"wrote figure3.png — 9 panels, {len(m):,} cells each")
