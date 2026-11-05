@@ -273,6 +273,7 @@ for f in FRONTIER:
     for test, label in TESTS:
         take(f, "elaj", "native", None, test, label)
 
+VALIDATE_CELLS: dict[int, str] = {}
 if VALIDATE.exists():
     for r in rows(VALIDATE):
         try:
@@ -281,6 +282,14 @@ if VALIDATE.exists():
             continue
         LEDGER.append((v, f"{VALIDATE.relative_to(ROOT)} :: "
                           f"{r['test']}/{r['label']} (whole corpus)"))
+        # The cell count each whole-corpus row was measured over is quotable
+        # prose, so it is registered from the file rather than typed into
+        # CONSTANTS by hand.
+        try:
+            VALIDATE_CELLS[int(r["n_cells"])] = (
+                f"cells, {r['test']}/{r['label']}, whole corpus")
+        except (ValueError, TypeError, KeyError):
+            pass
         for m in re.finditer(r"p=([\d.]+)", r.get("note") or ""):
             LEDGER.append((float(m.group(1)),
                            f"{VALIDATE.relative_to(ROOT)} :: "
@@ -443,6 +452,8 @@ CONSTANTS = {
 }
 # DERIVED, not typed: the count of cells outside endometrium comes from the
 # dumped metadata in the same pass that proves none of them is annotated.
+for _n, _why in VALIDATE_CELLS.items():
+    CONSTANTS.setdefault(_n, _why)
 if OUTSIDE_ENDOMETRIUM:
     CONSTANTS[OUTSIDE_ENDOMETRIUM] = ("cells outside endometrium, none "
                                       "annotated, from the dump")

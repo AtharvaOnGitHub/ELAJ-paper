@@ -60,22 +60,32 @@ cell family 0.9820, donor recovery 0.5188 and study mixing 0.6043.
 
 The model was given expression, with study, platform and anatomical site as
 decoder covariates and menstrual phase through a single supervised head. Cell
-family, cycle day, serum progesterone, disease status, surgical stage and
-severity reached neither the encoder nor the decoder. Once training ended and
-the checkpoint was fixed, all 1{,}577{,}728 cells were embedded and read
-together. Menstrual phase, the supervised exception, is reported on held-out
-donors throughout.
+family, cell type, cycle day, serum progesterone, donor identity, disease
+status, surgical stage and severity reached neither the encoder nor the
+decoder. Once training ended and the checkpoint was fixed, all 1{,}577{,}728
+cells were embedded and read together. Menstrual phase, the supervised
+exception, is reported on held-out donors throughout.
 
-Cross-donor agreement on cell family over the whole corpus was 0.9807 across
-118 donors ($p=0.005$), the highest of any label measured here. The sixteen
-dimensions group cells by what they are (Fig.~4a).
+Of the withheld variables, cell identity is the one the latent holds most
+completely, and it holds it at every granularity the corpus labels. Agreement
+among a cell's thirty nearest neighbours was 0.9975 on a four-way lineage
+label over 174{,}848 cells, and 0.8316 on a forty-five-way cell type over
+220{,}160. Measured across donors, so that a cell's own donor cannot vote for
+it, agreement on harmonised cell family was 0.9807 across 118 donors
+($p=0.005$), the highest of any label measured here. The sixteen dimensions
+group cells by what they are (Fig.~4a).
 
-Every cell-type label in this corpus belongs to an endometrial cell. Across
-the five annotation columns the eleven studies provide, 392{,}629 cells from
-ovary, peritoneum, myometrium, urinary bladder and rectum carry none. That
-agreement is therefore measured inside a single anatomical site, and where
-the model places a cell from any of the other five is its own reading of that
-cell, with no annotation to check it against (Fig.~4c).
+They do so inside one anatomical site. Every cell-type label in this corpus
+belongs to an endometrial cell, and 392{,}629 cells from ovary, peritoneum,
+myometrium, urinary bladder and rectum carry none in any of the five
+annotation columns the eleven studies provide. Where the model places those
+cells is its own reading of them, with no annotation to check it against
+(Fig.~4c).
+
+Donor identity is the withheld variable the model is trained to discard
+rather than to hold, and over the whole corpus agreement on it was 0.3229.
+The variables that remain are the menstrual cycle, taken up next, and the
+disease labels, taken up after it.
 
 \note{THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
 states what the model was given before it states any result. AW's rule, 6
