@@ -24,7 +24,7 @@ from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
-OUT = Path(__file__).resolve().parents[1] / "draft"
+OUT = Path(__file__).resolve().parents[1] / "pinned"
 B = ROOT / "Outputs/Benchmarks"
 MM = 1 / 25.4
 INK, SOFT, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"

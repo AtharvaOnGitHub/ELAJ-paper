@@ -229,5 +229,10 @@ umap((2, slice(0,2)), "cell family", "e", "cell type", cols=CAT)
 umap((2, slice(2,4)), "study", "f", "study of origin  (11 studies)", cols=STUDY, legend=False)
 umap((2, slice(4,6)), "CycleDay", "g", "day of the menstrual cycle", cont=True)
 
-fig.savefig("/tmp/claude-501/fig1/figure1_v4.png", dpi=340)
+import os
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                   "..", "pinned")
+os.makedirs(OUT, exist_ok=True)
+fig.savefig(os.path.join(OUT, "figure1.png"), dpi=340)
+print("wrote figures/pinned/figure1.png")
 print("saved")
