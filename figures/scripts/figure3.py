@@ -75,7 +75,10 @@ print("phase levels kept:",
 
 fig, axes = plt.subplots(len(ARMS), len(FAMS) + 1,
                          figsize=(180 * MM, 86 * MM))
-plt.subplots_adjust(left=.055, right=.995, top=.875, bottom=.015,
+# top .875 -> .925 and bottom .015 -> .085: the legend moved out from above
+# the column titles to a single centred line under both rows, which frees the
+# space it used to share with them.
+plt.subplots_adjust(left=.055, right=.995, top=.925, bottom=.085,
                     hspace=.10, wspace=.03)
 
 for r, (arm, armlab) in enumerate(ARMS):
@@ -107,7 +110,7 @@ fig.legend(handles=[Line2D([], [], lw=0, marker="o", ms=4, color=COL[p],
                            label=p) for p in PH]
                    + [Line2D([], [], lw=0, marker="o", ms=4, color=GHOST,
                              label="unlabelled or other phase")],
-           ncol=4, fontsize=6.0, frameon=False, loc="upper left",
-           bbox_to_anchor=(.055, 1.005), columnspacing=1.4, handletextpad=.4)
+           ncol=len(PH) + 1, fontsize=6.0, frameon=False, loc="lower center",
+           bbox_to_anchor=(.5, -.004), columnspacing=1.6, handletextpad=.4)
 fig.savefig(OUT / "figure3.png", dpi=int(os.environ.get("FIGDPI", 200)))
 print(f"wrote figure3.png — {len(ARMS)} arms x {len(FAMS) + 1} panels")
