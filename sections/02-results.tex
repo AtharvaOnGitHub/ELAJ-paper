@@ -79,11 +79,12 @@ cells and cells from other anatomical sites are not labelled. (Fig.~4c)
 hints at what the cells from other anatomical sites could be.
 
 Donor identity is the withheld variable the model is trained to discard
-rather than to hold, and over the whole corpus agreement on it was 0.3229.
-No representation tested here removes it: measured on the held-out split,
-where all ten are compared, every other method retains more of the donor
-than \elaj does. The variables that remain are the menstrual cycle, taken up
-next, and the disease labels, taken up after it.
+rather than to hold. Over the whole corpus, agreement on it was 0.3229. On
+the held-out split, where every method is measured on the same cells, it was
+0.5188 for \elaj and ran from 0.5421 to 0.7892 across the other nine. No
+representation removes the donor, and \elaj retains the least of it. The
+variables that remain are the menstrual cycle, taken up next, and the disease
+labels, taken up after it.
 
 \note{THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
 states what the model was given before it states any result. AW's rule, 6
