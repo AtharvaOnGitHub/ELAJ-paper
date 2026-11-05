@@ -79,12 +79,16 @@ cells and cells from other anatomical sites are not labelled. (Fig.~4c)
 hints at what the cells from other anatomical sites could be.
 
 Donor identity is the withheld variable the model is trained to discard
-rather than to hold. Over the whole corpus, agreement on it was 0.3229. On
-the held-out split, where every method is measured on the same cells, it was
-0.5188 for \elaj and ran from 0.5421 to 0.7892 across the other nine. No
-representation removes the donor, and \elaj retains the least of it. The
-variables that remain are the menstrual cycle, taken up next, and the disease
-labels, taken up after it.
+rather than to hold. On the held-out set, \elaj scored 0.5188 against a 
+range of 0.5421 to 0.7892 for other models. As seen in the previous
+section, \elaj is the best at retaining biological information while 
+removing donor identity.
+
+The next few sections use the whole corpus, not just the held-out set, to 
+interpret \elaj. These interpretations are underpinned by \elaj's donor 
+identity score on the full corpus: 0.3229. The low donor identity makes 
+the results on other variables more donor-blind than the number on the 
+held-out set would suggest.
 
 \note{THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
 states what the model was given before it states any result. AW's rule, 6
