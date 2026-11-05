@@ -69,6 +69,13 @@ F = {"elaj": grab(B / "p1_dab168_kl1/benchmark.csv", "elaj", "native", "train")}
 for m, (run, pol, fit) in MANIFEST.items():
     F[m] = grab(B / run / "benchmark.csv", m, pol, fit)
 
+# THE TWO REPORTED ARMS ARE NAMED. B is for biology: B_hi keeps more of the
+# menstrual cycle and gives up a little study removal, B_lo gives up cycle
+# signal and removes study substantially better. The other four arms are the
+# factorial sweep and stay as coordinates.
+ARM_NAME = {"p1_dab168_kl1": "ELAJ$_{B\\,hi}$",
+            "p1_dab168_kl30": "ELAJ$_{B\\,lo}$"}
+
 ARMS = {}
 for f in sorted(glob.glob(str(B / "p1_dab*/benchmark.csv"))):
     d = Path(f).parent
@@ -91,38 +98,82 @@ def pareto(pts):
     return front
 
 
-def declutter(ax, pts, colour, fontsize=4.6):
-    """Label every point, pushed apart vertically, leader line where moved.
+# Eight directions, tried in order of preference. Each is (dx, dy) in axes
+# fractions, with the text alignment that keeps the label on the far side of
+# the anchor from the point.
+DIRS = [(1, 0, "left", "center"), (-1, 0, "right", "center"),
+        (.75, .75, "left", "bottom"), (-.75, .75, "right", "bottom"),
+        (.75, -.75, "left", "top"), (-.75, -.75, "right", "top"),
+        (0, 1, "center", "bottom"), (0, -1, "center", "top")]
 
-    The vertical-declutter from figure1.py: sort by y, enforce a minimum
-    separation in data units, and draw a hairline back to the point when a
-    label had to move.
+def declutter(ax, pts, colour, fontsize=4.6, pad=.030):
+    """Place each label in the best free direction around its point.
+
+    A purely vertical push stacks every label into one column, which is what
+    collapsed panels c and d: on a saturated axis every point has nearly the
+    same y, so every label wanted the same slot. So each label now tries
+    right, left, the four diagonals, then up and down, and takes the first
+    direction whose box overlaps nothing already placed, no data point, and
+    no panel edge. If every direction collides it takes the least bad one and
+    a hairline leader is drawn.
+
+    Geometry is done in axes fractions, where a character is about 0.0062
+    wide and a line about 0.030 tall at this font size, so the boxes do not
+    distort with the panel's aspect or its data range.
     """
-    lo, hi = ax.get_ylim()
-    minsep = (hi - lo) * 0.052
-    # Make room BEFORE placing, so a stack of labels cannot climb out of the
-    # panel and land on the one above it.
-    need = lo + minsep * (len(pts) + 1)
-    if need > hi:
-        hi = need
-        ax.set_ylim(lo, hi)
-        minsep = (hi - lo) * 0.052
-    last = lo - minsep
-    for x, y, nm in sorted(pts, key=lambda t: t[1]):
-        yy = min(max(y, last + minsep), hi - minsep * .5); last = yy
-        ax.annotate(nm, (x, y), xytext=(x, yy), textcoords="data",
-                    fontsize=fontsize, color=colour, va="center", ha="left",
-                    zorder=8,
+    inv = ax.transAxes.inverted()
+    def to_ax(x, y):
+        return inv.transform(ax.transData.transform((x, y)))
+    CW, LH = 0.0062 * (fontsize / 4.6), 0.030 * (fontsize / 4.6)
+    anchors = [to_ax(x, y) for x, y, _ in pts]
+    placed, out = [], []
+    order = sorted(range(len(pts)), key=lambda i: -anchors[i][1])
+    for i in order:
+        ax_, ay_ = anchors[i]
+        nm = pts[i][2]
+        w, h = len(nm) * CW, LH
+        best, best_cost = None, np.inf
+        for dx, dy, ha, va in DIRS:
+            cx, cy = ax_ + dx * pad, ay_ + dy * pad
+            x0 = cx if ha == "left" else cx - w if ha == "right" else cx - w / 2
+            y0 = cy if va == "bottom" else cy - h if va == "top" else cy - h / 2
+            box = (x0, y0, x0 + w, y0 + h)
+            cost = 0.0
+            if box[0] < 0 or box[2] > 1 or box[1] < 0 or box[3] > 1:
+                cost += 10.0
+            for b in placed:
+                ox = max(0, min(box[2], b[2]) - max(box[0], b[0]))
+                oy = max(0, min(box[3], b[3]) - max(box[1], b[1]))
+                cost += (ox * oy) * 400
+            for px, py in anchors:
+                if box[0] - .004 < px < box[2] + .004 and box[1] - .004 < py < box[3] + .004:
+                    cost += 2.0
+            cost += DIRS.index((dx, dy, ha, va)) * 0.05     # prefer the earlier ones
+            if cost < best_cost:
+                best_cost, best = cost, (cx, cy, ha, va, box)
+        cx, cy, ha, va, box = best
+        placed.append(box)
+        out.append((i, cx, cy, ha, va, best_cost))
+    for i, cx, cy, ha, va, cost in out:
+        x, y, nm = pts[i]
+        ax.annotate(nm, xy=(x, y), xycoords="data", xytext=(cx, cy),
+                    textcoords=ax.transAxes, fontsize=fontsize, color=colour,
+                    ha=ha, va=va, zorder=8,
                     arrowprops=dict(arrowstyle="-", lw=.3, color=SOFT,
-                                    shrinkA=.5, shrinkB=1.5)
-                    if abs(yy - y) > 1e-9 else None)
+                                    shrinkA=.5, shrinkB=2.0))
 
+# THE DISEASE ROW IS GONE, and the reason is a measurement we already made.
+# Across the ten methods, a method's score on control-vs-eutopic correlates
+# with its donor recovery at rho +0.721 (p 0.019) while menstrual phase does
+# not (+0.176, p 0.63). A row whose dominant property is that it reads out
+# donor memorisation is not a performance axis, and putting it beside phase
+# and cell family implies it is one. The correlation itself stays as an
+# observation about the metric; it just is not a column of the scoreboard.
 ROWS = [("phase", "cross-donor menstrual phase"),
-        ("family", "cross-donor cell family"),
-        ("disease", "control vs eutopic endometrium")]
+        ("family", "cross-donor cell family")]
 COLS = [("donor", "donor recovery"), ("mixing", "study separation")]
 
-fig, axes = plt.subplots(len(ROWS), len(COLS), figsize=(180 * MM, 200 * MM))
+fig, axes = plt.subplots(len(ROWS), len(COLS), figsize=(180 * MM, 135 * MM))
 plt.subplots_adjust(left=.095, right=.985, top=.845, bottom=.075,
                     hspace=.30, wspace=.20)
 
@@ -138,8 +189,7 @@ for r, (ykey, ylab) in enumerate(ROWS):
                        color=ELAJ_C if rep else "white",
                        edgecolor="white" if rep else ARM_C,
                        lw=.8, zorder=6 if rep else 4)
-            labelled.append((v[xkey], v[ykey],
-                             "ELAJ" if rep else k.replace("p1_", "")))
+            labelled.append((v[xkey], v[ykey], ARM_NAME.get(k, k.replace("p1_", ""))))
         for m, v in F.items():
             if m == "elaj": continue
             if np.isnan(v[xkey]) or np.isnan(v[ykey]): continue
@@ -149,9 +199,12 @@ for r, (ykey, ylab) in enumerate(ROWS):
         fr = pareto([(x, y) for x, y, _ in labelled])
         ax.plot([p[0] for p in fr], [p[1] for p in fr], "-", color=SOFT,
                 lw=1.0, alpha=.8, zorder=2)
-        ax.margins(x=.30, y=.12)
-        declutter(ax, labelled, SOFT)
+        # INVERT FIRST. declutter freezes label positions in axes fractions,
+        # so inverting afterwards flips the points out from under their own
+        # labels and every leader line stretches across the panel.
+        ax.margins(x=.22, y=.16)
         ax.invert_xaxis()                      # cost axes: better to the right
+        declutter(ax, labelled, SOFT)
         if r == len(ROWS) - 1: ax.set_xlabel(xlab + "  (lower is better)")
         if c == 0: ax.set_ylabel(ylab)
         ax.grid(color=GRID, lw=.5, zorder=0)
@@ -162,7 +215,7 @@ for ax, letter in zip(axes.ravel(), "abcdef"):
             fontweight="bold", va="top", ha="right", clip_on=False)
 
 fig.legend(handles=[
-    Line2D([], [], lw=0, marker="o", ms=6, color=ELAJ_C, label="ELAJ, reported arm"),
+    Line2D([], [], lw=0, marker="o", ms=6, color=ELAJ_C, label="ELAJ$_{B\\,hi}$, reported"),
     Line2D([], [], lw=0, marker="o", ms=4.5, color=FIELD_C, label="other methods (9)"),
     Line2D([], [], lw=0, marker="o", ms=4.5, markerfacecolor="white",
            markeredgecolor=ARM_C, color="none", label="other ELAJ arms (5)"),
