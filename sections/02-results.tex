@@ -58,24 +58,24 @@ cell family 0.9820, donor recovery 0.5188 and study mixing 0.6043.
 % ---------------------------------------------------------------------
 \subsection*{[2] Reading 1.58 million cells as sixteen numbers}
 
-Every label read in the subsections that follow, with one exception, was
-withheld from the model. The decoder is conditioned on study, platform and
-anatomical site, and a single linear head reads menstrual phase from the whole
-latent. Cell family, cycle day, serum progesterone, disease status, surgical
-stage and severity reach neither the encoder nor the decoder. Once training
-ends and the checkpoint is fixed nothing further is selected, so all
-1{,}577{,}728 cells were embedded and read together. Menstrual phase, the
-supervised exception, is reported on held-out donors throughout.
+The model was given expression, with study, platform and anatomical site as
+decoder covariates and menstrual phase through a single supervised head. Cell
+family, cycle day, serum progesterone, disease status, surgical stage and
+severity reached neither the encoder nor the decoder. Once training ended and
+the checkpoint was fixed, all 1{,}577{,}728 cells were embedded and read
+together. Menstrual phase, the supervised exception, is reported on held-out
+donors throughout.
 
-Read that way, the sixteen dimensions group cells by cell identity.
 Cross-donor agreement on cell family over the whole corpus was 0.9807 across
-118 donors ($p=0.005$), the highest of any label tested here (Fig.~4a).
+118 donors ($p=0.005$), the highest of any label measured here. The sixteen
+dimensions group cells by what they are (Fig.~4a).
 
 Every cell-type label in this corpus belongs to an endometrial cell. Across
 the five annotation columns the eleven studies provide, 392{,}629 cells from
-ovary, peritoneum, myometrium, urinary bladder and rectum carry none, so that
-agreement is measured within endometrium and the other five sites are placed
-by the model with no annotation to read them against (Fig.~4c).
+ovary, peritoneum, myometrium, urinary bladder and rectum carry none. That
+agreement is therefore measured inside a single anatomical site, and where
+the model places a cell from any of the other five is its own reading of that
+cell, with no annotation to check it against (Fig.~4c).
 
 \note{THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
 states what the model was given before it states any result. AW's rule, 6
