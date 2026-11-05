@@ -36,117 +36,92 @@
 labels so nothing is orphaned and nothing is carried twice. Status is
 whether the panel exists today.}
 
-\subsection*{Figure 1 — The confound, and where the model pulls it apart}
-\note{SCHEMATIC, no data. The one figure a reader must understand before
-any other, and the one most at risk now the cap is six --- it shows
-nothing measured, which is the easiest kind to argue away. Keep it: the
-Introduction's central argument is geometric and a sentence cannot do it.
-\\\textbf{a} One biopsy per donor, so every cell of a donor shares one
-cycle phase. \textbf{b} The same quantity drawn as a per-donor offset
-beside a batch effect, which is the same object. \textbf{c} Where in the
-model the two are separated --- adversary on the latent, phase head on
-the latent, decoder given study directly.
-\\CARRIES: the Introduction's paragraph 3. DOES NOT EXIST, has to be
-drawn.}
+\subsection*{Figure 1 --- \elaj\ as a model, and the main findings}
+\note{ORDER SETTLED BY AW: 1 \elaj\ as a model and the main findings; 2 the
+frontier; 3 both latents; 4 nine UMAPs; 5 the ablations. FIVE items, not six.
+\\Recovered from the transcripts rather than re-invented: the architecture as
+one long wide butterfly panel across the top, the frontier at \textbf{b} and
+\textbf{c}, three UMAPs along the bottom.
+\\NOT RENDERED FINAL. Known defects: whitespace, clipped boxes, the spider
+label, a chance line drawn at 0.370 which is the double-counting error now
+corrected everywhere else, and two separate Pareto fronts where Figure 2 draws
+one. The frontier panels also overlap Figure 2 and that overlap has not been
+resolved.
+\\BLOCKED: the frontier panels need the four remaining arms' full-split
+mixing, which is Run 2.}
 
-\subsection*{Figure 2 — The frontier}
-\note{\textbf{a} The factorial: cross-donor phase against donor
-recovery, six arms, Pareto front drawn. \textbf{b} The same against
-study mixing. \textbf{c} The two knobs separated --- \texttt{lambda\_dab}
-moves the frontier, \texttt{w\_kl\_gauss} travels along it.
-\\CARRIES: B1.
-\\THE LEGEND SOLVES THE ARMS-TABLE PROBLEM. AW ruled no hyperparameter
-table anywhere, and the frontier points still need their coordinates.
-Put each arm's two knob values in the legend, where they cost no
-main-text words and sit next to the point they describe.
-\\EXISTS: frontier plot, both arms, plus the Excel explorer for choosing
-which points appear.}
+\subsection*{Figure 2 --- The \elaj\ frontier}
+\note{A 2$\times$2 scatter grid. Columns share an x axis and are costs with the
+axis reversed, rows share a y axis and are biology, so better is up and to the
+right in every panel. Fifteen points: six \elaj\ arms, four foundation models,
+two deep generative models, two batch-correction methods, principal
+components. ONE Pareto front over all of them, not one per family.
+\\THE LEGEND SOLVES THE ARMS-TABLE PROBLEM. AW ruled no hyperparameter table
+anywhere, and the frontier points still need coordinates, so each arm's two
+knob values go in the legend beside the point they describe.
+\\CARRIES: A1, A2, A4, B1.
+\\BLOCKED: the mixing column needs Run 2 and \texttt{mix\_scfoundation}. The
+disease row was removed on AW's ruling: an axis whose dominant property is
+that it reads out donor memorisation is not a performance axis.}
 
-\subsection*{Figure 3 — \elaj\ against the field}
-\note{THE VICTORY MARCH IN ONE ITEM, six panels, every one
-higher-is-better oriented or marked otherwise.
-\\\textbf{a} Cross-donor menstrual phase, twelve methods, width
-annotated on each bar. \textbf{b} Cross-donor cell family, with
-\emph{supervised-on-this-label} methods hatched --- SCimilarity and
-scANVI. \textbf{c} Donor recovery, lower better. \textbf{d} Study
-mixing, lower better. \textbf{e} The scIB batch metrics flat across all
-methods, which is why c and d are measured our way. \textbf{f} Disease,
-every method, nobody good.
-\\CARRIES: A1, A2, A3, A4, A5, A6, E3. Seven findings, no prose
-enumeration needed --- Results states the claim and points here.
-\\EXISTS as grouped bars; panels b, e, f need building. Caption carries
-the width limitation and the per-method supervision.}
+\subsection*{Figure 3 --- Both latents, by cell family and cycle phase}
+\note{TEN PANELS, two arms by five columns. \textbf{a}--\textbf{e}
+ELAJ$_{B\,hi}$, \textbf{f}--\textbf{j} ELAJ$_{B\,lo}$; columns are all
+labelled cells, then stromal, epithelial, endothelial and immune. Phase in the
+animation's five-group palette, cells of other families drawn in grey so each
+panel keeps the whole embedding's shape.
+\\WHERE A READER MEETS BOTH LATENTS SIDE BY SIDE and can judge for themselves
+that $B\,hi$ holds phase territories $B\,lo$ smears. No annotation says so.
+\\MENSTRUATION IS EXCLUDED HERE and shown in Figure 4, because this figure
+reads the cycle axis and \texttt{groupings.py} rules that menstruation is a
+distinct state rather than a point on it.
+\\RENDERED, all 1{,}577{,}728 cells sampled to 400{,}000 for the scatter.}
 
-\subsection*{Figure 4 — Disease, and where it is not}
-\note{\textbf{a} Whole-corpus UMAP with cell-type regions marked, the
-entry point for every crop. \textbf{b} Disease crop, immune
-concentration at 0.77/0.83 against 0.22 corpus-wide. \textbf{c} The
-non-replication: marecko beside duempelmann, orderings flipping.
-\textbf{d} Stage and grade at chance across every arm, with donor counts
-on the axis so the floor is visible.
-\\CARRIES: C1 (partly), C4, C5, C6.
-\\DELIBERATELY ONE ITEM: splitting b from c would let a reader take the
-positive without the negative. And d belongs here rather than with the
-ablations --- it is a finding about the labels, not about the model.
-\\PARTLY EXISTS (\texttt{01\_cell\_family}, \texttt{03\_disease}); the
-stage/grade panel does not. ARM MUST BE NAMED IN THE CAPTION.}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/pinned/figure3.png}
+\caption{\note{LEGEND TO BE WRITTEN to the 300-word limit once the arms are
+final. Must name the arm, the subsample, and the grey.}}
+\end{figure}
 
-\subsection*{Figure 5 — The menstrual cycle through \elaj}
-\note{THE HEADLINE FIGURE. Panels reordered so the letters match the
-Results paragraph order after AW's reorder of [3].
-\\\textbf{a} Cycle-day crop on a cyclic colour map, day 8 through
-15--20 to 25--30 with the ends meeting. The closure is the finding and
-this panel is the only place it is shown.
-\\\textbf{b} The same embedding split into one panel per cell family,
-each coloured by phase, so the gradient visible in stromal and
-epithelial cells and absent in endothelial and immune ones is read off
-the picture.
-\\\textbf{c} The same panels from the second frontier arm.
-\\\textbf{d} The tissue crop: stromal cells from five tissues landing
-together, epithelium almost purely endometrial.
-\\CARRIES: C3 and C1's other half in a and d; C2 in b and c, and
-\emph{only} there.
-\\THE ARGUMENT THE LEGEND MUST MAKE: the phase head is one linear map
-over the whole latent and was never given cell type, so it cannot have
-produced the split in b. Honest limit in the same legend, the day values
-come from one cohort of 60 donors contributing one day each.
-\\\textcolor{elajcoral}{PANEL b WAS A BAR OF \texttt{over\_scatter}
-RATIOS AND IS NOT ANY MORE. AW cut the matching Results paragraph on 2
-November: that statistic divides a centroid distance by a
-root-mean-square radius, which describes a cloud only if the cloud is a
-filled isotropic ball. The panel inherited the assumption whole. The
-per-cell-family panels carry the same claim without it, and
-\texttt{movie\_cycle\_by\_celltype.py} already renders these facets.
-\\The claim b supports is ``phase does not separate every cell type
-equally'', which is weaker than the ratios implied and is all the figure
-needs. No number accompanies it: AW's ruling of 2 November is that no
-further calculation is done unless a reviewer asks.
-\\Endothelial was dropped from the animation on AW's earlier ruling.
-DECIDE whether the still keeps four families or three.}
-\\EXISTS: a as \texttt{08\_cycleday}, d as \texttt{02\_tissue}, b and c
-as frames from \texttt{movie\_cycle\_by\_celltype.py} that need
-compositing into a still. ARM MUST BE NAMED IN THE CAPTION.}
+\subsection*{Figure 4 --- What endometriosis looks like, in nine UMAPs}
+\note{NINE PANELS over the whole corpus, one embedding, nine colourings:
+\textbf{a} cell family, \textbf{b} study, \textbf{c} tissue, \textbf{d}
+menstrual phase, \textbf{e} cycle day, \textbf{f} serum progesterone,
+\textbf{g} disease status, \textbf{h} surgical stage, \textbf{i} grade. Each
+title carries the share of cells the label covers, so a reader sees coverage
+and structure together.
+\\CARRIES C4 and C5, and the staging result visually: \textbf{h} and
+\textbf{i} show no structure that any of the other panels show.
+\\ONE SHARED SHUFFLED Z-ORDER across every panel. Drawing one class at a time
+put the last class on top: disease status is 42\% eutopic and looked 100\%
+only because \texttt{eutopic} sorts last.
+\\RENDERED, 400{,}000 of 1{,}577{,}728 cells, no split restriction, which is
+correct because none of these labels is a model input.}
 
-\subsection*{Figure 6 — What the latent needs}
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/pinned/figure4.png}
+\caption{\note{LEGEND TO BE WRITTEN. Must name the arm, the subsample, the
+grey, and that \textbf{h} and \textbf{i} are shown at the same scale as the
+panels that do carry structure.}}
+\end{figure}
+
+\subsection*{Figure 5 --- What the latent needs in order to work}
 \note{THE FIGURE AN ML READER COMES FOR, and the one most papers do not
-publish.
-\\\textbf{a} The five single-key ablations across the five axes, one
-grouped bar per axis, base marked. \textbf{b} The phase signal split:
-65.5\% architecture, 34.5\% supervision, on already
-chance-corrected values.
-\textbf{c} The regulariser result --- \texttt{train\_nb} falling
-0.4140$\rightarrow$0.3772 while \texttt{val\_nb} rises
-0.4083$\rightarrow$0.4256 from epoch 1. \textbf{d} ECS plotted ON
-Figure 2's frontier, showing it travels along rather than expands.
-\textbf{e} The defeated discriminator: adversary loss against donor
-recovery, correlation $+0.883$.
-\\CARRIES: D1, D2, D3, D4, D5, D6, B2, B3.
-\\THE LEGEND CARRIES THE REGISTRATION: predictions were written into each
-config before the runs started, 6 of 11 bands landed, and the misses are
-reported. That is the sentence that makes this figure unusual.
-\\DOES NOT EXIST. The data does --- all five arms are scored.}
+publish: five single-key ablations against one base, with predictions
+registered in each config before the runs started.
+\\\textbf{a} The five ablations across the five axes, base marked.
+\textbf{b} The phase signal split, 65.5\% architecture and 34.5\% supervision,
+on already chance-corrected values. \textbf{c} The regulariser result,
+\texttt{train\_nb} falling 0.4140$\rightarrow$0.3772 while \texttt{val\_nb}
+rises 0.4083$\rightarrow$0.4256 from epoch 1. \textbf{d} ECS plotted ON Figure
+2's frontier, showing it travels along rather than expands it. \textbf{e} The
+defeated discriminator: adversary loss against donor recovery.
+\\NO CALLOUTS. An earlier draft labelled a bar ``65.5\%'' and titled a panel
+``positive in 25 of 28 arms''; that is prose wearing a figure's clothes.
+\\CARRIES: D1--D6, B2, B3.
+\\BLOCKED TWICE: AW deferred the design until Results \texttt{[6]} is written,
+and D3 and D5 need Run 2's mixing figures.}
 
-% ---------------------------------------------------------------------
 \section*{Extended Data}
 \note{TEN MAXIMUM (NMI, Preparing your material). Captions here carry the
 detail main-text captions cannot afford. Allocation, in priority order:
