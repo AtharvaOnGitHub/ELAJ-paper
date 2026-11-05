@@ -64,6 +64,14 @@ m["phase group"] = m["menstrual phase"].map(COARSE)
 # points removes the artefact without touching the data.
 SHUF = np.random.default_rng(1).permutation(len(m))
 
+# Raw obs values where they are not self-explaining. Endometriosis_stage is
+# stored as a float, so the panel legend read "0.0 1.0 2.0 3.0 4.0"; it is the
+# revised ASRM scale and 0 is marecko's coding for its controls, established
+# by arithmetic in validate_latent's _union_severity.
+LABEL = {"Endometriosis_stage": {"0.0": "control", "1.0": "rASRM I",
+                                 "2.0": "rASRM II", "3.0": "rASRM III",
+                                 "4.0": "rASRM IV"}}
+
 PANELS = [
     ("cell family", "cell family", "cat", None),
     ("study", "study", "cat", None),
@@ -77,7 +85,9 @@ PANELS = [
 ]
 
 fig, axes = plt.subplots(3, 3, figsize=(180 * MM, 168 * MM))
-plt.subplots_adjust(left=.012, right=.988, top=.962, bottom=.012,
+# right=.955, not .988: the third column carries a colourbar and at .988 its
+# tick labels ran off the canvas.
+plt.subplots_adjust(left=.012, right=.955, top=.962, bottom=.012,
                     hspace=.20, wspace=.03)
 
 for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
@@ -96,8 +106,13 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
         rgb = np.array([lut.get(z, (1, 1, 1)) for z in v.to_numpy()[keep]])
         ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.40,
                    rasterized=True, zorder=2)
+        # NOT TRUNCATED. `[:18]` printed garcia_alonso_2021_a and _b as two
+        # identical legend entries in different colours, which reads as a
+        # rendering bug and hides the one fact the reader needs about them:
+        # they are the same fifteen people under thirty identifiers.
         handles = [Line2D([], [], lw=0, marker="o", ms=3, color=lut[lv],
-                          label=str(lv)[:18]) for lv in levels]
+                          label=LABEL.get(col, {}).get(str(lv), str(lv)))
+                   for lv in levels]
         ncol = 2 if len(levels) > 5 else 1
         ax.legend(handles=handles, fontsize=4.0, frameon=False, ncol=ncol,
                   loc="lower left", handletextpad=.3, columnspacing=.6,

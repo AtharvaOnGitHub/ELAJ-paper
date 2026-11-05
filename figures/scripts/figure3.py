@@ -54,7 +54,14 @@ m = meta.iloc[idx].reset_index(drop=True)
 # The animation's own five groups and palette, in cycle order. `menstrual`
 # is 162 cells of 400,000 and is folded into proliferative rather than drawn
 # as a level nobody can see.
-COARSE = {"menstrual": "proliferative",
+# MENSTRUATION IS EXCLUDED, NOT FOLDED IN. groupings.py: "menstrual is
+# dropped rather than folded into proliferative. Menstruation is a
+# distinct physiological state, not a point on the proliferative-to-
+# secretory axis, and it carries under 4,199 cells." This panel folded
+# it into proliferative, which is the one thing that note rules out.
+# Figure 4 still shows it as its own level, because that figure is a
+# description of what the corpus holds rather than a reading of the axis.
+COARSE = {"menstrual": None,
           "proliferative_early": "proliferative", "proliferative": "proliferative",
           "proliferative_late": "proliferative", "periovulatory": "periovulatory",
           "secretory_early": "secretory early", "secretory_early_mid": "secretory early",
