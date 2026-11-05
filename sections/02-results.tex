@@ -117,20 +117,21 @@ produced. On one scale across two cohorts it reaches 34, and because each
 cohort contributes all three levels, no part of the label can be read off the
 study a cell came from.
 
-\elaj does not recover it. On held-out donors its agreement was 0.1313 with
-stage ($p=0.303$) and $-$0.0414 with grade ($p=0.498$), neither reaching its
-own permutation null. The same estimator, on the same cells, reaches the
+\elaj does not recover it. Its agreement with the merged scale was 0.1157
+($p=0.289$), and with mild against severe $-$0.0968 ($p=0.781$). In the
+original vocabularies it was 0.1313 with stage ($p=0.303$) and $-$0.0414 with
+grade ($p=0.498$). None of the four reached its own permutation null. The same estimator, on the same cells, reaches the
 permutation floor of 0.005 for both cell family and menstrual phase
 (Fig.~4h, 4i), so it is not blind to structure that is present.
 
 Nor does anything else. Nine further representations were measured on the
-merged scale: four foundation models pretrained on corpora far larger than
-this one, two deep generative models, two batch-correction methods and
-principal components. Agreement ranged from 0.0759 to 0.1860 and not one of
-the nine reached its own null, the lowest $p$ being 0.080. Restricted to the
-donors who have endometriosis, so that the comparison is mild against severe
-rather than disease against control, all nine fell at or below zero, the
-lowest $p$ being 0.627.
+same scale: four foundation models pretrained on corpora far larger than this
+one, two deep generative models, two batch-correction methods and principal
+components. Across all ten, agreement ranged from 0.0759 to 0.1860 and not one
+reached its own null, the lowest $p$ being 0.080. Restricted to the donors who
+have endometriosis, so that the comparison is mild against severe rather than
+disease against control, all ten fell at or below zero, the lowest $p$ being
+0.627.
 
 Whether the label can be recovered at all was then tested by removing the
 restriction that makes it hard. Read across the whole corpus, where the donors
@@ -151,10 +152,11 @@ is it recoverable at all; it is not. The positive control sits in the \elaj
 paragraph rather than at the end, so the reader meets it at the first negative
 rather than after four of them.
 \\PARAGRAPH 1 IS AW'S OWN WORDING, unchanged.
-\\PENDING: \elaj's merged-severity and mild-against-severe rows, from the
-eleven arm re-scores. They belong in paragraph 3 beside the stage and grade
-figures, and the range in paragraph 4 then runs over ten methods rather than
-nine. Only those two edits.
+\\TEN OF TEN as of 6 November: \elaj's merged rows landed in
+`full_p1_dab168_kl1`, at 0.1157 and $-$0.0968, both inside the ranges the
+other nine already set, so no endpoint moved. Its held-out study mixing also
+confirmed the two figures I had computed off-pipeline, 0.7613 and 0.6544,
+exactly.
 \\REGISTER: the last sentence is AW's and is the one line that interprets
 rather than measures. The stronger reading he wants, that the scale itself is
 the problem and that patients have been saying so, is an argument and belongs

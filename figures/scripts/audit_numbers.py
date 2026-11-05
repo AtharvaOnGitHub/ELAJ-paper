@@ -156,7 +156,7 @@ SEVERITY_MANIFEST = {
     "scimilarity":  "severity_scimilarity",
     "harmony":      "severity_trans_harmony",
     "scanorama":    "severity_trans_scanorama",
-    # elaj: pending the eleven arm re-scores queued 6 November.
+    "elaj":         "full_p1_dab168_kl1",
 }
 STAGE_LABELS = {"stage": "Endometriosis_stage", "grade": "EndometriosisGrade",
                 "severity": "severity",

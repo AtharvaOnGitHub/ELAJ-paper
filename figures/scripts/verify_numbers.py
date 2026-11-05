@@ -228,6 +228,7 @@ SEVERITY_SOURCES = {
     "scimilarity":  BENCH / "severity_scimilarity/benchmark.csv",
     "harmony":      BENCH / "severity_trans_harmony/benchmark.csv",
     "scanorama":    BENCH / "severity_trans_scanorama/benchmark.csv",
+    "elaj":         BENCH / "full_p1_dab168_kl1/benchmark.csv",
     # elaj: pending the eleven arm re-scores queued 6 November. When they land,
     # add BENCH / "full_p1_dab168_kl1/benchmark.csv" here.
 }
