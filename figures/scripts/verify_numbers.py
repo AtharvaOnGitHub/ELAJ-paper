@@ -420,6 +420,11 @@ for macro in ("note", "todo", "citep", "citet", "cite", "label", "ref"):
 tex = re.sub(r"^%.*$", "", tex, flags=re.M)
 tex = re.sub(r"%.*$", "", tex, flags=re.M)        # trailing comments too
 tex = re.sub(r"Fig\.~\d+[a-z]?(--[a-z])?", "", tex)
+# Subsection numbers are structural markers, not measurements. Stripped
+# rather than whitelisted, so the number itself stays checked wherever
+# else it appears: [6] arrived on 5 November and failed the gate as an
+# unsourced prose value, which is the gate working and the wrong target.
+tex = re.sub(r"\\subsection\*\{\[\d+\]", r"\\subsection*{", tex)
 # Study identifiers are names, not measurements: marecko\_2024, lin\_2023.
 tex = re.sub(r"[A-Za-z]+\\_\d{4}", "", tex)
 tex = tex.replace("{,}", "").replace(",", "")

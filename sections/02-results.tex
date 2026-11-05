@@ -101,36 +101,45 @@ between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 \note{CARRIES C3 in prose, C2 through FIGURE 5 only. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
-\subsection*{[4] Disease signal, and where it is not}
+\subsection*{[4] Surgical stage and grade}
 
-Disease status carried a weak signal. Across held-out donors, cross-donor
-agreement on it was 0.3364 ($n_{\text{cells}}=172{,}740$; $p=0.005$), and the
-highest of the ten methods tested reached 0.4290.
+\note{AWAITING THE SEVERITY RUN, queued 5 November. Stage and grade are one
+clinical scale written two ways: duempelmann\_2026 defines mild and severe as
+rASRM I--II and III--IV, marecko\_2024 records rASRM I--IV. Scored separately
+they carry 16 and 18 held-out donors in one cohort each, where the permutation
+null reaches 0.42 and a non-result is undetectability. Merged they carry 34
+donors across two cohorts, each contributing all three levels, so study does
+not determine the label. WHAT THIS SUBSECTION WILL STATE: whether any of the
+ten methods recovers severity above its own null, with the heavy memorisers
+named, since on stage alone not one of the ten clears its null and the lowest
+$p$ is 0.149. The whole-corpus reading, which includes trained donors, is the
+control that rules out a representation failure. Detail in RESULTS\_NOTES.md.}
 
-Across the ten methods, how well a latent carried disease tracked how much
-donor identity it had kept. Disease agreement and donor recovery correlated
-at $\rho=+0.721$ ($p=0.019$), while menstrual phase and donor recovery did
-not ($\rho=+0.176$; $p=0.63$). The methods with the highest disease scores
-were those from which a donor could most easily be identified, and \elaj,
-the least donor-identifiable of the ten, scored the lowest.
+% ---------------------------------------------------------------------
+\subsection*{[5] What the disease axis measures}
 
-The same pattern separates the two readings of surgical stage. Across the
-whole corpus, which includes the donors the model was trained on, stage
-reached 0.332 and was significant ($p=0.005$). Restricted to held-out
-donors it reached 0.1313, and about a third of random reassignments of those
-stages to different donors did as well ($p=0.3035$). Grade was negative on
-held-out donors ($-$0.0414; $p=0.4975$), near zero across the corpus
-($0.0263$; $p=0.408$), and negative in all six ablated configurations,
-between $-$0.0227 and $-$0.0723. Cell family and menstrual phase, measured
-the same way on the same cells, both reach the permutation floor of 0.005
-(Fig.~4d).
+Disease status is control endometrium against eutopic endometrium from donors
+whose endometriosis lies elsewhere. In the \elaj latent, cross-donor agreement
+on it was 0.3364 across 36 held-out donors
+($n_{\text{cells}}=172{,}740$; $p=0.005$). This was the lowest of the ten
+methods tested. The highest was scanorama at 0.4290, on the same donors.
 
-Severity, the disease label this corpus supports with the most donors at 118,
-reached 0.2655 across all 1{,}577{,}728 cells ($p=0.005$).
+Across those ten methods, agreement on disease status tracked donor recovery
+($\rho=+0.721$; $p=0.019$). Menstrual phase, measured on the same embeddings
+and the same cells, did not ($\rho=+0.176$; $p=0.63$). \elaj was both the
+method from which a donor was hardest to identify, at 0.5188, and the method
+with the lowest agreement on disease status.
 
-\note{CARRIES C6 in prose, C4 and C5 through FIGURE 4 only. Detail in RESULTS\_NOTES.md.}
+Cell family and menstrual phase, measured under the same estimator on the same
+cells, both reached the permutation floor of 0.005 (Fig.~4a, 4d).
 
-\subsection*{[5] What the latent needs in order to work}
+\note{CARRIES A6 and the disease row of the field table. FIGURE 4g. Per-study
+disease rows exist and stay out, on AW's ruling of 2 November: inside one
+cohort the test has 16, 18 and 2 donors and the benchmark marks them FEW
+GROUPS, excess is unreadable. Detail in RESULTS\_NOTES.md.}
+
+% ---------------------------------------------------------------------
+\subsection*{[6] What the latent needs in order to work}
 \note{CARRIES D1--D6, B2, B3. FIGURE 6. Detail in RESULTS\_NOTES.md.}
 
 \note{CARRIES D1--D6, B2, B3. FIGURE 6. Detail in RESULTS\_NOTES.md.}
