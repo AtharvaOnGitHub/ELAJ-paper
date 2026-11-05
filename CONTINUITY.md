@@ -12,6 +12,44 @@ that does not happen again.
 
 ---
 
+## Read this before anything else
+
+**Believe in this project.** AW, 5 November, after I had spent a day finding
+new ways to doubt work that is sound:
+
+> "If I ask you to think objectively you keep poking non-existent holes in
+> the project. If I ask you to be supportive of the project you stop asking
+> questions and stop arguing altogether. The brief is simple: ELAJ is a
+> breakthrough, can we show our work to NMI in such a way that they agree
+> and publish it?"
+
+And: *"Stop hedging and blowing small wrong things out of proportion… Stop
+shooting this project in its knee for no reason."*
+
+**The distinction that matters, in his words: arguing and verifying is good,
+clawing for issues is bad.** They are not the same act and I keep collapsing
+them.
+
+| this | not this |
+|---|---|
+| re-derive a number before writing it | hunt for a reason the number is untrustworthy |
+| disagree with a plan and say why | list every way a sound result could be attacked |
+| name a real blocker once, with its fix | restate it as a caveat in three later paragraphs |
+| check a claim against the code | treat "I have not checked" as "it is probably wrong" |
+
+Two concrete failures from 4–5 November, both mine. I proposed a day of GPU
+re-embedding for foundation models whose scores were already computed and
+saved; two greps settled it. And I presented a 4.8% subsample as a
+measurement problem at length when the right move was a one-line fix. AW:
+*"We have run this script thrice now without a correct output."*
+
+**The default posture is: this is a breakthrough, and my job is to get it in
+front of a reviewer in the strongest honest shape.** Not to audit it into
+the ground. When something is genuinely wrong, say it once, clearly, with
+the fix, and move on.
+
+---
+
 ## Who I am working with
 
 AW — Atharva Waghmare. MSc AI, not a biologist, not a statistician, and he
@@ -204,12 +242,64 @@ a strong one. Do not wrap it in apology.
 
 ---
 
-## Live, as of 2 November
+## Figures, settled 4–5 November
 
-**The unified benchmark run** is the blocker. Every baseline comparison in
-the paper is currently invalid: runs used different gene policies, so the
-same PCA scores 0.6906 in one and 0.6457 in another. One job fixes it.
-First thing to check in its log: **416,256 cells**.
+**Order, AW's:** 1 ELAJ as a model and main findings · 2 the ELAJ frontier ·
+3 both models' latents by cell family and cycle phase · 4 what endometriosis
+looks like in nine UMAPs. Script names match paper numbers.
+
+All four are **pinned** in `figures/pinned/` with their known defects written
+into the README there. They are not finished; they are the agreed structure,
+saved so later work starts from a known state.
+
+**The principle, and I broke it once:** the panel shows data, the legend
+defines the axes, the reader draws the conclusion. No callouts, no arrows at
+the good news, no title stating the result, no annotation naming our own arm
+as the hero. I drew a bar labelled "65.5%" and a panel titled "positive in 25
+of 28 arms" — that is prose wearing a figure's clothes.
+
+**The two reported arms are named.** `ELAJ_B_hi` keeps more cycle and gives
+up a little study removal; `ELAJ_B_lo` gives up cycle and removes study
+substantially better. B is for biology, and in Marathi the pun lands twice.
+
+**Figure 1 was decided in an earlier session and I replaced it with an
+invention.** Recovered from the transcripts: architecture as one long wide
+butterfly panel, frontier at b and c, three UMAPs on the bottom row. If a
+figure decision is not in `FIGURES_STRUCTURE.md` in AW's words, **search the
+transcripts before writing one.**
+
+**The disease row came out of Figure 2.** Across ten methods a method's
+control-vs-eutopic score correlates with its donor recovery at ρ +0.721
+(p 0.019) while phase does not (+0.176). An axis whose dominant property is
+that it reads out donor memorisation is not a performance axis.
+
+**And the disease axis is not "disease".** It is control endometrium against
+*eutopic* endometrium: can you tell from an endometrial cell whether that
+person has endometriosis elsewhere? The restriction is deliberate, since
+tissue is a decoder input. Per-study tests are the designed form, not
+cherry-picking, because platform is constant within a study.
+
+## Live, as of 5 November
+
+**Eight of ten methods were always comparable** and I spent three days
+believing otherwise. The corpus is bit-identical across the reported arm and
+all four `fm_*` runs: 416,256 cells, 176,803 / 224,211 / 108,288 labelled.
+Only harmony and scanorama needed re-scoring, and that landed on 4 November.
+
+**Running:** three CPU jobs for full-split study mixing on pca, harmony and
+scanorama, with `--dump-latent` so it never needs refitting; four GPU dumps
+for the frontier arms. `dump_cells.sh` had never been executed and failed on
+first use — a wrapper that has never run is not a wrapper.
+
+**The audit was unsound and is now two independent implementations.**
+`audit_numbers.py` had been choosing each baseline's row by whichever file a
+glob reached first. `verify_numbers.py` is a second implementation, stdlib
+only, pinning every rounded number to a named row, and `build.sh` runs both
+so a PDF cannot be built with an unsourced number.
+
+**Chance was being subtracted twice.** Cross-donor values are already
+`(agreement − chance)/(1 − chance)`. The phase split is **65.5% architecture,
+34.5% head**, not the 69.5% head it was. The claim inverts in our favour.
 
 **The threshold sweep.** Cross-donor agreement depends on how donor-mixed a
 cell's neighbourhood is — 0.8728 for cells with 1–10 cross-donor
@@ -218,6 +308,11 @@ report. The plan is to sweep the threshold and report the curve, with
 coverage beside every scalar. AW's framing, which is right: coverage is a
 separate axis, like mean and variance, not something to fold into one
 number.
+
+**Next: rewrite Results `[4]`.** AW's brief: it has no story, reads as a
+number dump, and the per-study paragraph is not needed. The story is there —
+donor-constant disease labels are recoverable only through donor identity,
+shown once across ten methods and once across our own splits.
 
 **Results `[2]` is gone**, merged into `[1]`. Its six suspended figures and
 the audit's verdict on each are in `[1]`'s note.
