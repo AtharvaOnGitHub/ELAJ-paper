@@ -76,7 +76,13 @@ for f in sorted(glob.glob(str(B / "p1_dab*/benchmark.csv"))):
     ARMS[d.name] = grab(f, "elaj", "native", "train")
 
 def pareto(pts):
-    """Non-dominated under maximise-y, minimise-x, returned left to right."""
+    """Non-dominated under maximise-y, minimise-x, returned left to right.
+
+    ONE FRONT OVER EVERYTHING. An earlier version drew the front over the ten
+    methods only, with our own arms as a separate curve, which decides in
+    advance who is allowed to be on it. Every point competes: whatever lies
+    on the front, lies on it.
+    """
     s = sorted(pts, key=lambda p: (p[0], -p[1]))
     front, best = [], -np.inf
     for x, y in s:
@@ -84,39 +90,67 @@ def pareto(pts):
             front.append((x, y)); best = y
     return front
 
+
+def declutter(ax, pts, colour, fontsize=4.6):
+    """Label every point, pushed apart vertically, leader line where moved.
+
+    The vertical-declutter from figure1.py: sort by y, enforce a minimum
+    separation in data units, and draw a hairline back to the point when a
+    label had to move.
+    """
+    lo, hi = ax.get_ylim()
+    minsep = (hi - lo) * 0.052
+    # Make room BEFORE placing, so a stack of labels cannot climb out of the
+    # panel and land on the one above it.
+    need = lo + minsep * (len(pts) + 1)
+    if need > hi:
+        hi = need
+        ax.set_ylim(lo, hi)
+        minsep = (hi - lo) * 0.052
+    last = lo - minsep
+    for x, y, nm in sorted(pts, key=lambda t: t[1]):
+        yy = min(max(y, last + minsep), hi - minsep * .5); last = yy
+        ax.annotate(nm, (x, y), xytext=(x, yy), textcoords="data",
+                    fontsize=fontsize, color=colour, va="center", ha="left",
+                    zorder=8,
+                    arrowprops=dict(arrowstyle="-", lw=.3, color=SOFT,
+                                    shrinkA=.5, shrinkB=1.5)
+                    if abs(yy - y) > 1e-9 else None)
+
 ROWS = [("phase", "cross-donor menstrual phase"),
         ("family", "cross-donor cell family"),
-        ("disease", "cross-donor disease")]
+        ("disease", "control vs eutopic endometrium")]
 COLS = [("donor", "donor recovery"), ("mixing", "study separation")]
 
-fig, axes = plt.subplots(len(ROWS), len(COLS), figsize=(180 * MM, 175 * MM))
+fig, axes = plt.subplots(len(ROWS), len(COLS), figsize=(180 * MM, 200 * MM))
 plt.subplots_adjust(left=.095, right=.985, top=.845, bottom=.075,
                     hspace=.30, wspace=.20)
 
 for r, (ykey, ylab) in enumerate(ROWS):
     for c, (xkey, xlab) in enumerate(COLS):
         ax = axes[r, c]
-        pts = [(F[m][xkey], F[m][ykey]) for m in F
-               if not (np.isnan(F[m][xkey]) or np.isnan(F[m][ykey]))]
-        fr = pareto(pts)
-        ax.plot([p[0] for p in fr], [p[1] for p in fr], "-", color=SOFT,
-                lw=.9, alpha=.75, zorder=2)
-        # the six ELAJ arms, two knob families
-        for suffix, ls in (("kl1", "-"), ("kl30", "--")):
-            a = sorted((ARMS[k][xkey], ARMS[k][ykey]) for k in ARMS
-                       if k.endswith(suffix)
-                       and not np.isnan(ARMS[k][xkey]))
-            if len(a) > 1:
-                ax.plot([p[0] for p in a], [p[1] for p in a], ls,
-                        color=ARM_C, lw=1.1, alpha=.85, zorder=3)
-            ax.scatter([p[0] for p in a], [p[1] for p in a], s=11,
-                       facecolor="white", edgecolor=ARM_C, lw=.8, zorder=4)
-        for m in F:
+        # EVERY point: the six p-series arms and the nine other methods.
+        labelled = []
+        for k, v in ARMS.items():
+            if np.isnan(v[xkey]) or np.isnan(v[ykey]): continue
+            rep = k == "p1_dab168_kl1"
+            ax.scatter([v[xkey]], [v[ykey]], s=44 if rep else 16,
+                       color=ELAJ_C if rep else "white",
+                       edgecolor="white" if rep else ARM_C,
+                       lw=.8, zorder=6 if rep else 4)
+            labelled.append((v[xkey], v[ykey],
+                             "ELAJ" if rep else k.replace("p1_", "")))
+        for m, v in F.items():
             if m == "elaj": continue
-            ax.scatter([F[m][xkey]], [F[m][ykey]], s=20, color=FIELD_C,
+            if np.isnan(v[xkey]) or np.isnan(v[ykey]): continue
+            ax.scatter([v[xkey]], [v[ykey]], s=20, color=FIELD_C,
                        edgecolor="white", lw=.5, zorder=5)
-        ax.scatter([F["elaj"][xkey]], [F["elaj"][ykey]], s=46, color=ELAJ_C,
-                   edgecolor="white", lw=.8, zorder=6)
+            labelled.append((v[xkey], v[ykey], m))
+        fr = pareto([(x, y) for x, y, _ in labelled])
+        ax.plot([p[0] for p in fr], [p[1] for p in fr], "-", color=SOFT,
+                lw=1.0, alpha=.8, zorder=2)
+        ax.margins(x=.30, y=.12)
+        declutter(ax, labelled, SOFT)
         ax.invert_xaxis()                      # cost axes: better to the right
         if r == len(ROWS) - 1: ax.set_xlabel(xlab + "  (lower is better)")
         if c == 0: ax.set_ylabel(ylab)
@@ -130,10 +164,10 @@ for ax, letter in zip(axes.ravel(), "abcdef"):
 fig.legend(handles=[
     Line2D([], [], lw=0, marker="o", ms=6, color=ELAJ_C, label="ELAJ, reported arm"),
     Line2D([], [], lw=0, marker="o", ms=4.5, color=FIELD_C, label="other methods (9)"),
-    Line2D([], [], color=ARM_C, lw=1.1, label="ELAJ arms, lower information cost"),
-    Line2D([], [], color=ARM_C, lw=1.1, ls="--", label="ELAJ arms, higher information cost"),
-    Line2D([], [], color=SOFT, lw=.9, label="Pareto front over all methods")],
-    ncol=3, fontsize=6.2, frameon=False, loc="upper left",
+    Line2D([], [], lw=0, marker="o", ms=4.5, markerfacecolor="white",
+           markeredgecolor=ARM_C, color="none", label="other ELAJ arms (5)"),
+    Line2D([], [], color=SOFT, lw=1.0, label="Pareto front over every point")],
+    ncol=4, fontsize=6.2, frameon=False, loc="upper left",
     bbox_to_anchor=(.085, .975), columnspacing=1.6, handlelength=1.6)
 fig.savefig(OUT / "figure2.png", dpi=240)
 plt.close(fig)
