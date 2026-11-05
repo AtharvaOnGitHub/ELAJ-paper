@@ -211,6 +211,59 @@ for key, entry in SOURCES.items():
     for test, label in TESTS:
         take(f, key if key != "elaj" else "elaj", policy, fit, test, label)
 
+# ── severity, scored in its own pass, plus the note fields the prose quotes ──
+# ADDED 6 November 2026 with Results [4]. Two things here that `take` cannot
+# do. The severity rows live in separate files, because the labels were added
+# to CROSS_DONOR_LABELS after the main pass and scored with --only-labels. And
+# the prose quotes a permutation null's 95th percentile and a donor count,
+# both of which live in the `note` column rather than in `value`, so they are
+# read from the named row rather than pinned by hand.
+SEVERITY_SOURCES = {
+    "pca":          BENCH / "severity_ind_pca/benchmark.csv",
+    "scvi":         BENCH / "severity_ind_scvi/benchmark.csv",
+    "scanvi":       BENCH / "severity_ind_scanvi/benchmark.csv",
+    "scgpt":        BENCH / "severity_scgpt/benchmark.csv",
+    "geneformer":   BENCH / "severity_geneformer/benchmark.csv",
+    "scfoundation": BENCH / "severity_scfoundation/benchmark.csv",
+    "scimilarity":  BENCH / "severity_scimilarity/benchmark.csv",
+    "harmony":      BENCH / "severity_trans_harmony/benchmark.csv",
+    "scanorama":    BENCH / "severity_trans_scanorama/benchmark.csv",
+    # elaj: pending the eleven arm re-scores queued 6 November. When they land,
+    # add BENCH / "full_p1_dab168_kl1/benchmark.csv" here.
+}
+SEVERITY_LABELS = ("severity", "severity (patients only)")
+
+def take_note(path, method, test, label, keys=("null95", "p", "donors")):
+    """Register the note fields of one named row: null95, p, donor count."""
+    if not path.exists():
+        fail(f"missing file {path}"); return
+    for r in rows(path):
+        m = re.sub(r"__.*", "", (r.get("method") or ""))
+        if m != method or r.get("test") != test or r.get("label") != label:
+            continue
+        note = r.get("note") or ""
+        prov = (f"{path.relative_to(ROOT)} :: {method} {test}/{label} note")
+        for k in keys:
+            mm = (re.search(rf"{k}=([-\d.]+)", note) if k != "donors"
+                  else re.search(r"(\d+) donors", note))
+            if mm:
+                try: LEDGER.append((float(mm.group(1)), f"{prov} {k}"))
+                except ValueError: pass
+        return
+    fail(f"no row for {method} {test}/{label} in {path.relative_to(ROOT)}")
+
+for key, f in SEVERITY_SOURCES.items():
+    for label in SEVERITY_LABELS:
+        take(f, key, None, None, "cross-donor", label)
+        take(f, key, None, None, "cross-donor-p", label)
+        take_note(f, key, "cross-donor", label)
+
+# The same note fields for stage and grade, which the prose quotes as nulls.
+for key, entry in SOURCES.items():
+    if entry[0] is None: continue
+    for label in ("Endometriosis_stage", "EndometriosisGrade"):
+        take_note(entry[0], key, "cross-donor", label)
+
 for name, f in ABLATIONS.items():
     for test, label in TESTS:
         take(f, "elaj", "native", None, test, label)
@@ -345,6 +398,7 @@ CONSTANTS = {
     269: "donors", 142: "donors, whole-corpus phase", 118: "donors, severity",
     67: "severity label levels", 60: "cycle-day donors / grade donors",
     58: "stage donors, whole corpus", 36: "phase donors, held out",
+    34: "donors, merged severity, held out", 18: "donors, mild vs severe",
     30: "last cycle day", 22: "cycle days present", 16: "latent dimensions",
     11: "studies", 5: "first cycle day",
 }
@@ -420,6 +474,9 @@ for macro in ("note", "todo", "citep", "citet", "cite", "label", "ref"):
 tex = re.sub(r"^%.*$", "", tex, flags=re.M)
 tex = re.sub(r"%.*$", "", tex, flags=re.M)        # trailing comments too
 tex = re.sub(r"Fig\.~\d+[a-z]?(--[a-z])?", "", tex)
+# Ordinals are words. "95th percentile" is the name of a quantity, not a
+# measurement, and 95 has no source row by design.
+tex = re.sub(r"\d+(?:st|nd|rd|th)\b", "", tex)
 # Subsection numbers are structural markers, not measurements. Stripped
 # rather than whitelisted, so the number itself stays checked wherever
 # else it appears: [6] arrived on 5 November and failed the gate as an

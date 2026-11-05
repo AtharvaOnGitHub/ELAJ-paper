@@ -137,6 +137,79 @@ def read_keyed(path: Path, method: str, policy: str, fit: str) -> dict:
     row["fit_on"] = fit or "transductive"
     return row
 
+# ── stage, grade and the severity merge, across every method ──────────────
+# ADDED 6 November 2026, with Results [4]. Its claim is a RANGE over methods
+# and a count of how many clear their own permutation null, so the audit has
+# to derive every method's value, its p and its null95, not just ELAJ's.
+#
+# SEVERITY LIVES IN ITS OWN FILES because it was scored in a second pass with
+# --only-labels, after the labels were added to CROSS_DONOR_LABELS. Those runs
+# read a dumped ExternalLatent, so their `method` column carries the dump key
+# (`pca__all30962__train`), which read_keyed's `__.*` strip already handles.
+SEVERITY_MANIFEST = {
+    "pca":          "severity_ind_pca",
+    "scvi":         "severity_ind_scvi",
+    "scanvi":       "severity_ind_scanvi",
+    "scgpt":        "severity_scgpt",
+    "geneformer":   "severity_geneformer",
+    "scfoundation": "severity_scfoundation",
+    "scimilarity":  "severity_scimilarity",
+    "harmony":      "severity_trans_harmony",
+    "scanorama":    "severity_trans_scanorama",
+    # elaj: pending the eleven arm re-scores queued 6 November.
+}
+STAGE_LABELS = {"stage": "Endometriosis_stage", "grade": "EndometriosisGrade",
+                "severity": "severity",
+                "severity_cases": "severity (patients only)"}
+
+def _note_fields(note: str) -> dict:
+    out = {}
+    for part in str(note).split(";"):
+        if "=" in part:
+            k, v = part.split("=", 1)
+            try: out[k.strip()] = float(v.strip().split()[0])
+            except ValueError: pass
+    return out
+
+def cross_donor_rows(path: Path, method: str, label: str) -> dict:
+    b = pd.read_csv(path)
+    b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
+    e = b[(b.mm == method) & (b.test == "cross-donor") & (b.label == label)]
+    if e.empty:
+        raise KeyError(f"{method}/{label} absent from {rel(path)}")
+    r = e.iloc[0]
+    f = _note_fields(r["note"])
+    return {"value": float(r["value"]), "p": f.get("p"), "null95": f.get("null95")}
+
+STAGING = {}
+for meth, (run, _, _) in list(MANIFEST.items()) + [("elaj", ("p1_dab168_kl1", "", ""))]:
+    f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
+    for key in ("stage", "grade"):
+        try: STAGING[(meth, key)] = cross_donor_rows(f, meth, STAGE_LABELS[key])
+        except (KeyError, FileNotFoundError): pass
+for meth, run in SEVERITY_MANIFEST.items():
+    f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
+    for key in ("severity", "severity_cases"):
+        try: STAGING[(meth, key)] = cross_donor_rows(f, meth, STAGE_LABELS[key])
+        except (KeyError, FileNotFoundError): pass
+
+STAGING_VALUES = set()
+for (meth, key), d in STAGING.items():
+    for x in (d["value"], d["p"], d["null95"]):
+        if x is None: continue
+        for dp in (4, 3, 2):
+            STAGING_VALUES.add(f"{x:.{dp}f}"); STAGING_VALUES.add(f"{abs(x):.{dp}f}")
+# The ranges the prose quotes, so a min or max is pinned as such rather than
+# passing only because it happens to equal one method's value.
+for key in STAGE_LABELS:
+    vs = [d["value"] for (m, k), d in STAGING.items() if k == key]
+    if not vs: continue
+    for x in (min(vs), max(vs)):
+        STAGING_VALUES.add(f"{x:.4f}"); STAGING_VALUES.add(f"{abs(x):.4f}")
+    ps = [d["p"] for (m, k), d in STAGING.items() if k == key and d["p"] is not None]
+    if ps:
+        STAGING_VALUES.add(f"{min(ps):.3f}"); STAGING_VALUES.add(f"{min(ps):.4f}")
+
 MISSING_METHODS = []
 for meth, (run, policy, fit) in MANIFEST.items():
     f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
@@ -181,6 +254,7 @@ for k, (r, f) in sorted(base.items(), key=lambda x: -x[1][0]["phase"]):
 # gene policy. Nothing here crosses a method boundary.
 # =========================================================================
 extra = set()
+extra |= STAGING_VALUES
 
 lines += ["", "## D1--D6 — the ablations", "",
           "Six arms, one scoring pass, ELAJ only. Each is a single-key change",

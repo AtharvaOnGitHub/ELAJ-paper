@@ -103,17 +103,37 @@ between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 % ---------------------------------------------------------------------
 \subsection*{[4] Surgical stage and grade}
 
-\note{AWAITING THE SEVERITY RUN, queued 5 November. Stage and grade are one
-clinical scale written two ways: duempelmann\_2026 defines mild and severe as
-rASRM I--II and III--IV, marecko\_2024 records rASRM I--IV. Scored separately
-they carry 16 and 18 held-out donors in one cohort each, where the permutation
-null reaches 0.42 and a non-result is undetectability. Merged they carry 34
-donors across two cohorts, each contributing all three levels, so study does
-not determine the label. WHAT THIS SUBSECTION WILL STATE: whether any of the
-ten methods recovers severity above its own null, with the heavy memorisers
-named, since on stage alone not one of the ten clears its null and the lowest
-$p$ is 0.149. The whole-corpus reading, which includes trained donors, is the
-control that rules out a representation failure. Detail in RESULTS\_NOTES.md.}
+Surgical stage and endometriosis grade are the same clinical scale recorded in
+two vocabularies, rASRM I--IV in one cohort and mild against severe in the
+other, where mild and severe are defined as rASRM I--II and III--IV. Merged
+onto one three-level scale they cover 34 held-out donors across two cohorts,
+each of which contributes controls, mild and severe disease.
+
+Across nine methods, agreement on that merged scale ranged from 0.0759 to
+0.1860, and no method reached its own permutation null. The lowest $p$ was
+0.080. Restricted to the
+donors who have endometriosis, so that the comparison is mild against severe
+rather than disease against control, every method was at or below zero, with
+the lowest $p$ at 0.627.
+
+Measured separately in their own vocabularies the two labels behave the same
+way. Stage ranged from 0.1035 to 0.4307 across the ten methods, again with
+every value below its own null, and the lowest $p$ was 0.149. The three
+highest values belonged to the three methods from which a donor is most easily
+identified, and those same three carried the three widest nulls. Grade ranged
+from $-$0.0806 to $0.0133$, with the lowest $p$ at 0.224.
+
+Read across the whole corpus, which includes the donors the model was trained
+on, stage reached 0.332 across 58 donors ($p=0.005$) against a null 95th
+percentile of 0.03. Grade did not, at 0.0263 across 60 donors ($p=0.408$).
+Cell family and menstrual phase, measured under the same estimator on the same
+cells, both reached the permutation floor of 0.005 (Fig.~4h, 4i).
+
+\note{PENDING: \elaj's own merged-severity and mild-against-severe rows, from
+the eleven arm re-scores queued 6 November. Until they land the first range is
+over NINE methods and the word ``nine'' in paragraph 2 is the only edit
+needed. Stage and grade are already over all ten. CARRIES the staging result.
+FIGURE 4h, 4i. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{[5] What the disease axis measures}
