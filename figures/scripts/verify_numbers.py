@@ -387,6 +387,44 @@ try:
 except Exception as _exc:
     fail(f"cross-method correlations could not be computed: {_exc}")
 
+# ── the corpus's annotation coverage, checked rather than asserted ────────
+# Results [2] says every cell-type label in this corpus belongs to an
+# endometrial cell. That is a claim a reviewer can test in one line, so the
+# audit tests it rather than trusting the count: it reads the dumped metadata,
+# counts the cells outside endometrium, and FAILS if any of them carries a
+# label in any of the five annotation columns the eleven studies provide.
+ANNOTATION_COLUMNS = ("cell family", "AnnotationMain", "lineage", "celltype",
+                      "AnnotationRefined")
+CELLS_META = ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz"
+
+def annotation_coverage() -> None:
+    import gzip
+    if not CELLS_META.exists():
+        fail(f"missing {CELLS_META}"); return 0
+    with gzip.open(CELLS_META, "rt", newline="") as fh:
+        rd = csv.DictReader(fh)
+        cols = [c for c in ANNOTATION_COLUMNS if c in (rd.fieldnames or [])]
+        if len(cols) != len(ANNOTATION_COLUMNS):
+            fail(f"annotation columns missing from the dump: "
+                 f"{set(ANNOTATION_COLUMNS) - set(cols)}")
+            return 0
+        outside = 0
+        labelled_outside = 0
+        for r in rd:
+            if (r.get("tissue") or "") == "endometrium":
+                continue
+            outside += 1
+            if any((r.get(c) or "").strip() for c in cols):
+                labelled_outside += 1
+    if labelled_outside:
+        fail(f"[2] claims no cell-type label outside endometrium, but "
+             f"{labelled_outside:,} such cells carry one")
+    print(f"\n   annotation coverage: {outside:,} cells outside endometrium, "
+          f"{labelled_outside} of them labelled")
+    return outside
+
+OUTSIDE_ENDOMETRIUM = annotation_coverage()
+
 CONSTANTS = {
     1577728: "corpus cells, metadata",
     1161472: "train-split cells, benchmark log",
@@ -403,6 +441,11 @@ CONSTANTS = {
     30: "last cycle day", 22: "cycle days present", 16: "latent dimensions",
     11: "studies", 5: "first cycle day",
 }
+# DERIVED, not typed: the count of cells outside endometrium comes from the
+# dumped metadata in the same pass that proves none of them is annotated.
+if OUTSIDE_ENDOMETRIUM:
+    CONSTANTS[OUTSIDE_ENDOMETRIUM] = ("cells outside endometrium, none "
+                                      "annotated, from the dump")
 
 # ──────────────────────────────────────────────────────────────────────────
 # PINNED VALUES. A number the prose rounds cannot be traced by search: at two

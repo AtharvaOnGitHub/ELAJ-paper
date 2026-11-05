@@ -57,9 +57,42 @@ cell family 0.9820, donor recovery 0.5188 and study mixing 0.6043.
 
 % ---------------------------------------------------------------------
 \subsection*{[2] Reading 1.58 million cells as sixteen numbers}
-\note{CARRIES C1. FIGURE 5a, 5d. Detail in RESULTS\_NOTES.md.}
 
-% ---------------------------------------------------------------------
+Every label read in the subsections that follow, with one exception, was
+withheld from the model. The decoder is conditioned on study, platform and
+anatomical site, and a single linear head reads menstrual phase from the whole
+latent. Cell family, cycle day, serum progesterone, disease status, surgical
+stage and severity reach neither the encoder nor the decoder. Once training
+ends and the checkpoint is fixed nothing further is selected, so all
+1{,}577{,}728 cells were embedded and read together. Menstrual phase, the
+supervised exception, is reported on held-out donors throughout.
+
+Read that way, the sixteen dimensions group cells by cell identity.
+Cross-donor agreement on cell family over the whole corpus was 0.9807 across
+118 donors ($p=0.005$), the highest of any label tested here (Fig.~4a).
+
+Every cell-type label in this corpus belongs to an endometrial cell. Across
+the five annotation columns the eleven studies provide, 392{,}629 cells from
+ovary, peritoneum, myometrium, urinary bladder and rectum carry none, so that
+agreement is measured within endometrium and the other five sites are placed
+by the model with no annotation to read them against (Fig.~4c).
+
+\note{THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
+states what the model was given before it states any result. AW's rule, 6
+November: a label the model never received cannot leak, so held-out protects
+against nothing for it.
+\\C1'S CROSS-TISSUE CLAIM IS WITHDRAWN. `RESULTS\_STRUCTURE.md` had "stromal
+cells from five tissues land together"; all five annotation columns in the
+corpus are endometrium-only, so there are no labelled stromal cells outside
+it. The coverage fact replaces it and is a finding of the same kind as
+\texttt{[4]}'s: the public record cannot answer the question.
+\\REGISTER, calibrated against scGPT (Nat Methods 2024), whose main text
+quotes AvgBIO 0.821 from its two-batch dataset while its eighteen-batch result
+is 0.504 in Supplementary Table 3, and which calls the whole "state-of-the-art
+performance on batch correction". Biology stated plainly here; study
+separation reported honestly in \texttt{[1]}.
+\\NO PURITY PERCENTAGES, per the standing ruling. CARRIES C1. FIGURE 4a, 4c.}
+
 \subsection*{[3] The menstrual cycle through \elaj}
 
 The decoder is conditioned on study, platform and tissue alone. Menstrual phase 
