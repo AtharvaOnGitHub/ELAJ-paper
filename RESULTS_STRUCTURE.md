@@ -92,7 +92,7 @@ Discovery, not competition. No baseline column, by the rule in
 
 | # | finding | numbers | status |
 |---|---|---|---|
-| C1 | **Cells group by what they are, not where they came from.** Stromal cells from five tissues land together; most cells in each region carried no cell-type label at all | cross-donor family 0.9841; the UMAP crops | solid; claim stays at the level the approximation supports |
+| C1 | **Cells group by what they are, not where they came from.** Stromal cells from five tissues land together; most cells in each region carried no cell-type label at all | cross-donor family **0.9807** over all 1,577,728 cells and 118 donors; 0.9820 held out. The 0.9841 recorded here until 6 November belonged to a different arm and is one of the six the audit caught |  solid; claim stays at the level the approximation supports |
 | C2 | **Cycle displacement splits by cell type, and the supervision cannot have produced the split.** The phase head is one linear map over the whole latent and was never given cell type. | displacement in units of each type's own width: stromal 1.07, epithelial 0.98, endothelial 0.39, immune 0.34. **Identical across both frontier arms** | solid, and this is the headline |
 | C3 | **The cycle is continuous and closes.** | day 8 through 15-20 to 25-30 with the ends meeting, read off a cyclic colour map rather than inferred | solid; **day values come from one cohort**, stated in the same breath |
 | C4 | **Disease signal concentrates in the immune compartment.** | 0.77 / 0.83 inside marecko's immune cells against 0.22 corpus-wide; rank 1 of 4 in both arms | solid |

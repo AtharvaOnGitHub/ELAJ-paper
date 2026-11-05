@@ -79,15 +79,36 @@ distinct state rather than a point on it.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure3.png}
-\caption{\note{LEGEND TO BE WRITTEN to the 300-word limit once the arms are
-final. Must name the arm, the subsample, and the grey.}}
+\caption{\textbf{Both \elaj\ latents, by cell family and cycle phase.} Every
+panel is a UMAP of the same sixteen-dimensional latent, showing 400{,}000
+cells drawn at random from all 1{,}577{,}728 in the corpus. Top row
+(\textbf{a}--\textbf{e}), ELAJ$_{B\,hi}$; bottom row (\textbf{f}--\textbf{j}),
+ELAJ$_{B\,lo}$. The two arms differ only in their adversarial and
+Kullback--Leibler weights, given in Figure 2's legend. Columns restrict the
+colouring to one cell family while leaving every cell in place, so each panel
+shows where that family sits within the whole embedding: all labelled cells
+(\textbf{a},~\textbf{f}), stromal (\textbf{b},~\textbf{g}), epithelial
+(\textbf{c},~\textbf{h}), endothelial (\textbf{d},~\textbf{i}) and immune
+(\textbf{e},~\textbf{j}). Colour is harmonised menstrual phase in four groups;
+cells with no phase label, and cells of another family in that column, are
+drawn in grey. Menstruation is excluded here and appears in Figure~4d: it
+carries fewer than 4{,}199 cells and is a distinct physiological state rather
+than a point on the proliferative-to-secretory axis. Menstrual phase is the
+only one of these variables supplied to the model, through a single linear
+head reading the whole latent; that head was never given cell family.}
 \end{figure}
 
 \subsection*{Figure 4 --- What endometriosis looks like, in nine UMAPs}
 \note{NINE PANELS over the whole corpus, one embedding, nine colourings:
 \textbf{a} cell family, \textbf{b} study, \textbf{c} tissue, \textbf{d}
 menstrual phase, \textbf{e} cycle day, \textbf{f} serum progesterone,
-\textbf{g} disease status, \textbf{h} surgical stage, \textbf{i} grade. Each
+\textbf{g} disease status, \textbf{h} merged severity, \textbf{i} surgical
+stage. Grade was dropped on AW's ruling of 6 November: it is a coarsening of
+the same rASRM scale, so showing both spent a panel twice, and the merge is
+what Results \texttt{[4]} actually tests. It also covers more of the map, 41\%
+of cells against grade's 30\%. The merged column is built by importing the
+project's own harmoniser rather than retyping the mapping, so the figure and
+the numbers cannot drift apart. Each
 title carries the share of cells the label covers, so a reader sees coverage
 and structure together.
 \\CARRIES C4 and C5, and the staging result visually: \textbf{h} and
@@ -100,9 +121,25 @@ correct because none of these labels is a model input.}
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure4.png}
-\caption{\note{LEGEND TO BE WRITTEN. Must name the arm, the subsample, the
-grey, and that \textbf{h} and \textbf{i} are shown at the same scale as the
-panels that do carry structure.}}
+\caption{\textbf{Nine readings of one embedding.} All panels show the same
+UMAP of ELAJ$_{B\,hi}$'s sixteen-dimensional latent, 400{,}000 cells drawn at
+random from all 1{,}577{,}728, recoloured by one variable each: cell family
+(\textbf{a}), study (\textbf{b}), anatomical site (\textbf{c}), harmonised
+menstrual phase (\textbf{d}), cycle day (\textbf{e}), serum progesterone
+(\textbf{f}), disease status (\textbf{g}), merged severity (\textbf{h}) and
+surgical stage (\textbf{i}). Each title gives the share of cells carrying that
+label, and cells without it are drawn in grey, so coverage and structure are
+visible together. Points are drawn in one shared random order across all nine
+panels rather than one class at a time: drawn by class, the last class paints
+over every other, and disease status, which is 42\% eutopic, appeared total
+only because \texttt{eutopic} sorts last. Severity in \textbf{h} merges the two
+cohorts' vocabularies onto one three-level scale, taking rASRM I--II and
+III--IV as mild and severe after duempelmann\_2026 and rASRM I--IV from
+marecko\_2024; stage in \textbf{i} is marecko\_2024's rASRM coding alone. Of
+the nine variables only menstrual phase was supplied to the model, through one
+supervised head. Study, platform and anatomical site enter the decoder as
+covariates. Cell family, cycle day, serum progesterone, disease status,
+severity and surgical stage were withheld from it entirely.}
 \end{figure}
 
 \subsection*{Figure 5 --- What the latent needs in order to work}

@@ -21,6 +21,7 @@ of 400,000 points at 200 dpi will not survive print.
 """
 from __future__ import annotations
 import os
+import sys
 from pathlib import Path
 import numpy as np, pandas as pd
 import matplotlib
@@ -57,6 +58,22 @@ PHASE_ORDER = ["menstrual", "proliferative", "periovulatory",
 PHASE_COL = ["#8C2F39", "#D9A441", "#3A7D5D", "#2F6690", "#6D2E46"]
 m["phase group"] = m["menstrual phase"].map(COARSE)
 
+# SEVERITY REPLACES GRADE IN PANEL h, AW 6 November: grade is a coarsening of
+# stage, so showing both spent a panel on the same clinical scale twice. The
+# merge is what Results [4] tests and it carries 641,024 cells across two
+# cohorts against grade's 466,176 in one.
+#
+# IMPORTED, NOT RETYPED. A second copy of the mapping here could drift from
+# the one the numbers are computed with, and then the figure and the prose
+# would disagree about what "severe" means.
+sys.path.insert(0, str(ROOT / "axw1008" / "src"))
+from endo_model.evaluation.label_harmonisation import (            # noqa: E402
+    SEVERITY, SEVERITY_SOURCE_COLUMNS, merge_columns)
+m["severity"] = merge_columns({c: m[c].to_numpy() for c in SEVERITY_SOURCE_COLUMNS},
+                              SEVERITY_SOURCE_COLUMNS, SEVERITY)
+SEV_ORDER = list(SEVERITY.order)
+SEV_COL = ["#2F6690", "#D9A441", "#8C2F39"]        # ordered scale, ordered hue
+
 # ONE RANDOM Z-ORDER, SHARED BY EVERY PANEL. Drawing one class at a time
 # puts the last class on top of all the others: disease status is 42%
 # eutopic, not 100%, and it only looked that way because `eutopic` sorts
@@ -80,8 +97,8 @@ PANELS = [
     ("cycle day", "CycleDay", "seq", None),
     ("serum progesterone", "ProgesteroneSerum", "seq", None),
     ("disease status", "disease_status", "cat", None),
+    ("severity", "severity", "cat", (SEV_ORDER, SEV_COL)),
     ("surgical stage", "Endometriosis_stage", "cat", None),
-    ("grade", "EndometriosisGrade", "cat", None),
 ]
 
 fig, axes = plt.subplots(3, 3, figsize=(180 * MM, 168 * MM))
