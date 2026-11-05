@@ -7,10 +7,34 @@ These are **not finished**. They are the agreed structure, saved so the
 design decisions behind them are not lost and so later work starts from a
 known state rather than a re-derivation.
 
-| file | script | regenerate with |
+| file | script | what it is |
 |---|---|---|
-| `figure1.png` | `../scripts/figure1.py` | `python figures/scripts/figure1.py` |
-| `figure2.png` | `../scripts/figure2.py` | `python figures/scripts/figure2.py` |
+| `figure1.png` | `../scripts/figure1.py` | ELAJ as a model, and the main findings |
+| `figure2.png` | `../scripts/figure2.py` | the ELAJ frontier |
+| `figure3.png` | `../scripts/figure3.py` | both models' latents, by cell family and cycle phase |
+| `figure4.png` | `../scripts/figure4.py` | this is what endometriosis looks like, in nine UMAPs |
+
+Regenerate any of them with
+`python figures/scripts/figureN.py`. Set `FIGDPI=600` for submission: 200 is
+for reading on screen, and a rasterised scatter of 400,000 points at 200 dpi
+will not survive print.
+
+## The order, and why
+
+AW, 5 November:
+
+> 1. ELAJ as a model and main findings
+> 2. The ELAJ frontier
+> 3. ELAJ models by cell type and menstrual phase
+> 4. This is what endometriosis looks like in 9 UMAPs.
+
+Figure 3 comes before Figure 4 because it is where a reader meets both
+latents side by side and can judge for themselves that `ELAJ_B_hi` separates
+the space more sharply than `ELAJ_B_lo`. The corpus-wide read only makes
+sense once they have.
+
+The scripts were renamed to match, so the file number is the paper number
+and nobody has to carry a mapping.
 
 Both write here directly. `figure1.py` previously wrote to `/tmp`, where it
 would not have survived a reboot.
@@ -74,3 +98,46 @@ performance axis. The correlation stays as an observation about the metric.
    that row gets its own expanded range, or only front points are labelled.
 3. `B_lo` reads as a demotion when it is the better model at the harder task.
    The legend should say what the subscript indexes.
+
+
+---
+
+## Figure 3 — both latents, by cell family and cycle phase
+
+Two rows, one per reported arm. Column 1 is every labelled cell as the
+reference a reader needs to tell a cycle gradient from cell-type structure;
+columns 2 to 5 restrict to one family at a time.
+
+Phase is collapsed into the animation's own five groups in cycle order, with
+the animation's palette, so the figure and the GIF tell one story in one set
+of colours. `menstrual` is 162 cells of 400,000 and folds into
+`proliferative` rather than being drawn as a level nobody can see.
+
+**No magnitudes anywhere.** C2 was ruled out of the prose, so this figure is
+the finding: which families separate, not by how much.
+
+## Figure 4 — nine UMAPs
+
+One embedding, nine colourings, nothing moving between panels but colour.
+Neutral 3 × 3 grid: grouping the panels into "labels that structure the
+latent" and "labels that do not" would read better and would state the
+conclusion through layout.
+
+**Disease status was an artefact and is fixed.** The corpus is 42% eutopic,
+35% control, 20% ectopic, 3% adenomyosis. Drawing one class at a time
+alphabetically put `eutopic` on top of everything and the panel looked
+uniform. Every panel now shares one shuffled z-order, which is what
+`phase_groups.py` was already doing.
+
+Cycle day and serum progesterone are both viridis, so they can be compared
+by eye rather than through a colour-map difference. They are not the same:
+progesterone's bright band is sharply localised where cycle day's gradient
+is broad.
+
+**Panels h and i carry the claim.** AW: "We cannot find any reasonable
+biological pattern in endometriosis staging across the entire publicly
+available scRNA database. Maybe we need a change."
+
+**Study structure is visible in panel b and that is fine.** It is on the
+frontier, it is the paper's subject, and a reviewer who asks gets an answer.
+No pre-emption.

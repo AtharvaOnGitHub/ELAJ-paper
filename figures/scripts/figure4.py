@@ -1,18 +1,19 @@
-"""Figure 4 — the cycle, and the cell families it separates.
+"""Figure 4 — this is what endometriosis looks like, in nine UMAPs.
 
     /Users/atharvawaghmare/miniconda3/envs/elaj/bin/python figures/scripts/figure4.py
 
-C2 was ruled out of the Results prose entirely, so this figure IS the
-finding: whether the menstrual-cycle gradient is present in a cell family or
-absent from it, read off the embedding rather than off a ratio.
+ONE embedding, nine colourings. Nothing moves between panels except colour,
+which is what makes a grid of UMAPs legible: a reader compares structure, not
+layout. They see in one pass which labels organise the latent and which do
+not, and that is the whole "what does the latent hold" question at once.
 
-Each row is one frontier arm. Column 1 is every labelled cell, as the
-reference a reader needs to judge whether a per-family panel is showing a
-cycle gradient or just showing cell-type structure. Columns 2 to 5 are the
-same embedding restricted to one family at a time, same colours, same axes.
+Neutral grid, alphabetical. Grouping the panels into "labels that structure
+it" and "labels that do not" would read better and would state the conclusion
+through layout, which is the thing a figure must not do.
 
-No magnitudes anywhere. That is the ruling and it is also the honest form:
-the claim is which families separate, not by how much.
+REPRODUCIBILITY. The subsample is default_rng(24).choice(n, 400_000) then
+sorted, and the cache is keyed on sample size alone, so changing the seed or
+the count silently invalidates it.
 SUBMISSION RESOLUTION. 200 dpi is for reading on screen while the
 design is settled. For the manuscript set FIGDPI=600 or higher:
 AW does not want blurred or messy images, and a rasterised scatter
@@ -28,74 +29,98 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
-OUT = Path(__file__).resolve().parents[1] / "draft"
+ARM = "p1_dab168_kl1"
+OUT = Path(__file__).resolve().parents[1] / "pinned"
 MM = 1 / 25.4
-INK, SOFT, GHOST = "#1a1a1a", "#6b6b6b", "#ededed"
-ARMS = [("p1_dab168_kl1", "ELAJ$_{B\\,hi}$"), ("p1_dab168_kl30", "ELAJ$_{B\\,lo}$")]
-FAMS = ["stromal", "epithelial", "endothelial", "immune"]
+INK, SOFT = "#1a1a1a", "#6b6b6b"
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 6.5,
                      "text.color": INK})
 
-meta = pd.read_csv(ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz",
-                   low_memory=False)
+xy = np.load(ROOT / f"Outputs/analysis/umaps/{ARM}/_umap_cache/global_400000.npy")
+meta = pd.read_csv(ROOT / f"Outputs/cells/{ARM}/metadata.csv.gz", low_memory=False)
 idx = np.sort(np.random.default_rng(24).choice(len(meta), 400_000, replace=False))
 m = meta.iloc[idx].reset_index(drop=True)
+assert len(m) == len(xy), f"{len(m)} rows against {len(xy)} points"
 
-# THE COLUMN HAS NINE FINE LEVELS, NOT THREE. proliferative_early,
-# secretory_mid and the rest are separate values, so matching the three
-# coarse names drops most of the labelled cells and makes secretory almost
-# vanish. Collapse by prefix into the four cycle stages, in cycle order,
-# because the point is a gradient and alphabetical order scrambles it.
-# The animation's own five groups and palette, in cycle order. `menstrual`
-# is 162 cells of 400,000 and is folded into proliferative rather than drawn
-# as a level nobody can see.
-COARSE = {"menstrual": "proliferative",
+CAT = plt.get_cmap("tab10").colors
+
+# PHASE IS GROUPED AS THE ANIMATION GROUPED IT. Nine harmonised levels
+# collapse to five in cycle order, with the animation's own palette, so the
+# two tell the same story in the same colours.
+COARSE = {"menstrual": "menstrual",
           "proliferative_early": "proliferative", "proliferative": "proliferative",
           "proliferative_late": "proliferative", "periovulatory": "periovulatory",
           "secretory_early": "secretory early", "secretory_early_mid": "secretory early",
           "secretory_mid": "secretory late", "secretory_late": "secretory late"}
-PH = ["proliferative", "periovulatory", "secretory early", "secretory late"]
-COL = dict(zip(PH, ["#D9A441", "#3A7D5D", "#2F6690", "#6D2E46"]))
-phase = m["menstrual phase"].map(COARSE)
+PHASE_ORDER = ["menstrual", "proliferative", "periovulatory",
+               "secretory early", "secretory late"]
+PHASE_COL = ["#8C2F39", "#D9A441", "#3A7D5D", "#2F6690", "#6D2E46"]
+m["phase group"] = m["menstrual phase"].map(COARSE)
+
+# ONE RANDOM Z-ORDER, SHARED BY EVERY PANEL. Drawing one class at a time
+# puts the last class on top of all the others: disease status is 42%
+# eutopic, not 100%, and it only looked that way because `eutopic` sorts
+# last and painted over control, ectopic and adenomyosis. Interleaving the
+# points removes the artefact without touching the data.
 SHUF = np.random.default_rng(1).permutation(len(m))
-print("phase levels kept:",
-      {k: int(v) for k, v in phase.value_counts().items()})
 
-fig, axes = plt.subplots(len(ARMS), len(FAMS) + 1,
-                         figsize=(180 * MM, 86 * MM))
-plt.subplots_adjust(left=.055, right=.995, top=.875, bottom=.015,
-                    hspace=.10, wspace=.03)
+PANELS = [
+    ("cell family", "cell family", "cat", None),
+    ("study", "study", "cat", None),
+    ("tissue", "tissue", "cat", None),
+    ("menstrual phase", "phase group", "cat", (PHASE_ORDER, PHASE_COL)),
+    ("cycle day", "CycleDay", "seq", None),
+    ("serum progesterone", "ProgesteroneSerum", "seq", None),
+    ("disease status", "disease_status", "cat", None),
+    ("surgical stage", "Endometriosis_stage", "cat", None),
+    ("grade", "EndometriosisGrade", "cat", None),
+]
 
-for r, (arm, armlab) in enumerate(ARMS):
-    xy = np.load(ROOT / f"Outputs/analysis/umaps/{arm}/_umap_cache/global_400000.npy")
-    for c, fam in enumerate(["all labelled cells"] + FAMS):
-        ax = axes[r, c]
-        ax.set_xticks([]); ax.set_yticks([])
-        for s in ax.spines.values(): s.set_visible(False)
-        ax.scatter(xy[:, 0], xy[:, 1], s=.4, c=GHOST, lw=0, alpha=.55,
-                   rasterized=True, zorder=1)
-        sel = (phase.isin(PH)).to_numpy()
-        if c > 0:
-            sel &= (m["cell family"] == fam).to_numpy()
-        # shuffled z-order, so no phase paints over the one before it
-        keep = SHUF[sel[SHUF]]
-        rgb = np.array([COL[z] for z in phase.to_numpy()[keep]])
-        ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.45,
+fig, axes = plt.subplots(3, 3, figsize=(180 * MM, 168 * MM))
+plt.subplots_adjust(left=.012, right=.988, top=.962, bottom=.012,
+                    hspace=.20, wspace=.03)
+
+for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
+    ax.set_xticks([]); ax.set_yticks([])
+    for s in ax.spines.values(): s.set_visible(False)
+    v = m[col]
+    ok = v.notna().to_numpy()
+    ax.scatter(xy[~ok, 0], xy[~ok, 1], s=.5, c="#ededed", lw=0, alpha=.55,
+               rasterized=True, zorder=1)
+    if kind == "cat":
+        levels, cols = (override if override else
+                        (sorted(v.dropna().unique(), key=str),
+                         [CAT[i % 10] for i in range(v.nunique())]))
+        lut = {lv: cols[i] for i, lv in enumerate(levels)}
+        keep = SHUF[ok[SHUF]]                       # shuffled, labelled only
+        rgb = np.array([lut.get(z, (1, 1, 1)) for z in v.to_numpy()[keep]])
+        ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.40,
                    rasterized=True, zorder=2)
-        if r == 0:
-            ax.set_title(fam, fontsize=6.6, pad=3)
-        if c == 0:
-            ax.text(-.04, .5, armlab, transform=ax.transAxes, fontsize=7.4,
-                    rotation=90, va="center", ha="right")
-        ax.text(.02, .97, f"{chr(97 + r * (len(FAMS) + 1) + c)}",
-                transform=ax.transAxes, fontsize=8, fontweight="bold",
-                va="top", ha="left")
+        handles = [Line2D([], [], lw=0, marker="o", ms=3, color=lut[lv],
+                          label=str(lv)[:18]) for lv in levels]
+        ncol = 2 if len(levels) > 5 else 1
+        ax.legend(handles=handles, fontsize=4.0, frameon=False, ncol=ncol,
+                  loc="lower left", handletextpad=.3, columnspacing=.6,
+                  borderpad=.1, labelspacing=.25)
+    else:
+        # viridis for both continuous panels, perceptually uniform and the
+        # same scale shape, so cycle day and progesterone are comparable by
+        # eye rather than by a colour-map difference.
+        x = pd.to_numeric(v, errors="coerce").to_numpy()
+        keep = SHUF[ok[SHUF]]
+        sc = ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=x[keep],
+                        cmap="viridis", lw=0, alpha=.45, rasterized=True,
+                        zorder=2)
+        cb = fig.colorbar(sc, ax=ax, fraction=.035, pad=.01)
+        cb.ax.tick_params(labelsize=4.2, length=1.5, color=SOFT)
+        cb.outline.set_visible(False)
+    n = int(ok.sum())
+    ax.set_title(f"{title}   ({100*n/len(m):.0f}% of cells labelled)",
+                 fontsize=6.4, pad=3, color=INK)
 
-fig.legend(handles=[Line2D([], [], lw=0, marker="o", ms=4, color=COL[p],
-                           label=p) for p in PH]
-                   + [Line2D([], [], lw=0, marker="o", ms=4, color=GHOST,
-                             label="unlabelled or other phase")],
-           ncol=4, fontsize=6.0, frameon=False, loc="upper left",
-           bbox_to_anchor=(.055, 1.005), columnspacing=1.4, handletextpad=.4)
+for ax, letter in zip(axes.ravel(), "abcdefghi"):
+    ax.text(.012, .985, letter, transform=ax.transAxes, fontsize=9,
+            fontweight="bold", va="top", ha="left")
+
 fig.savefig(OUT / "figure4.png", dpi=int(os.environ.get("FIGDPI", 200)))
-print(f"wrote figure4.png — {len(ARMS)} arms x {len(FAMS) + 1} panels")
+print(f"wrote figure4.png — 9 panels, {len(m):,} cells each")
