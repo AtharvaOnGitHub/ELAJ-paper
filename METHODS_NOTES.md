@@ -220,8 +220,8 @@ rather than the circular block, indistinguishable from "the Gaussian
 means" while no reported arm has a circular branch; and that the head is
 discarded after training.
 
-COLLISION: the 69.5% figure for how much of the phase margin the head
-supplies is a result and belongs in *Ablations*.
+COLLISION: the 34.5% figure for how much of the chance-corrected phase
+signal the head supplies is a result and belongs in *Ablations*.
 
 ## Composite objective
 

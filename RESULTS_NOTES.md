@@ -220,9 +220,9 @@ as a corpus figure.
 
 FOR THE DISCUSSION, not here: that one linear map over the whole latent,
 never given cell type, cannot have manufactured a four-way split by cell
-type; that 69.5% of the phase margin being the head's means "the cycle was
-recovered" is unavailable while "the cell-type structure of the cycle was
-recovered" is; that stromal and epithelial cells are the two compartments
+type; that with 34.5% of the chance-corrected phase signal being the
+head's, "the cycle was recovered" is a weaker claim than "the cell-type
+structure of the cycle was recovered"; that stromal and epithelial cells are the two compartments
 that remodel across the cycle and the two that move; and that the progesterone
 and pseudotime correlations are external corroboration of the axis.
 
@@ -365,8 +365,10 @@ config before the runs started, 6 of 11 bands landed, misses reported.
 D1 FIRST AND MOST PROMINENTLY, because every reported arm is
 semi-supervised and a reviewer will ask whether the cycle result is the
 supervision played back: removing the phase head drops cross-donor phase
-0.7346 to 0.4812 against chance 0.370. The head supplies about 69.5% of the
-margin, the architecture 30.5%.
+0.7346 to 0.4812. Both values are already chance-corrected, so the ratio
+is the split: the architecture supplies about 65.5% of the signal, the head
+34.5%. CORRECTED 5 November; the earlier 69.5% head figure subtracted
+chance a second time.
 
 D2, THE SURPRISE: the same head is a regulariser. Without it
 `train_nb` falls 0.4140 to 0.3772 while `val_nb` rises

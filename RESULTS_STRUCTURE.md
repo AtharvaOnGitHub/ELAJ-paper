@@ -110,7 +110,7 @@ cross-donor, held-out.
 
 | # | finding | numbers | status |
 |---|---|---|---|
-| D1 | **The phase head supplies about 69.5% of the phase margin over chance; the architecture supplies the other 30.5%.** Neither "phase emerges" nor "phase is supervised" — a measurement of how the two divide | phase 0.7346 to 0.4812 on removal, chance 0.370 | solid |
+| D1 | **The architecture supplies about 65.5% of the chance-corrected phase signal; the head supplies the other 34.5%.** Neither "phase emerges" nor "phase is supervised" — a measurement of how the two divide | phase 0.7346 to 0.4812 on removal, both already chance-corrected | solid |
 | D2 | **The phase head is also a regulariser.** Without it the model fits the training split at the expense of held-out cells from epoch 1 | `train_nb` 0.4140 to 0.3772 while `val_nb` 0.4083 to 0.4256 | solid |
 | D3 | **ECS traverses the frontier rather than expanding it.** Removing it improves every biology axis and worsens every cost axis — the same kind of knob as `w_kl_gauss`, not an independent gain | family +0.0017, phase +0.0051, disease +0.0274; donor 0.5188 to 0.5520, mixing 0.6043 to 0.6829 | solid |
 | D4 | **Pooled order statistics are a phase mechanism, not a general one.** | phase -0.096, family -0.002 on removal | solid |
