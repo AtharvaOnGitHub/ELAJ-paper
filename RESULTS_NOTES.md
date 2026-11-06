@@ -411,3 +411,60 @@ AW to retitle the five headings; NMI wants the finding, not the activity.
 
 ---
 
+
+
+---
+
+## Closed subsections: the notes their tex no longer carries
+
+Moved out of `02-results.tex` on 6 November, when each was closed. The
+rule is that a finished subsection carries no note in the manuscript.
+
+### [2]
+
+THE LICENCE FOR EVERY WHOLE-CORPUS NUMBER THAT FOLLOWS, which is why it
+states what the model was given before it states any result. AW's rule, 6
+November: a label the model never received cannot leak, so held-out protects
+against nothing for it.
+
+- C1'S CROSS-TISSUE CLAIM IS WITHDRAWN. `RESULTS_STRUCTURE.md` had "stromal
+cells from five tissues land together"; all five annotation columns in the
+corpus are endometrium-only, so there are no labelled stromal cells outside
+it. The coverage fact replaces it and is a finding of the same kind as
+`[4]`'s: the public record cannot answer the question.
+
+- REGISTER, calibrated against scGPT (Nat Methods 2024), whose main text
+quotes AvgBIO 0.821 from its two-batch dataset while its eighteen-batch result
+is 0.504 in Supplementary Table 3, and which calls the whole "state-of-the-art
+performance on batch correction". Biology stated plainly here; study
+separation reported honestly in `[1]`.
+
+- NO PURITY PERCENTAGES, per the standing ruling. CARRIES C1. FIGURE 4a, 4c.
+
+### [4]
+
+AW'S ARGUMENT CHAIN, 6 November, and the prose is his. Four bracketed
+tasks filled: ELAJ's held-out figure, the arm check, the baseline numbers,
+and the called-out models.
+
+- ARM CHECK: 0.1286 is `wholecorpus_p1_dab168_kl1` and 0.1114 is
+`_kl30`, so B hi and B lo were the right way round as written.
+
+- GRADE NOT CLEARING AT 60 DONORS IS NOT REPORTED. Severity is the variable
+the claim is made on, and one of its two source vocabularies falling short of
+power is a limit of that test rather than evidence against the claim.
+Hedging on it would weaken something true.
+
+- TWO NUMBERS WERE DROPPED, not for being wrong but for being unquotable.
+scVI's merged severity is +0.0789 and its grade is -0.0789, so the audit
+cannot tell which a reader is being shown; scANVI at 0.0759 makes the same
+point unambiguously.
+
+- CARRIES the staging result. FIGURE 4h, 4i. Detail in RESULTS_NOTES.md.
+
+### [5]
+
+CARRIES A6 and the disease row of the field table. FIGURE 4g. Per-study
+disease rows exist and stay out, on AW's ruling of 2 November: inside one
+cohort the test has 16, 18 and 2 donors and the benchmark marks them FEW
+GROUPS, excess is unreadable. Detail in RESULTS_NOTES.md.
