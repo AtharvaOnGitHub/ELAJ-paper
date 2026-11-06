@@ -175,22 +175,22 @@ much of each survives in the latent is the cost this model is measured
 against.}
 \end{figure}
 
-\subsection*{Figure 5 --- What the latent needs in order to work}
-\note{THE FIGURE AN ML READER COMES FOR, and the one most papers do not
-publish: five single-key ablations against one base, with predictions
-registered in each config before the runs started.
-\\\textbf{a} The five ablations across the five axes, base marked.
-\textbf{b} The phase signal split, 65.5\% architecture and 34.5\% supervision,
-on already chance-corrected values. \textbf{c} The regulariser result,
-\texttt{train\_nb} falling 0.4140$\rightarrow$0.3772 while \texttt{val\_nb}
-rises 0.4083$\rightarrow$0.4256 from epoch 1. \textbf{d} ECS plotted ON Figure
-2's frontier, showing it travels along rather than expands it. \textbf{e} The
-defeated discriminator: adversary loss against donor recovery.
-\\NO CALLOUTS. An earlier draft labelled a bar ``65.5\%'' and titled a panel
-``positive in 25 of 28 arms''; that is prose wearing a figure's clothes.
-\\CARRIES: D1--D6, B2, B3.
-\\BLOCKED TWICE: AW deferred the design until Results \texttt{[6]} is written,
-and D3 and D5 need Run 2's mixing figures.}
+\subsection*{Table 1 --- Every representation on every axis}
+\note{REPLACES FIGURE 5, on AW's ruling of 6 November. The five-panel
+ablations figure becomes one long table over the p-series, the a-series,
+the baselines and the foundation models. NMI counts a table as a display
+item, so the paper stays at five of six.
+\\GENERATED, never typed: \texttt{figures/scripts/table1.py} reads the same
+files the two auditors read, so a cell here and the same number in the
+prose cannot come from different runs. Regenerate after any re-score.
+\\ORDERING IS THE ARGUMENT. Four blocks, each sorted by cross-donor
+menstrual phase descending, so a reader meets every group at its best. The
+ablations are the exception: the base leads, because the rest are
+single-key changes against it.
+\\CARRIES D1--D6 and the whole field comparison. B2 and B3 are not here;
+they were cut from Results \texttt{[6]} and from the Discussion.}
+
+\input{sections/table1}
 
 \section*{Extended Data}
 \note{TEN MAXIMUM (NMI, Preparing your material). Captions here carry the
