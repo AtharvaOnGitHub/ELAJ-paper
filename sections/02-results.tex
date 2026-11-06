@@ -152,11 +152,12 @@ between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 Endometriosis severity is recorded across studies as surgical stage or 
 endometriosis grade. It appears as rASRM I--IV in one cohort and mild against 
 severe in the other, where mild and severe are defined as rASRM I--II and 
-III--IV respectively. Merged onto one three-level scale it covers 34 held-out 
-donors and 118 total donors across the whole corpus.
+III--IV respectively. Merged onto one three-level scale (control, mild, severe) 
+it covers 34 held-out donors and 118 total donors across the whole corpus.
 
 On the 34 held-out donors, ELAJ$_{B\,hi}$ reached 0.1157 on the merged scale
-and did not clear its permutation null ($p=0.289$). Read across the whole
+and did not clear its permutation null ($p=0.289$), as did ELAJ$_{B\,lo}$ at
+0.1155 ($p=0.249$). Read across the whole
 corpus, agreement on it was 0.1286 ($p=0.025$) on ELAJ$_{B\,hi}$, and 0.1114
 ($p=0.020$) on ELAJ$_{B\,lo}$. While \elaj is
 able to identify severity with some confidence, further analysis revealed that 
@@ -167,23 +168,24 @@ having some severity of endometriosis, the best model (ELAJ$_{B\,hi}$) scored
 disease status on its own, control endometrium against eutopic endometrium,
 reached 0.3364 comfortably clearing the permutation null with $p=0.005$.
 
-Additionally, no model is able to reliably interpret severity from biological 
-signal alone. On held-out donors, agreement on the merged
+The field corroborates this result. No model is able to reliably interpret 
+severity from biological signal alone. On held-out donors, agreement on the merged
 scale ran from 0.0759 to 0.1860 across the ten methods with the lowest $p$ 
 being 0.080, and not one of them reached its own permutation null. The
-highest was Geneformer at 0.1860, pretrained on corpora far larger than this
-one; the lowest was scANVI at 0.0759. Scanorama, the
-method from which a donor is most easily identified at 0.7892, reached
-0.1505, and scFoundation, the widest representation tested at 3{,}072
-dimensions, reached 0.1695. Restricted to the donors who have endometriosis,
+highest was Geneformer at 0.1860 ($p=0.080$), pretrained on corpora far
+larger than this one; the lowest was scANVI at 0.0759 ($p=0.418$). Scanorama,
+the method from which a donor is most easily identified in this corpus
+(0.7892), reached 0.1505 ($p=0.219$), and scFoundation, the widest
+representation tested at a 3{,}072-dimensional latent space, reached 0.1695
+($p=0.139$). Testing the severity separability without control samples,
 every one of the ten fell at or below zero, with the lowest $p$ at 0.627.
 
 This indicates that whether a person has endometriosis is legible in their 
 endometrium but the severity, even abstracted to two levels, cannot be
-interpreted 
-from biology. We read this result against other variables measured on the same 
-cells: cell family reached 0.9820 and menstrual phase reached 0.7346 with no 
-permutation matching them ($p=0.005$; Fig.~4h, 4i).
+interpreted from biology. We read this result against other variables measured 
+on the same cells: cell family reached 0.9820 and menstrual phase reached 
+0.7346 in ELAJ$_{B\,hi}$, with no permutation matching either of them
+($p=0.005$; Fig.~4h, 4i).
 
 
 \note{AW'S ARGUMENT CHAIN, 6 November, and the prose is his. Four bracketed

@@ -235,11 +235,13 @@ SEVERITY_SOURCES = {
     "scimilarity":  BENCH / "severity_scimilarity/benchmark.csv",
     "harmony":      BENCH / "severity_trans_harmony/benchmark.csv",
     "scanorama":    BENCH / "severity_trans_scanorama/benchmark.csv",
-    "elaj":         BENCH / "full_p1_dab168_kl1/benchmark.csv",
+    "elaj":         BENCH / "full/full_p1_dab168_kl1/benchmark.csv",
     # elaj: pending the eleven arm re-scores queued 6 November. When they land,
     # add BENCH / "full_p1_dab168_kl1/benchmark.csv" here.
 }
 SEVERITY_LABELS = ("severity", "severity (patients only)")
+# [4] quotes the held-out severity of BOTH reported arms, so both are sources.
+SEVERITY_SOURCES["elaj_blo"] = BENCH / "full/full_p1_dab168_kl30/benchmark.csv"
 
 def take_note(path, method, test, label, keys=("p", "donors")):
     """Register the note fields of one named row: null95, p, donor count."""
@@ -292,10 +294,11 @@ for _key, _files in WHOLE_CORPUS.items():
             take_note(_f, _key, "cross-donor", _label)
 
 for key, f in SEVERITY_SOURCES.items():
+    meth = "elaj" if key.startswith("elaj") else key
     for label in SEVERITY_LABELS:
-        take(f, key, None, None, "cross-donor", label)
-        take(f, key, None, None, "cross-donor-p", label)
-        take_note(f, key, "cross-donor", label)
+        take(f, meth, None, None, "cross-donor", label)
+        take(f, meth, None, None, "cross-donor-p", label)
+        take_note(f, meth, "cross-donor", label)
 
 # The same note fields for stage and grade, which the prose quotes as nulls.
 for key, entry in SOURCES.items():
@@ -525,6 +528,11 @@ PINNED = {
     "0.721": ("donor recovery vs disease", ""),
     "0.019": ("donor recovery vs disease", ""),
     "0.176": ("donor recovery vs phase", ""),
+    # Two different measurements round to 0.219 at three decimals. [4] quotes
+    # scanorama's merged-severity permutation p; the collision is with a stage
+    # p elsewhere in the table, and the prose names the method and the test.
+    "0.219": ("severity_trans_scanorama/benchmark.csv",
+              "cross-donor/severity note p"),
     "0.63":  ("donor recovery vs phase", ""),
 }
 

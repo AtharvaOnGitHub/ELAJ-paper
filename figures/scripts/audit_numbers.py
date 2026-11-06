@@ -156,7 +156,7 @@ SEVERITY_MANIFEST = {
     "scimilarity":  "severity_scimilarity",
     "harmony":      "severity_trans_harmony",
     "scanorama":    "severity_trans_scanorama",
-    "elaj":         "full_p1_dab168_kl1",
+    "elaj":         "full/full_p1_dab168_kl1",
 }
 STAGE_LABELS = {"stage": "Endometriosis_stage", "grade": "EndometriosisGrade",
                 "severity": "severity",
@@ -200,6 +200,14 @@ for i, run in enumerate(WHOLE_CORPUS_RUNS):
                        ("stage", "Endometriosis_stage"),
                        ("grade", "EndometriosisGrade")):
         try: STAGING[(f"elaj_wc{i}", key)] = cross_donor_rows(f, "elaj", label)
+        except (KeyError, FileNotFoundError): pass
+
+# [4] quotes the held-out severity of both reported arms.
+for _i, _run in enumerate(("full/full_p1_dab168_kl1", "full/full_p1_dab168_kl30")):
+    _f = ROOT / "Outputs/Benchmarks" / _run / "benchmark.csv"
+    for _key, _label in (("severity", "severity"),
+                         ("severity_cases", "severity (patients only)")):
+        try: STAGING[(f"elaj_ho{_i}", _key)] = cross_donor_rows(_f, "elaj", _label)
         except (KeyError, FileNotFoundError): pass
 
 for meth, run in SEVERITY_MANIFEST.items():
