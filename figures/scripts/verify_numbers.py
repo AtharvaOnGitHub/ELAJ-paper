@@ -776,6 +776,22 @@ ANNOTATION_COLUMNS = ("cell family", "AnnotationMain", "lineage", "celltype",
                       "AnnotationRefined")
 CELLS_META = ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz"
 
+# A CITED NUMBER HAS NO FILE BEHIND IT, AND THAT IS NOT THE SAME AS HAVING
+# NO SOURCE. Until this registry existed, "11.1 years to diagnosis" matched
+# a derived percentage change in donor recovery (11.1%) and was reported as
+# sourced to it. A literature value is registered with its bibliography key
+# and pinned, so it can only ever resolve to the paper it came from.
+LITERATURE = [
+    (11.1, "cited: bontempo2025diagnostic, mean years to diagnosis"),
+]
+for _v, _why in LITERATURE:
+    LEDGER.append((_v, _why))
+
+# Per-study shares the prose quotes, counted from the dumped metadata in
+# the same pass that checks annotation coverage rather than typed here.
+STUDY_SHARES = ("li_2025",)
+STUDY_CELLS: dict[int, str] = {}
+
 def annotation_coverage() -> None:
     import gzip
     if not CELLS_META.exists():
@@ -789,12 +805,24 @@ def annotation_coverage() -> None:
             return 0
         outside = 0
         labelled_outside = 0
+        total = 0
+        per_study: dict[str, int] = {}
+        per_donor: dict[str, set] = {}
         for r in rd:
+            total += 1
+            st = r.get("study") or ""
+            if st in STUDY_SHARES:
+                per_study[st] = per_study.get(st, 0) + 1
+                per_donor.setdefault(st, set()).add(r.get("patient_id"))
             if (r.get("tissue") or "") == "endometrium":
                 continue
             outside += 1
             if any((r.get(c) or "").strip() for c in cols):
                 labelled_outside += 1
+    for st, n_ in per_study.items():
+        STUDY_CELLS[n_] = f"cells from {st}"
+        STUDY_CELLS[len(per_donor[st])] = f"donors in {st}"
+        DERIVED.append((100 * n_ / total, f"{st} as a share of the corpus"))
     if labelled_outside:
         fail(f"[2] claims no cell-type label outside endometrium, but "
              f"{labelled_outside:,} such cells carry one")
@@ -850,6 +878,8 @@ CONSTANTS = {
 # DERIVED, not typed: the count of cells outside endometrium comes from the
 # dumped metadata in the same pass that proves none of them is annotated.
 for _n, _why in VALIDATE_CELLS.items():
+    CONSTANTS.setdefault(_n, _why)
+for _n, _why in STUDY_CELLS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in NOTE_DONORS.items():
     CONSTANTS.setdefault(_n, _why)
@@ -926,6 +956,11 @@ PINNED_AT = {
     ("D", "0.0"): ("scib-ilisi_knn", ""),
     ("D", "1.0"): ("scib-clisi_knn", ""),
     ("D", "0.04"): ("scib-kbet", ""),
+    # 11.1 is two unrelated things: years to diagnosis in the Discussion,
+    # and the donor-recovery change across the adversarial weight in [1].
+    ("1", "11.1"): ("donor % change across the adversarial weight", "p1_dab7_kl1"),
+    ("D", "11.1"): ("cited: bontempo2025diagnostic", ""),
+    ("D", "2.87"): ("li_2025 as a share of the corpus", ""),
 }
 
 def subsection_of(pos: int, marks: list[tuple[int, str]]) -> str:

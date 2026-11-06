@@ -78,8 +78,9 @@ a way of working where data is scarce and batch structure is severe:
 state the trade-off, measure both axes, and report the point on the 
 frontier the model occupies. Notably, the arm with the best held-out 
 reconstruction in this project (\texttt{val\_nb} 0.3911) falls short of the 
-reported arm (\texttt{val\_nb} 0.4024) on biology. So reconstruction loss is 
-a criterion for epoch selection, not for model performance.
+reported arm (\texttt{val\_nb} 0.4024) on biology. So validation 
+reconstruction loss is a criterion for epoch selection, not for model 
+performance.
 
 Size did not produce any of this. \elaj\ carries 1{,}883{,}986
 parameters and 16 latent dimensions against pretrained models at 256
@@ -106,4 +107,67 @@ free component is. A disease score reported on pooled single-cell data is
 therefore partly a memorisation score, and the methods that look strongest 
 on it are the ones from which donors are most easily recovered.
 
-\todo{paragraphs 5--8: the disease direction, staging, limitations, and what this makes possible. Plan in DISCUSSION\_STRUCTURE.md.}
+The disease signal itself sits in tissue that is not the disease. Every cell
+in that test is eutopic endometrium, the lining in its normal place, from
+people whose lesions are elsewhere or absent, and cross-donor agreement on
+disease status reached 0.3364 with no permutation matching it
+($p=0.005$). \elaj\ returns the lowest disease agreement of the ten
+representations and is also the one from which donors are hardest to
+recover, which by the correlation above makes it the least contaminated of
+the ten rather than the weakest. A diagnosis today takes 11.1 years and ends
+in laparoscopy \citep{bontempo2025diagnostic}. A signal legible in the
+uterine lining is a signal reachable without an operating theatre, and that
+is the direction this result points in, with one caution: of the eleven
+studies pooled here, one samples follicular fluid rather than tissue, and no
+single cohort in this corpus is large enough to support a test on its own.
+
+What that signal does not carry is the stage. Revised American Society for
+Reproductive Medicine scoring rates what a surgeon sees at one operation,
+the size and depth of lesions and the adhesions between organs, and it was
+built to predict fertility outcomes rather than symptoms. It is what every
+cohort records and it is the number a patient is given. Lesion burden has
+never tracked how much a person hurts, and patients have said so for
+decades. Measured here, the two halves of that scale come apart. Whether a
+person has endometriosis is recoverable from their endometrium
+(0.3364, $p=0.005$), and merged severity clears its permutation null across
+118 donors (0.1286, $p=0.025$) on the strength of the control contrast
+inside it. Mild against severe, among patients only, does not
+(0.0744, $p=0.129$ at 57 donors). No representation tested does better:
+across the ten methods merged severity ran 0.0759 to 0.1860 and not one
+cleared its own null, and across the six configurations of \elaj\ itself it
+cleared in none ($p=0.149$ to $0.468$). The permutation null has a floor set
+by how many donors carry the label, so the claim is bounded as what it is:
+surgical stage is not recoverable from transcriptional state in this corpus
+at this donor count. It is not a claim that severity has no biology. It is a
+claim that the scale now used to grade this disease does not correspond to
+anything the cells of the affected tissue distinguish, which is what a
+patient with a millimetre lesion and years of pain has been saying all
+along.
+
+Several limits bound these conclusions. Width is not matched: \elaj\ is read
+at sixteen dimensions against representations at 256 to 3{,}072, although
+the negative association between width and cycle agreement makes it unlikely
+that width is what separates them. The continuity of cycle day rests on a
+single cohort of 60 donors, so the closed trajectory is replicated nowhere
+else in this corpus. One of the eleven studies, 45{,}312 cells and 2.87\% of
+the corpus from 6 donors, is a follicular-fluid aspirate that entered
+labelled as endometrium and was conditioned accordingly; it contributes no
+cell-family and no phase labels, so the cycle and cell-type results do not
+depend on it. The corpus also holds only a part of the metadata that
+matters, since no cohort records cycle day, serum progesterone, surgical
+stage and treatment history together. Finally, the permutation null
+reassigns the donor-to-label map across all eleven studies at once, which
+breaks the association between a label and the cohort it came from, so the
+null never sees whatever study structure remains in the latent. The size of
+that residue is our own study separation figure, 0.7613, and a permutation
+stratified within study is the correct remedy.
+
+What a sixteen-number representation of a cell is useful for is narrow and
+worth stating plainly. It gives a common coordinate system in which a new
+cohort can be placed beside eleven existing ones without being corrected
+into them, which is the operation every one of the questions this field
+cannot currently answer depends on. It makes a cell's position comparable
+across studies, so a pattern reported in one can be looked for in another
+rather than argued about. And it is small enough to retrain, so the next
+cohort to be published does not require anyone to repeat a pretraining run
+in order to be included.
