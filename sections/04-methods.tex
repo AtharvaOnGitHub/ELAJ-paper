@@ -741,10 +741,23 @@ Supplementary.}
 
 
 \subsection*{Use of large language models}
-\note{PURPOSE: \textbf{REQUIRED BY NMI} --- ``Use of an LLM should be
-properly documented in the Methods section.'' What was used, for what,
-and what it did not do.\\
-SOURCE: Thesis Appendix A, rewritten to that requirement.}
+
+This project used generative artificial intelligence. None of the
+architectural, experimental, curative, scientific, interpretive or
+directional decisions were made by it. In descending order of usage, Claude
+Opus 5, Claude Sonnet 4.8 and Claude Sonnet 4.5 were used, accessed
+primarily through Claude Code, and the tasks fall into three groups. The
+first is code writing. The system was given the project plan, the code flow
+and the programmatic architecture, and was required to document every module
+it wrote; the code was then reviewed manually against that documentation.
+The second is testing. Unit, smoke and pre-flight tests were a standing
+requirement of every module from the outset, which produced over 500 tests
+for the codebase and made debugging and maintenance a part of writing rather
+than a separate stage. The third is proofreading, including a search for
+logical gaps in this manuscript and in the analysis that precedes it. Every
+number reported here is additionally checked by two independent auditing
+scripts that trace it to a named file, and a manuscript cannot be built with
+an unsourced value in it.
 
 \subsection*{Data availability}
 

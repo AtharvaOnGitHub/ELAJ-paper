@@ -238,3 +238,63 @@ Concrete. No reflexive gesture at clinical translation.
    this section quotes has to be added to their scope** or the Discussion
    ships unchecked. That is a change to `TEX` in both scripts, not a new
    derivation, since the numbers are the ones Results already sources.
+
+
+---
+
+## The notes the manuscript no longer carries
+
+Moved out of `sections/03-discussion.tex` on 6 November 2026, when the
+section closed. The rule is that a finished section keeps a one-line note
+and the detail lives here.
+
+```latex
+\note{PARAGRAPH 1 — what the work establishes, in one move. Not a
+summary: the claim at its proper altitude. A sixteen-dimensional
+representation of pooled endometrial single-cell data that is blind to
+the donor and still holds the menstrual cycle.
+\\\textcolor{elajcoral}{CORRECTED 30 October 2026. This note used to end
+``and the cycle structure was recovered rather than supplied'', which
+a1\_nophase disproves as a bare claim: removing the phase head drops
+cross-donor phase from 0.7346 to 0.4812, both already
+chance-corrected, so the architecture supplies about 65.5\% of the
+signal and the head the remaining 34.5\%. The defensible claim is narrower and better — the
+head is one linear map over the whole latent and was never told about
+cell types, yet cycle displacement splits by cell type (stromal 1.07,
+epithelial 0.98, endothelial 0.39, immune 0.34). THAT structure cannot
+have come from the supervision. Claim the split, not the signal.}}
+
+\note{PARAGRAPH 2 — why the frontier framing matters beyond this
+dataset. Any single-biopsy design makes the biology collinear with the
+sample. Name the other settings where that is true, so the contribution
+is not read as endometriosis-specific tooling.}
+
+\note{PARAGRAPH 3 — LIMITATIONS, stated plainly and without hedging
+language. Sixteen dimensions against baselines at 128 and higher, so the
+comparison is not width-matched. The cycle-day continuity rests on one
+cohort. The immune disease result does not replicate across cohorts.
+17{,}873 held-out cells (4.3\%) share a donor with training through the
+one overlapping study pair. Cell-type labels exist only for endometrium.
+\\ADD, AW's ruling 30 October 2026: one study of the eleven (li et al.,
+45{,}312 cells, 2.87\% of the corpus, 6 of 269 donors) is a single-cell
+atlas of pre-ovulatory follicular fluid collected at IVF oocyte retrieval,
+not an endometrial biopsy. It entered the corpus labelled as endometrium and
+the model was conditioned accordingly, so the label is reported as it was
+given rather than silently corrected. Three consequences to state: the
+sample is a fluid aspirate where every other study is a tissue section; its
+\texttt{eutopic}/\texttt{control} marks follicular fluid from an ovarian
+endometriosis patient against a male-factor infertility control, which is
+not what those words mean in the other nine studies, so 2.87\% of the
+disease axis carries different semantics; and its cycles are
+hormonally stimulated. It contributes NO cell-family and NO phase labels, so
+the cycle and cell-type results are untouched by it.}
+
+\note{PARAGRAPH 4 — what this makes possible next, kept concrete.
+Avoid the reflexive gesture at clinical translation; say what a sixteen-
+number cell representation is actually useful for.}
+```
+
+Two of these were acted on and both are recorded above rather than lost:
+the correction to paragraph 1's claim (claim the cell-type split of the
+cycle, not the cycle signal itself), and paragraph 3's li\_2025 material,
+which is now the fourth limitation in the written paragraph.

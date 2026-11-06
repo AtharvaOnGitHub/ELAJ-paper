@@ -18,7 +18,7 @@ Figure 2 landed.
 | Results `[4]` stage and grade | ~430 | **done** |
 | Results `[5]` the disease axis | ~160 | **done** |
 | Results `[6]` what the latent needs | **0** | the last one |
-| Discussion | **~1** | notes only, nothing written |
+| Discussion | 1,285 | **done**, 8 paragraphs |
 | Methods | 4,714 | **five subsections empty** |
 | Legends | 733 | Figures 2, 3, 4 written; 1 and 5 not |
 
@@ -68,7 +68,8 @@ needs is on disk and sourced through the manifest.
 
 - [ ] **Methods — *Donor and study recovery*.** 0 words.
 - [ ] **Methods — *Optimisation*.** 0 words.
-- [ ] **Methods — *Use of large language models*.** 0 words, NMI requires it.
+- [x] **Methods — *Use of large language models*.** Written 6 November from
+      the thesis's own Appendix A, compressed to ~160 words.
 - [ ] **Methods — *Whole-corpus embedding*.** 11 words.
 - [ ] **Methods — *the severity merge*.** New. rASRM I–II and III–IV from
       duempelmann\_2026, rASRM I–IV from marecko\_2024, both published, so the
@@ -103,7 +104,8 @@ needs is on disk and sourced through the manifest.
 - [ ] **Reporting Summary.** Adobe Reader form.
 - [ ] **Cover letter.** The IDAI answers carry the framing.
 
-- [ ] **Discussion.** No subheadings, ~1,000 words, currently nothing but
+- [x] **Discussion.** Written 6 November, 1,285 words, no subheadings.
+      SUPERSEDED, kept for the record: No subheadings, ~1,000 words, currently nothing but
       notes. Carries the arguments moved out of Results, C6, F1–F6, the cut
       Introduction material, and the staging argument in full: the scale
       describes lesions, lesion burden has never predicted symptoms, patients
@@ -127,9 +129,10 @@ needs is on disk and sourced through the manifest.
       checkable if the repo is public.
       *Blocked by:* external, a licence choice and a Zenodo deposit.
 
-- [ ] **Backmatter.** Author contributions, competing interests,
-      acknowledgements, in Nature's order.
-      *Blocked by:* the Zenodo DOI.
+- [~] **Backmatter.** Competing interests written. Acknowledgements and
+      author contributions seeded with coral placeholders: BlueBEAR
+      publishes a form of words it asks to be used verbatim, and the author
+      list is not final.
 
 - [ ] **Cite duempelmann\_2026 and marecko\_2024 for their methods sections.**
 
