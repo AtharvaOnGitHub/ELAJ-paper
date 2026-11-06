@@ -923,6 +923,9 @@ PINNED = {
 PINNED_AT = {
     ("1", "7.7"): ("donor % change across the information cost", "p1_dab7_kl1"),
     ("6", "7.7"): ("phase % change, BASE against random groups", ""),
+    ("D", "0.0"): ("scib-ilisi_knn", ""),
+    ("D", "1.0"): ("scib-clisi_knn", ""),
+    ("D", "0.04"): ("scib-kbet", ""),
 }
 
 def subsection_of(pos: int, marks: list[tuple[int, str]]) -> str:
@@ -976,7 +979,10 @@ def strip_group(text: str, macro: str) -> str:
         i = k
     return "".join(out)
 
-tex = "\n".join(f.read_text() for f in TEX_FILES if f.exists())
+tex = "\n".join(
+    (f.read_text() if f.name.startswith("02")
+     else "\\subsection*{[D] discussion}\n" + f.read_text())
+    for f in TEX_FILES if f.exists())
 for macro in ("note", "todo", "citep", "citet", "cite", "label", "ref"):
     tex = strip_group(tex, macro)
 tex = re.sub(r"^%.*$", "", tex, flags=re.M)
@@ -997,8 +1003,8 @@ tex = re.sub(r"\d+(?:st|nd|rd|th)\b", "", tex)
 # Offsets into THIS string, recorded before the numbers are stripped, so a
 # pin can name the subsection a prose value sits in.
 SUBSECTION_OFFSETS = [(m.start(), m.group(1)) for m in
-                      re.finditer(r"\\subsection\*\{\[(\d+)\]", tex)]
-tex = re.sub(r"\\subsection\*\{\[\d+\]", r"\\subsection*{", tex)
+                      re.finditer(r"\\subsection\*\{\[(\w+)\]", tex)]
+tex = re.sub(r"\\subsection\*\{\[\w+\]", r"\\subsection*{", tex)
 # Study identifiers are names, not measurements: marecko\_2024, lin\_2023.
 tex = re.sub(r"[A-Za-z]+\\_\d{4}", "", tex)
 tex = tex.replace("{,}", "").replace(",", "")

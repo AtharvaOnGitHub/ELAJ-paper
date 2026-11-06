@@ -834,7 +834,10 @@ NOT_FROM_BENCHMARK = {
     "0.3700": "same",
 }
 lines += ["", "## Numbers in the prose that this script cannot account for", ""]
-tex = "\n".join(f.read_text() for f in TEX_FILES if f.exists())
+tex = "\n".join(
+    (f.read_text() if f.name.startswith("02")
+     else "\\subsection*{[D] discussion}\n" + f.read_text())
+    for f in TEX_FILES if f.exists())
 tex = re.sub(r"\\note\{.*?\n\n", "", tex, flags=re.S)       # prose only, not my notes
 unaccounted = []
 for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):

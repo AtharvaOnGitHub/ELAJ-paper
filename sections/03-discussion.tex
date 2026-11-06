@@ -52,15 +52,13 @@ number cell representation is actually useful for.}
 
 This work set out to read a pooled endometriosis corpus without losing the
 biology that pooling threatens. Eleven studies and 1{,}577{,}728 cells
-reduce to sixteen numbers per cell from which the donor is hard to recover
-and in which the menstrual cycle survives, and that combination is the
+reduce to sixteen numbers per cell in which the menstrual cycle survives 
+but the donor is hard to recover, and that combination is the
 point. Every donor here was biopsied once, so menstrual phase is constant
 within a donor and varies between donors, which is the geometry of a batch
-effect; a correction aimed at the one necessarily reaches for the other.
+effect. A correction aimed at the one necessarily reaches for the other.
 What survives is more specific than the cycle itself. The phase head
-accounts for 34.5\% of the chance-corrected phase margin, so a claim that
-the cycle emerged unsupervised would overstate what was measured. The claim
-that holds is about structure rather than signal. The head is a single
+accounts for 34.5\% of the chance-corrected phase margin. The head is a single
 linear map over all sixteen dimensions and was never told what kind of cell
 it was reading, yet cycle structure in the latent is sharp in stromal
 cells, present in epithelial and close to absent in endothelial and immune.
@@ -69,49 +67,43 @@ no supervision in this model could have produced it.
 
 The confound is not peculiar to endometriosis. Wherever tissue is hard to
 obtain, each donor contributes one sample at one moment, and whatever
-varies with that moment becomes collinear with the person. The field's
-usual response is a correction strength: one scalar, turned up until batch
-structure disappears. The frontier here shows that one number cannot
+varies with that moment becomes collinear with the donor. The field's
+usual response is correction strength, turned up until batch
+structure disappears. The \elaj\ frontier shows that one number cannot
 describe the operation. The adversarial weight moves the achievable
-trade-off and stops improving it past the middle setting, while the
+trade-off and stops improving it past a critical point, while the
 information cost slides a model along the trade-off without moving it.
-Reporting a single correction strength conflates the two. What this offers
-another group is therefore not an endometriosis tool but a way of working
-where data is scarce and batch structure is severe: state the trade-off,
-measure both axes, and report the point on the frontier the model occupies.
-One warning travels with it. The arm with the best held-out reconstruction
-in this project, a negative-binomial loss of 0.3911 against the reported
-arm's 0.4024, is the arm that holds the least biology, so reconstruction
-loss is not a selection criterion for a representation.
+Reporting a single correction strength conflates the two. This study offers
+a way of working where data is scarce and batch structure is severe: 
+state the trade-off, measure both axes, and report the point on the 
+frontier the model occupies. Notably, the arm with the best held-out 
+reconstruction in this project (\texttt{val\_nb} 0.3911) falls short of the 
+reported arm (\texttt{val\_nb} 0.4024) on biology. So reconstruction loss is 
+a criterion for epoch selection, not for model performance.
 
-Size was not what produced any of this. \elaj\ carries 1{,}883{,}986
-parameters and sixteen latent dimensions against pretrained models at 256
-to 3{,}072. Across the ten representations width is negatively associated
-with cross-donor phase agreement ($\rho=-0.6503$, $p=0.0418$), and a
-sixteen-component principal component decomposition reaches 0.6457 on that
-axis against scGPT's 0.4869 at 512 dimensions. For a disease where every
-cohort is small and expensive to assemble, efficiency matters as much as
-accuracy: this result was obtained at a scale a single group can train and
-retrain.
+Size did not produce any of this. \elaj\ carries 1{,}883{,}986
+parameters and 16 latent dimensions against pretrained models at 256
+to 3{,}072 latent dimensions. Across the ten representations width is 
+negatively associated with cross-donor phase agreement ($\rho=-0.6503$, 
+$p=0.0418$), and a 16-component PCA reaches 0.6457 on that axis 
+against scGPT's 0.4869 at 512 dimensions. For diseases where 
+data is scarce and unconsolidated, an efficient model architecture can 
+transform what the field is able to say about the disease.
 
 The way the field scores batch correction does not work on a corpus of this
-shape. Two of the standard scIB metrics are perfectly degenerate across all
-ten representations, iLISI at exactly 0.0000 for every one of them and
-cLISI at exactly 1.0000, with kBET no further than 0.0400 from zero. One of
-those is the batch half of the scorecard and the other is the biology half.
+nature. Two of the standard scIB metrics are perfectly degenerate across all
+ten representations (iLISI=0.0 and cLISI=1.0 for all, kBET $\leq$ 0.04).
 The axis used in their place is little better as a ranking instrument:
 cross-donor agreement on cell family separates nine of the ten methods by
-0.0076 in total, from 0.9820 to 0.9896, with only Geneformer outside the
-band at 0.9023. Cell identity is something every method here recovers and
-therefore something none of them can be judged on. The axis that does
-separate methods is the one that should concern the field most. Agreement
-on disease status tracks donor recovery across the ten
-($\rho=+0.721$, $p=0.019$) while agreement on menstrual phase does not
-($+0.176$). Disease status is constant within a donor, so a representation
-that remembers donors is handed the disease label at no cost, and Methods
-quantifies how large that free component is. A disease score reported on
-pooled single-cell data is therefore partly a memorisation score, and the
-methods that look strongest on it are the ones from which donors are most
-easily recovered.
+0.0076 in total (0.9820 to 0.9896), with only Geneformer outside the
+band (0.9023). Cell identity is something every method here recovers and
+therefore something that cannot rank methods. Agreement on disease status 
+tracks donor recovery across the ten ($\rho=+0.721$, $p=0.019$) while 
+agreement on menstrual phase does not ($+0.176$). Disease status is 
+constant within a donor, so a representation that remembers donors is 
+handed the disease label at no cost, and Methods quantifies how large that 
+free component is. A disease score reported on pooled single-cell data is 
+therefore partly a memorisation score, and the methods that look strongest 
+on it are the ones from which donors are most easily recovered.
 
 \todo{paragraphs 5--8: the disease direction, staging, limitations, and what this makes possible. Plan in DISCUSSION\_STRUCTURE.md.}
