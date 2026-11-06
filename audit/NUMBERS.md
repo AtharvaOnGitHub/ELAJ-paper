@@ -45,22 +45,22 @@ so the gene policy and the baseline re-scoring do not reach them.
 
 | arm | family ↑ | phase ↑ | disease ↑ | donor ↓ | mixing ↓ | source |
 |---|---:|---:|---:|---:|---:|---|
-| **BASE** | 0.9820 | 0.7346 | 0.3364 | 0.5188 | 0.6043 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| -phase head | 0.9794 | 0.4812 | 0.3170 | 0.3754 | 0.5305 | `Outputs/Benchmarks/a_series/a1_nophase/benchmark.csv` |
-| -ECS | 0.9837 | 0.7397 | 0.3638 | 0.5520 | 0.6829 | `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` |
-| -statistics | 0.9798 | 0.6384 | 0.3225 | 0.4943 | 0.5955 | `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` |
-| -sentinel | 0.9816 | 0.7308 | 0.3615 | 0.5207 | 0.6260 | `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` |
-| random groups | 0.9606 | 0.6780 | 0.2698 | 0.5323 | 0.6327 | `Outputs/Benchmarks/a_series/a1_randgroups/benchmark.csv` |
+| **BASE** | 0.9820 | 0.7346 | 0.3364 | 0.5188 | 0.7613 | `Outputs/Benchmarks/full/full_p1_dab168_kl1/benchmark.csv` |
+| -phase head | 0.9794 | 0.4812 | 0.3170 | 0.3754 | 0.6523 | `Outputs/Benchmarks/full/full_a1_nophase/benchmark.csv` |
+| -ECS | 0.9837 | 0.7397 | 0.3638 | 0.5520 | 0.8340 | `Outputs/Benchmarks/full/full_a1_noecs/benchmark.csv` |
+| -statistics | 0.9798 | 0.6384 | 0.3225 | 0.4943 | 0.7600 | `Outputs/Benchmarks/full/full_a1_clsonly/benchmark.csv` |
+| -sentinel | 0.9816 | 0.7308 | 0.3615 | 0.5207 | 0.7818 | `Outputs/Benchmarks/full/full_a1_nodns/benchmark.csv` |
+| random groups | 0.9606 | 0.6780 | 0.2698 | 0.5323 | 0.7701 | `Outputs/Benchmarks/full/full_a1_randgroups/benchmark.csv` |
 
 **Deltas against BASE**, for the claims that are stated as changes:
 
-| arm | Δ family | Δ phase | Δ disease | Δ donor | Δ mixing |
-|---|---:|---:|---:|---:|---:|
-| -phase head | -0.0026 | -0.2534 | -0.0194 | -0.1434 | -0.0738 |
-| -ECS | +0.0017 | +0.0051 | +0.0274 | +0.0332 | +0.0786 |
-| -statistics | -0.0022 | -0.0962 | -0.0139 | -0.0245 | -0.0088 |
-| -sentinel | -0.0004 | -0.0038 | +0.0251 | +0.0019 | +0.0217 |
-| random groups | -0.0214 | -0.0566 | -0.0666 | +0.0135 | +0.0284 |
+| arm | Δ family | Δ phase | Δ cell type | Δ disease | Δ donor | Δ mixing |
+|---|---:|---:|---:|---:|---:|---:|
+| -phase head | -0.0026 | -0.2534 | -0.0428 | -0.0194 | -0.1434 | -0.1090 |
+| -ECS | +0.0017 | +0.0051 | +0.0030 | +0.0274 | +0.0332 | +0.0727 |
+| -statistics | -0.0022 | -0.0962 | -0.0138 | -0.0139 | -0.0245 | -0.0013 |
+| -sentinel | -0.0004 | -0.0038 | -0.0020 | +0.0251 | +0.0019 | +0.0205 |
+| random groups | -0.0214 | -0.0566 | -0.0075 | -0.0666 | +0.0135 | +0.0088 |
 
 **D1, recomputed.** Cross-donor values are already chance-corrected, so the phase margin splits as a ratio of the two excesses, not as a difference from a chance rate:
 
@@ -98,6 +98,39 @@ table above; quoting 0.4083 as a BASE value would be wrong, it is the
 It is a computed baseline, not a logged metric, and must be
 re-derived from the code that produced it before it becomes prose.
 
+
+## The trajectories — per-epoch, from `metrics.csv`
+
+Results [6] reads these three arms down their own training
+curves. `val_*_knn_xdonor` is k=30 on 19,972 validation cells
+and is NOT the benchmark's cross-donor agreement (k=100 on the
+416,256-cell held-out split); the prose names it as a per-epoch
+validation readout for exactly that reason.
+
+| quantity | value | arm, epoch |
+|---|---:|---|
+| BASE val_nb min / family max | ep 4 / ep 4 | coincide |
+| random groups val_nb min / family max | ep 12 / ep 2 | **10 epochs apart** |
+| random groups family at selected | 0.9582 | a1_randgroups |
+| random groups family at its max | 0.9827 | a1_randgroups ep 2 |
+| random groups val_nb, epoch 1 | 0.3998 | a1_randgroups — already past BASE's best 0.4024 |
+| -phase head phase at selected | 0.4977 | a1_nophase ep 0 |
+| -phase head phase at its max | 0.7488 | a1_nophase ep 4 |
+| -phase head val_nb, first epoch | 0.4083 | a1_nophase ep 0 |
+| -phase head val_nb, last epoch | 0.4256 | a1_nophase ep 7 |
+| val_nb penalty of removing the head, at each arm's own checkpoint | 0.0058 | a1_nophase - BASE |
+| largest train_nb gap over the shared epochs | 0.0008 | a1_nophase vs BASE — the head costs nothing in fit |
+| donor gap at the two selected checkpoints | 0.1203 | BASE - a1_nophase |
+| donor gap at epoch 7, the last both arms ran | 0.0327 | BASE - a1_nophase |
+| study gap at the two selected checkpoints | 0.1021 | BASE - a1_nophase |
+| study gap at epoch 7, the last both arms ran | 0.0010 | BASE - a1_nophase |
+| decoder reliance on latent, BASE | 0.1715 | nats per gene |
+| decoder reliance on latent, random groups | 0.1528 | nats per gene |
+| decoder reliance on provenance, BASE | 0.0230 | nats per gene |
+| decoder reliance on provenance, random groups | 0.0627 | nats per gene |
+| decoder reliance on ratio, BASE | 7.4566 | nats per gene |
+| decoder reliance on ratio, random groups | 2.4348 | nats per gene |
+
 ## C6 — surgical stage and grade, across every arm
 
 Cross-donor excess agreement and its permutation p. Negative excess
@@ -105,12 +138,12 @@ means neighbours agree *less* than chance.
 
 | arm | stage | p | grade | p | source |
 |---|---:|---:|---:|---:|---|
-| BASE | +0.1313 | 0.3035 | -0.0414 | 0.4975 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| -phase head | +0.1535 | 0.1194 | -0.0227 | 0.4378 | `Outputs/Benchmarks/a_series/a1_nophase/benchmark.csv` |
-| -ECS | +0.2190 | 0.1990 | -0.0438 | 0.5224 | `Outputs/Benchmarks/a_series/a1_noecs/benchmark.csv` |
-| -statistics | +0.0918 | 0.2886 | -0.0358 | 0.4726 | `Outputs/Benchmarks/a_series/a1_clsonly/benchmark.csv` |
-| -sentinel | +0.0799 | 0.3284 | -0.0549 | 0.5423 | `Outputs/Benchmarks/a_series/a1_nodns/benchmark.csv` |
-| random groups | +0.1161 | 0.3234 | -0.0723 | 0.6269 | `Outputs/Benchmarks/a_series/a1_randgroups/benchmark.csv` |
+| BASE | +0.1313 | 0.3035 | -0.0414 | 0.4975 | `Outputs/Benchmarks/full/full_p1_dab168_kl1/benchmark.csv` |
+| -phase head | +0.1535 | 0.1194 | -0.0227 | 0.4378 | `Outputs/Benchmarks/full/full_a1_nophase/benchmark.csv` |
+| -ECS | +0.2190 | 0.1990 | -0.0438 | 0.5224 | `Outputs/Benchmarks/full/full_a1_noecs/benchmark.csv` |
+| -statistics | +0.0918 | 0.2886 | -0.0358 | 0.4726 | `Outputs/Benchmarks/full/full_a1_clsonly/benchmark.csv` |
+| -sentinel | +0.0799 | 0.3284 | -0.0549 | 0.5423 | `Outputs/Benchmarks/full/full_a1_nodns/benchmark.csv` |
+| random groups | +0.1161 | 0.3234 | -0.0723 | 0.6269 | `Outputs/Benchmarks/full/full_a1_randgroups/benchmark.csv` |
 
 Across all 6 arms: stage +0.0799 to +0.2190 at p 0.1194 to 0.3284; grade is **negative in every arm**, -0.0723 to -0.0227, at p 0.4378 to 0.6269.
 

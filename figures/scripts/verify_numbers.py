@@ -30,7 +30,7 @@ Exit status is 1 on any failure. Nothing here prints "ok" without having
 checked.
 """
 from __future__ import annotations
-import csv, re, sys
+import csv, math, re, sys
 from pathlib import Path
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
@@ -81,19 +81,26 @@ SOURCES = {
 # different experiment from the wide ones and must not be mixed with them.
 FORBIDDEN = ("r8_all", "r8_inductive", "_train", "train_cpu")
 
+# Full-split re-scores, matching FRONTIER below and MANIFEST in
+# audit_numbers.py. The a_series originals capped study mixing at 19,998 of
+# 416,256 cells, which is the axis D3 and D5 are claims about.
 ABLATIONS = {
-    "BASE":          BENCH / "p1_dab168_kl1/benchmark.csv",
-    "-phase head":   BENCH / "a_series/a1_nophase/benchmark.csv",
-    "-ECS":          BENCH / "a_series/a1_noecs/benchmark.csv",
-    "-statistics":   BENCH / "a_series/a1_clsonly/benchmark.csv",
-    "-sentinel":     BENCH / "a_series/a1_nodns/benchmark.csv",
-    "random groups": BENCH / "a_series/a1_randgroups/benchmark.csv",
+    "BASE":          BENCH / "full/full_p1_dab168_kl1/benchmark.csv",
+    "-phase head":   BENCH / "full/full_a1_nophase/benchmark.csv",
+    "-ECS":          BENCH / "full/full_a1_noecs/benchmark.csv",
+    "-statistics":   BENCH / "full/full_a1_clsonly/benchmark.csv",
+    "-sentinel":     BENCH / "full/full_a1_nodns/benchmark.csv",
+    "random groups": BENCH / "full/full_a1_randgroups/benchmark.csv",
 }
 FRONTIER = [BENCH / f"full/full_p1_dab{d}_kl{k}/benchmark.csv"
             for d in ("7", "168", "336") for k in ("1", "30")]
 VALIDATE = ROOT / "Outputs/validate/p1_dab168_kl1_full/validation.csv"
 METRICS = {"BASE": ROOT / "Outputs/p_series/p1_dab168_kl1/metrics.csv",
-           "-phase head": ROOT / "Outputs/a_series/a1_nophase/metrics.csv"}
+           "-phase head": ROOT / "Outputs/a_series/a1_nophase/metrics.csv",
+           "-ECS": ROOT / "Outputs/a_series/a1_noecs/metrics.csv",
+           "-statistics": ROOT / "Outputs/a_series/a1_clsonly/metrics.csv",
+           "-sentinel": ROOT / "Outputs/a_series/a1_nodns/metrics.csv",
+           "random groups": ROOT / "Outputs/a_series/a1_randgroups/metrics.csv"}
 
 # ──────────────────────────────────────────────────────────────────────────
 # 1. THE CORPUS IS THE SAME, OR NOTHING BELOW IS COMPARABLE.
@@ -170,6 +177,9 @@ print("   manifest references no obsolete or train-split file"
 # 3. EVERY VALUE, WITH ITS PROVENANCE.
 # ──────────────────────────────────────────────────────────────────────────
 LEDGER: list[tuple[float, str]] = []
+# Arithmetic over LEDGER values. Declared here rather than at first use so
+# that every block below can append to one list.
+DERIVED: list[tuple[float, str]] = []
 
 def rows(path: Path):
     with path.open(newline="") as fh:
@@ -318,8 +328,15 @@ for key, entry in SOURCES.items():
     for label in ("Endometriosis_stage", "EndometriosisGrade"):
         take_note(entry[0], key, "cross-donor", label)
 
+# [6] reads three rows off the ablation arms that no baseline comparison
+# needs: the forty-five-way cell type, and merged severity with its p. They
+# are added here rather than to TESTS so the baseline manifest stays as
+# narrow as the prose that quotes it.
+ABLATION_TESTS = TESTS + [("knn-agreement", "AnnotationRefined"),
+                          ("cross-donor", "severity"),
+                          ("cross-donor-p", "severity")]
 for name, f in ABLATIONS.items():
-    for test, label in TESTS:
+    for test, label in ABLATION_TESTS:
         take(f, "elaj", "native", None, test, label)
 
 for f in FRONTIER:
@@ -362,6 +379,135 @@ for name, f in METRICS.items():
                    (vals[-1][0], "val_nb @last"), (vals[-1][1], "train_nb @last")):
         LEDGER.append((v, f"{f.relative_to(ROOT)} :: {name} {tag}"))
 
+# ── the per-epoch quantities [6] quotes ──────────────────────────────────
+# Three things no benchmark file holds: where each arm's held-out loss
+# bottoms out against where its biology peaks, what the decoder is reading
+# at the selected checkpoint, and the same pair of arms compared at a
+# matched epoch instead of at their own checkpoints.
+#
+# val_*_knn_xdonor IS NOT THE BENCHMARK'S CROSS-DONOR AGREEMENT. It is k=30
+# on 19,972 validation cells against k=100 on the 416,256-cell held-out
+# split, and the prose names it as a per-epoch validation readout wherever
+# it is quoted. Registering it does not make the two interchangeable.
+CURVES: dict[str, dict[str, list[float]]] = {}
+for _name, _f in METRICS.items():
+    if not _f.exists():
+        continue
+    _rs = list(rows(_f))
+    CURVES[_name] = {c: [float(r[c]) for r in _rs]
+                     for c in ("val_nb", "train_nb", "val_reliance_latent",
+                               "val_reliance_technical", "val_reliance_ratio",
+                               "val_family_knn_xdonor", "val_phase_knn_xdonor",
+                               "val_patient_knn", "val_study_knn")
+                     if c in (_rs[0] if _rs else {})}
+
+def _sel(name: str) -> int:
+    v = CURVES[name]["val_nb"]
+    return v.index(min(v))
+
+if {"BASE", "-phase head", "random groups"} <= set(CURVES):
+    _B, _N, _R = CURVES["BASE"], CURVES["-phase head"], CURVES["random groups"]
+    _bi, _ni, _ri = _sel("BASE"), _sel("-phase head"), _sel("random groups")
+
+    def _reg(v, why):
+        LEDGER.append((v, f"metrics.csv :: {why}"))
+
+    # Where the two optima sit, and the value the selection rule returned
+    # against the value the same run had already reached.
+    _reg(_R["val_family_knn_xdonor"][_ri],
+         f"random groups val_family_knn_xdonor at selected ep{_ri}")
+    _reg(max(_R["val_family_knn_xdonor"]),
+         "random groups val_family_knn_xdonor at its maximum")
+    _reg(_R["val_nb"][1], "random groups val_nb at epoch 1")
+    _reg(_N["val_phase_knn_xdonor"][_ni],
+         f"-phase head val_phase_knn_xdonor at selected ep{_ni}")
+    _reg(max(_N["val_phase_knn_xdonor"]),
+         "-phase head val_phase_knn_xdonor at its maximum")
+    # val_nb at this arm's first and last epoch is already registered by the
+    # METRICS pass above (its best epoch IS epoch 0), so it is not repeated
+    # here: one quantity under two wordings reads as an ambiguity.
+
+    # The decoder's reliance at each selected checkpoint, in nats per gene.
+    for _lab, _col in (("latent", "val_reliance_latent"),
+                       ("provenance", "val_reliance_technical"),
+                       ("ratio", "val_reliance_ratio")):
+        _reg(_B[_col][_bi], f"BASE decoder reliance on {_lab}, ep{_bi}")
+        _reg(_R[_col][_ri], f"random groups decoder reliance on {_lab}, ep{_ri}")
+
+    # SELECTED CHECKPOINTS AGAINST A MATCHED EPOCH. This pair is the point of
+    # the paragraph: the first difference is what removing the head looks
+    # like, the second is what it is once both arms are read at the same age.
+    _L = min(len(_B["val_nb"]), len(_N["val_nb"])) - 1
+    for _lab, _col in (("donor", "val_patient_knn"), ("study", "val_study_knn")):
+        DERIVED.append((_B[_col][_bi] - _N[_col][_ni],
+                        f"{_lab} gap, BASE ep{_bi} minus -phase head ep{_ni}, "
+                        f"each at its own checkpoint"))
+        DERIVED.append((_B[_col][_L] - _N[_col][_L],
+                        f"{_lab} gap at epoch {_L}, the last both arms ran"))
+    DERIVED.append((_N["val_nb"][_ni] - _B["val_nb"][_bi],
+                    "val_nb the head buys, each arm at its own checkpoint"))
+    _gap = max(abs(x - y) for x, y in zip(_B["train_nb"], _N["train_nb"]))
+    # Quoted as a bound, so the bound is registered, rounded up: a sentence
+    # saying "within 0.001" is a claim about a maximum, not a value.
+    DERIVED.append((math.ceil(_gap * 1e4) / 1e4,
+                    "bound on the train_nb gap over the shared epochs"))
+else:
+    fail("the three training curves [6] reads are not all present")
+
+# ── the ablation percentage changes [6] quotes ───────────────────────────
+# Named arms and named axes only. Deriving every arm against every axis
+# manufactured collisions with unrelated p-values when [1] was written, and
+# a derivation wider than the prose makes the audit less useful, not more.
+def _abl(arm: str, test: str, label: str):
+    f = ABLATIONS.get(arm)
+    for r in rows(f) if f and f.exists() else []:
+        if (re.sub(r"__.*", "", r.get("method") or "") == "elaj"
+                and r["test"] == test and r["label"] == label):
+            return float(r["value"])
+    return None
+
+for _arm, _test, _label, _why in (
+        ("random groups", "disease-xdonor", "all studies (pooled)", "disease"),
+        ("-ECS", "knn-agreement", "patient_id", "donor recovery"),
+        ("-ECS", "study-mixing", "all studies", "study separation"),
+        ("-statistics", "cross-donor", "menstrual phase", "phase")):
+    _u, _w = _abl("BASE", _test, _label), _abl(_arm, _test, _label)
+    if _u and _w:
+        _pc = abs(100 * (_w - _u) / _u)
+        for _val in (_pc, round(_pc, 1)):
+            DERIVED.append((_val, f"{_why} % change, BASE against {_arm}"))
+    else:
+        fail(f"could not derive the {_why} change for {_arm}")
+
+for _arm, _test, _label, _why in (
+        ("-statistics", "cross-donor", "cell family", "cell family"),):
+    _u, _w = _abl("BASE", _test, _label), _abl(_arm, _test, _label)
+    if _u and _w:
+        DERIVED.append((abs(_u - _w), f"{_why} change, BASE against {_arm}"))
+    else:
+        fail(f"could not derive the {_why} change for {_arm}")
+
+_ct = (_abl("BASE", "knn-agreement", "AnnotationRefined"),
+       _abl("-statistics", "knn-agreement", "AnnotationRefined"))
+if all(_ct):
+    DERIVED.append((abs(_ct[0] - _ct[1]),
+                    "cell type change, BASE against -statistics"))
+else:
+    fail("could not derive the cell-type change for -statistics")
+
+# The sentinel paragraph states a bound over the three axes it does not
+# single out, so the bound is derived rather than read off one of them.
+_sent = [(_abl("BASE", t, l), _abl("-sentinel", t, l))
+         for t, l in (("cross-donor", "cell family"),
+                      ("cross-donor", "menstrual phase"),
+                      ("knn-agreement", "patient_id"))]
+if all(a and b for a, b in _sent):
+    DERIVED.append((max(abs(a - b) for a, b in _sent),
+                    "bound on how far -sentinel moves off BASE on the three "
+                    "axes other than study separation"))
+else:
+    fail("could not derive the -sentinel bound")
+
 ANALYSIS = ROOT / "Outputs/analysis"
 for arm in ("p1_dab168_kl1", "p1_dab168_kl30"):
     for stem, lab, frm, to in (("phase_within_family", "phase", "proliferative", "secretory"),
@@ -385,7 +531,7 @@ print(f"\n3. LEDGER: {len(LEDGER)} values from "
       f"{len({p.split(' :: ')[0] for _, p in LEDGER})} files")
 
 # Derived quantities. Each is arithmetic on ledger values and says so.
-DERIVED: list[tuple[float, str]] = []
+# Declared beside LEDGER, above, because the trajectory block appends to it.
 base = {p: v for v, p in LEDGER if "p1_dab168_kl1/benchmark.csv" in p
         and "elaj/native" in p and "cross-donor menstrual phase" in p}
 b = next((v for v, p in LEDGER if "p1_dab168_kl1/benchmark.csv" in p
@@ -447,8 +593,6 @@ for _a, _b, _why in _PAIRS:
     for _ax in ("phase", "mixing", "donor"):
         if (_a, _ax) in _ARM_AXES and (_b, _ax) in _ARM_AXES:
             _u, _w = _ARM_AXES[(_a, _ax)], _ARM_AXES[(_b, _ax)]
-            DERIVED.append((abs(_u - _w),
-                            f"{_ax} across the {_why}, {_a} against {_b}"))
             # [1] reports these as percentage changes, which is the only form
             # in which three axes on different scales can be read together.
             _pc = abs(100 * (_w - _u) / _u)
@@ -599,6 +743,10 @@ CONSTANTS = {
     34: "donors, merged severity, held out", 18: "donors, mild vs severe",
     30: "last cycle day", 22: "cycle days present", 16: "latent dimensions",
     11: "studies", 5: "first cycle day",
+    # What one group hands forward, from Methods: a learned query plus eight
+    # order statistics, each its own token at width 32.
+    288: "numbers per group, 9 summary tokens x width 32",
+    32: "numbers per group with the statistics removed, and the token width",
 }
 # DERIVED, not typed: the count of cells outside endometrium comes from the
 # dumped metadata in the same pass that proves none of them is annotated.
@@ -633,6 +781,10 @@ PINNED = {
     "0.005": ("p1_dab168_kl1/benchmark.csv", "cross-donor-p/menstrual phase"),
     "0.332": ("validation.csv", "cross-donor/Endometriosis_stage"),
     "65.5": ("share of chance-corrected", ""),
+    # The other half of the same split. Never checked until 6 November,
+    # because it sits after an escaped percent sign on its line and the
+    # comment strip was eating the rest of the line.
+    "34.5": ("the head's share", ""),
     "1.58": ("corpus cells in millions", ""),
     # The cross-method correlations and their p-values. Rounded in prose, so
     # pinned to the axis they belong to rather than searched for.
@@ -647,6 +799,16 @@ PINNED = {
     "0.219": ("severity_trans_scanorama/benchmark.csv",
               "cross-donor/severity note p"),
     "0.63":  ("donor recovery vs phase", ""),
+    # [6]'s decoder-reliance ratios and the one severity p it quotes at three
+    # decimals. Rounded, so pinned rather than searched for.
+    "0.4024": ("metrics.csv", "BASE val_nb @best"),
+    # [6] quotes the range of severity p across the six ablation arms. The
+    # low end is the head-free arm's 0.1493, and geneformer's STAGE p is
+    # exactly 0.149, so the unpinned search certified the wrong row.
+    "0.149": ("a1_nophase/benchmark.csv", "cross-donor-p/severity"),
+    "7.46": ("BASE decoder reliance on ratio", ""),
+    "2.43": ("random groups decoder reliance on ratio", ""),
+    "0.468": ("a1_randgroups/benchmark.csv", "cross-donor-p/severity"),
 }
 
 def pinned_source(raw: str, dp: int):
@@ -691,7 +853,12 @@ tex = TEX.read_text()
 for macro in ("note", "todo", "citep", "citet", "cite", "label", "ref"):
     tex = strip_group(tex, macro)
 tex = re.sub(r"^%.*$", "", tex, flags=re.M)
-tex = re.sub(r"%.*$", "", tex, flags=re.M)        # trailing comments too
+# TRAILING COMMENTS, BUT NOT AN ESCAPED PERCENT SIGN. This pattern was
+# `%.*$`, which deleted the rest of any line containing a `\%` -- so every
+# number written after a percentage on the same line had never been checked.
+# [1] is full of them: "gave up 7.4\% of phase (0.7337 to 0.6791)" was read
+# as "gave up 7.4" and the two levels were invisible to the audit.
+tex = re.sub(r"(?<!\\)%.*$", "", tex, flags=re.M)
 tex = re.sub(r"Fig\.~\d+[a-z]?(--[a-z])?", "", tex)
 # Ordinals are words. "95th percentile" is the name of a quantity, not a
 # measurement, and 95 has no source row by design.
@@ -707,7 +874,11 @@ tex = tex.replace("{,}", "").replace(",", "")
 
 print("\n4. PROSE, NUMBER BY NUMBER\n")
 unaccounted, ambiguous, ok = [], [], 0
-for mobj in re.finditer(r"(?<![\d.])(\d+\.\d+|\d+)(?![\d.])", tex):
+# A NUMBER AT THE END OF A SENTENCE IS STILL A NUMBER. The trailing
+# lookahead was `(?![\d.])`, which rejected any match followed by a full
+# stop, so "the ratio fell to 2.43." was never checked. Only a following
+# DIGIT should disqualify a match.
+for mobj in re.finditer(r"(?<![\d.])(\d+\.\d+|\d+)(?!\d)", tex):
     raw = mobj.group(1)
     if "." not in raw:
         if int(raw) in CONSTANTS:

@@ -11,7 +11,8 @@ Nothing here is typed from memory: every value is pulled from
 Outputs/Benchmarks/<arm>/benchmark.csv at run time.
 """
 from __future__ import annotations
-import glob, os, re, sys
+import glob
+import math, os, re, sys
 from pathlib import Path
 import pandas as pd
 
@@ -46,17 +47,22 @@ def read(path: Path, method: str) -> dict:
 # on trust from project documents; they are re-derived here instead.
 # ---------------------------------------------------------------------------
 
-ABL = {"p1_dab168_kl1":  ("BASE",          "Outputs/Benchmarks/p1_dab168_kl1",
+# THE FULL-SPLIT RE-SCORES, for the same reason the frontier arms use them:
+# the originals measured study mixing on 19,998 of 416,256 cells, so D3 and D5
+# -- both of which are claims about study mixing -- were reading a twentieth of
+# the split. Second element is the benchmark directory, third is the training
+# run, which is unchanged because metrics.csv comes out of training.
+ABL = {"p1_dab168_kl1":  ("BASE",          "Outputs/Benchmarks/full/full_p1_dab168_kl1",
                           "Outputs/p_series/p1_dab168_kl1"),
-       "a1_nophase":     ("-phase head",   "Outputs/Benchmarks/a_series/a1_nophase",
+       "a1_nophase":     ("-phase head",   "Outputs/Benchmarks/full/full_a1_nophase",
                           "Outputs/a_series/a1_nophase"),
-       "a1_noecs":       ("-ECS",          "Outputs/Benchmarks/a_series/a1_noecs",
+       "a1_noecs":       ("-ECS",          "Outputs/Benchmarks/full/full_a1_noecs",
                           "Outputs/a_series/a1_noecs"),
-       "a1_clsonly":     ("-statistics",   "Outputs/Benchmarks/a_series/a1_clsonly",
+       "a1_clsonly":     ("-statistics",   "Outputs/Benchmarks/full/full_a1_clsonly",
                           "Outputs/a_series/a1_clsonly"),
-       "a1_nodns":       ("-sentinel",     "Outputs/Benchmarks/a_series/a1_nodns",
+       "a1_nodns":       ("-sentinel",     "Outputs/Benchmarks/full/full_a1_nodns",
                           "Outputs/a_series/a1_nodns"),
-       "a1_randgroups":  ("random groups", "Outputs/Benchmarks/a_series/a1_randgroups",
+       "a1_randgroups":  ("random groups", "Outputs/Benchmarks/full/full_a1_randgroups",
                           "Outputs/a_series/a1_randgroups")}
 
 def label_rows(path: Path, test: str) -> dict:
@@ -341,12 +347,18 @@ for key, (label, bdir, rdir) in ABL.items():
     mix = label_rows(bf, "study-mixing")
     r = {"family":  xd.get("cell family", float("nan")),
          "phase":   xd.get("menstrual phase", float("nan")),
+         "ctype":   don.get("AnnotationRefined", float("nan")),
          "disease": dis.get("all studies (pooled)", float("nan")),
          "donor":   don.get("patient_id", float("nan")),
          "mixing":  mix.get("all studies", float("nan")),
          "stage":   xd.get("Endometriosis_stage", float("nan")),
          "grade":   xd.get("EndometriosisGrade", float("nan"))}
     xdp = label_rows(bf, "cross-donor-p")
+    # Severity's p is quoted at three decimals in [6]'s closing sentence.
+    for _lab in ("severity", "severity (patients only)"):
+        _v = xdp.get(_lab)
+        if _v is not None and not pd.isna(_v):
+            extra.add(f"{_v:.3f}")
     r["stage_p"] = xdp.get("Endometriosis_stage", float("nan"))
     r["grade_p"] = xdp.get("EndometriosisGrade", float("nan"))
     abl[key] = (label, r)
@@ -362,11 +374,11 @@ for key, (label, bdir, rdir) in ABL.items():
 if "p1_dab168_kl1" in abl:
     b = abl["p1_dab168_kl1"][1]
     lines += ["", "**Deltas against BASE**, for the claims that are stated as changes:", "",
-              "| arm | Δ family | Δ phase | Δ disease | Δ donor | Δ mixing |",
-              "|---|---:|---:|---:|---:|---:|"]
+              "| arm | Δ family | Δ phase | Δ cell type | Δ disease | Δ donor | Δ mixing |",
+              "|---|---:|---:|---:|---:|---:|---:|"]
     for key, (label, r) in abl.items():
         if label == "BASE": continue
-        d = [r[k] - b[k] for k in ("family", "phase", "disease", "donor", "mixing")]
+        d = [r[k] - b[k] for k in ("family", "phase", "ctype", "disease", "donor", "mixing")]
         for v in d: extra.add(f"{abs(v):.4f}")
         lines.append(f"| {label} | " + " | ".join(f"{v:+.4f}" for v in d) + " |")
     # CHANCE IS ALREADY REMOVED. endo_model/evaluation/sufficient_stats.py:
@@ -431,6 +443,99 @@ lines += ["", "**D2 reads down the `-phase head` row, not across to BASE.** With
           "**A7's study-mean reference (0.4315) is not in any file read here.**",
           "It is a computed baseline, not a logged metric, and must be",
           "re-derived from the code that produced it before it becomes prose.", ""]
+
+# -------------------------------------------------------------------------
+# THE TRAJECTORIES. Results [6] quotes per-epoch quantities, which no
+# benchmark file carries: where each arm's held-out loss bottoms out against
+# where its biology peaks, and what the decoder is reading at the selected
+# checkpoint. All of it comes from the same metrics.csv as D2.
+#
+# `val_*_knn_xdonor` is a DIFFERENT ESTIMATOR from the benchmark's
+# cross-donor agreement -- k=30 on 19,972 validation cells against k=100 on
+# the 416,256-cell held-out split -- which is why the prose names it as a
+# per-epoch validation readout and never sets it beside a benchmark value.
+#
+# `reliance_latent` and `reliance_technical` are reconstruction penalties in
+# nats per gene from endo_model/training/decoder_reliance.py: decode each
+# cell from a deranged latent, or borrow all four provenance channels from
+# another study. Bigger means the decoder depends on that input more.
+# -------------------------------------------------------------------------
+TRAJ_COLS = ("val_nb", "train_nb", "val_reliance_latent",
+             "val_reliance_technical", "val_reliance_ratio",
+             "val_family_knn_xdonor", "val_phase_knn_xdonor",
+             "val_patient_knn", "val_study_knn")
+
+def traj(rdir: str) -> dict:
+    """Per-epoch columns plus the selected index, for one arm."""
+    m = pd.read_csv(ROOT / rdir / "metrics.csv")
+    out = {c: [float(v) for v in m[c]] for c in TRAJ_COLS if c in m.columns}
+    out["sel"] = int(m["val_nb"].astype(float).idxmin())
+    return out
+
+T = {key: traj(rdir) for key, (_, _, rdir) in ABL.items()
+     if (ROOT / rdir / "metrics.csv").exists()}
+
+if {"p1_dab168_kl1", "a1_nophase", "a1_randgroups"} <= set(T):
+    b, nh, rg = T["p1_dab168_kl1"], T["a1_nophase"], T["a1_randgroups"]
+    lines += ["", "## The trajectories — per-epoch, from `metrics.csv`", "",
+              "Results [6] reads these three arms down their own training",
+              "curves. `val_*_knn_xdonor` is k=30 on 19,972 validation cells",
+              "and is NOT the benchmark's cross-donor agreement (k=100 on the",
+              "416,256-cell held-out split); the prose names it as a per-epoch",
+              "validation readout for exactly that reason.", "",
+              "| quantity | value | arm, epoch |", "|---|---:|---|"]
+
+    def put(name, value, where):
+        extra.add(f"{value:.4f}")
+        extra.add(f"{value:.3f}")
+        lines.append(f"| {name} | {value:.4f} | {where} |")
+
+    # Where each optimum sits. The claim is that they coincide in the base
+    # and separate when an inductive bias is removed.
+    bf = b["val_family_knn_xdonor"]; rf = rg["val_family_knn_xdonor"]
+    np_ = nh["val_phase_knn_xdonor"]
+    lines.append(f"| BASE val_nb min / family max | ep {b['sel']} / "
+                 f"ep {bf.index(max(bf))} | coincide |")
+    lines.append(f"| random groups val_nb min / family max | ep {rg['sel']} / "
+                 f"ep {rf.index(max(rf))} | "
+                 f"**{rg['sel'] - rf.index(max(rf))} epochs apart** |")
+    put("random groups family at selected", rf[rg["sel"]], "a1_randgroups")
+    put("random groups family at its max", max(rf), f"a1_randgroups ep {rf.index(max(rf))}")
+    put("random groups val_nb, epoch 1", rg["val_nb"][1],
+        "a1_randgroups — already past BASE's best 0.4024")
+
+    put("-phase head phase at selected", np_[nh["sel"]], f"a1_nophase ep {nh['sel']}")
+    put("-phase head phase at its max", max(np_), f"a1_nophase ep {np_.index(max(np_))}")
+    put("-phase head val_nb, first epoch", nh["val_nb"][0], "a1_nophase ep 0")
+    put("-phase head val_nb, last epoch", nh["val_nb"][-1], f"a1_nophase ep {len(nh['val_nb'])-1}")
+
+    # The head's price, and the price of being selected early. The second
+    # pair is why the first pair is not what the ablation bought.
+    put("val_nb penalty of removing the head, at each arm's own checkpoint",
+        nh["val_nb"][nh["sel"]] - b["val_nb"][b["sel"]], "a1_nophase - BASE")
+    _gap = max(abs(x - y) for x, y in zip(b["train_nb"], nh["train_nb"]))
+    put("largest train_nb gap over the shared epochs", _gap,
+        "a1_nophase vs BASE — the head costs nothing in fit")
+    # The prose states this as a bound ("within 0.001"), so the bound is
+    # what gets registered, rounded UP so the sentence stays true.
+    extra.add(f"{math.ceil(_gap * 1e4) / 1e4:.4f}")
+    L = min(len(b["val_nb"]), len(nh["val_nb"])) - 1
+    for lab, col in (("donor", "val_patient_knn"), ("study", "val_study_knn")):
+        put(f"{lab} gap at the two selected checkpoints",
+            b[col][b["sel"]] - nh[col][nh["sel"]], "BASE - a1_nophase")
+        put(f"{lab} gap at epoch {L}, the last both arms ran",
+            b[col][L] - nh[col][L], "BASE - a1_nophase")
+
+    # What the decoder reads at the selected checkpoint.
+    for lab, key in (("latent", "val_reliance_latent"),
+                     ("provenance", "val_reliance_technical"),
+                     ("ratio", "val_reliance_ratio")):
+        put(f"decoder reliance on {lab}, BASE", b[key][b["sel"]], "nats per gene")
+        put(f"decoder reliance on {lab}, random groups", rg[key][rg["sel"]],
+            "nats per gene")
+    for v in (b["val_reliance_ratio"][b["sel"]], rg["val_reliance_ratio"][rg["sel"]]):
+        extra.add(f"{v:.2f}")
+    lines.append("")
 
 # -------------------------------------------------------------------------
 # C6 / D7 — stage and grade. Reported as an absence, so the p-floor and the
