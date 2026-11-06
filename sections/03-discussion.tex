@@ -107,33 +107,26 @@ free component is. A disease score reported on pooled single-cell data is
 therefore partly a memorisation score, and the methods that look strongest 
 on it are the ones from which donors are most easily recovered.
 
-What the endometrium does not carry is the stage. Revised American Society
-for Reproductive Medicine scoring rates what a surgeon sees in a single
-operation, the size and depth of lesions and the adhesions between organs,
-and it was built to predict fertility outcomes rather than symptoms. It is
+Revised American Society for Reproductive Medicine (rASRM) scoring rates 
+what a surgeon sees. The size and depth of lesions and the adhesions between 
+organs determine staging in endometriosis. It was built to predict fertility 
+outcomes rather than symptoms. Read through the latent, the scale comes apart.
+Whether a person has endometriosis is recoverable from their endometrium, and
+recoverable even in the representation from which donors are hardest to
+identify (0.3364, $p=0.005$). Severity is legible only because it carries
+a contrast between disease and no disease; among donors with disease alone the
+grades do not separate ($p=0.129$), and nothing tested here does better, 
+including four models pretrained on corpora orders of magnitude larger than
+this corpus. However, the presence of disease is legible in endometrium sampled 
+from its normal location while the rASRM stage is not. It is
 nonetheless what every cohort records, what trials stratify on, and the
 number a patient is handed to account for their pain. It has never tracked
-how much a person hurts, and patients have been saying so for decades. Read
-through the latent, the scale comes apart along that same seam. Whether a
-person has endometriosis is recoverable from their endometrium, and
-recoverable even in the representation from which donors are hardest to
-identify (0.3364, $p=0.005$). Severity is legible only so far as it carries
-that same contrast between disease and no disease; among patients alone the
-grades do not separate ($p=0.129$), and nothing tested here does better,
-including four models pretrained on corpora orders of magnitude larger than
-this corpus. What bounds that is the number of donors carrying a grade
-rather than the biology, so the claim is the narrow one: this corpus cannot
-distinguish a stage, which is not the same as there being no stage to
-distinguish. But a scale the affected tissue does not resolve is a scale
-describing an operation rather than a disease, and the same measurement
-points the field somewhere more useful. If the presence of disease is
-legible in endometrium sampled from its normal location while the surgeon's
-grade is not, the thing worth building is a readout from tissue reachable in
-a clinic rather than a finer description of what a camera can see.
-Diagnosis today takes 11.1 years and ends in
-laparoscopy \citep{bontempo2025diagnostic}. The case for changing both the
-scale and the route does not rest on this model. It rests on every patient
-told that a lesion a millimetre across could not account for their pain.
+how much a person hurts, and patients have been saying so for decades.
+The staging worth building is a readout from tissue reachable in
+a clinic rather than anatomical cues. Diagnosis today takes 11.1 years and 
+ends in laparoscopy \citep{bontempo2025diagnostic}. The case for changing both 
+the scale and the route rests on every patient told that a lesion a 
+millimetre across could not account for their pain.
 
 Several limits bound these conclusions. Width is not matched: \elaj\ is read
 at sixteen dimensions against representations at 256 to 3{,}072, although
