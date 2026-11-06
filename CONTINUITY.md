@@ -279,6 +279,114 @@ person has endometriosis elsewhere? The restriction is deliberate, since
 tissue is a decoder input. Per-study tests are the designed form, not
 cherry-picking, because platform is constant within a study.
 
+## How AW edits, and what I am allowed to change
+
+This cost four rounds on 6 November and it is the rule I break most.
+
+**He edits, I seed. I fix spelling, grammar and tense. Nothing else.** Tone
+and voice are his. On 6 November I rewrote four of his sentences, dropping
+"It is clear that" and "It is relevant to state that", and presented it as a
+review. His reply: *"I believe your continuity file prevents you from making
+more than grammar edits without proposals... tone and voice are my decision
+to make not yours."* Everything beyond grammar comes back as
+**current / proposed / why**, and he picks.
+
+**Tense is grammar, and he has asked me to fix it.** Results is past tense
+throughout. He switches; I level it silently.
+
+**Numbers are shown, not asserted.** His framing, and it is the best writing
+rule in this project: *"In legends the interpretation is from figures the
+reader sees. In results it is from the numbers you show the reader."* A
+sentence like "every other method retains more of the donor than ELAJ does"
+is an assertion until 0.5188 and the 0.5421-to-0.7892 range are on the page
+beside it. Deliver the numbers flat, then one precise line of reading. That
+is the Figure 3 legend standard and he holds everything to it now.
+
+**Do not hedge a true claim because one sub-measurement disagrees.** Grade
+does not clear its null at 60 donors while merged severity does at 118. I
+wrote that in as a caveat. AW: *"Taking a hedge because a part of the
+combined variable doesn't follow our claim to the smallest element is not
+proof that our claim should not be stated at full strength. This is the same
+idea as clawing at the data."* Severity is the variable the claim is made on.
+
+**Passages must use the whole table, not a sliver.** When I reported one
+adversarial weight out of three he said the passage read loose. The
+information-cost paragraph now carries all nine readings.
+
+---
+
+## The rule about non-input metadata
+
+**If a variable was never given to the model, measure it on all 1,577,728
+cells.** Held-out protects against the model having been handed the answer;
+for a label it never received there is nothing to protect against, and the
+cross-donor estimator already discards same-donor neighbours. AW, twice,
+the second time with visible irritation.
+
+| variable | input? | measure on |
+|---|---|---|
+| menstrual phase | yes, supervised head | held out |
+| study, platform, tissue | yes, decoder covariates | held out |
+| donor recovery | no, but it measures the fit itself | held out |
+| disease, stage, grade, severity, cell family, cycle day | **no** | **whole corpus** |
+
+It applies to figures too. The UMAPs already sample all 1.58M.
+
+## The audit, and the mistake I kept making inside it
+
+Both auditors now read the **full-split** sources. The old ones measured
+study mixing on 19,998 of 416,256 cells. `MANIFEST` in `audit_numbers.py` and
+`SOURCES` in `verify_numbers.py` must agree; the second catching the first is
+how the stale sources were found.
+
+**Supervision is declared, not read.** A run scored through
+`--external-latent` does not record `supervised_on`, so scimilarity silently
+lost its "supervised on cell family" flag and ELAJ lost "menstrual phase".
+
+**Derive only what the prose quotes.** Three times I widened a derivation and
+three times it manufactured false collisions with unrelated numbers: every
+pairwise arm delta, then `null95` at two decimals against three-decimal
+p-values, then the 168-to-336 percentages. **A derivation wider than the
+prose makes the audit less useful, not more.**
+
+Where two real quantities share a value, the number comes out of the prose
+rather than getting pinned: scVI's severity is $+$0.0789 and its grade
+$-$0.0789, so scANVI's 0.0759 makes the point instead.
+
+## Running jobs: name the stages
+
+`--stages` selects which scoring stages run, and **scIB is opt-in**. On 5
+November a fifteen-hour scFoundation job was OOM-killed inside
+`silhouette_batch`, which runs *before* study mixing, so the one row it
+existed to produce was never reached. Re-run with `--stages mixing`: **17
+minutes.** `--dump-only` splits the GPU embed from the CPU battery, because a
+GPU job runs at 14% CPU efficiency while holding an A100, and bbgpu allows
+two GPUs against the shared CPU QoS's 1,344 cores.
+
+## Building
+
+`./build.sh` boxes the figures; `FIGS=1 ./build.sh` embeds them. A `mkdir`
+lock prevents concurrent builds, which on 6 November corrupted `main.pdf`
+with a stale startxref. Closed subsections keep a **one-line** note and the
+detail moves to `RESULTS_NOTES.md`.
+
+## Figures, settled 6 November
+
+1 ELAJ as a model: architecture, **two frontier scatters over every method
+with the Pareto front**, three UMAPs. 2 how the two knobs move the frontier:
+p-series only, points **joined**, 2x4, rows pinned to 0.50-0.80 and
+0.95-1.00 because phase spans five times what cell family does. 3 both
+latents. 4 nine UMAPs. 5 the ablations, which AW proposes replacing with one
+long table over every p-series and a-series arm.
+
+## Results [4] is a dissociation, not a null
+
+Disease status is recoverable (0.3364, p=0.005). Merged severity clears at
+118 donors (0.1286, p=0.025). **Mild against severe, among patients only,
+does not** (0.0744, p=0.129 at 57 donors). The model can say whether a person
+has endometriosis and cannot say how severe a surgeon judged it. AW: that is
+the win for the patient with a millimetre lesion whose doctor found nothing.
+
 ## Live, as of 5 November
 
 **Eight of ten methods were always comparable** and I spent three days
