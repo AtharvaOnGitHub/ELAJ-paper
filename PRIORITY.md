@@ -36,6 +36,19 @@ needs is on disk and sourced through the manifest.
       (0.7613 base, 0.8340 without ECS, 0.7818 without the sentinel). B2 and
       B3 need their arms named. All eleven arms are in `Outputs/Benchmarks/full/`.
 
+- [ ] **Supplementary Figure 1, the ablation UMAPs.** Scheduled late, on AW's
+      ruling of 6 November, but `[6]` points at it twice. One horizontal
+      figure: study-mixing UMAPs for ELAJ$_{B\,hi}$ and all five ablation
+      arms, coloured by study, one panel each. Sources are already on disk,
+      each arm's own selected checkpoint:
+      `Outputs/{p_series/p1_dab168_kl1,a_series/a1_*}/figures/best/latent_umap_epoch*.png`
+      is the rendered five-panel version; the figure wants only the *by
+      study* panel from each, redrawn from the latents rather than cropped.
+      What it has to show, and what the benchmark already says: study
+      territory grows in the order base 0.7613 < -sentinel 0.7818 <
+      -ECS 0.8340, and both ablations develop large single-study regions
+      that the reported arm does not have.
+
 - [ ] **Figure 5, the ablations.** AW's proposal, 6 November: replace the
       five-panel figure with **one long table** carrying cell family,
       menstrual phase, donor recovery, study separation and the rest, for

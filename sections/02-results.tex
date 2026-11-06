@@ -266,7 +266,7 @@ therefore carries biology along with parameter efficiency: a random partition
 of the same shape reconstructs the corpus better but holds less of what is 
 in it.
 
-Setting the menstrual-phase head's weight to zero ablated for the phase head. 
+The phase head was ablated by setting its loss weight to zero. 
 Cross-donor phase agreement fell 34.5\%. The architecture supplied 65.5\% of the
 margin and the head the remaining 34.5\%. Read on the frontier axes alone
 the rest of the arm looks unremarkable: donor recovery fell 27.6\% and study
@@ -274,7 +274,8 @@ separation 14.3\%, which is what less pressure on the latent should do to
 both. The training curves say otherwise. Read every epoch on the validation 
 split, phase agreement in the head-free arm climbed from 0.4977 to 0.7488, 
 while its held-out reconstruction loss was lowest at the first epoch and rose 
-at every epoch after. Training loss stayed within 0.0009 of ELAJ$_{B\,hi}$
+at every epoch after, so the selection rule returned the model before that 
+structure had arrived. Training loss stayed within 0.0009 of ELAJ$_{B\,hi}$
 at every epoch, so the head cost nothing in fit. At the selected checkpoints 
 the head-free arm recovered donors 0.1203 less well and separated studies 
 0.1021 less, and at the last epoch both arms ran those gaps were 0.0327 
@@ -287,15 +288,17 @@ and worsened every cost axis. Disease status rose 8.1\% while cell family,
 menstrual phase and cell type each rose by less than 1\%, against donor
 recovery worsening 6.4\% and study separation 9.5\%. The most remarkable 
 outcome of ECS can be seen in the UMAPs produced. ECS creates a push and pull 
-between cells in the latent space that makes room for biology as adversarial 
-pressure tries to clump everything together (Supplementary figure reference).
+between cells that keeps the latent organised by similarity while adversarial 
+pressure pulls studies together. Without it, cells reorganise by provenance: 
+large single-study territories appear that ELAJ$_{B\,hi}$ does not have 
+(Supplementary figure reference).
 
 To ablate for DNS sentinel, genes never assayed in a study were set to zero 
 instead of the special embedding. The ablation worsened study separation by 
 2.7\% and moved cell family, menstrual phase and donor recovery by less 
 than 1\% each. The biggest difference, despite everything else being the same, 
-was again seen in the UMAPs. DNS seems to have had a catalytic effect on 
-study separability. Absence of measurement is not a measured absence.
+was again seen in the UMAPs. The DNS sentinel seems to act as a catalyst for 
+removing study separation. Absence of measurement is not a measured absence.
 
 Taking the eight order statistics out of each group's readout and leaving
 the single learned query, which reduces what a group hands forward from 288
