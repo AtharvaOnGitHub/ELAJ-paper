@@ -234,6 +234,8 @@ SEVERITY_SOURCES = {
 }
 SEVERITY_LABELS = ("severity", "severity (patients only)")
 
+NOTE_DONORS: dict[int, str] = {}
+
 def take_note(path, method, test, label, keys=("null95", "p", "donors")):
     """Register the note fields of one named row: null95, p, donor count."""
     if not path.exists():
@@ -248,10 +250,33 @@ def take_note(path, method, test, label, keys=("null95", "p", "donors")):
             mm = (re.search(rf"{k}=([-\d.]+)", note) if k != "donors"
                   else re.search(r"(\d+) donors", note))
             if mm:
-                try: LEDGER.append((float(mm.group(1)), f"{prov} {k}"))
+                try:
+                    LEDGER.append((float(mm.group(1)), f"{prov} {k}"))
+                    # Donor counts are quoted in prose as integers, and the
+                    # integer path reads CONSTANTS rather than the ledger, so
+                    # they are registered from the row that reports them.
+                    if k == "donors":
+                        NOTE_DONORS[int(mm.group(1))] = f"donors, {label}"
                 except ValueError: pass
         return
     fail(f"no row for {method} {test}/{label} in {path.relative_to(ROOT)}")
+
+# ── the same four labels read over the whole corpus ──────────────────────
+# Severity, stage and grade are not model inputs, so held-out protects
+# against nothing for them and the whole corpus is the better-powered test:
+# 118 donors against 34, and 57 against 18 once controls are dropped.
+WHOLE_CORPUS = {
+    "elaj": (BENCH / "whole_corpus/wholecorpus_p1_dab168_kl1/benchmark.csv",
+             BENCH / "whole_corpus/wholecorpus_p1_dab168_kl30/benchmark.csv"),
+}
+WHOLE_CORPUS_LABELS = ("severity", "severity (patients only)",
+                       "Endometriosis_stage", "EndometriosisGrade")
+for _key, _files in WHOLE_CORPUS.items():
+    for _f in _files:
+        for _label in WHOLE_CORPUS_LABELS:
+            take(_f, _key, None, None, "cross-donor", _label)
+            take(_f, _key, None, None, "cross-donor-p", _label)
+            take_note(_f, _key, "cross-donor", _label)
 
 for key, f in SEVERITY_SOURCES.items():
     for label in SEVERITY_LABELS:
@@ -453,6 +478,8 @@ CONSTANTS = {
 # DERIVED, not typed: the count of cells outside endometrium comes from the
 # dumped metadata in the same pass that proves none of them is annotated.
 for _n, _why in VALIDATE_CELLS.items():
+    CONSTANTS.setdefault(_n, _why)
+for _n, _why in NOTE_DONORS.items():
     CONSTANTS.setdefault(_n, _why)
 if OUTSIDE_ENDOMETRIUM:
     CONSTANTS[OUTSIDE_ENDOMETRIUM] = ("cells outside endometrium, none "

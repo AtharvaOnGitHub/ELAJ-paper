@@ -181,12 +181,27 @@ def cross_donor_rows(path: Path, method: str, label: str) -> dict:
     f = _note_fields(r["note"])
     return {"value": float(r["value"]), "p": f.get("p"), "null95": f.get("null95")}
 
+# The whole-corpus reading of the same four labels, from the two reported
+# arms. Not a different experiment: the same estimator over 118 donors
+# instead of 34, which is the donor count the public record actually holds.
+WHOLE_CORPUS_RUNS = ("whole_corpus/wholecorpus_p1_dab168_kl1",
+                     "whole_corpus/wholecorpus_p1_dab168_kl30")
+
 STAGING = {}
 for meth, (run, _, _) in list(MANIFEST.items()) + [("elaj", ("p1_dab168_kl1", "", ""))]:
     f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
     for key in ("stage", "grade"):
         try: STAGING[(meth, key)] = cross_donor_rows(f, meth, STAGE_LABELS[key])
         except (KeyError, FileNotFoundError): pass
+for i, run in enumerate(WHOLE_CORPUS_RUNS):
+    f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
+    for key, label in (("severity", "severity"),
+                       ("severity_cases", "severity (patients only)"),
+                       ("stage", "Endometriosis_stage"),
+                       ("grade", "EndometriosisGrade")):
+        try: STAGING[(f"elaj_wc{i}", key)] = cross_donor_rows(f, "elaj", label)
+        except (KeyError, FileNotFoundError): pass
+
 for meth, run in SEVERITY_MANIFEST.items():
     f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
     for key in ("severity", "severity_cases"):

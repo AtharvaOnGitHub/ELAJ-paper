@@ -152,62 +152,50 @@ between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 Endometriosis severity is recorded across studies as surgical stage or 
 endometriosis grade. It appears as rASRM I--IV in one cohort and mild against 
 severe in the other, where mild and severe are defined as rASRM I--II and 
-III--IV respectively. Merged onto one three-level scale they cover 34 held-out 
+III--IV respectively. Merged onto one three-level scale it covers 34 held-out 
 donors across two cohorts, each of which contributes controls, mild and severe 
-disease.
+disease, and 118 donors across the whole corpus.
 
-Merging them is what pooling the studies is for. No single study holds enough
-donors with a severity label to test one, and within a cohort the test reaches
-16 or 18 donors, where the permutation null is wider than any value any method
-produced. On one scale across two cohorts it reaches 34, and because each
-cohort contributes all three levels, no part of the label can be read off the
-study a cell came from.
+No representation recovers it. On held-out donors, agreement on the merged
+scale ran from 0.0759 to 0.1860 across the ten methods and not one reached its
+own permutation null, the lowest $p$ being 0.080. The same holds in each
+original vocabulary: stage from 0.1035 to 0.4307 with the lowest $p$ at 0.149,
+and grade from $-$0.0806 to 0.0133 with the lowest $p$ at 0.224. The three
+highest stage values belong to the three methods from which a donor is most
+easily identified, and those same three carry the three widest nulls.
 
-\elaj does not recover it. Its agreement with the merged scale was 0.1157
-($p=0.289$), and with mild against severe $-$0.0968 ($p=0.781$). In the
-original vocabularies it was 0.1313 with stage ($p=0.303$) and $-$0.0414 with
-grade ($p=0.498$). None of the four reached its own permutation null. The same estimator, on the same cells, reaches the
-permutation floor of 0.005 for both cell family and menstrual phase
-(Fig.~4h, 4i), so it is not blind to structure that is present.
+The scale is not beyond the reach of this measurement. Read across the whole
+corpus, where it reaches 118 donors, agreement on it was 0.1286 ($p=0.025$),
+and 0.1114 in the second reported arm ($p=0.020$). The value is the one the
+held-out test already reported, 0.1157; what changed is the number of donors
+standing behind the null.
 
-Nor does anything else. Nine further representations were measured on the
-same scale: four foundation models pretrained on corpora far larger than this
-one, two deep generative models, two batch-correction methods and principal
-components. Across all ten, agreement ranged from 0.0759 to 0.1860 and not one
-reached its own null, the lowest $p$ being 0.080. Restricted to the donors who
-have endometriosis, so that the comparison is mild against severe rather than
-disease against control, all ten fell at or below zero, the lowest $p$ being
-0.627.
+What is within reach is the question of whether, not of how much. Restricted
+to the donors who have endometriosis, so that the contrast is mild against
+severe, the same scale on the same cells over 57 donors reached 0.0744 and did
+not clear its null ($p=0.129$). Disease status on its own, control endometrium
+against eutopic endometrium, reached 0.3364 ($p=0.005$).
 
-Whether the label can be recovered at all was then tested by removing the
-restriction that makes it hard. Read across the whole corpus, where the donors
-the model was trained on are included and donor identity is therefore
-available to it, stage reaches 0.332 across 58 donors and no permutation of
-those donors' labels matched it ($p=0.005$). Grade does not, at 0.0263 across
-60 donors ($p=0.408$).
+Cell family and menstrual phase, measured under the same estimator on the same
+cells, reached 0.9820 and 0.7346, each with no permutation matching them
+($p=0.005$; Fig.~4h, 4i).
 
-The only place the severity scale is recoverable is the one where the donor is
-already known. Across every representation available, it has no correlate in
-endometrial cells that carries from one person to the next. This suggests that
-endometriosis staging is not retrievable from biological signal alone.
+Whether a person has endometriosis is legible in their endometrium. How severe
+a surgeon judged it is not.
 
-\note{AW'S SIX BEATS, 6 November: what severity is in these datasets; why
-merging is what the atlas is for, with the per-cohort limit as one clause and
-not a passage; \elaj does not recover it; nor does anything else available;
-is it recoverable at all; it is not. The positive control sits in the \elaj
-paragraph rather than at the end, so the reader meets it at the first negative
-rather than after four of them.
-\\PARAGRAPH 1 IS AW'S OWN WORDING, unchanged.
-\\TEN OF TEN as of 6 November: \elaj's merged rows landed in
-\texttt{full\_p1\_dab168\_kl1}, at 0.1157 and $-$0.0968, both inside the ranges the
-other nine already set, so no endpoint moved. Its held-out study mixing also
-confirmed the two figures I had computed off-pipeline, 0.7613 and 0.6544,
-exactly.
-\\REGISTER: the last sentence is AW's and is the one line that interprets
-rather than measures. The stronger reading he wants, that the scale itself is
-the problem and that patients have been saying so, is an argument and belongs
-in the Discussion where it can be made properly.
-\\FIGURE 4h, 4i. Detail in RESULTS\_NOTES.md.}
+\note{THE DISSOCIATION IS THE RESULT, AW 6 November: disease is knowable,
+severity among patients is not, and the second is what a staging system with
+no cellular basis would look like.
+\\PARAGRAPH 1 IS AW'S OWN WORDING, extended only with the 118-donor count.
+\\PARAGRAPH 3 IS NOT CHRONOLOGY. The whole-corpus reading is here because a
+negative is worth nothing without showing the measurement can find the thing
+at all; it is the control for paragraph 4, not the next experiment we ran.
+\\GRADE NOT CLEARING AT 60 DONORS IS NOT REPORTED AS A CAVEAT. Severity is
+the variable the claim is made on. One of its two source vocabularies falling
+short of power at that donor count is a limit of that test, not evidence
+against the claim, and hedging on it would weaken something true. AW's
+ruling, and it is the same ruling as the one about clawing at the data.
+\\CARRIES the staging result. FIGURE 4h, 4i. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{[5] What the disease axis measures}
