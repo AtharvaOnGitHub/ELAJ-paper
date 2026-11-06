@@ -128,16 +128,26 @@ ends in laparoscopy \citep{bontempo2025diagnostic}. The case for changing both
 the scale and the route rests on every patient told that a lesion a 
 millimetre across could not account for their pain.
 
-Several limits bound these conclusions. Width is not matched. \elaj\ is
+These conclusions are bound by some notable factors. First, the split
+leaks. One study pair deposits the same fifteen people under two sets of
+identifiers, which a donor-level split cannot detect. 17{,}873 held-out
+cells, 4.3\% of the held-out set, belong to a person who also appears under
+the other study's identifier, and those cells carry both a menstrual phase
+and a disease status. The cross-donor
+estimator discards a neighbour that carries the same donor identifier. For
+these fifteen, a neighbour recorded under the other identifier is counted as
+cross-donor when it is not. Phase, disease and severity are constant within
+a donor, so the error inflates those agreements rather than depressing them.
+4.3\% is its ceiling. Second, \elaj\ is
 read at sixteen dimensions against representations at 256 to 3{,}072. Width
 is unlikely to be what separates them, since across the ten it is
-negatively associated with cycle agreement. The continuity of cycle day
+negatively associated with cycle agreement. Third, the continuity of cycle day
 rests on one cohort of 60 donors. No other study here records the day, so
-the closed trajectory is replicated nowhere in this corpus. One of the
+the closed trajectory is replicated nowhere in this corpus. Fourth, one of the
 eleven studies is a follicular-fluid aspirate that entered labelled as
 endometrium and was conditioned accordingly: 45{,}312 cells, 2.87\% of the
 corpus, 6 of 269 donors. It carries no cell-family and no phase labels, so
-the cycle and cell-type results do not rest on it. The corpus also holds
+the cycle and cell-type results do not rest on it. Generically, the corpus holds
 only part of the metadata that matters. No cohort records cycle day, serum
 progesterone, surgical stage and treatment history together. The
 permutation null reassigns the donor-to-label map across all eleven studies
@@ -147,11 +157,10 @@ own study separation figure, 0.7613, bounds how much that can matter. A
 permutation stratified within study is the correct remedy and is not built
 here.
 
-What a sixteen-number cell is useful for is narrow. It is a common
-coordinate system. A new cohort can be placed beside the eleven already
-here without being corrected into them. A pattern reported in one study can
-be looked for in another rather than argued about. The model is small
-enough to retrain, so the next cohort to be published does not need anyone
-to repeat a pretraining run before it can be included. Endometriosis
-research has been held back by cohorts that cannot be read together. This
-is a way to read them together.
+What a sixteen-number cell is useful for is a common coordinate system. A 
+new cohort can be placed beside the eleven already here without being 
+corrected into them. A pattern reported in one study can be looked for in 
+another rather than argued about. The model is small enough to retrain, so 
+the next cohort to be published does not need anyone to repeat a pretraining 
+run before it can be included. Endometriosis research has been held back by 
+cohorts that cannot be read together. This is a way to read them together.

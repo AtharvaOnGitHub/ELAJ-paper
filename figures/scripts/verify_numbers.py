@@ -181,6 +181,8 @@ print("   manifest references no obsolete or train-split file"
 # 3. EVERY VALUE, WITH ITS PROVENANCE.
 # ──────────────────────────────────────────────────────────────────────────
 LEDGER: list[tuple[float, str]] = []
+# Integers registered by blocks that run before CONSTANTS is built.
+CONSTANTS_EXTRA: dict[int, str] = {}
 # Arithmetic over LEDGER values. Declared here rather than at first use so
 # that every block below can append to one list.
 DERIVED: list[tuple[float, str]] = []
@@ -787,6 +789,25 @@ LITERATURE = [
 for _v, _why in LITERATURE:
     LEDGER.append((_v, _why))
 
+# THE SPLIT LEAK. Measured once by check_donor_overlap.sh over all 55 study
+# pairs and written to a report; the dumped metadata carries only patient_id
+# and the overlap was found on source_sample_id, so it cannot be recomputed
+# from the dump. The figure is read from the report rather than typed here,
+# and the percentage is derived against the held-out cell count.
+OVERLAP = ROOT / "Outputs/qc/donor_overlap_261022/donor_overlap.md"
+if OVERLAP.exists():
+    _m = re.search(r"Held-out cells belonging to a donor that also appears in "
+                   r"the other study:\s*\*\*([\d,]+)\*\*", OVERLAP.read_text())
+    if _m:
+        _leak = int(_m.group(1).replace(",", ""))
+        CONSTANTS_EXTRA[_leak] = "held-out cells sharing a person across the study pair"
+        DERIVED.append((100 * _leak / 416256,
+                        "leaked held-out cells as a share of the held-out set"))
+    else:
+        fail(f"{OVERLAP.name} no longer states the held-out overlap count")
+else:
+    fail(f"missing the donor-overlap report {OVERLAP}")
+
 # Per-study shares the prose quotes, counted from the dumped metadata in
 # the same pass that checks annotation coverage rather than typed here.
 STUDY_SHARES = ("li_2025",)
@@ -881,6 +902,8 @@ for _n, _why in VALIDATE_CELLS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in STUDY_CELLS.items():
     CONSTANTS.setdefault(_n, _why)
+for _n, _why in CONSTANTS_EXTRA.items():
+    CONSTANTS.setdefault(_n, _why)
 for _n, _why in NOTE_DONORS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in KNOBS.items():
@@ -961,6 +984,7 @@ PINNED_AT = {
     ("1", "11.1"): ("donor % change across the adversarial weight", "p1_dab7_kl1"),
     ("D", "11.1"): ("cited: bontempo2025diagnostic", ""),
     ("D", "2.87"): ("li_2025 as a share of the corpus", ""),
+    ("D", "4.3"): ("leaked held-out cells as a share", ""),
 }
 
 def subsection_of(pos: int, marks: list[tuple[int, str]]) -> str:

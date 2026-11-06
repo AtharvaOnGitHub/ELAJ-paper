@@ -183,9 +183,19 @@ Kept:
 Skipped, with reasons:
 
 - **F3** is C5, which is parked.
-- **F4** (17,873 held-out cells, 4.3%, share a donor with training through
-  one overlapping study pair) is a Methods fact about the split and does
-  not change a claim.
+- ~~**F4**~~ **REINSTATED, 6 November, and it is now the FIRST limitation.**
+  I dropped it as "a Methods fact about the split that does not change a
+  claim" and AW caught it: it changes two claims. The overlapping pair
+  carries a menstrual phase and a disease status on every cell, so the leak
+  sits inside the two headline held-out measurements. The estimator
+  discards a neighbour by donor identifier, and these fifteen people hold
+  two, so a same-person neighbour is counted as cross-donor. Phase, disease
+  and severity are donor-constant, so it inflates them.
+  *Wording corrected in Methods too:* "share a donor with training" is not
+  what the audit measured. One of the seven split samples has both sides
+  held out (2,945 and 997 cells), so 3,942 of the 17,873 share a person
+  with the held-out set rather than with training, which is the more direct
+  problem for a cross-donor estimator, not a lesser one.
 - **F6** (single runs, 4% seed variability) — kept only if the paragraph
   has room; it is real but it is the smallest of the six.
 - **The annotation gap** (392,629 unannotated cells). AW: "doesn't need to
