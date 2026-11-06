@@ -51,20 +51,28 @@ def fail(msg: str) -> None:
 # ──────────────────────────────────────────────────────────────────────────
 BENCH = ROOT / "Outputs/Benchmarks"
 SOURCES = {
-    "elaj":     (BENCH / "p1_dab168_kl1/benchmark.csv", "native", "train",
+    # MOVED TO THE FULL-SPLIT SOURCES, 6 November 2026, with the manifest in
+    # audit_numbers.py. Every entry below used to name a run whose study
+    # mixing was measured on 19,998 of 416,256 held-out cells.
+    "elaj":     (BENCH / "full/full_p1_dab168_kl1/benchmark.csv", "native", "train",
                  "the reported arm, ELAJ's own 15,496-gene vocabulary"),
-    "frontier": (None, None, None, "the six p1_* arms, ELAJ rows only"),
-    "pca":      (BENCH / "fm_scgpt/benchmark.csv", "all30962", "train",
-                 "wide axis, inductive; bit-identical in all four fm_* files"),
-    "scvi":     (BENCH / "fm_scgpt/benchmark.csv", "all30962", "train", "as pca"),
-    "scanvi":   (BENCH / "fm_scgpt/benchmark.csv", "all30962", "train", "as pca"),
-    "scgpt":        (BENCH / "fm_scgpt/benchmark.csv", "native", "pretrained", ""),
-    "geneformer":   (BENCH / "fm_baseline+Geneformer/benchmark.csv", "native", "pretrained", ""),
+    "frontier": (None, None, None, "the six full/full_p1_* arms, ELAJ rows only"),
+    "pca":      (BENCH / "wide_full_inductive/benchmark.csv", "all30962", "train",
+                 "wide axis, inductive, full split"),
+    "scvi":     (BENCH / "wide_full_inductive/benchmark.csv", "all30962", "train", "as pca"),
+    "scanvi":   (BENCH / "wide_full_inductive/benchmark.csv", "all30962", "train", "as pca"),
+    "scgpt":        (BENCH / "wide_full_scgpt/benchmark.csv", "native", "pretrained", ""),
+    "geneformer":   (BENCH / "wide_full_geneformer/benchmark.csv", "native", "pretrained", ""),
+    # scFoundation's full-split pass was OOM-killed inside scIB before the
+    # mixing stage, so its mixing row alone comes from a separate --stages
+    # mixing pass over the same dumped latent.
     "scfoundation": (BENCH / "fm_scfoundation/benchmark.csv", "native", "pretrained", ""),
-    "scimilarity":  (BENCH / "fm_scimilarity/benchmark.csv", "native", "pretrained", ""),
-    "harmony":   (BENCH / "wide_transductive/benchmark.csv", "all30962", "",
+    "scfoundation_mixing": (BENCH / "mixing_scfoundation/benchmark.csv", "native",
+                            "pretrained", "mixing only"),
+    "scimilarity":  (BENCH / "wide_full_scimilarity/benchmark.csv", "native", "pretrained", ""),
+    "harmony":   (BENCH / "wide_full_harmony/benchmark.csv", "all30962", "",
                   "wide axis, transductive: cannot be fitted inductively"),
-    "scanorama": (BENCH / "wide_transductive/benchmark.csv", "all30962", "",
+    "scanorama": (BENCH / "wide_full_scanorama/benchmark.csv", "all30962", "",
                   "as harmony"),
 }
 # Deliberately absent: r8_all and r8_inductive (obsolete corpus, ELAJ scores
@@ -81,7 +89,7 @@ ABLATIONS = {
     "-sentinel":     BENCH / "a_series/a1_nodns/benchmark.csv",
     "random groups": BENCH / "a_series/a1_randgroups/benchmark.csv",
 }
-FRONTIER = [BENCH / f"p1_dab{d}_kl{k}/benchmark.csv"
+FRONTIER = [BENCH / f"full/full_p1_dab{d}_kl{k}/benchmark.csv"
             for d in ("7", "168", "336") for k in ("1", "30")]
 VALIDATE = ROOT / "Outputs/validate/p1_dab168_kl1_full/validation.csv"
 METRICS = {"BASE": ROOT / "Outputs/p_series/p1_dab168_kl1/metrics.csv",
@@ -215,8 +223,12 @@ for key, entry in SOURCES.items():
     f, policy, fit = entry[0], entry[1], entry[2]
     if f is None:
         continue
-    for test, label in TESTS:
-        take(f, key if key != "elaj" else "elaj", policy, fit, test, label)
+    # A mixing-only pass holds exactly one row; asking it for the rest is how
+    # a split source turns into a wall of false failures.
+    tests = ([("study-mixing", "all studies")] if key.endswith("_mixing")
+             else TESTS)
+    for test, label in tests:
+        take(f, key.replace("_mixing", ""), policy, fit, test, label)
 
 # ── severity, scored in its own pass, plus the note fields the prose quotes ──
 # ADDED 6 November 2026 with Results [4]. Two things here that `take` cannot
@@ -302,7 +314,7 @@ for key, f in SEVERITY_SOURCES.items():
 
 # The same note fields for stage and grade, which the prose quotes as nulls.
 for key, entry in SOURCES.items():
-    if entry[0] is None: continue
+    if entry[0] is None or key.endswith("_mixing"): continue
     for label in ("Endometriosis_stage", "EndometriosisGrade"):
         take_note(entry[0], key, "cross-donor", label)
 
@@ -403,6 +415,49 @@ else:
 # The corpus size also appears rounded to millions in a heading.
 DERIVED.append((1_577_728 / 1e6, "corpus cells in millions, 1,577,728 / 1e6"))
 
+# ── what [1] derives from the frontier table ─────────────────────────────
+# The knob effects are differences between two arms on one axis, and the
+# pca-to-harmony figures are percentage changes. Both are arithmetic over
+# rows already registered above, so they are recomputed here from the same
+# files rather than quoted from a notebook.
+_ARM_AXES: dict[tuple[str, str], float] = {}
+for _f in FRONTIER:
+    _arm = _f.parent.name.replace("full_", "", 1)
+    for _test, _label, _axis in (("cross-donor", "menstrual phase", "phase"),
+                                 ("study-mixing", "all studies", "mixing"),
+                                 ("knn-agreement", "patient_id", "donor")):
+        for _r in rows(_f) if _f.exists() else []:
+            if (re.sub(r"__.*", "", _r.get("method") or "") == "elaj"
+                    and _r["test"] == _test and _r["label"] == _label):
+                _ARM_AXES[(_arm, _axis)] = float(_r["value"]); break
+# NAMED COMPARISONS ONLY. Deriving every pair manufactured collisions with
+# unrelated p-values, which is the same fault registering null95 had: a
+# derivation that is wider than the prose makes the audit less useful, not
+# more. [1] compares each arm against itself across the information cost, and
+# the two lower adversarial weights at the lower cost.
+_PAIRS = ([(f"p1_dab{_d}_kl1", f"p1_dab{_d}_kl30", "information cost")
+           for _d in ("7", "168", "336")]
+          + [("p1_dab7_kl1", "p1_dab168_kl1", "adversarial weight")])
+for _a, _b, _why in _PAIRS:
+    for _ax in ("phase", "mixing", "donor"):
+        if (_a, _ax) in _ARM_AXES and (_b, _ax) in _ARM_AXES:
+            DERIVED.append((abs(_ARM_AXES[(_a, _ax)] - _ARM_AXES[(_b, _ax)]),
+                            f"{_ax} across the {_why}, {_a} against {_b}"))
+
+_PCA_T = BENCH / "wide_full_pca/benchmark.csv"
+_HARM = BENCH / "wide_full_harmony/benchmark.csv"
+def _one(path, meth, test, label):
+    for _r in rows(path) if path.exists() else []:
+        if (re.sub(r"__.*", "", _r.get("method") or "") == meth
+                and _r["test"] == test and _r["label"] == label):
+            return float(_r["value"])
+    return None
+for _test, _label, _why in (("study-mixing", "all studies", "study separation"),
+                            ("cross-donor", "menstrual phase", "phase")):
+    _p, _h = _one(_PCA_T, "pca", _test, _label), _one(_HARM, "harmony", _test, _label)
+    if _p and _h:
+        DERIVED.append((abs(100 * (_h - _p) / _p), f"pca to harmony, {_why}"))
+
 # The cross-method correlations, recomputed here from this file's own
 # manifest rather than imported, so the two scripts can disagree.
 try:
@@ -434,6 +489,24 @@ try:
             DERIVED.append((max(_v) - min(_v),
                             f"spread of {_lab} across {len(_v)} methods"))
     DERIVED.append((max(_dn) - min(_dn), "spread of donor recovery"))
+    _w = [float(v[("knn-agreement", "patient_id")]) and 0 or 0 for v in []]
+    _wid, _ph = [], []
+    for _m, _e in SOURCES.items():
+        if _e[0] is None or _m.endswith("_mixing"): continue
+        for _r in rows(_e[0]):
+            if (re.sub(r"__.*", "", _r.get("method") or "") == _m
+                    and _r["test"] == "cross-donor"
+                    and _r["label"] == "menstrual phase"):
+                try:
+                    _wid.append(int(float(_r["width"]))); _ph.append(float(_r["value"]))
+                except (ValueError, TypeError):
+                    pass
+                break
+    if len(_wid) >= 3:
+        _r2, _p2 = spearmanr(_wid, _ph)
+        for _x in (_r2, abs(_r2), _p2):
+            DERIVED.append((_x, f"Spearman across {len(_wid)} methods, "
+                                f"representation width vs phase"))
 except Exception as _exc:
     fail(f"cross-method correlations could not be computed: {_exc}")
 
@@ -475,6 +548,26 @@ def annotation_coverage() -> None:
 
 OUTSIDE_ENDOMETRIUM = annotation_coverage()
 
+# ── the two knobs, read from the configs that set them ───────────────────
+# [1] names the adversarial weights and information costs. They are
+# configuration rather than measurement, so they are read from the arm
+# configs instead of being typed here: a knob renamed in a config and not in
+# the prose should fail the build.
+KNOBS: dict[int, str] = {}
+_CFG = ROOT / "axw1008/src/configs/experiment"
+for _d in ("7", "168", "336"):
+    for _k in ("1", "30"):
+        _f = _CFG / f"p1_dab{_d}_kl{_k}.yaml"
+        if not _f.exists():
+            fail(f"missing arm config {_f}"); continue
+        _txt = _f.read_text()
+        for _key, _why in (("model.dab.lambda_dab", "adversarial weight"),
+                           ("model.loss.w_kl_gauss", "information cost")):
+            _m = re.search(rf"{re.escape(_key)}:\s*([\d.]+)", _txt)
+            if _m:
+                KNOBS[int(float(_m.group(1)))] = _why
+print(f"\n   knob values from the arm configs: {sorted(KNOBS)}")
+
 CONSTANTS = {
     1577728: "corpus cells, metadata",
     1161472: "train-split cells, benchmark log",
@@ -496,6 +589,8 @@ CONSTANTS = {
 for _n, _why in VALIDATE_CELLS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in NOTE_DONORS.items():
+    CONSTANTS.setdefault(_n, _why)
+for _n, _why in KNOBS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in WIDTHS.items():
     if _n:
@@ -528,6 +623,8 @@ PINNED = {
     "0.721": ("donor recovery vs disease", ""),
     "0.019": ("donor recovery vs disease", ""),
     "0.176": ("donor recovery vs phase", ""),
+    "30.3": ("pca to harmony", "study separation"),
+    "8.2":  ("pca to harmony", "phase"),
     # Two different measurements round to 0.219 at three decimals. [4] quotes
     # scanorama's merged-severity permutation p; the collision is with a stage
     # p elsewhere in the table, and the prose names the method and the test.

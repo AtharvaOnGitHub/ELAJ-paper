@@ -240,12 +240,7 @@ Spread per axis across the ten: phase 0.2974, donor 0.2704, family 0.0873, disea
 
 ## Numbers in the prose that this script cannot account for
 
-- `0.5129` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/p1_dab168_kl30/benchmark.csv` — elaj / study-mixing / all studies
-- `0.6530` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/p1_dab336_kl1/benchmark.csv` — elaj / study-mixing / all studies
-- `0.7183` — real, on a reported axis, but **from a file this table does not quote**:
-    - `Outputs/Benchmarks/p1_dab7_kl1/benchmark.csv` — elaj / study-mixing / all studies
+None. Every decimal in the Results prose matches a value re-derived above, or is a chance rate carried in the benchmark's own `note` column.
 
 ## How the field table is sourced
 
