@@ -38,6 +38,9 @@ PAPER = Path(__file__).resolve().parents[2]
 TEX = PAPER / "sections" / "02-results.tex"
 
 FAIL: list[str] = []
+WIDTHS: dict[int, str] = {}
+NOTE_DONORS: dict[int, str] = {}
+
 def fail(msg: str) -> None:
     FAIL.append(msg)
 
@@ -190,6 +193,10 @@ def take(path: Path, method: str, policy, fit, test: str, label: str) -> None:
         v = float(hits[0]["value"])
     except ValueError:
         return
+    try:
+        WIDTHS[int(float(hits[0].get("width") or 0))] = f"{method} embedding width"
+    except (ValueError, TypeError):
+        pass
     LEDGER.append((v, f"{path.relative_to(ROOT)} :: {method}/"
                       f"{hits[0].get('gene_policy') or '-'}/"
                       f"{hits[0].get('fit_on') or '-'} {test}/{label}"))
@@ -234,9 +241,7 @@ SEVERITY_SOURCES = {
 }
 SEVERITY_LABELS = ("severity", "severity (patients only)")
 
-NOTE_DONORS: dict[int, str] = {}
-
-def take_note(path, method, test, label, keys=("null95", "p", "donors")):
+def take_note(path, method, test, label, keys=("p", "donors")):
     """Register the note fields of one named row: null95, p, donor count."""
     if not path.exists():
         fail(f"missing file {path}"); return
@@ -249,6 +254,14 @@ def take_note(path, method, test, label, keys=("null95", "p", "donors")):
         for k in keys:
             mm = (re.search(rf"{k}=([-\d.]+)", note) if k != "donors"
                   else re.search(r"(\d+) donors", note))
+            # NULL95 IS NOT REGISTERED. It is written to two decimals, so a
+            # three-decimal p-value quoted in prose matches it numerically and
+            # the pass is reported as ambiguous: 0.080 is geneformer's
+            # severity p, and 0.08 is somebody's null. The prose quotes no
+            # null anywhere, for exactly that reason, so registering them buys
+            # nothing and costs a false ambiguity on every p below 0.1.
+            if k == "null95":
+                continue
             if mm:
                 try:
                     LEDGER.append((float(mm.group(1)), f"{prov} {k}"))
@@ -481,6 +494,9 @@ for _n, _why in VALIDATE_CELLS.items():
     CONSTANTS.setdefault(_n, _why)
 for _n, _why in NOTE_DONORS.items():
     CONSTANTS.setdefault(_n, _why)
+for _n, _why in WIDTHS.items():
+    if _n:
+        CONSTANTS.setdefault(_n, _why)
 if OUTSIDE_ENDOMETRIUM:
     CONSTANTS[OUTSIDE_ENDOMETRIUM] = ("cells outside endometrium, none "
                                       "annotated, from the dump")
