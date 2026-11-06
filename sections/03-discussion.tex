@@ -107,42 +107,33 @@ free component is. A disease score reported on pooled single-cell data is
 therefore partly a memorisation score, and the methods that look strongest 
 on it are the ones from which donors are most easily recovered.
 
-The disease signal itself sits in tissue that is not the disease. Every cell
-in that test is eutopic endometrium, the lining in its normal place, from
-people whose lesions are elsewhere or absent, and cross-donor agreement on
-disease status reached 0.3364 with no permutation matching it
-($p=0.005$). \elaj\ returns the lowest disease agreement of the ten
-representations and is also the one from which donors are hardest to
-recover, which by the correlation above makes it the least contaminated of
-the ten rather than the weakest. A diagnosis today takes 11.1 years and ends
-in laparoscopy \citep{bontempo2025diagnostic}. A signal legible in the
-uterine lining is a signal reachable without an operating theatre, and that
-is the direction this result points in, with one caution: of the eleven
-studies pooled here, one samples follicular fluid rather than tissue, and no
-single cohort in this corpus is large enough to support a test on its own.
-
-What that signal does not carry is the stage. Revised American Society for
-Reproductive Medicine scoring rates what a surgeon sees at one operation,
-the size and depth of lesions and the adhesions between organs, and it was
-built to predict fertility outcomes rather than symptoms. It is what every
-cohort records and it is the number a patient is given. Lesion burden has
-never tracked how much a person hurts, and patients have said so for
-decades. Measured here, the two halves of that scale come apart. Whether a
-person has endometriosis is recoverable from their endometrium
-(0.3364, $p=0.005$), and merged severity clears its permutation null across
-118 donors (0.1286, $p=0.025$) on the strength of the control contrast
-inside it. Mild against severe, among patients only, does not
-(0.0744, $p=0.129$ at 57 donors). No representation tested does better:
-across the ten methods merged severity ran 0.0759 to 0.1860 and not one
-cleared its own null, and across the six configurations of \elaj\ itself it
-cleared in none ($p=0.149$ to $0.468$). The permutation null has a floor set
-by how many donors carry the label, so the claim is bounded as what it is:
-surgical stage is not recoverable from transcriptional state in this corpus
-at this donor count. It is not a claim that severity has no biology. It is a
-claim that the scale now used to grade this disease does not correspond to
-anything the cells of the affected tissue distinguish, which is what a
-patient with a millimetre lesion and years of pain has been saying all
-along.
+What the endometrium does not carry is the stage. Revised American Society
+for Reproductive Medicine scoring rates what a surgeon sees in a single
+operation, the size and depth of lesions and the adhesions between organs,
+and it was built to predict fertility outcomes rather than symptoms. It is
+nonetheless what every cohort records, what trials stratify on, and the
+number a patient is handed to account for their pain. It has never tracked
+how much a person hurts, and patients have been saying so for decades. Read
+through the latent, the scale comes apart along that same seam. Whether a
+person has endometriosis is recoverable from their endometrium, and
+recoverable even in the representation from which donors are hardest to
+identify (0.3364, $p=0.005$). Severity is legible only so far as it carries
+that same contrast between disease and no disease; among patients alone the
+grades do not separate ($p=0.129$), and nothing tested here does better,
+including four models pretrained on corpora orders of magnitude larger than
+this corpus. What bounds that is the number of donors carrying a grade
+rather than the biology, so the claim is the narrow one: this corpus cannot
+distinguish a stage, which is not the same as there being no stage to
+distinguish. But a scale the affected tissue does not resolve is a scale
+describing an operation rather than a disease, and the same measurement
+points the field somewhere more useful. If the presence of disease is
+legible in endometrium sampled from its normal location while the surgeon's
+grade is not, the thing worth building is a readout from tissue reachable in
+a clinic rather than a finer description of what a camera can see.
+Diagnosis today takes 11.1 years and ends in
+laparoscopy \citep{bontempo2025diagnostic}. The case for changing both the
+scale and the route does not rest on this model. It rests on every patient
+told that a lesion a millimetre across could not account for their pain.
 
 Several limits bound these conclusions. Width is not matched: \elaj\ is read
 at sixteen dimensions against representations at 256 to 3{,}072, although
