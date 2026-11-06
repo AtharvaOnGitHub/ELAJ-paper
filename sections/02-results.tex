@@ -32,34 +32,35 @@ latent space, ablation studies, and other ways of understanding the model itself
 % ---------------------------------------------------------------------
 \subsection*{[1] The \elaj frontier}
 
-Six models were trained, crossing three adversarial weights with two settings
-of the latent's information cost, and each was selected on reconstruction loss
-on the validation split alone. The two knobs do different things. Raising the
-information cost from 1 to 30 gives up cross-donor phase agreement and buys
-back donor and study removal, at every adversarial weight: at the middle
-weight, phase falls from 0.7346 to 0.6033 while donor recovery falls from
-0.5188 to 0.3975 and study separation from 0.7613 to 0.6544. That knob
-travels along the trade-off. Raising the adversarial weight from 7 to 168
-moves the trade-off instead. At the lower information cost, study separation
-fell from 0.8636 to 0.7613 and donor recovery from 0.5837 to 0.5188, while
-cross-donor phase agreement went from 0.7337 to 0.7346, which is to say it
-cost nothing. Raising it further to 336 was worse on all three axes at both
-information costs (Fig.~2).
+Six models were trained and each was selected on reconstruction loss
+on the validation split alone. The models trace a Pareto front on a plot of 
+menstrual phase against study separation or donor recovery. 
 
-Placed on the same axes as the field, the frontier is \elaj's. Cross-donor
+The models cross three adversarial weights with two settings of the latent's 
+information cost. The two knobs do different things. Raising the
+information cost from 1 to 30 reduces cross-donor phase agreement and improves
+donor and study removal, and it does so at all three adversarial weights. At
+the middle weight, where both reported arms sit, phase falls from 0.7346 to
+0.6033, donor recovery from 0.5188 to 0.3975, and study separation from
+0.7613 to 0.6544. So information cost travels along the Pareto front.
+
+On the other hand, raising the adversarial weight from 7 to 168 moves the 
+Pareto front itself. At lower information cost, study separation
+falls from 0.8636 to 0.7613 and donor recovery from 0.5837 to 0.5188, while
+cross-donor phase agreement barely changes, from 0.7337 to 0.7346. Raising it
+further to 336 is worse on all three axes at both information costs (Fig.~2).
+
+Placed on the same axes as the field, \elaj creates the frontier. Cross-donor
 phase agreement of 0.7346 is the highest of the fifteen representations
 measured, above scanorama's 0.7303, and donor recovery of 0.5188 is lower
 than every one of the nine competing methods, the nearest being Geneformer at
-0.5421. No other method is simultaneously better on both: of all fifteen
-points, the two that cannot be improved on phase without losing donor removal
-are both \elaj arms.
+0.5421. No other method is simultaneously better on both. 
 
-Only one method competes on study removal, and it is the one built for
-nothing else. Harmony reaches 0.6697, between ELAJ$_{B\,lo}$ at 0.6544 and
-ELAJ$_{B\,hi}$ at 0.7613, and it pays for it in cycle signal: fitted
-transductively on the same cells as principal components, it cuts study
-separation by 30.3\% and cross-donor phase agreement by 8.2\%. That is the
-trade this paper is about, demonstrated by the field's own correction tool.
+Only one method competes on study removal. Harmony reaches 0.6697, between 
+ELAJ$_{B\,lo}$ at 0.6544 and ELAJ$_{B\,hi}$ at 0.7613, and it pays for it in 
+cycle signal: fitted transductively on the same cells as principal components, 
+it cuts study separation by 30.3\% and cross-donor phase agreement by 8.2\%. 
+The trade is demonstrated by the field's own correction tool.
 
 Cell type does not separate these methods. Cross-donor agreement on cell
 family runs from 0.9023 to 0.9896 across all fifteen, a spread of 0.0873,
