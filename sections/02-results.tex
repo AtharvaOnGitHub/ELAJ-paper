@@ -261,49 +261,41 @@ reading fell: cross-donor agreement on disease status by 19.8\%, on cell
 family by 2.2\%, on merged severity by 50.6\%, and on menstrual phase by
 7.7\%. The decoder reached the better reconstruction by reading provenance
 instead of cells, its reliance on the latent relative to the covariates it
-is told about falling from 7.46 to 2.43. Reconstruction and biology also
-stopped pointing at the same checkpoint. In ELAJ$_{B\,hi}$ the held-out loss
-and the cell-family readout were best at the same epoch; with the grouping
-shuffled, cell family peaked ten epochs before the loss did and had fallen
-2.5\% by the point the checkpoint was taken. The pathway grouping therefore
-carries biology and not only parameter efficiency: a random partition of the
-same shape reconstructs the corpus better and holds less of what is in it.
+is told about falling from 7.46 to 2.43. The pathway grouping 
+therefore carries biology along with parameter efficiency: a random partition
+of the same shape reconstructs the corpus better but holds less of what is 
+in it.
 
-Setting the menstrual-phase head's weight to zero removed the only label the
-model is given. Cross-donor phase agreement fell 34.5\%, and both figures
-are already corrected for chance, so the architecture supplied 65.5\% of the
+Setting the menstrual-phase head's weight to zero ablated for the phase head. 
+Cross-donor phase agreement fell 34.5\%. The architecture supplied 65.5\% of the
 margin and the head the remaining 34.5\%. Read on the frontier axes alone
 the rest of the arm looks unremarkable: donor recovery fell 27.6\% and study
 separation 14.3\%, which is what less pressure on the latent should do to
-both. The training curves say otherwise. Phase structure was not so much
-absent without the head as late. Read every epoch on the validation split,
-phase agreement in the head-free arm climbed from 0.4977 to 0.7488, while
-its held-out reconstruction loss was lowest at the first epoch and rose at
-every epoch after, so the selection rule returned the model before that
-structure had arrived. Training loss stayed within 0.0009 of ELAJ$_{B\,hi}$
-at every epoch, so the head cost nothing in fit. The same displacement
-accounts for most of what it appears to cost on the two confound axes: at
-the selected checkpoints the head-free arm recovered donors 0.1203 less well
-and separated studies 0.1021 less, and at the last epoch both arms ran those
-gaps were 0.0327 and 0.0010. The head does more than return phase to the
-latent. It holds the epoch at which the model reconstructs best together
-with the epoch at which it carries the most biology (Fig.~5).
+both. The training curves say otherwise. Read every epoch on the validation 
+split, phase agreement in the head-free arm climbed from 0.4977 to 0.7488, 
+while its held-out reconstruction loss was lowest at the first epoch and rose 
+at every epoch after. Training loss stayed within 0.0009 of ELAJ$_{B\,hi}$
+at every epoch, so the head cost nothing in fit. At the selected checkpoints 
+the head-free arm recovered donors 0.1203 less well and separated studies 
+0.1021 less, and at the last epoch both arms ran those gaps were 0.0327 
+and 0.0010. The head does more than return phase to the latent. It has a 
+regularising effect on the model which improves biological signal retention 
+in general (Fig.~5).
 
 Disabling the elastic cell similarity head improved every biological axis
 and worsened every cost axis. Disease status rose 8.1\% while cell family,
 menstrual phase and cell type each rose by less than 1\%, against donor
-recovery worsening 6.4\% and study separation 9.5\%. That is the signature
-of the information cost rather than of an independent gain. The term sets
-where the model sits on the trade-off and does not move the trade-off.
+recovery worsening 6.4\% and study separation 9.5\%. The most remarkable 
+outcome of ECS can be seen in the UMAPs produced. ECS creates a push and pull 
+between cells in the latent space that makes room for biology as adversarial 
+pressure tries to clump everything together (Supplementary figure reference).
 
-Removing the Did Not Sample sentinel, so that a gene a study never assayed
-enters as the embedding of a measured zero in the way every other
-single-cell model reads it, worsened study separation by 2.7\% and moved
-cell family, menstrual phase and donor recovery by less than 1\% each. The
-reconstruction mask was untouched, so the change is to the input
-representation alone. Absence is not a measurement of zero, and the whole
-cost of treating it as one landed on the single axis where a study's choice
-of gene panel is the confound.
+To ablate for DNS sentinel, genes never assayed in a study were set to zero 
+instead of the special embedding. The ablation worsened study separation by 
+2.7\% and moved cell family, menstrual phase and donor recovery by less 
+than 1\% each. The biggest difference, despite everything else being the same, 
+was again seen in the UMAPs. DNS seems to have had a catalytic effect on 
+study separability. Absence of measurement is not a measured absence.
 
 Taking the eight order statistics out of each group's readout and leaving
 the single learned query, which reduces what a group hands forward from 288
