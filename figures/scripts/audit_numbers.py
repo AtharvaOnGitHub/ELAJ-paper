@@ -18,7 +18,10 @@ import pandas as pd
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
 OUT  = Path(__file__).resolve().parents[2] / "audit" / "NUMBERS.md"
-TEX  = Path(__file__).resolve().parents[2] / "sections" / "02-results.tex"
+_SEC = Path(__file__).resolve().parents[2] / "sections"
+# Results AND Discussion, for the reason given in verify_numbers.py.
+TEX_FILES = [_SEC / "02-results.tex", _SEC / "03-discussion.tex"]
+TEX  = TEX_FILES[0]
 
 TESTS = {"donor":  ("knn-agreement", "patient_id",        "lower is better"),
          "mixing": ("study-mixing",  "all studies",       "lower is better"),
@@ -292,6 +295,61 @@ for _m, _run in MIXING_OVERRIDE.items():
 for _m, _sup in SUPERVISION.items():
     if _m in base:
         base[_m][0]["supervised_on"] = _sup
+
+# -------------------------------------------------------------------------
+# WHAT THE DISCUSSION QUOTES AND RESULTS DOES NOT. Two claims about the
+# field's measuring instruments, both read off the same per-method files as
+# the table above.
+#
+#   scIB degeneracy: iLISI, cLISI and kBET over every method in MANIFEST
+#   plus the reported arm. The earlier note claimed pcr_batch was exactly
+#   1.0000 for four methods; it is 0.5249 to 0.9386, so that figure is NOT
+#   registered and must not be quoted.
+#
+#   The cell-family band: the Discussion says nine of the ten methods sit
+#   within one narrow range and names Geneformer as the tenth, so the band
+#   is derived with the named outlier dropped rather than over all ten.
+# -------------------------------------------------------------------------
+SCIB_TESTS = ("scib-ilisi_knn", "scib-clisi_knn", "scib-kbet")
+scib: dict[str, dict[str, float]] = {}
+for _m, (_run, _, _) in list(MANIFEST.items()) + [
+        ("elaj", ("full/full_p1_dab168_kl1", "", ""))]:
+    _f = ROOT / "Outputs/Benchmarks" / _run / "benchmark.csv"
+    if not _f.exists():
+        continue
+    _b = pd.read_csv(_f)
+    _b["mm"] = _b.method.astype(str).str.replace("__.*", "", regex=True)
+    for _t in SCIB_TESTS:
+        _v = _b[(_b.mm == _m) & (_b.test == _t)]["value"]
+        if len(_v):
+            scib.setdefault(_t, {})[_m] = float(_v.iloc[0])
+
+DISCUSSION_VALUES: set[str] = set()
+for _t in SCIB_TESTS:
+    _vals = scib.get(_t, {})
+    if not _vals:
+        continue
+    for _v in (min(_vals.values()), max(_vals.values())):
+        DISCUSSION_VALUES.add(f"{_v:.4f}")
+        DISCUSSION_VALUES.add(f"{_v:.3f}")
+
+# The band over the nine, Geneformer named separately in the prose.
+# base holds the nine baselines; the tenth method in the band is ELAJ's
+# reported arm, read from its own file so the band is over all ten.
+_fam = {m: r[0]["family"] for m, r in base.items()
+        if not pd.isna(r[0].get("family", float("nan")))}
+_eb = pd.read_csv(ROOT / "Outputs/Benchmarks/full/full_p1_dab168_kl1/benchmark.csv")
+_eb["mm"] = _eb.method.astype(str).str.replace("__.*", "", regex=True)
+_ev = _eb[(_eb.mm == "elaj") & (_eb.test == "cross-donor")
+          & (_eb.label == "cell family")]["value"]
+if len(_ev):
+    _fam["elaj"] = float(_ev.iloc[0])
+_fam_in = {m: v for m, v in _fam.items() if m != "geneformer"}
+if _fam_in:
+    _lo, _hi = min(_fam_in.values()), max(_fam_in.values())
+    for _v in (_lo, _hi, _hi - _lo):
+        DISCUSSION_VALUES.add(f"{_v:.4f}")
+    DISCUSSION_VALUES.add(str(len(_fam_in)))
 
 def rel(p): return os.path.relpath(p, ROOT)
 lines = ["# Results numbers, and where each one comes from", "",
@@ -770,12 +828,13 @@ for r, _ in list(arms.values()) + list(base.values()):
     for k in TESTS:
         if not pd.isna(r[k]): derived.add(f"{r[k]:.4f}")
 derived |= derived_extra
+derived |= DISCUSSION_VALUES
 NOT_FROM_BENCHMARK = {
     "0.370": "chance rate for menstrual phase, printed in the benchmark `note` column",
     "0.3700": "same",
 }
 lines += ["", "## Numbers in the prose that this script cannot account for", ""]
-tex = TEX.read_text()
+tex = "\n".join(f.read_text() for f in TEX_FILES if f.exists())
 tex = re.sub(r"\\note\{.*?\n\n", "", tex, flags=re.S)       # prose only, not my notes
 unaccounted = []
 for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):

@@ -35,7 +35,11 @@ from pathlib import Path
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
 PAPER = Path(__file__).resolve().parents[2]
-TEX = PAPER / "sections" / "02-results.tex"
+# Results AND Discussion. The Discussion quotes measured values like any
+# other section, and reading only Results meant it shipped unchecked.
+TEX_FILES = [PAPER / "sections" / "02-results.tex",
+             PAPER / "sections" / "03-discussion.tex"]
+TEX = TEX_FILES[0]
 
 FAIL: list[str] = []
 WIDTHS: dict[int, str] = {}
@@ -557,6 +561,49 @@ if all(a and b for a, b in _sent):
 else:
     fail("could not derive the -sentinel bound")
 
+# ── what the Discussion quotes and Results does not ──────────────────────
+# Two claims about the field's measuring instruments. Both read off the
+# same per-method files the comparison table uses, independently of
+# audit_numbers.py's version.
+#
+# NOT REGISTERED: pcr_batch. RESULTS_STRUCTURE's E3 calls it exactly 1.0000
+# for four methods and it is 0.5249 to 0.9386, so nothing in the paper may
+# quote it until that is re-derived.
+SCIB_TESTS = ("scib-ilisi_knn", "scib-clisi_knn", "scib-kbet")
+_scib: dict[str, list[float]] = {t_: [] for t_ in SCIB_TESTS}
+_family: dict[str, float] = {}
+for _m, _e in list(SOURCES.items()) + [("elaj_arm",
+        (BENCH / "full/full_p1_dab168_kl1/benchmark.csv", None, None))]:
+    _f = _e[0]
+    if _f is None or _m.endswith("_mixing") or not _f.exists():
+        continue
+    _meth = "elaj" if _m.startswith("elaj") else _m
+    for _r in rows(_f):
+        if re.sub(r"__.*", "", _r.get("method") or "") != _meth:
+            continue
+        if _r["test"] in _scib and _r["value"] not in ("", None):
+            _scib[_r["test"]].append(float(_r["value"]))
+        if (_r["test"] == "cross-donor" and _r["label"] == "cell family"
+                and _r["value"] not in ("", None)):
+            _family.setdefault(_meth, float(_r["value"]))
+
+for _t, _vals in _scib.items():
+    if not _vals:
+        fail(f"no {_t} rows found for the Discussion's degeneracy claim")
+        continue
+    LEDGER.append((min(_vals), f"{_t}, lowest of {len(_vals)} methods"))
+    LEDGER.append((max(_vals), f"{_t}, highest of {len(_vals)} methods"))
+
+# THE BAND IS OVER THE NINE. The prose names Geneformer as the tenth and
+# outside it, so deriving the band over all ten would not match the claim.
+_band = {m: v for m, v in _family.items() if m != "geneformer"}
+if len(_band) >= 8:
+    _lo, _hi = min(_band.values()), max(_band.values())
+    DERIVED.append((_hi - _lo, f"cell family band across {len(_band)} methods, "
+                               f"Geneformer excluded as the prose does"))
+else:
+    fail(f"cell family band has only {len(_band)} methods")
+
 ANALYSIS = ROOT / "Outputs/analysis"
 for arm in ("p1_dab168_kl1", "p1_dab168_kl30"):
     for stem, lab, frm, to in (("phase_within_family", "phase", "proliferative", "secretory"),
@@ -792,6 +839,9 @@ CONSTANTS = {
     34: "donors, merged severity, held out", 18: "donors, mild vs severe",
     30: "last cycle day", 22: "cycle days present", 16: "latent dimensions",
     11: "studies", 5: "first cycle day",
+    # Reported by every arm's own training log; see axw1008 ABLATIONS.md.
+    1883986: "ELAJ parameters",
+    256: "Geneformer width", 512: "scGPT width", 3072: "scFoundation width",
     # What one group hands forward, from Methods: a learned query plus eight
     # order statistics, each its own token at width 32.
     288: "numbers per group, 9 summary tokens x width 32",
@@ -851,6 +901,10 @@ PINNED = {
     # [6]'s decoder-reliance ratios and the one severity p it quotes at three
     # decimals. Rounded, so pinned rather than searched for.
     "0.4024": ("metrics.csv", "BASE val_nb @best"),
+    # cLISI is exactly 1 for every method, which also happens to be the
+    # value two of [6]'s "less than 1%" bounds round up to.
+    "1.0000": ("scib-clisi_knn", ""),
+    "0.0000": ("scib-ilisi_knn", ""),
     # [6] quotes the range of severity p across the six ablation arms. The
     # low end is the head-free arm's 0.1493, and geneformer's STAGE p is
     # exactly 0.149, so the unpinned search certified the wrong row.
@@ -922,7 +976,7 @@ def strip_group(text: str, macro: str) -> str:
         i = k
     return "".join(out)
 
-tex = TEX.read_text()
+tex = "\n".join(f.read_text() for f in TEX_FILES if f.exists())
 for macro in ("note", "todo", "citep", "citet", "cite", "label", "ref"):
     tex = strip_group(tex, macro)
 tex = re.sub(r"^%.*$", "", tex, flags=re.M)
