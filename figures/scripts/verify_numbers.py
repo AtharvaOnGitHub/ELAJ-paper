@@ -466,18 +466,67 @@ def _abl(arm: str, test: str, label: str):
             return float(r["value"])
     return None
 
-for _arm, _test, _label, _why in (
-        ("random groups", "disease-xdonor", "all studies (pooled)", "disease"),
-        ("-ECS", "knn-agreement", "patient_id", "donor recovery"),
-        ("-ECS", "study-mixing", "all studies", "study separation"),
-        ("-statistics", "cross-donor", "menstrual phase", "phase")):
-    _u, _w = _abl("BASE", _test, _label), _abl(_arm, _test, _label)
-    if _u and _w:
-        _pc = abs(100 * (_w - _u) / _u)
-        for _val in (_pc, round(_pc, 1)):
-            DERIVED.append((_val, f"{_why} % change, BASE against {_arm}"))
+_AXES = {"disease":   ("disease-xdonor", "all studies (pooled)"),
+         "donor recovery":   ("knn-agreement", "patient_id"),
+         "study separation": ("study-mixing", "all studies"),
+         "phase":     ("cross-donor", "menstrual phase"),
+         "cell family": ("cross-donor", "cell family"),
+         "cell type": ("knn-agreement", "AnnotationRefined"),
+         "severity":  ("cross-donor", "severity")}
+
+# ARM BY AXIS, AND ONLY WHERE THE PROSE QUOTES IT. [6] reports every
+# ablation as a percentage change, so each pair below is a sentence in the
+# subsection rather than a sweep of the table.
+_QUOTED = {
+    "random groups": ("disease", "cell family", "severity", "phase"),
+    "-phase head":   ("donor recovery", "study separation"),
+    "-ECS":          ("disease", "donor recovery", "study separation"),
+    "-sentinel":     ("study separation",),
+    "-statistics":   ("phase", "cell type"),
+}
+for _arm, _whys in _QUOTED.items():
+    for _why in _whys:
+        _test, _label = _AXES[_why]
+        _u, _w = _abl("BASE", _test, _label), _abl(_arm, _test, _label)
+        if _u and _w:
+            _pc = abs(100 * (_w - _u) / _u)
+            for _val in (_pc, round(_pc, 1)):
+                DERIVED.append((_val, f"{_why} % change, BASE against {_arm}"))
+        else:
+            fail(f"could not derive the {_why} change for {_arm}")
+
+# THE THREE BOUNDS. Where a change is under one per cent, one decimal place
+# cannot tell it apart from any of the dozens of measured values that round
+# to the same figure, so the prose states a bound and the bound is what gets
+# derived -- rounded UP, so the sentence stays true.
+_BOUNDS = (("-ECS", ("cell family", "phase", "cell type"), 0,
+            "every biology axis -ECS moves by less than"),
+           ("-sentinel", ("cell family", "phase", "donor recovery"), 0,
+            "the three axes -sentinel barely moves, less than"),
+           ("-statistics", ("cell family",), 1,
+            "cell family under -statistics, less than"))
+for _arm, _whys, _dp, _why in _BOUNDS:
+    _pcs = []
+    for _w2 in _whys:
+        _test, _label = _AXES[_w2]
+        _u, _v = _abl("BASE", _test, _label), _abl(_arm, _test, _label)
+        if _u and _v:
+            _pcs.append(abs(100 * (_v - _u) / _u))
+    if len(_pcs) == len(_whys):
+        _f = 10 ** _dp
+        DERIVED.append((math.ceil(max(_pcs) * _f) / _f, f"{_why} (bound)"))
     else:
-        fail(f"could not derive the {_why} change for {_arm}")
+        fail(f"could not derive the bound for {_arm}")
+
+# The cell-family readout's decay between its own peak and the epoch the
+# selection rule returned, with the grouping shuffled.
+if "random groups" in CURVES:
+    _rf = CURVES["random groups"]["val_family_knn_xdonor"]
+    _ri2 = _sel("random groups")
+    _pc = abs(100 * (_rf[_ri2] - max(_rf)) / max(_rf))
+    for _val in (_pc, round(_pc, 1)):
+        DERIVED.append((_val, "random groups val_family_knn_xdonor, its peak "
+                              "against the selected checkpoint, % change"))
 
 for _arm, _test, _label, _why in (
         ("-statistics", "cross-donor", "cell family", "cell family"),):
@@ -811,11 +860,35 @@ PINNED = {
     "0.468": ("a1_randgroups/benchmark.csv", "cross-donor-p/severity"),
 }
 
+# PINNED, BUT ONLY INSIDE ONE SUBSECTION. A percentage written to one
+# decimal collides easily: [1]'s "7.7\% of donor recovery" across the
+# information cost and [6]'s "7.7\%" of menstrual phase under a shuffled
+# grouping are different quantities with the same digits, and a pin keyed on
+# the digits alone would certify both against one row. Keyed on the
+# subsection as well, each occurrence is pinned to its own source.
+PINNED_AT = {
+    ("1", "7.7"): ("donor % change across the information cost", "p1_dab7_kl1"),
+    ("6", "7.7"): ("phase % change, BASE against random groups", ""),
+}
+
+def subsection_of(pos: int, marks: list[tuple[int, str]]) -> str:
+    """Which [n] subsection a character offset falls in."""
+    here = ""
+    for at, num in marks:
+        if at <= pos:
+            here = num
+        else:
+            break
+    return here
+
 def pinned_source(raw: str, dp: int):
     """The pinned ledger entry for a prose value, checked against the pin."""
     want = PINNED.get(raw)
     if want is None:
         return None
+    return _resolve(raw, dp, want)
+
+def _resolve(raw: str, dp: int, want):
     needle, key = want
     cands = [(v, prov) for v, prov in LEDGER + DERIVED
              if needle in prov and (not key or key in prov)]
@@ -867,6 +940,10 @@ tex = re.sub(r"\d+(?:st|nd|rd|th)\b", "", tex)
 # rather than whitelisted, so the number itself stays checked wherever
 # else it appears: [6] arrived on 5 November and failed the gate as an
 # unsourced prose value, which is the gate working and the wrong target.
+# Offsets into THIS string, recorded before the numbers are stripped, so a
+# pin can name the subsection a prose value sits in.
+SUBSECTION_OFFSETS = [(m.start(), m.group(1)) for m in
+                      re.finditer(r"\\subsection\*\{\[(\d+)\]", tex)]
 tex = re.sub(r"\\subsection\*\{\[\d+\]", r"\\subsection*{", tex)
 # Study identifiers are names, not measurements: marecko\_2024, lin\_2023.
 tex = re.sub(r"[A-Za-z]+\\_\d{4}", "", tex)
@@ -899,6 +976,13 @@ for mobj in re.finditer(r"(?<![\d.])(\d+\.\d+|\d+)(?!\d)", tex):
              if f"{val:.4f}" == f"{v:.4f}" or f"{abs(val):.4f}" == f"{v:.4f}"}
     if not hits:
         unaccounted.append(raw); continue
+    where = subsection_of(mobj.start(), SUBSECTION_OFFSETS)
+    if (where, raw) in PINNED_AT:
+        prov = _resolve(raw, dp, PINNED_AT[(where, raw)])
+        if prov and not prov.startswith(("MISSING", "PIN ")):
+            ok += 1
+            print(f"   {raw:<8} <- PINNED in [{where}] {prov}")
+        continue
     if raw in PINNED:
         prov = pinned_source(raw, dp)
         if prov and not prov.startswith(("MISSING", "PIN ")):
