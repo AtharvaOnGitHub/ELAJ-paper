@@ -13,29 +13,29 @@ cross-donor phase, cell family and disease are **higher is better**.
 
 | arm | donor ↓ | mixing ↓ | phase ↑ | family ↑ | source |
 |---|---:|---:|---:|---:|---|
-| `p1_dab168_kl1` | 0.5188 | 0.6043 | 0.7346 | 0.9820 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| `p1_dab168_kl30` | 0.3975 | 0.5129 | 0.6033 | 0.9565 | `Outputs/Benchmarks/p1_dab168_kl30/benchmark.csv` |
-| `p1_dab336_kl1` | 0.5277 | 0.6530 | 0.7146 | 0.9779 | `Outputs/Benchmarks/p1_dab336_kl1/benchmark.csv` |
-| `p1_dab336_kl30` | 0.4154 | 0.5474 | 0.5922 | 0.9553 | `Outputs/Benchmarks/p1_dab336_kl30/benchmark.csv` |
-| `p1_dab7_kl1` | 0.5837 | 0.7183 | 0.7337 | 0.9829 | `Outputs/Benchmarks/p1_dab7_kl1/benchmark.csv` |
-| `p1_dab7_kl30` | 0.5389 | 0.7381 | 0.6791 | 0.9841 | `Outputs/Benchmarks/p1_dab7_kl30/benchmark.csv` |
+| `p1_dab168_kl1` | 0.5188 | 0.7613 | 0.7346 | 0.9820 | `Outputs/Benchmarks/full/full_p1_dab168_kl1/benchmark.csv` |
+| `p1_dab168_kl30` | 0.3975 | 0.6544 | 0.6033 | 0.9565 | `Outputs/Benchmarks/full/full_p1_dab168_kl30/benchmark.csv` |
+| `p1_dab336_kl1` | 0.5277 | 0.8200 | 0.7146 | 0.9779 | `Outputs/Benchmarks/full/full_p1_dab336_kl1/benchmark.csv` |
+| `p1_dab336_kl30` | 0.4154 | 0.7190 | 0.5922 | 0.9553 | `Outputs/Benchmarks/full/full_p1_dab336_kl30/benchmark.csv` |
+| `p1_dab7_kl1` | 0.5837 | 0.8636 | 0.7337 | 0.9829 | `Outputs/Benchmarks/full/full_p1_dab7_kl1/benchmark.csv` |
+| `p1_dab7_kl30` | 0.5389 | 0.8587 | 0.6791 | 0.9841 | `Outputs/Benchmarks/full/full_p1_dab7_kl30/benchmark.csv` |
 
-**Reported arm: `p1_dab168_kl1`** — phase 0.7346, family 0.9820, donor 0.5188, mixing 0.6043.
+**Reported arm: `p1_dab168_kl1`** — phase 0.7346, family 0.9820, donor 0.5188, mixing 0.7613.
 
 ## The field
 
 | method | width | supervised on | phase ↑ | mixing ↓ | donor ↓ | family ↑ | disease ↑ | source |
 |---|---:|---|---:|---:|---:|---:|---:|---|
-| **elaj** | 16 | menstrual phase | 0.7346 | 0.6043 | 0.5188 | 0.9820 | 0.3364 | `Outputs/Benchmarks/p1_dab168_kl1/benchmark.csv` |
-| scanorama | 100 | — | 0.7303 | 0.7395 | 0.7892 | 0.9866 | 0.4290 | `Outputs/Benchmarks/wide_transductive/benchmark.csv` |
-| scvi | 16 | — | 0.7053 | 0.7379 | 0.6888 | 0.9828 | 0.3689 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
-| scanvi | 16 | cell family | 0.6971 | 0.7240 | 0.6893 | 0.9832 | 0.3481 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
-| pca | 16 | — | 0.6457 | 0.8435 | 0.6923 | 0.9866 | 0.3640 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
-| scfoundation | 3072 | — | 0.6449 | 0.8076 | 0.7675 | 0.9832 | 0.4024 | `Outputs/Benchmarks/fm_scfoundation/benchmark.csv` |
-| scimilarity | 128 | cell family | 0.6255 | 0.7171 | 0.6516 | 0.9896 | 0.3646 | `Outputs/Benchmarks/fm_scimilarity/benchmark.csv` |
-| harmony | 50 | — | 0.6186 | 0.4168 | 0.6932 | 0.9822 | 0.3846 | `Outputs/Benchmarks/wide_transductive/benchmark.csv` |
-| scgpt | 512 | — | 0.4869 | 0.6284 | 0.5630 | 0.9840 | 0.3473 | `Outputs/Benchmarks/fm_scgpt/benchmark.csv` |
-| geneformer | 256 | — | 0.4372 | 0.6388 | 0.5421 | 0.9023 | 0.3713 | `Outputs/Benchmarks/fm_baseline+Geneformer/benchmark.csv` |
+| **elaj** | 16 | menstrual phase | 0.7346 | 0.7613 | 0.5188 | 0.9820 | 0.3364 | `Outputs/Benchmarks/full/full_p1_dab168_kl1/benchmark.csv` |
+| scanorama | 100 | — | 0.7303 | 0.8632 | 0.7892 | 0.9866 | 0.4290 | `Outputs/Benchmarks/wide_full_scanorama/benchmark.csv` |
+| scvi | 16 | — | 0.7053 | 0.8776 | 0.6888 | 0.9828 | 0.3689 | `Outputs/Benchmarks/wide_full_inductive/benchmark.csv` |
+| scanvi | 16 | cell family | 0.6971 | 0.8683 | 0.6893 | 0.9832 | 0.3481 | `Outputs/Benchmarks/wide_full_inductive/benchmark.csv` |
+| pca | 16 | — | 0.6457 | 0.9510 | 0.6923 | 0.9866 | 0.3640 | `Outputs/Benchmarks/wide_full_inductive/benchmark.csv` |
+| scfoundation | 3072 | — | 0.6449 | 0.9272 | 0.7675 | 0.9832 | 0.4024 | `Outputs/Benchmarks/fm_scfoundation/benchmark.csv  (mixing: mixing_scfoundation)` |
+| scimilarity | 128 | cell family | 0.6255 | 0.8669 | 0.6516 | 0.9896 | 0.3646 | `Outputs/Benchmarks/wide_full_scimilarity/benchmark.csv` |
+| harmony | 50 | — | 0.6186 | 0.6697 | 0.6932 | 0.9823 | 0.3846 | `Outputs/Benchmarks/wide_full_harmony/benchmark.csv` |
+| scgpt | 512 | — | 0.4869 | 0.7682 | 0.5630 | 0.9840 | 0.3473 | `Outputs/Benchmarks/wide_full_scgpt/benchmark.csv` |
+| geneformer | 256 | — | 0.4372 | 0.7964 | 0.5421 | 0.9023 | 0.3713 | `Outputs/Benchmarks/wide_full_geneformer/benchmark.csv` |
 
 ## D1--D6 — the ablations
 
@@ -240,7 +240,12 @@ Spread per axis across the ten: phase 0.2974, donor 0.2704, family 0.0873, disea
 
 ## Numbers in the prose that this script cannot account for
 
-None. Every decimal in the Results prose matches a value re-derived above, or is a chance rate carried in the benchmark's own `note` column.
+- `0.5129` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/p1_dab168_kl30/benchmark.csv` — elaj / study-mixing / all studies
+- `0.6530` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/p1_dab336_kl1/benchmark.csv` — elaj / study-mixing / all studies
+- `0.7183` — real, on a reported axis, but **from a file this table does not quote**:
+    - `Outputs/Benchmarks/p1_dab7_kl1/benchmark.csv` — elaj / study-mixing / all studies
 
 ## How the field table is sourced
 

@@ -74,10 +74,17 @@ def best_epoch(metrics: Path) -> tuple:
     return int(m.loc[i, "epoch"]), m.loc[i], m.iloc[-1], len(m)
 
 arms, base = {}, {}
-for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/p1_*/benchmark.csv"))):
-    name = Path(f).parent.name
-    if not name.endswith("_train"):
-        arms[name] = (read(Path(f), "elaj"), f)
+# THE FULL-SPLIT RE-SCORES, not the p1_* originals. Those were measured with
+# study mixing capped at 19,998 of 416,256 cells; `full/full_p1_*` is the same
+# arm, same checkpoint, scored over the whole held-out split.
+for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/full/full_p1_*/benchmark.csv"))):
+    name = Path(f).parent.name.replace("full_", "", 1)
+    _r = read(Path(f), "elaj")
+    # Declared, for the reason given at SUPERVISION below: the full-split
+    # re-scores went through --external-latent, which does not record it.
+    # Every p1_* arm carries the menstrual-phase head.
+    _r["supervised_on"] = "menstrual phase"
+    arms[name] = (_r, f)
 # ─────────────────────────────────────────────────────────────────────────
 # AN EXPLICIT MANIFEST, BECAUSE GLOBBING IS WHAT BROKE THIS AUDIT.
 #
@@ -93,22 +100,42 @@ for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/p1_*/benchmark.csv"))):
 # key is an error. Nothing falls back to another file, and no file outside
 # this dict can contribute a number.
 # ─────────────────────────────────────────────────────────────────────────
+# MOVED TO THE FULL-SPLIT SOURCES, 6 November 2026. Every entry above used to
+# point at a run whose study-mixing row was measured on 19,998 of the 416,256
+# held-out cells, 4.8% of the split. Those runs are still correct for every
+# other row, and the three foundation models re-scored bit-exactly, but a
+# table that mixed a full-split ELAJ against a capped baseline would be the
+# same error as the glob this manifest replaced.
 MANIFEST = {
     # method:        (benchmark.csv,                    gene_policy,  fit_on)
-    "pca":          ("fm_scgpt",                        "all30962",   "train"),
-    "scvi":         ("fm_scgpt",                        "all30962",   "train"),
-    "scanvi":       ("fm_scgpt",                        "all30962",   "train"),
-    "scgpt":        ("fm_scgpt",                        "native", "pretrained"),
-    "geneformer":   ("fm_baseline+Geneformer",          "native", "pretrained"),
+    "pca":          ("wide_full_inductive",             "all30962",   "train"),
+    "scvi":         ("wide_full_inductive",             "all30962",   "train"),
+    "scanvi":       ("wide_full_inductive",             "all30962",   "train"),
+    "scgpt":        ("wide_full_scgpt",                 "native", "pretrained"),
+    "geneformer":   ("wide_full_geneformer",            "native", "pretrained"),
+    "scimilarity":  ("wide_full_scimilarity",           "native", "pretrained"),
+    # scFoundation is SPLIT ACROSS TWO FILES and that is not a shortcut. Its
+    # full-split pass was OOM-killed inside scIB after fifteen hours, before
+    # the mixing stage it existed to reach, so nothing was written. Every
+    # other row comes from the original pass, which the three re-scored
+    # models proved reproduces bit-exactly; the mixing row comes from a
+    # seventeen-minute --stages mixing pass over the same dumped latent.
     "scfoundation": ("fm_scfoundation",                 "native", "pretrained"),
-    "scimilarity":  ("fm_scimilarity",                  "native", "pretrained"),
-    # Scored 4 November on the wide axis, same corpus, TRANSDUCTIVE: neither
-    # method can be fitted on the training donors and applied to held-out
-    # ones, so both saw the held-out cells while fitting. That is an advantage
-    # the table must declare per method, not a detail.
-    "harmony":      ("wide_transductive",               "all30962",   ""),
-    "scanorama":    ("wide_transductive",               "all30962",   ""),
+    # TRANSDUCTIVE: neither method can be fitted on the training donors and
+    # applied to held-out ones, so both saw the held-out cells while fitting.
+    # That is an advantage the table must declare per method, not a detail.
+    "harmony":      ("wide_full_harmony",               "all30962",   ""),
+    "scanorama":    ("wide_full_scanorama",             "all30962",   ""),
 }
+# The one row that does not come from its method's manifest file.
+MIXING_OVERRIDE = {"scfoundation": "mixing_scfoundation"}
+# DECLARED, NOT READ. `supervised_on` is a fact about how a method was built,
+# and a run scored through --external-latent does not record it: the
+# full-split scimilarity file leaves it empty where the original pass said
+# "cell family". Reading it from whichever file happened to keep it is how a
+# supervised method quietly loses its asterisk.
+SUPERVISION = {"scanvi": "cell family", "scimilarity": "cell family",
+               "elaj": "menstrual phase"}
 EXCLUDED = {
     "r8_all": "obsolete corpus; ELAJ scores phase 0.1161 there against 0.7346",
     "r8_inductive": "same corpus as r8_all",
@@ -188,7 +215,7 @@ WHOLE_CORPUS_RUNS = ("whole_corpus/wholecorpus_p1_dab168_kl1",
                      "whole_corpus/wholecorpus_p1_dab168_kl30")
 
 STAGING = {}
-for meth, (run, _, _) in list(MANIFEST.items()) + [("elaj", ("p1_dab168_kl1", "", ""))]:
+for meth, (run, _, _) in list(MANIFEST.items()) + [("elaj", ("full/full_p1_dab168_kl1", "", ""))]:
     f = ROOT / "Outputs/Benchmarks" / run / "benchmark.csv"
     for key in ("stage", "grade"):
         try: STAGING[(meth, key)] = cross_donor_rows(f, meth, STAGE_LABELS[key])
@@ -241,6 +268,24 @@ for meth, (run, policy, fit) in MANIFEST.items():
     except (KeyError, FileNotFoundError) as exc:
         MISSING_METHODS.append(f"{meth}: {exc}")
 
+
+for _m, _run in MIXING_OVERRIDE.items():
+    if _m not in base:
+        continue
+    _f = ROOT / "Outputs/Benchmarks" / _run / "benchmark.csv"
+    _b = pd.read_csv(_f)
+    _b["mm"] = _b.method.astype(str).str.replace("__.*", "", regex=True)
+    _e = _b[(_b.mm == _m) & (_b.test == "study-mixing")
+            & (_b.label == "all studies")]["value"]
+    if not len(_e):
+        raise SystemExit(f"MIXING_OVERRIDE names {_run} for {_m}, which holds "
+                         f"no study-mixing row. Refusing to fall back.")
+    base[_m][0]["mixing"] = float(_e.iloc[0])
+    base[_m] = (base[_m][0], base[_m][1] + f"  (mixing: {_run})")
+
+for _m, _sup in SUPERVISION.items():
+    if _m in base:
+        base[_m][0]["supervised_on"] = _sup
 
 def rel(p): return os.path.relpath(p, ROOT)
 lines = ["# Results numbers, and where each one comes from", "",
