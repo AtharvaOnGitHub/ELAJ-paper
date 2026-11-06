@@ -114,44 +114,44 @@ outcomes rather than symptoms. Read through the latent, the scale comes apart.
 Whether a person has endometriosis is recoverable from their endometrium, and
 recoverable even in the representation from which donors are hardest to
 identify (0.3364, $p=0.005$). Severity is legible only because it carries
-a contrast between disease and no disease; among donors with disease alone the
-grades do not separate ($p=0.129$), and nothing tested here does better, 
-including four models pretrained on corpora orders of magnitude larger than
-this corpus. However, the presence of disease is legible in endometrium sampled 
+a contrast between disease and no disease; among donors with disease the
+grades do not separate ($p=0.129$). Nothing tested here does better, 
+including four models pretrained on corpora far larger than
+this corpus. So, the presence of disease is legible in endometrium sampled 
 from its normal location while the rASRM stage is not. It is
 nonetheless what every cohort records, what trials stratify on, and the
 number a patient is handed to account for their pain. It has never tracked
 how much a person hurts, and patients have been saying so for decades.
-The staging worth building is a readout from tissue reachable in
-a clinic rather than anatomical cues. Diagnosis today takes 11.1 years and 
+The staging worth building is one graded by what the affected tissue 
+distinguishes rather than anatomical cues. Diagnosis today takes 11.1 years and 
 ends in laparoscopy \citep{bontempo2025diagnostic}. The case for changing both 
 the scale and the route rests on every patient told that a lesion a 
 millimetre across could not account for their pain.
 
-Several limits bound these conclusions. Width is not matched: \elaj\ is read
-at sixteen dimensions against representations at 256 to 3{,}072, although
-the negative association between width and cycle agreement makes it unlikely
-that width is what separates them. The continuity of cycle day rests on a
-single cohort of 60 donors, so the closed trajectory is replicated nowhere
-else in this corpus. One of the eleven studies, 45{,}312 cells and 2.87\% of
-the corpus from 6 donors, is a follicular-fluid aspirate that entered
-labelled as endometrium and was conditioned accordingly; it contributes no
-cell-family and no phase labels, so the cycle and cell-type results do not
-depend on it. The corpus also holds only a part of the metadata that
-matters, since no cohort records cycle day, serum progesterone, surgical
-stage and treatment history together. Finally, the permutation null
-reassigns the donor-to-label map across all eleven studies at once, which
-breaks the association between a label and the cohort it came from, so the
-null never sees whatever study structure remains in the latent. The size of
-that residue is our own study separation figure, 0.7613, and a permutation
-stratified within study is the correct remedy.
+Several limits bound these conclusions. Width is not matched. \elaj\ is
+read at sixteen dimensions against representations at 256 to 3{,}072. Width
+is unlikely to be what separates them, since across the ten it is
+negatively associated with cycle agreement. The continuity of cycle day
+rests on one cohort of 60 donors. No other study here records the day, so
+the closed trajectory is replicated nowhere in this corpus. One of the
+eleven studies is a follicular-fluid aspirate that entered labelled as
+endometrium and was conditioned accordingly: 45{,}312 cells, 2.87\% of the
+corpus, 6 of 269 donors. It carries no cell-family and no phase labels, so
+the cycle and cell-type results do not rest on it. The corpus also holds
+only part of the metadata that matters. No cohort records cycle day, serum
+progesterone, surgical stage and treatment history together. The
+permutation null reassigns the donor-to-label map across all eleven studies
+at once. That breaks the link between a label and the cohort it came from,
+so the null never sees whatever study structure survives in the latent. Our
+own study separation figure, 0.7613, bounds how much that can matter. A
+permutation stratified within study is the correct remedy and is not built
+here.
 
-What a sixteen-number representation of a cell is useful for is narrow and
-worth stating plainly. It gives a common coordinate system in which a new
-cohort can be placed beside eleven existing ones without being corrected
-into them, which is the operation every one of the questions this field
-cannot currently answer depends on. It makes a cell's position comparable
-across studies, so a pattern reported in one can be looked for in another
-rather than argued about. And it is small enough to retrain, so the next
-cohort to be published does not require anyone to repeat a pretraining run
-in order to be included.
+What a sixteen-number cell is useful for is narrow. It is a common
+coordinate system. A new cohort can be placed beside the eleven already
+here without being corrected into them. A pattern reported in one study can
+be looked for in another rather than argued about. The model is small
+enough to retrain, so the next cohort to be published does not need anyone
+to repeat a pretraining run before it can be included. Endometriosis
+research has been held back by cohorts that cannot be read together. This
+is a way to read them together.
