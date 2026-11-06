@@ -50,19 +50,42 @@ resolved.
 \\BLOCKED: the frontier panels need the four remaining arms' full-split
 mixing, which is Run 2.}
 
-\subsection*{Figure 2 --- The \elaj\ frontier}
-\note{A 2$\times$2 scatter grid. Columns share an x axis and are costs with the
-axis reversed, rows share a y axis and are biology, so better is up and to the
-right in every panel. Fifteen points: six \elaj\ arms, four foundation models,
-two deep generative models, two batch-correction methods, principal
-components. ONE Pareto front over all of them, not one per family.
-\\THE LEGEND SOLVES THE ARMS-TABLE PROBLEM. AW ruled no hyperparameter table
-anywhere, and the frontier points still need coordinates, so each arm's two
-knob values go in the legend beside the point they describe.
-\\CARRIES: A1, A2, A4, B1.
-\\BLOCKED: the mixing column needs Run 2 and \texttt{mix\_scfoundation}. The
-disease row was removed on AW's ruling: an axis whose dominant property is
-that it reads out donor memorisation is not a performance axis.}
+\subsection*{Figure 2 --- How the two knobs move the frontier}
+\note{THE P-SERIES ALONE, AND THE POINTS ARE JOINED. Figure 1 answers whether
+\elaj\ is better, with every method and one Pareto front over the lot. This
+one answers how the knobs work, so no baseline, no foundation model and no
+ablation appears. Eight panels: two cost axes, two joining schemes, and two
+rows of biology.
+\\ROWS ARE CALIBRATED, NOT SHARED. Phase spans 0.1424 across these arms and
+cell family 0.0288. Autoscaling each row makes the bottom look as dramatic as
+the top, so the rows are pinned to 0.50--0.80 and 0.95--1.00 and labelled
+once each. The bottom row is the control: the knobs trade phase against the
+confounds and leave cell identity where it was.
+\\CARRIES B1.
+\\RENDERED at 1200 dpi.}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth]{figures/pinned/figure2.png}
+\caption{\textbf{How the two knobs move the frontier.} The six arms of the
+factorial, three adversarial weights crossed with two settings of the
+latent's information cost, plotted against donor recovery (\textbf{a},
+\textbf{c}, \textbf{e}, \textbf{g}) and study separation (\textbf{b},
+\textbf{d}, \textbf{f}, \textbf{h}), with both cost axes reversed so that
+better is up and to the right throughout. Points are joined by shared
+information cost in the left four panels and by shared adversarial weight in
+the right four. Arms are labelled by their two knob values,
+\texttt{lambda\_dab}/\texttt{w\_kl\_gauss}; the two carried forward are named.
+\\Joined by information cost, the two lines are separated vertically and that
+separation is the cost itself: raising it from 1 to 30 moves an arm down and
+to the right in every panel. Along each line the adversarial sweep doubles
+back, 336 sitting to the left of 168 on both cost axes, so the adversary
+improves the trade only as far as the middle weight. Joined by adversarial
+weight, the three lines run close to parallel, which is the same statement
+read the other way: the information cost does the same thing wherever the
+adversary is set. The lower row is drawn on a range five times narrower than
+the upper one, and the lines in it are close to flat; cell identity survives
+every setting of both knobs.}
+\end{figure}
 
 \subsection*{Figure 3 --- Both latents, by cell family and cycle phase}
 \note{TEN PANELS, two arms by five columns. \textbf{a}--\textbf{e}

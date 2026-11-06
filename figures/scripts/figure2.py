@@ -1,228 +1,134 @@
-"""Figure 2 — the ELAJ frontier.
+"""Figure 2 — how the two knobs move the frontier.
 
-    /Users/atharvawaghmare/miniconda3/envs/elaj/bin/python figures/scripts/figure2.py
+WHAT THIS FIGURE IS FOR, and what Figure 1 does instead. Figure 1 answers
+"is ELAJ better": every method, both cost axes, one Pareto front drawn over
+the lot. This one answers "how do the knobs work", so it carries the p-series
+alone and JOINS the points. No baseline, no ablation, nothing that is not one
+of the six arms of the factorial.
 
-A grid of scatters. Every column shares an x-axis (a cost: something a good
-model should fail at), every row shares a y-axis (a biology axis). Both cost
-axes are REVERSED, so in every panel better is up and to the right and the
-reader never has to re-learn the orientation.
+WHY LINES RATHER THAN A FRONT. The finding is not where the six arms sit, it
+is what happens when you move one knob and hold the other. Joined by
+information cost, each line is the adversary sweep at one cost and the
+vertical gap between the two lines IS the cost. Joined by adversarial weight,
+three near-parallel lines say the cost step does the same thing wherever you
+start. Neither reads off a scatter of unconnected points.
 
-Ten methods as points. The six ELAJ arms as a curve, because the two knobs
-sweep a frontier and the field does not: that contrast is the figure.
+PHASE AND CELL FAMILY ARE NOT ON ONE SCALE, AND THE ROWS SAY SO. Phase spans
+0.1424 across these arms and cell family 0.0288, five times less. Letting
+matplotlib autoscale each row makes the bottom row look as dramatic as the
+top, which is a chart that lies by default. The rows are therefore pinned to
+0.50-0.80 and 0.95-1.00, labelled once each, so the difference in scale is
+read off the ticks. The bottom row is the control: the knobs trade phase
+against the confounds and leave cell identity alone.
 
-Pareto front drawn per panel over the ten methods. No callouts, no arrows,
-no annotation naming our own arm. The legend identifies; the data argues.
+AW, 6 November: "the scales don't need to be shared but they do need to be
+calibrated correctly."
+
+    FIGDPI=1200 python figures/scripts/figure2.py
 """
 from __future__ import annotations
-import glob
+import csv, os, re
 from pathlib import Path
-import numpy as np, pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.patches import Rectangle
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
+B = ROOT / "Outputs/Benchmarks/full"
 OUT = Path(__file__).resolve().parents[1] / "pinned"
-B = ROOT / "Outputs/Benchmarks"
 MM = 1 / 25.4
-INK, SOFT, GRID = "#1a1a1a", "#6b6b6b", "#e2e2e2"
-ELAJ_C, FIELD_C, ARM_C = "#2b4c7e", "#9aa7b4", "#5c7fa8"
 
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 7,
-                     "axes.edgecolor": SOFT, "axes.labelcolor": INK,
-                     "xtick.color": SOFT, "ytick.color": SOFT,
-                     "axes.linewidth": .6, "xtick.major.width": .6,
-                     "ytick.major.width": .6, "text.color": INK})
+AX = {"donor":  ("knn-agreement", "patient_id",      "donor recovery"),
+      "mixing": ("study-mixing",  "all studies",     "study separation"),
+      "phase":  ("cross-donor",   "menstrual phase", "cross-donor menstrual phase"),
+      "family": ("cross-donor",   "cell family",     "cross-donor cell family")}
+YLIM = {"phase": (0.50, 0.80), "family": (0.95, 1.00)}
+# The two reported arms get their names; the other four are knob coordinates.
+NAMED = {(168, 1): "B$_{hi}$", (168, 30): "B$_{lo}$"}
 
-MANIFEST = {"pca": ("fm_scgpt", "all30962", "train"),
-            "scvi": ("fm_scgpt", "all30962", "train"),
-            "scanvi": ("fm_scgpt", "all30962", "train"),
-            "scgpt": ("fm_scgpt", "native", "pretrained"),
-            "geneformer": ("fm_baseline+Geneformer", "native", "pretrained"),
-            "scfoundation": ("fm_scfoundation", "native", "pretrained"),
-            "scimilarity": ("fm_scimilarity", "native", "pretrained"),
-            "harmony": ("wide_transductive", "all30962", ""),
-            "scanorama": ("wide_transductive", "all30962", "")}
-AX = {"phase": ("cross-donor", "menstrual phase"),
-      "family": ("cross-donor", "cell family"),
-      "disease": ("disease-xdonor", "all studies (pooled)"),
-      "donor": ("knn-agreement", "patient_id"),
-      "mixing": ("study-mixing", "all studies")}
+def val(arm: str, key: str) -> float:
+    test, label, _ = AX[key]
+    path = B / f"full_{arm}/benchmark.csv"
+    for r in csv.DictReader(open(path)):
+        if (re.sub(r"__.*", "", r["method"]) == "elaj"
+                and r["test"] == test and r["label"] == label):
+            return float(r["value"])
+    raise SystemExit(f"{path} has no {test}/{label} row for elaj")
 
-def grab(path, method, policy, fit):
-    b = pd.read_csv(path)
-    b["mm"] = b.method.astype(str).str.replace("__.*", "", regex=True)
-    e = b[(b.mm == method)
-          & (b.gene_policy.fillna("").astype(str) == policy)
-          & (b.fit_on.fillna("").astype(str) == fit)]
-    out = {}
-    for k, (t, l) in AX.items():
-        s = e[(e.test == t) & (e.label == l)]["value"]
-        out[k] = float(s.iloc[0]) if len(s) else np.nan
-    w = e["width"].dropna()
-    out["width"] = int(w.max()) if len(w) else None
-    return out
+ARMS = [(d, k) for k in (1, 30) for d in (7, 168, 336)]
+P = {(d, k): {a: val(f"p1_dab{d}_kl{k}", a) for a in AX} for d, k in ARMS}
 
-F = {"elaj": grab(B / "p1_dab168_kl1/benchmark.csv", "elaj", "native", "train")}
-for m, (run, pol, fit) in MANIFEST.items():
-    F[m] = grab(B / run / "benchmark.csv", m, pol, fit)
+KLC  = {1: "#2F6690", 30: "#8C2F39"}
+DABC = {7: "#D9A441", 168: "#3A7D5D", 336: "#6D2E46"}
+by_kl  = {k: [(d, k) for d in (7, 168, 336)] for k in (1, 30)}
+by_dab = {d: [(d, k) for k in (1, 30)] for d in (7, 168, 336)}
+INK, SOFT = "#1a1a1a", "#6b6b6b"
+plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 6.4,
+                     "text.color": INK})
 
-# THE TWO REPORTED ARMS ARE NAMED. B is for biology: B_hi keeps more of the
-# menstrual cycle and gives up a little study removal, B_lo gives up cycle
-# signal and removes study substantially better. The other four arms are the
-# factorial sweep and stay as coordinates.
-ARM_NAME = {"p1_dab168_kl1": "ELAJ$_{B\\,hi}$",
-            "p1_dab168_kl30": "ELAJ$_{B\\,lo}$"}
+COLS = [("donor",  by_kl,  KLC,  r"$w_{kl}$ %s"),
+        ("mixing", by_kl,  KLC,  r"$w_{kl}$ %s"),
+        ("donor",  by_dab, DABC, r"$\lambda_{dab}$ %s"),
+        ("mixing", by_dab, DABC, r"$\lambda_{dab}$ %s")]
 
-ARMS = {}
-for f in sorted(glob.glob(str(B / "p1_dab*/benchmark.csv"))):
-    d = Path(f).parent
-    if d.name.endswith("_train"): continue
-    ARMS[d.name] = grab(f, "elaj", "native", "train")
+fig, axes = plt.subplots(2, 4, figsize=(190 * MM, 100 * MM),
+                         sharex="col", sharey="row")
+plt.subplots_adjust(left=.062, right=.995, top=.885, bottom=.095,
+                    hspace=.07, wspace=.045)
 
-def pareto(pts):
-    """Non-dominated under maximise-y, minimise-x, returned left to right.
+def place(ax, x):
+    """Push a label inward when its point is against a spine."""
+    x0, x1 = ax.get_xlim()
+    frac = (x - x0) / (x1 - x0)
+    if frac > 0.80:  return -5, -3
+    if frac < 0.20:  return 5, 4
+    return 4, 4
 
-    ONE FRONT OVER EVERYTHING. An earlier version drew the front over the ten
-    methods only, with our own arms as a separate curve, which decides in
-    advance who is allowed to be on it. Every point competes: whatever lies
-    on the front, lies on it.
-    """
-    s = sorted(pts, key=lambda p: (p[0], -p[1]))
-    front, best = [], -np.inf
-    for x, y in s:
-        if y > best:
-            front.append((x, y)); best = y
-    return front
+for r, ykey in enumerate(("phase", "family")):
+    for c, (xkey, groups, cols, fmt) in enumerate(COLS):
+        ax = axes[r][c]
+        for gk, pts in groups.items():
+            ax.plot([P[p][xkey] for p in pts], [P[p][ykey] for p in pts],
+                    "-o", color=cols[gk], ms=3.8, lw=1.2, label=fmt % gk, zorder=3)
+        ax.set_ylim(*YLIM[ykey])
+        xs = [P[a][xkey] for a in ARMS]
+        pad = 0.11 * (max(xs) - min(xs))
+        ax.set_xlim(max(xs) + pad, min(xs) - pad)
+        placed: list[tuple[float, float]] = []
+        for a in ARMS:
+            x, y = P[a][xkey], P[a][ykey]
+            dx, dy = place(ax, x)
+            # If a label would land on one already written, drop it below.
+            for px, py in placed:
+                if abs(px - x) < 0.14 * abs(ax.get_xlim()[1] - ax.get_xlim()[0]) \
+                        and abs(py - y) < 0.12 * (YLIM[ykey][1] - YLIM[ykey][0]):
+                    dy -= 8
+            placed.append((x, y))
+            ax.annotate(NAMED.get(a, f"{a[0]}/{a[1]}"), (x, y), fontsize=4.4,
+                        color=SOFT, xytext=(dx, dy), textcoords="offset points",
+                        ha="left" if dx > 0 else "right")
+        for s in ("top", "right"):
+            ax.spines[s].set_visible(False)
+        ax.tick_params(labelsize=5.4, color=SOFT)
+        if r == 1: ax.set_xlabel(AX[xkey][2] + "  (lower is better)", fontsize=6.2)
+        if c == 0: ax.set_ylabel(AX[ykey][2], fontsize=6.2)
+        if r == 0: ax.legend(fontsize=5.0, frameon=False, loc="lower left",
+                             handletextpad=.4, borderpad=.1)
 
+# The two subtitles sit over the pair of columns each describes, centred on
+# them rather than left-aligned to one panel.
+for (c0, c1), text in (((0, 1), "joined by information cost"),
+                       ((2, 3), "joined by adversarial weight")):
+    x0 = axes[0][c0].get_position().x0
+    x1 = axes[0][c1].get_position().x1
+    fig.text((x0 + x1) / 2, .945, text, ha="center", va="bottom",
+             fontsize=8.0, fontweight="bold", color=INK)
 
-# Eight directions, tried in order of preference. Each is (dx, dy) in axes
-# fractions, with the text alignment that keeps the label on the far side of
-# the anchor from the point.
-DIRS = [(1, 0, "left", "center"), (-1, 0, "right", "center"),
-        (.75, .75, "left", "bottom"), (-.75, .75, "right", "bottom"),
-        (.75, -.75, "left", "top"), (-.75, -.75, "right", "top"),
-        (0, 1, "center", "bottom"), (0, -1, "center", "top")]
+for ax, letter in zip(axes.ravel(), "abcdefgh"):
+    ax.text(.015, .975, letter, transform=ax.transAxes, fontsize=7.5,
+            fontweight="bold", va="top", ha="left")
 
-def declutter(ax, pts, colour, fontsize=4.6, pad=.030):
-    """Place each label in the best free direction around its point.
-
-    A purely vertical push stacks every label into one column, which is what
-    collapsed panels c and d: on a saturated axis every point has nearly the
-    same y, so every label wanted the same slot. So each label now tries
-    right, left, the four diagonals, then up and down, and takes the first
-    direction whose box overlaps nothing already placed, no data point, and
-    no panel edge. If every direction collides it takes the least bad one and
-    a hairline leader is drawn.
-
-    Geometry is done in axes fractions, where a character is about 0.0062
-    wide and a line about 0.030 tall at this font size, so the boxes do not
-    distort with the panel's aspect or its data range.
-    """
-    inv = ax.transAxes.inverted()
-    def to_ax(x, y):
-        return inv.transform(ax.transData.transform((x, y)))
-    CW, LH = 0.0062 * (fontsize / 4.6), 0.030 * (fontsize / 4.6)
-    anchors = [to_ax(x, y) for x, y, _ in pts]
-    placed, out = [], []
-    order = sorted(range(len(pts)), key=lambda i: -anchors[i][1])
-    for i in order:
-        ax_, ay_ = anchors[i]
-        nm = pts[i][2]
-        w, h = len(nm) * CW, LH
-        best, best_cost = None, np.inf
-        for dx, dy, ha, va in DIRS:
-            cx, cy = ax_ + dx * pad, ay_ + dy * pad
-            x0 = cx if ha == "left" else cx - w if ha == "right" else cx - w / 2
-            y0 = cy if va == "bottom" else cy - h if va == "top" else cy - h / 2
-            box = (x0, y0, x0 + w, y0 + h)
-            cost = 0.0
-            if box[0] < 0 or box[2] > 1 or box[1] < 0 or box[3] > 1:
-                cost += 10.0
-            for b in placed:
-                ox = max(0, min(box[2], b[2]) - max(box[0], b[0]))
-                oy = max(0, min(box[3], b[3]) - max(box[1], b[1]))
-                cost += (ox * oy) * 400
-            for px, py in anchors:
-                if box[0] - .004 < px < box[2] + .004 and box[1] - .004 < py < box[3] + .004:
-                    cost += 2.0
-            cost += DIRS.index((dx, dy, ha, va)) * 0.05     # prefer the earlier ones
-            if cost < best_cost:
-                best_cost, best = cost, (cx, cy, ha, va, box)
-        cx, cy, ha, va, box = best
-        placed.append(box)
-        out.append((i, cx, cy, ha, va, best_cost))
-    for i, cx, cy, ha, va, cost in out:
-        x, y, nm = pts[i]
-        ax.annotate(nm, xy=(x, y), xycoords="data", xytext=(cx, cy),
-                    textcoords=ax.transAxes, fontsize=fontsize, color=colour,
-                    ha=ha, va=va, zorder=8,
-                    arrowprops=dict(arrowstyle="-", lw=.3, color=SOFT,
-                                    shrinkA=.5, shrinkB=2.0))
-
-# THE DISEASE ROW IS GONE, and the reason is a measurement we already made.
-# Across the ten methods, a method's score on control-vs-eutopic correlates
-# with its donor recovery at rho +0.721 (p 0.019) while menstrual phase does
-# not (+0.176, p 0.63). A row whose dominant property is that it reads out
-# donor memorisation is not a performance axis, and putting it beside phase
-# and cell family implies it is one. The correlation itself stays as an
-# observation about the metric; it just is not a column of the scoreboard.
-ROWS = [("phase", "cross-donor menstrual phase"),
-        ("family", "cross-donor cell family")]
-COLS = [("donor", "donor recovery"), ("mixing", "study separation")]
-
-fig, axes = plt.subplots(len(ROWS), len(COLS), figsize=(180 * MM, 135 * MM))
-plt.subplots_adjust(left=.095, right=.985, top=.845, bottom=.075,
-                    hspace=.30, wspace=.20)
-
-for r, (ykey, ylab) in enumerate(ROWS):
-    for c, (xkey, xlab) in enumerate(COLS):
-        ax = axes[r, c]
-        # EVERY point: the six p-series arms and the nine other methods.
-        labelled = []
-        for k, v in ARMS.items():
-            if np.isnan(v[xkey]) or np.isnan(v[ykey]): continue
-            rep = k == "p1_dab168_kl1"
-            ax.scatter([v[xkey]], [v[ykey]], s=44 if rep else 16,
-                       color=ELAJ_C if rep else "white",
-                       edgecolor="white" if rep else ARM_C,
-                       lw=.8, zorder=6 if rep else 4)
-            labelled.append((v[xkey], v[ykey], ARM_NAME.get(k, k.replace("p1_", ""))))
-        for m, v in F.items():
-            if m == "elaj": continue
-            if np.isnan(v[xkey]) or np.isnan(v[ykey]): continue
-            ax.scatter([v[xkey]], [v[ykey]], s=20, color=FIELD_C,
-                       edgecolor="white", lw=.5, zorder=5)
-            labelled.append((v[xkey], v[ykey], m))
-        fr = pareto([(x, y) for x, y, _ in labelled])
-        ax.plot([p[0] for p in fr], [p[1] for p in fr], "-", color=SOFT,
-                lw=1.0, alpha=.8, zorder=2)
-        # INVERT FIRST. declutter freezes label positions in axes fractions,
-        # so inverting afterwards flips the points out from under their own
-        # labels and every leader line stretches across the panel.
-        ax.margins(x=.22, y=.16)
-        ax.invert_xaxis()                      # cost axes: better to the right
-        declutter(ax, labelled, SOFT)
-        if r == len(ROWS) - 1: ax.set_xlabel(xlab + "  (lower is better)")
-        if c == 0: ax.set_ylabel(ylab)
-        ax.grid(color=GRID, lw=.5, zorder=0)
-        for s in ("top", "right"): ax.spines[s].set_visible(False)
-
-for ax, letter in zip(axes.ravel(), "abcdef"):
-    ax.text(-.10, 1.07, letter, transform=ax.transAxes, fontsize=9,
-            fontweight="bold", va="top", ha="right", clip_on=False)
-
-fig.legend(handles=[
-    Line2D([], [], lw=0, marker="o", ms=6, color=ELAJ_C, label="ELAJ$_{B\\,hi}$, reported"),
-    Line2D([], [], lw=0, marker="o", ms=4.5, color=FIELD_C, label="other methods (9)"),
-    Line2D([], [], lw=0, marker="o", ms=4.5, markerfacecolor="white",
-           markeredgecolor=ARM_C, color="none", label="other ELAJ arms (5)"),
-    Line2D([], [], color=SOFT, lw=1.0, label="Pareto front over every point")],
-    ncol=4, fontsize=6.2, frameon=False, loc="upper left",
-    bbox_to_anchor=(.085, .975), columnspacing=1.6, handlelength=1.6)
-fig.savefig(OUT / "figure2.png", dpi=240)
-plt.close(fig)
-print(f"wrote figure2.png — {len(ROWS)}x{len(COLS)} scatters, "
-      f"{len(F)} methods, {len(ARMS)} ELAJ arms")
+fig.savefig(OUT / "figure2.png", dpi=int(os.environ.get("FIGDPI", 200)))
+print(f"wrote figure2.png — 2x4, {len(ARMS)} arms, "
+      f"phase span {max(P[a]['phase'] for a in ARMS) - min(P[a]['phase'] for a in ARMS):.4f}, "
+      f"family span {max(P[a]['family'] for a in ARMS) - min(P[a]['family'] for a in ARMS):.4f}")
