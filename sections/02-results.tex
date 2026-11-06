@@ -39,32 +39,32 @@ menstrual phase against study separation or donor recovery.
 The models crossed three adversarial weights with two settings of the
 latent's information cost, and the two knobs did different things.
 
-Raising the information cost from 1 to 30 cost cross-donor phase agreement
-and bought back both confounds, at all three adversarial weights. At the
-lowest weight it gave up 7.4\% of phase (0.7337 to 0.6791) for 7.7\% of
-donor recovery (0.5837 to 0.5389) and 0.6\% of study separation (0.8636 to
-0.8587). At the middle weight, where both reported arms sit, it gave up
-17.9\% of phase (0.7346 to 0.6033) for 23.4\% of donor recovery (0.5188 to
-0.3975) and 14.0\% of study separation (0.7613 to 0.6544). At the highest
-weight the figures were 17.1\% of phase (0.7146 to 0.5922) for 21.3\% of
-donor recovery (0.5277 to 0.4154) and 12.3\% of study separation (0.8200 to
-0.7190). The sign is the same in all nine readings: this knob travelled along
-the Pareto front.
+Raising the information cost from 1 to 30 reduced cross-donor phase agreement
+and improved study separation, at all three adversarial weights. At the
+lowest adversarial weight (\texttt{lambda\_dab} 7) it gave up 7.4\% of phase (0.7337 to 
+0.6791) for 7.7\% of donor recovery (0.5837 to 0.5389) and 0.6\% of study 
+separation (0.8636 to 0.8587). At the middle adversarial weight 
+(\texttt{lambda\_dab} 168), it gave up 17.9\% of phase (0.7346 to 0.6033) for 23.4\% 
+of donor recovery (0.5188 to 0.3975) and 14.0\% of study separation (0.7613 
+to 0.6544). At the highest adversarial weight (\texttt{lambda\_dab} 336) the figures 
+were 17.1\% of phase (0.7146 to 0.5922) for 21.3\% of donor recovery (0.5277 
+to 0.4154) and 12.3\% of study separation (0.8200 to 0.7190). The sign is the 
+same in all nine readings: information cost traversed along the Pareto front.
 
 Raising the adversarial weight moved the front itself, and only up to a
-point. From 7 to 168 at the lower information cost, donor recovery fell
+point. From 7 to 168 at the lower information cost (\texttt{w\_kl\_gauss} 1), donor recovery fell
 11.1\% (0.5837 to 0.5188) and study separation 11.8\% (0.8636 to 0.7613)
-while phase rose 0.1\% (0.7337 to 0.7346), which is to say both confounds
-were bought for nothing. The same step at the higher information cost bought
-more and charged for it: donor recovery fell 26.2\% (0.5389 to 0.3975) and
-study separation 23.8\% (0.8587 to 0.6544) against 11.2\% of phase (0.6791
-to 0.6033). Raising the weight again from 168 to 336 reversed every one of
-those gains. At the lower information cost donor recovery rose from 0.5188 to
+while phase rose 0.1\% (0.7337 to 0.7346). Both confounds were bought for 
+nothing. The same step at the higher information cost (\texttt{w\_kl\_gauss} 30) bought more 
+and charged for it: donor recovery fell 26.2\% (0.5389 to 0.3975) and study 
+separation 23.8\% (0.8587 to 0.6544) against 11.2\% of phase (0.6791 to 
+0.6033). Raising the weight again from 168 to 336 reversed every one of those 
+gains. At the lower information cost (\texttt{w\_kl\_gauss} 1) donor recovery rose from 0.5188 to
 0.5277 and study separation from 0.7613 to 0.8200, while phase fell from
 0.7346 to 0.7146; at the higher, donor recovery rose from 0.3975 to 0.4154
 and study separation from 0.6544 to 0.7190, while phase fell from 0.6033 to
-0.5922. Past the middle weight the adversary took cycle signal without
-returning anything (Fig.~2).
+0.5922. So adversarial weight moved the Pareto front itself, with the best results 
+at \texttt{lambda\_dab} 168 (Fig.~2).
 
 Placed on the same axes as the field, \elaj creates the frontier. Cross-donor
 phase agreement of 0.7346 is the highest of the fifteen representations
