@@ -437,12 +437,28 @@ for _f in FRONTIER:
 # the two lower adversarial weights at the lower cost.
 _PAIRS = ([(f"p1_dab{_d}_kl1", f"p1_dab{_d}_kl30", "information cost")
            for _d in ("7", "168", "336")]
-          + [("p1_dab7_kl1", "p1_dab168_kl1", "adversarial weight")])
+          + [(f"p1_dab7_kl{_k}", f"p1_dab168_kl{_k}", "adversarial weight")
+             for _k in ("1", "30")]
+          )
+# The 168-to-336 step is reported as levels, not as a change, so no delta is
+# derived for it. A phase delta of 0.0200 there would collide with the 0.020
+# permutation p in [4], and a derivation nothing quotes can only do harm.
 for _a, _b, _why in _PAIRS:
     for _ax in ("phase", "mixing", "donor"):
         if (_a, _ax) in _ARM_AXES and (_b, _ax) in _ARM_AXES:
-            DERIVED.append((abs(_ARM_AXES[(_a, _ax)] - _ARM_AXES[(_b, _ax)]),
+            _u, _w = _ARM_AXES[(_a, _ax)], _ARM_AXES[(_b, _ax)]
+            DERIVED.append((abs(_u - _w),
                             f"{_ax} across the {_why}, {_a} against {_b}"))
+            # [1] reports these as percentage changes, which is the only form
+            # in which three axes on different scales can be read together.
+            _pc = abs(100 * (_w - _u) / _u)
+            # Registered at full precision AND at the one decimal place the
+            # prose quotes. A percentage change is derived, so there is no
+            # source precision to round against, and leaving only the full
+            # value makes every quoted figure look like an unpinned rounding.
+            for _val in (_pc, round(_pc, 1)):
+                DERIVED.append((_val, f"{_ax} % change across the {_why}, "
+                                      f"{_a} against {_b}"))
 
 _PCA_T = BENCH / "wide_full_pca/benchmark.csv"
 _HARM = BENCH / "wide_full_harmony/benchmark.csv"
