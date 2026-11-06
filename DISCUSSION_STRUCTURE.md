@@ -1,143 +1,254 @@
 # Discussion — what it has to carry
 
-Written 6 November 2026, after Results closed. Three inventories and a
-plan. The inventories exist so nothing is lost, NOT so the Discussion
-becomes the place everything is dumped.
+Rewritten 6 November 2026 on AW's comments. The first version framed this
+as "handoffs", finishing sentences Results left open. **That was wrong and
+he corrected it:**
 
-NMI: ~1,000 words, **no subheadings**, limitations in the open rather than
-in a defensive final paragraph.
+> "Discussion is not about incomplete sentences from Results finding a
+> home. It is about going beyond the numbers and saying something about the
+> model, data, field, architecture, SOTA, etc. Handoffs is something like
+> 'we spoke about the model but didn't comment on the field. Now we speak
+> about the field'."
+
+So this file is organised by **what we say about the field**, not by what
+Results left over. ~1,000 words is the guideline; AW has ruled that going
+over is acceptable for a submission draft.
 
 ---
 
-## 1. The handoffs — where Results deliberately stopped short
+## The paragraphs
 
-Each of these is a finding whose numbers are already on the page. The
-Discussion does not restate them; it finishes the sentence.
+### 1. What this establishes (~180)
 
-| from | Results states | stops short of |
+The full claim, stated elaborately rather than summarised. Pooled
+single-cell data from eleven studies can be read as sixteen numbers that
+are blind to the donor and still hold the menstrual cycle, on a corpus
+where phase is constant within a donor and therefore geometrically
+indistinguishable from a batch effect.
+
+The careful version of the cycle claim, which Results supports and the
+looser version does not: the head supplies 34.5% of the phase margin, so
+"the cycle was recovered" overstates it. **"The cell-type structure of the
+cycle was recovered" is the claim that holds**, because the phase head is
+one linear map over all sixteen dimensions and was never given cell family,
+and Figure 3 shows the cycle sharp in stromal cells, present in epithelial
+and close to absent in endothelial and immune.
+
+### 2. Pooling, and the framework this is (~210)
+
+The single-biopsy confound is not an endometriosis problem. Any design
+where each donor contributes one timepoint makes the biology collinear with
+the sample, and the field's response is a correction strength reported as
+one scalar. It is two axes, and the two knobs here move along and across
+the front independently (`[1]`).
+
+AW's framing, and the contribution at its proper altitude: **a framework
+for building disease atlases where data is scarce and batch structure is
+severe.** Both conditions hold wherever tissue requires surgery.
+
+Model selection folds in here rather than taking its own paragraph: the arm
+with the best held-out reconstruction in this project is the arm that holds
+the least biology, and it got there by reading provenance instead of cells.
+Single-cell models are routinely selected on reconstruction or ELBO.
+
+### 3. Scale (~130)
+
+1.88M parameters at sixteen dimensions against pretrained models at 256 to
+3,072. Width is not what produces the result: PCA at sixteen beats scGPT at
+512 on cross-donor phase (0.6457 against 0.4869), and across the ten methods
+width is *negatively* associated with phase agreement
+($\rho = -0.6503$, $p = 0.0418$).
+
+AW: "We have changed disease atlas efficiency drastically. That is a
+disruptive result." Stated as efficiency, not as a win over foundation
+models, because A5 says we do not win on cell type.
+
+### 4. How the field measures batch correction (~230)
+
+Three things, all re-derived from the benchmark files on 6 November rather
+than taken from the notes.
+
+**(a) The standard scorecard does not discriminate here, in both halves.**
+`ilisi_knn` is **exactly 0.0000 for all ten representations** and
+`clisi_knn` **exactly 1.0000 for all ten**; `kbet` spans 0.0000 to 0.0400.
+One of those is the batch half and one is the bio half.
+*Correction to `RESULTS_STRUCTURE.md`'s E3: it says `pcr_batch` is exactly
+1.0000 for PCA, scVI, scANVI and ELAJ. It is not — 0.5249, 0.9268, 0.9386
+and 0.8603. That sentence must not be reused.*
+
+**(b) The third axis AW asked for, and it completes (a).** Cross-donor
+agreement on cell family, the field's usual biology axis, puts **nine of
+the ten methods within 0.0076 of each other** (0.9820 to 0.9896), with only
+Geneformer outside at 0.9023. So the bio half is saturated as well as
+degenerate: a benchmark that ranks methods on cell-type conservation cannot
+rank anything on a corpus like this.
+
+**(c) A disease score is partly a memorisation score.** Across the ten
+methods, agreement on disease status tracks donor recovery at $\rho$ +0.721
+($p$ 0.019) while phase does not (+0.176). Disease is constant within a
+donor, so a model that memorises donors gets disease for free, and Methods'
+same-donor floor is the mechanism: a quarter to three-fifths of a cell's
+hundred neighbours come from its own donor, twenty to fifty times chance,
+and 44% to 71% of plain agreement is that free part. **This is where E1,
+E2 and E4 get their comment in relation to the results**, rather than
+sitting silently in Methods.
+
+B2 and B3, if they appear at all, are one line here. AW: the defeated
+discriminator is a claim arising from our own mistake and is well known
+from GANs.
+
+### 5. Endometriosis is in the endometrium (~200)
+
+The paper's clinical point, and AW's: a person's own uterine lining carries
+signal about whether they have disease growing elsewhere. Cross-donor
+agreement on disease status is 0.3364 with no permutation reaching it
+($p$ 0.005), on cells that are all eutopic endometrium.
+
+**The argument this paragraph has to make explicitly**, or a reviewer will
+make the opposite one: 0.3364 is the *lowest* of the ten methods. That is
+a strength, not a weakness, and (c) above is why — the higher scores belong
+to the methods from which donors are most easily recovered. ELAJ is the
+least donor-identifiable representation tested, so its disease signal is
+the least contaminated one in the table.
+
+Then the direction: diagnosis today takes 11.1 years and requires
+laparoscopy. See the argument below on what we are allowed to call the
+alternative.
+
+C4 and C5 would sit here. See the open question.
+
+### 6. Staging should be reimagined (~240)
+
+The longest paragraph and the one that justifies the venue.
+
+What staging has meant in endometriosis: rASRM scores a surgeon's view of
+lesion size, depth and adhesion at one operation. It was built to predict
+fertility outcomes, it is what every cohort records, and it is the number a
+patient is given. Lesion burden has never tracked symptom severity, and
+patients have said so for decades.
+
+What we measured: disease status is recoverable (0.3364, $p$ 0.005), merged
+severity clears its null across 118 donors (0.1286, $p$ 0.025), and
+mild against severe **among patients only** does not (0.0744, $p$ 0.129 at
+57 donors). No other method does better: across all ten, merged severity
+ran 0.0759 to 0.1860 and not one cleared its own null. Across all six of
+our own configurations it cleared in none ($p$ 0.149 to 0.468).
+
+The claim, worded exactly: **not recoverable from this corpus at this donor
+count**, never "not biologically real". What follows is a case for a
+staging grounded in biology rather than in what a surgeon can see, and for
+treating the millimetre-lesion patient's account as data rather than as
+noise.
+
+### 7. Limitations (~180)
+
+Plainly, not defensively, and only the ones that bite.
+
+F1 width is not matched (and (b)/(3) above already bound how much that
+matters). F2 cycle-day continuity rests on one cohort of 60 donors. F4
+17,873 held-out cells, 4.3%, share a donor with training through the one
+overlapping study pair. F5 li\_2025 is a follicular-fluid aspirate labelled
+as endometrium: 45,312 cells, 2.87%, 6 of 269 donors, contributing no
+cell-family and no phase labels. F6 reported arms are single runs with seed
+variability measured at 4%.
+
+Two more that are not in F1--F6 and should be:
+
+- **The corpus carries a subset of the metadata that matters.** AW's note.
+  No cohort records all of cycle day, progesterone, stage, grade and
+  treatment, and cell-type labels exist for endometrium only, so 392,629
+  cells from five other sites carry none.
+- **The permutation null is unstratified.** Reassigning the donor-to-label
+  map across all eleven studies breaks the label-study association, so the
+  pooled null never sees whatever study structure remains in the latent.
+  The bound on how much that can matter is our own study-mixing figure,
+  0.7613. A within-study permutation is the correct fix and is not built.
+
+F3 is dropped, because it is C5 and C5 is in question below.
+
+### 8. What this makes possible (~120)
+
+Concrete. No reflexive gesture at clinical translation.
+
+---
+
+## Three arguments back
+
+### A. "Non-invasive" is the wrong word and a reviewer will catch it
+
+AW's framing: "the endometriosis patient's endometrium has signal about the
+disease. We suggest that to be a possible direction for non-invasive
+testing."
+
+The finding is right and it is the best clinical sentence in the paper. The
+word is the problem. Every cell in this test came from an **endometrial
+biopsy**. A pipelle biopsy is an outpatient procedure under no general
+anaesthetic and is worlds away from diagnostic laparoscopy, but in clinical
+usage "non-invasive" means blood, urine, saliva or imaging. A clinician
+reviewer reads "non-invasive" and finds a biopsy, and the whole paragraph
+loses credit for a word we did not need.
+
+**Proposed: "without surgery", or "a route to diagnosis that does not
+require laparoscopy".** This keeps the entire force of the claim — 11.1
+years because confirmation needs an operating theatre, and our result says
+the answer is present in tissue obtainable in a clinic — and costs nothing.
+
+### B. C4 and C5 cannot be written as they stand
+
+AW asked for both in Figure 4's legend and in the Discussion. Two problems,
+found by reading the source files rather than the notes.
+
+**Their only statistic was withdrawn.** C4 and C5 live in
+`Outputs/analysis/*/disease_within_family.csv` and the quantity is
+`over_scatter`, a centroid distance over a mean root-mean-square radius.
+AW ruled that unsound on 2 November — it describes a cloud only if the
+cloud is a filled isotropic ball — and it was cut from `[3]` and `[4]` for
+exactly that reason. There is no sound replacement in any file.
+
+**And the claim does not survive its own arm check.** Ranked by
+`over_scatter`:
+
+| arm | marecko\_2024 | duempelmann\_2026 |
 |---|---|---|
-| `[1]` | the nine readings across both knobs | that one knob *traverses* the front and the other *moves* it, and that moving it stops working past the middle weight. That is the claim that makes this a frontier rather than a tuning parameter |
-| `[2]` | 392,629 cells from five sites carry no cell-type label in any of five annotation columns | that the public record cannot say what those cells are, which is a finding about the field's data and not about our model |
-| `[3]` | 65.5% architecture, 34.5% head | that "the cycle was recovered" is therefore the wrong claim. **"The cell-type structure of the cycle was recovered" is the right one**, and Figure 3's legend already shows the split the supervision could not have produced |
-| `[4]` | disease recoverable, merged severity recoverable at 118 donors, mild-against-severe not at 57 | the staging argument in full |
-| `[5]` | disease agreement tracks donor recovery at $\rho$ +0.721 while phase does not (+0.176) | that an axis whose dominant property is donor memorisation is not a performance axis, so the field's disease-classification scores need reading differently |
-| `[6]` | the shuffled grouping has the project's best reconstruction and worst biology | that reconstruction loss is not a model-selection criterion for a representation |
+| B hi | **immune** .773 > epi .609 > endo .576 > stromal .428 | **immune** .289 > endo .233 > epi .211 > stromal .206 |
+| B lo | **immune** .832 > stromal .570 > endo .507 > epi .506 | endo .266 > epi .252 > stromal .216 > **immune .191** |
+
+Immune is first in three of the four cells and **last** in the fourth.
+Changing one weight moves it from rank 1 to rank 4 in the second cohort.
+`RESULTS_STRUCTURE.md` has C4 as "rank 1 of 4 in both arms", which is true
+of marecko and false of duempelmann.
+
+Three ways forward:
+
+1. **Drop C4 and C5, and drop the Introduction's promise with them.** The
+   Introduction currently asks "whether a signature found in one cohort
+   holds in another" and the paper would then not answer it. Cheapest,
+   and it removes a question we raised ourselves.
+2. **Compute the sound statistic.** Cross-donor disease agreement
+   restricted to each cell family, which is the estimator we already
+   trust, with its own permutation null. The notes name this as the robust
+   replacement that was never built. It answers the Introduction properly
+   and it is the only honest route to the claim. It breaks the standing
+   "no further calculation" rule, but the exception AW wrote into that rule
+   is "unless something is wrong", and an unsound statistic behind a
+   printed claim is wrong. **This is my recommendation.**
+3. Write them qualitatively off a figure. Not available: Figure 4 has no
+   panel showing disease within cell family, so there is nothing to read
+   them off.
+
+### C. E3 goes to the Discussion, and I withdraw the Methods argument
+
+I proposed Methods. AW: "I think it is a finding of the paper so it
+shouldn't be in Methods." He is right, and the re-derived numbers make it
+a stronger finding than the note claimed — two metrics perfectly
+degenerate across all ten representations, one from each half of the
+scorecard. That is a result about the field's measuring instrument on
+corpora of this shape, not a justification for our estimator. It is
+paragraph 4(a).
 
 ---
 
-## 2. The round-up — findings with no spotlight anywhere
+## Open question
 
-Checked against `RESULTS_STRUCTURE.md` claim by claim, and against the
-current Results and legends rather than against what the notes claim.
-**A verdict is proposed for each. Several should stay out.**
-
-| # | finding | where it is now | proposed |
-|---|---|---|---|
-| **C4** | disease signal concentrates in the immune compartment (0.77 / 0.83 inside marecko's immune cells against 0.22 corpus-wide) | **nowhere.** Figure 4's note says "CARRIES C4 and C5" and its caption does not mention either. The note is stale | see the open question below |
-| **C5** | and it does not replicate across cohorts (0.19--0.29, ordering flips between arms) | **nowhere**, same stale note | the Introduction promises exactly this question. See below |
-| **B2** | a defeated discriminator is not evidence that a latent is study-free (+0.883 adversary loss against donor kNN, +0.890 against study kNN) | cut from Methods by AW on 6 Nov, cut from `[6]` this session | **one sentence in the Discussion.** It is the most transferable negative result the project holds and it is a comment about the field, which is what this section is for. The objection stands: it diagnoses the 64-unit discriminator retired at `58cc532`, and no reported arm uses it |
-| **B3** | discriminator capacity, not batch composition, was the cause | with B2 | fold into B2's sentence or drop with it |
-| **E3** | the scIB batch metrics are degenerate here: `ilisi_knn` exactly 0.0000 and `pcr_batch` exactly 1.0000 for PCA, scVI, scANVI and ELAJ alike, `kbet` 0.000--0.025 for all | **no home since 2 November.** The longest-open question in the project | **Methods, not Discussion.** It is the justification for measuring study by kNN purity, and it belongs beside the estimator it justifies. A scIB-literate reviewer will ask, and Methods is where they will look |
-| **A7** | reconstruction beats a study-mean baseline by 6.5% | **nowhere**, and the reference value is not re-derivable. The training log says 0.4024 against **0.4315, +6.7%**, so the 6.5% in `RESULTS_STRUCTURE.md` is wrong as well as unsourced | **leave out.** It is a weak number, it would have to be derived before it could be printed, and `[6]`'s point about reconstruction cuts against quoting it approvingly |
-| **E1** | whole-corpus agreement on a donor-constant label is a donor-memorisation readout, $\rho$ +0.943 | Methods, by AW's ruling | stays in Methods |
-| **E2, E4** | the same-donor floor; the p-floor set by donor count | Methods, written | stay |
-| **F1--F6** | the six limits | planned for here | yes, and plainly |
-
----
-
-## 3. The field comments — our place in it
-
-This is what the section is actually for, and the paragraph plan below is
-built around these rather than around a tour of the results.
-
-**On endometriosis.** Diagnosis requires surgery and takes 11.1 years. The
-scale that surgery produces describes lesions, and we cannot read it off the
-cells. A person's endometrium says whether they have the disease and not how
-severe a surgeon judged it to be. That is the paper's most disruptive claim
-and the one a patient would recognise.
-
-**On pooling.** Every donor here was biopsied once, so phase is constant
-within a donor and sits in the same geometric form as a batch effect. That
-is not an endometriosis problem. It is true of every single-biopsy design,
-and naming the others is what stops this reading as endometriosis-specific
-tooling.
-
-**On how the field measures batch correction.** Three separate things we
-can say, and probably only room for one: the standard scIB metrics do not
-discriminate on this corpus; a defeated adversary is not evidence of an
-invariant latent; and a disease score that tracks donor recovery is
-measuring memorisation.
-
-**On how the field selects models.** The arm with the best held-out
-reconstruction in this project is the arm that holds the least biology, and
-it got there by reading provenance instead of cells. Single-cell models are
-routinely selected on reconstruction or ELBO.
-
-**On scale.** A 1.88M-parameter model at sixteen dimensions against
-pretrained models at 256 to 3,072. Width is not what produces the result,
-and PCA at sixteen beating scGPT at 512 on both biology axes is the cleanest
-way to say so without claiming more than we measured.
-
----
-
-## 4. Proposed paragraphs, ~1,000 words, no subheadings
-
-1. **What the work establishes, at altitude.** ~160 words. Not a summary.
-   Pooled single-cell data can be read in sixteen numbers that are blind to
-   the donor and still hold the cycle, and the cycle's *cell-type structure*
-   is the part supervision cannot account for.
-2. **Why the frontier is the contribution.** ~170. The two knobs do
-   different things; correction strength is reported as a scalar in this
-   field and it is two axes. Name the other single-biopsy settings.
-3. **Staging.** ~200, the longest, and the mic drop. Must read "not
-   recoverable from this corpus at this donor count", never "not
-   biologically real".
-4. **What this says to people who build these models.** ~170. Reconstruction
-   is not a selection criterion; the phase head regularises; and whichever
-   measurement comment from §3 survives the budget.
-5. **Limitations.** ~180. F1--F6, li\_2025 as follicular fluid, the
-   annotation gap, and the pooled-null concern bounded by our own 0.7613.
-6. **What it makes possible.** ~120. Concrete. No reflexive gesture at
-   clinical translation.
-
----
-
-## 5. The budget, stated rather than discovered later
-
-Abstract 151 + Introduction 482 + Results 2,618 = **3,251 of 3,500**.
-That leaves **249 words** for a section that wants 1,000.
-
-Roughly 750 words have to come from somewhere, and that is AW's call. The
-candidates, largest first:
-
-- **`[1]`'s two knob paragraphs, ~330 words**, carrying all nine readings at
-  full precision. Compressed to the shape of the finding plus the three
-  readings that carry it, ~150 words come back. This is the passage AW asked
-  to be made number-heavy, so it is his to cut and not mine.
-- **`[4]`, ~430 words.** The ten-method corroboration paragraph restates in
-  prose what Figure 4h shows.
-- **`[6]`, ~730 words.** The two long paragraphs are the two that carry the
-  trajectory argument, which is the part no other paper in this field writes.
-- **The Introduction's ¶4, ~120 words** of literature review that the
-  Discussion will partly repeat.
-
-Doing nothing is also an option: NMI's limit is a guideline and editors
-routinely accept overruns on a paper they want. But it should be a decision.
-
----
-
-## 6. Open questions for AW
-
-1. **C4 and C5 are not in the paper at all.** The immune concentration and
-   its non-replication were assigned to Figure 4's panels and the caption
-   never made either claim. The Introduction promises "whether a signature
-   found in one cohort holds in another", which is C5 exactly. Three ways
-   to go: (a) add both to Figure 4's caption, which costs no main-text
-   words; (b) one Discussion sentence on the non-replication as a finding
-   about cohort-level reproducibility; (c) leave out, and drop the promise
-   from the Introduction instead. **(a) is cheapest and (b) is the one that
-   answers the Introduction.**
-2. **Does B2 get its sentence?** It is the best field comment available and
-   it describes a discriminator we no longer run.
-3. **E3 to Methods, or does it stay homeless?** It has been open since
-   2 November and Methods is the right home.
+**C4 and C5: option 1, 2 or 3 above.** Nothing else is pending; every other
+comment on the previous version is settled and built into the paragraphs.
