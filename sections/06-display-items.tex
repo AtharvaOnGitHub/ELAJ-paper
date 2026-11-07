@@ -58,23 +58,33 @@ frontier panels also overlap Figure 2 and that overlap has not been resolved.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure1.png}
-\caption{\textbf{\elaj, the corpus it was built on, and where it sits against
-the field.} \textbf{a}, The architecture. A cell enters as 15{,}496 genes,
-which are read in 44 pathway groups, normalised per study, and summarised by
-one transformer per group before a cell-level stage compresses them to a
-sixteen-dimensional latent. Four heads read that latent: an adversarial study
-discriminator whose gradient is reversed on the way back, reconstruction,
+\caption{\textbf{\elaj, the corpus it was built on, and where it sits
+against the field.} \textbf{a}, The architecture. A cell enters as 15{,}496
+genes read in 44 pathway groups, normalised per study, and summarised by one
+transformer per group before a cell-level stage compresses them to sixteen
+dimensions. Four heads read that latent: an adversarial study discriminator
+whose gradient is reversed on the way back to the encoder, reconstruction,
 elastic cell similarity, and menstrual phase. Study, platform and anatomical
-site are given to the decoder and never to the encoder; disease status is
-given to neither. \textbf{b}, Record selection, following PRISMA 2020. The
-database and manual routes are shown as one flow. \textbf{c},~\textbf{d},
-Cross-donor agreement on menstrual phase against the two costs, over every
-representation tested on the same held-out donors, with the Pareto front
-drawn. Higher is better on the vertical axis and lower is better on both
-horizontal ones, so the upper left corner is the goal.
-\textbf{e},~\textbf{f}, The ELAJ$_{B\,hi}$ latent over all 1{,}577{,}728
-cells, 400{,}000 drawn at random, coloured by cell family and by study. Cells
-without a cell-family label are drawn in grey.}
+site are given to the decoder and never to the encoder. Disease status is
+given to neither. \textbf{b}, Record selection, following PRISMA 2020, with
+the database and manual routes shown as one flow. Of 553 records identified,
+198 were removed before screening, 293 were excluded at screening and 51 of
+the 62 assessed were excluded, leaving 11 studies, 1{,}577{,}728 cells and
+254 donors across six anatomical sites. \textbf{c},~\textbf{d}, Cross-donor
+agreement on menstrual phase against each of the two costs, over all ten
+representations on the same held-out donors, with the Pareto front drawn.
+Higher is better vertically and lower is better horizontally, so the upper
+left corner is the goal. \textbf{e},~\textbf{f}, The ELAJ$_{B\,hi}$ latent
+over all 1{,}577{,}728 cells, 400{,}000 drawn at random, coloured by cell
+family and by study; cells with no cell-family label are grey.
+\\Two readings. In \textbf{c} the front is two points and both are ours:
+ELAJ$_{B\,hi}$ holds the most cycle signal of anything tested (0.7346) while
+giving up the least donor identity (0.5188), and the nearest competitor on
+cycle, Scanorama at 0.7303, is also the representation from which a donor is
+most easily recovered (0.7892). In \textbf{d} Harmony joins the front, and
+the comparison between \textbf{e} and \textbf{f} is what that costs: cell
+families occupy contiguous territory while studies do not separate into
+their own.}
 \end{figure}
 
 \subsection*{Figure 2 --- How the two knobs move the frontier}

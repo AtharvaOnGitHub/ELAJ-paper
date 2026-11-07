@@ -233,6 +233,24 @@ through an ablation study.
 %  and how information is squeezed.
 % =====================================================================
 
+\subsection*{Study normalisation}
+
+A batch is drawn from one study by construction, and studies differ
+systematically in sequencing depth, chemistry and dissociation protocol.
+Those differences set the scale and spread of the token values before any
+biology does. Normalising with statistics pooled across the corpus would
+fold that variation into every token and hand the encoder a reliable study
+signature, in a model whose whole purpose is to not carry one.
+
+\elaj\ therefore applies domain-specific batch normalisation, adapted from
+scGPT \citep{cui2024scgpt}. One set of normalisation statistics and one
+affine transform are held per study, and each cell is normalised with the
+parameters belonging to the study it came from. The step sits on the group
+tokens, after grouping and before any attention, so every later stage reads
+values already placed on a common scale. Because the parameters are
+per-study, the shift and scale a study needs are absorbed here rather than
+being left for the latent to encode.
+
 \subsection*{Group encoders}
 
 Each group is read by its own transformer: two layers of multi-head

@@ -54,17 +54,22 @@ questions about variation between donors, and both therefore require a
 representation of pooled data in which donor identity has been removed and
 cycle phase has not.
 
-\note{PARAGRAPH 6 --- what we do, and the contributions. Not ``we propose a
-novel architecture''. The trade-off is made explicit and measurable: a
-frontier between donor-blindness and retained cycle signal, with every
-result reported from a named point on it. One sentence on why a pretrained
-single-cell foundation model is not the answer either, since an NMI
-readership asks it on the first page. Then the contributions as a short list
-Results delivers in order.
-\\FLOW RULE: the last sentence here must be the first question Results
-answers.
-\\Held back deliberately --- it promises what Results delivers, and Results
-is notes. Write it once the Results subsections are ordered.}
+This paper does not propose that the trade-off can be avoided. It proposes
+that it can be measured, and that a model should report where on it the
+result was taken. \elaj\ is a conditional variational autoencoder that reads
+a cell in 44 pathway groups and returns sixteen numbers, with two weights
+that move it along and across that trade-off: an adversarial weight on a
+study discriminator, and a price on the information the latent may carry.
+Varying the two traces a frontier between donor-blindness and retained
+cycle signal, and every number reported here comes from a named point on it.
+A pretrained single-cell foundation model is not an alternative, because the
+confound is a property of this corpus rather than of any model, and a
+representation learned elsewhere arrives with no reason to have separated
+the two. What follows is that frontier, what the sixteen numbers hold once
+the model is fixed, what the cycle looks like through them, what they say
+about surgical staging, and which parts of the architecture the result
+depends on. The first question is where the frontier lies, and what the
+field looks like against it.
 
 A subtle but deliberate choice in this study is to treat this disease as a human 
 health problem rather than a gendered disease. At a scale of hundreds of millions 
