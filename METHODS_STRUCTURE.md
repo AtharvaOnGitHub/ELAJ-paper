@@ -251,3 +251,190 @@ written subsections and established nowhere), and the gene-masking policy
 forward-references into empty space). To be settled last, deliberately.
 
 **Count after these calls: 23 headings**, from 28.
+
+---
+
+# What is left to write, and the argument each passage has to make
+
+Rounded up 7 November 2026, after Results and the Discussion closed. Every
+fact below was re-derived from the configs, the run records and the
+benchmark files rather than taken from the notes, and three of them
+contradict what the notes said.
+
+Methods sits outside NMI's 3,500-word count, so length here is a discipline
+and not a limit.
+
+---
+
+## 1. Donor and study recovery — 0 words
+
+**The one argument that has to land:** these are the axes a good model
+should *fail* at. Without that sentence a reader meets a column of low
+numbers and reads it as poor performance.
+
+- **Donor recovery** is $k$NN agreement on `patient_id` at $k=30$ over all
+  416,256 held-out cells. No label is needed, since every cell has a donor,
+  which is why this axis covers the whole split while the biology axes do
+  not.
+- **Study separation** is $k$NN study purity, rescaled so that 0 is
+  perfectly mixed and 1 fully separated. The rescaling has to be given
+  rather than implied: the reported 0.7613 is
+  $(0.805-0.182)/(1-0.182)$, where 0.805 is raw purity and 0.182 is the
+  purity eleven studies of these sizes would give by chance.
+- **Why $k$NN purity and not the scIB batch metrics.** One line, pointing
+  at the Discussion: iLISI is exactly 0.0000 and cLISI exactly 1.0000 for
+  all ten representations, so the standard instrument cannot rank anything
+  here.
+- **Both are measured on the held-out split**, because unlike the metadata
+  axes these measure the fit itself.
+- **Harmony and Scanorama are transductive** and that is declared here, not
+  left in the table's footnote alone.
+
+## 2. Whole-corpus embedding — 11 words, and it should absorb the "whole-corpus rule"
+
+**PROPOSAL, and the one structural question in this round.** `PRIORITY.md`
+lists *Whole-corpus embedding* and *the whole-corpus rule* as two
+subsections. They are the same argument: a label the model never received
+cannot leak, therefore the split stops mattering for it. **I would write one
+subsection, not two.** Two headings saying the same thing is worse than one
+that says it properly.
+
+What the single passage carries:
+
+- The licence. Once the checkpoint is fixed nothing is being selected, and
+  the cross-donor estimator already discards same-donor neighbours, so for
+  a label the model never received a held-out split protects against
+  nothing.
+- The table of where each variable is measured: phase, study, platform and
+  tissue held out because they reached the model; disease, stage, grade,
+  severity, cell family, cycle day and progesterone on all 1,577,728 cells
+  because they did not. Donor recovery is the odd one out, held out despite
+  never being an input, because it measures the fit itself.
+- **The region procedure**, which exists nowhere else in the paper: every
+  cell takes the cell family of its 25 nearest *labelled* neighbours,
+  searched in the sixteen dimensions and not in the UMAP. The reason is
+  worth one clause, because it is a real choice: a bounding box drawn on a
+  UMAP assumes each family occupies one convex patch, and immune cells do
+  not.
+- This subsection is what licenses `[2]`, `[4]` and every whole-corpus
+  panel, so it has to come before them in the reader's mind even though
+  Methods comes after.
+
+## 3. Optimisation — 0 words
+
+**Three corrections to the note that sits there now.**
+
+- The note says lr $10^{-3}$. `training/base.yaml` says `3.0e-4`. The
+  **arm config overrides it to 0.001**, and `run_config.json` for the
+  reported arm confirms `lr = 0.001`, so the note is right and the base
+  config is not the operative value. Quote the run record, not the base.
+- The note says "early stopping at patience 5". Correct for the arms;
+  `base.yaml` says 10 with a 25-epoch warmup, which the arms override to
+  **patience 5, warmup 2**.
+- `max_epochs: 50` in the base, **20 in every arm**.
+
+What the passage says:
+
+- AdamW, lr $10^{-3}$, weight decay $10^{-4}$, batch 256, bf16, gradient
+  clipping at 1.0, KL weight ramped from 0 to 1 over the first 20% of steps.
+- **The horizon is a shape, not a length**, and this is the only part that
+  needs an argument. Cosine annealing takes $T_{max}$ from `max_epochs`, so
+  the horizon sets how long the learning rate stays useful rather than when
+  the run ends. At $T_{max}$ 12 the eleventh and twelfth epochs run at 6.7%
+  and 1.7% of base rate; at $T_{max}$ 20 the same two run at 50.0% and
+  42.2%. An arm still descending late is capped by the shape rather than by
+  its own configuration.
+- **What ends a run is early stopping on held-out reconstruction**, patience
+  5 after a two-epoch warmup. No arm in this project has ever reached
+  `max_epochs`.
+- **A registered check that passed, and it is worth its sentence.** The
+  configs state it in advance: if an arm's best epoch is its last, early
+  stopping never fired and the arm did not converge. Verified for all six
+  arms on 7 November, and none of them has its best epoch last (4 of 9,
+  0 of 7, 4 of 9, 4 of 9, 5 of 10, 12 of 17). Every arm converged.
+- **The selection sentence** `OUTSTANDING.md` requires: the reported
+  checkpoint is `argmin val_nb` on the validation donors, and every metric
+  reported in this paper is label-based and played no part in selecting it.
+- bf16 and why, in one clause: FlashAttention has no fp32 kernel, and one
+  forward-and-backward at the real training shapes measures 449.97 ms in
+  fp32 against 174.87 ms in bf16. The Power Spherical sampler and the
+  negative-binomial loss force fp32 back regardless.
+- **A batch is one study by construction.** Two sentences, and they are
+  load-bearing elsewhere: it is why ECS pairs are always within-study, and
+  it is what the adversary sees.
+- Seed 24, single runs, seed variability measured at 4%.
+
+## 4. The severity merge — new, no heading yet
+
+**The argument: this is sourced, not assumed.** That is the whole point of
+the subsection and it should be its first sentence.
+
+- Two cohorts record severity in different vocabularies: `marecko_2024` as
+  rASRM I--IV, `duempelmann_2026` as mild against severe.
+- duempelmann's own paper defines mild as rASRM I--II and severe as
+  III--IV. The merge onto control / mild / severe therefore follows the
+  published definitions rather than our judgement. **Cite both papers for
+  their methods.**
+- Coverage: 34 held-out donors and 118 across the whole corpus; dropping
+  controls leaves 18 and 57.
+- **Why the union variable is unused.** `severity (study vocabularies)`
+  exists in the scored tables and appears nowhere in the paper, because its
+  levels are study-prefixed (`stage_0`, `grade_mild`). A variable readable
+  off study identity cannot carry a severity claim, and saying so pre-empts
+  a reviewer who finds the column.
+
+## 5. Cross-donor agreement — 812 words, written, never reviewed
+
+The subsection carries a coral block listing six loopholes and one wrong
+claim. Each needs a destination.
+
+| | disposition |
+|---|---|
+| **The wrong claim** — "the number of distinct permutations is set by how many donors carry the label" | **Cut.** At 16 to 60 donors the number of assignments is astronomical and is not what binds. The binding constraint is the width of the null, which is loophole 1, and it is the stronger argument. |
+| **1. `excess` is not comparable across labels.** The null's own 95th percentile tracks donor count: 0.06 at 34 donors, 0.18 at 36, 0.12 at 18, **0.42 at 16** | **Stays in Methods.** This is a property of the estimator, not a limitation of the study, and without it a reader puts 0.1313 and 0.7346 on one scale. |
+| **2. $p$ is one-sided** | **One line in Methods.** It is why grade's $-$0.0414 is reported as "not positive" and never as "negative". |
+| **3. The permutation is too permissive for a label spanning studies** | **Already written into the Discussion** as the unstratified null bounded by 0.7613. Methods points forward in half a sentence; it does not argue it twice. |
+| **4. Unstratified by donor size** | **One clause**, with the remedy named. |
+| **5. $k=100$ is a free choice with no sensitivity analysis** | **State it plainly.** The honest form is that $k=100$ is fixed and coverage is reported beside every scalar, not that the choice was validated. |
+| **6. $p$ floors at $1/201$** | **Already in `[3]`.** Methods states the floor once where the estimator is defined. |
+
+Two more jobs in this subsection:
+
+- **Rewrite to the $t=1$ convention**, which was settled and never applied
+  here: agreement is reported for every labelled cell with at least one
+  cross-donor neighbour, 88.2% of them, with coverage beside the scalar.
+  The prose still describes the single-scalar version.
+- **E1 lands here**, by AW's ruling: whole-corpus agreement on a
+  donor-constant label is a readout of donor memorisation, $\rho$ +0.943
+  for disease against +0.371 for cell family, the only label that varies
+  within a donor. It is the justification for the estimator and it belongs
+  beside it.
+
+## 6. Study selection — carries a TODO
+
+- The TODO is a **PRISMA figure**, which is a display-item decision rather
+  than prose. Six items are the budget and five are spoken for, so this is
+  a real choice and not a formality.
+- **A live inconsistency, and it is in the manuscript now.** Line 46 says
+  "254 donors". Lines 597 and 673 say "269 donors". Both are true of
+  different things, and the paper calls both "donors": there are **269
+  donor identifiers and 254 people**, because one study pair deposits
+  fifteen of them twice. The estimator operates on identifiers; the corpus
+  description should say people. This needs one consistent form of words
+  and a sentence explaining the gap, and it is the same fifteen people the
+  Discussion's first limitation is about.
+
+---
+
+## Suggested order of work
+
+1. **Optimisation** and **Donor and study recovery** first. Both are
+   self-contained, both are pure description, and neither blocks on a
+   decision.
+2. **Whole-corpus embedding**, once the merge-or-split question above is
+   answered.
+3. **The severity merge**, which needs the two citations added to
+   `references.bib`.
+4. **Cross-donor agreement** last. It is a rewrite rather than a seed, it
+   is the longest, and it is the one a methods reviewer will read hardest.
+5. **Study selection**'s donor-count fix can go in with any of the above.
