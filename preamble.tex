@@ -62,7 +62,7 @@
 \bibliographystyle{unsrtnat}
 
 % ---- Drafting apparatus ---------------------------------------------
-% Set \draftmodefalse before submitting: it removes line numbers, the
+% Set \draftmodetrue before submitting: it removes line numbers, the
 % extra leading, and every \todo and \note in one switch.
 \newif\ifdraftmode
 \draftmodetrue
@@ -99,3 +99,8 @@
 % line inside a note would end the paragraph mid-argument and abort the build.
 \newcommand{\todo}[1]{\ifdraftmode{\color{elajcoral}\small\bfseries[TODO: #1]}\fi}
 \newcommand{\note}[1]{\ifdraftmode{\color{elajmuted}\small\itshape[#1]}\fi}
+% Navigation between Methods subsections. Scaffolding for us, noise for a
+% reader, and it used to survive \draftmodetrue because it was written
+% as raw \textcolor rather than as a macro.
+\newcommand{\flow}[1]{\ifdraftmode\medskip\noindent%
+  {\color{elajmuted}$\rightarrow$ \textit{#1}}\fi}

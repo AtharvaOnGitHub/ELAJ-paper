@@ -110,9 +110,9 @@ This has added benefits apparent in the encoder later. Restricted to this
 vocabulary, the proportion of genes a pair of studies holds in common 
 rises from 64–96\% to 87–98\%.
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{The corpus is
+\flow{The corpus is
 one object with a chosen vocabulary. How does a cell's counts over that
-vocabulary become something a transformer can read?}}
+vocabulary become something a transformer can read?}
 
 % =====================================================================
 %  INPUT REPRESENTATION  -- budget 500. NOT YET SEEDED.
@@ -225,8 +225,8 @@ gene space to block diagonal and getting nothing in return. This is tested
 through an ablation study.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A cell is now
-44 groups of tokens. What reads a group, and what does it hand on?}}
+\flow{A cell is now
+44 groups of tokens. What reads a group, and what does it hand on?}
 
 % =====================================================================
 %  ENCODER  -- budget 450. Needs MORE than the thesis has: the funnel,
@@ -321,9 +321,9 @@ A cell therefore leaves the encoder as a single vector of width 64,
 narrowed from 15{,}496 gene tokens through 396 group summaries.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A cell is one
+\flow{A cell is one
 vector of width 64. What does the model keep when it is forced to describe
-that cell in sixteen numbers?}}
+that cell in sixteen numbers?}
 
 % =====================================================================
 %  THE LATENT  -- budget 150.
@@ -373,9 +373,9 @@ embedding is also a disease indicator. Claims about adenomyosis are
 therefore selectively made.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{The decoder
+\flow{The decoder
 knows where the cell came from. Now it has to produce 15{,}496 numbers from
-sixteen.}}
+sixteen.}
 
 \subsection*{Reconstruction head}
 
@@ -431,8 +431,8 @@ from the encoder during training are still demanded of the decoder,
 which makes this masked autoencoding.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{A reconstruction
-exists. What stops it being produced WITHOUT the latent?}}
+\flow{A reconstruction
+exists. What stops it being produced WITHOUT the latent?}
 
 \subsection*{Adversarial study removal head}
 
@@ -459,8 +459,8 @@ discriminator with three linear layers of width 256, with a leaky rectifier, no
 dropout, and layer normalisation after each layer.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{One term pushes
-structure OUT of the latent. The next two decide what stays in.}}
+\flow{One term pushes
+structure OUT of the latent. The next two decide what stays in.}
 
 \subsection*{Elastic cell similarity head}
 
@@ -483,8 +483,8 @@ head. Confined to one study the term can sharpen within-study structure,
 which helps gather biologically similar cells together.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Both terms so
-far shape the latent without being told anything. One term is told.}}
+\flow{Both terms so
+far shape the latent without being told anything. One term is told.}
 
 \subsection*{Menstrual-phase head}
 
@@ -518,8 +518,8 @@ status, stage and grade have no head in any configuration reported here,
 so every result on those is unsupervised.
 
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Five terms
-exist. What does the sum look like?}}
+\flow{Five terms
+exist. What does the sum look like?}
 
 \subsection*{Composite objective}
 
@@ -682,8 +682,8 @@ two-epoch warmup. A batch is drawn from one study by construction.
 
 Every arm reported here is a single run at seed 24.
 
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Everything
-measurable has been measured. What has to be declared?}}
+\flow{Everything
+measurable has been measured. What has to be declared?}
 
 
 % =====================================================================
