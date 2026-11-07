@@ -233,7 +233,7 @@ through an ablation study.
 %  and how information is squeezed.
 % =====================================================================
 
-\subsection*{Study normalisation}
+\subsection*{Domain-Specific Batch Normalisation}
 
 A batch is drawn from one study by construction, and studies differ
 systematically in sequencing depth, chemistry and dissociation protocol.
@@ -242,7 +242,7 @@ biology does. Normalising with statistics pooled across the corpus would
 fold that variation into every token and hand the encoder a reliable study
 signature, in a model whose whole purpose is to not carry one.
 
-\elaj\ therefore applies domain-specific batch normalisation, adapted from
+\elaj\ therefore applies domain-specific batch normalisation, inspired by
 scGPT \citep{cui2024scgpt}. One set of normalisation statistics and one
 affine transform are held per study, and each cell is normalised with the
 parameters belonging to the study it came from. The step sits on the group
@@ -250,6 +250,16 @@ tokens, after grouping and before any attention, so every later stage reads
 values already placed on a common scale. Because the parameters are
 per-study, the shift and scale a study needs are absorbed here rather than
 being left for the latent to encode.
+
+One detail differs from the original. scGPT holds a separate normalisation
+module per study and routes an entire batch through the one named by a
+single batch-level label, which is correct only while every cell in the
+batch comes from the same study. \elaj\ instead keeps the per-study
+statistics and affine parameters in indexed tables and looks them up with
+the study identifier carried on each row, so a batch of mixed provenance is
+normalised correctly cell by cell. Batches here are still built from one
+study, for the reasons given above, but the normalisation no longer depends
+on that being true.
 
 \subsection*{Group encoders}
 
