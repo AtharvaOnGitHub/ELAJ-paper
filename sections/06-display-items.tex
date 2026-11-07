@@ -56,6 +56,27 @@ frontier panels also overlap Figure 2 and that overlap has not been resolved.
 \\UNBLOCKED: the four remaining arms' full-split mixing landed on
 6 November, so every frontier point now exists.}
 
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/pinned/figure1.png}
+\caption{\textbf{\elaj, the corpus it was built on, and where it sits against
+the field.} \textbf{a}, The architecture. A cell enters as 15{,}496 genes,
+which are read in 44 pathway groups, normalised per study, and summarised by
+one transformer per group before a cell-level stage compresses them to a
+sixteen-dimensional latent. Four heads read that latent: an adversarial study
+discriminator whose gradient is reversed on the way back, reconstruction,
+elastic cell similarity, and menstrual phase. Study, platform and anatomical
+site are given to the decoder and never to the encoder; disease status is
+given to neither. \textbf{b}, Record selection, following PRISMA 2020. The
+database and manual routes are shown as one flow. \textbf{c},~\textbf{d},
+Cross-donor agreement on menstrual phase against the two costs, over every
+representation tested on the same held-out donors, with the Pareto front
+drawn. Higher is better on the vertical axis and lower is better on both
+horizontal ones, so the upper left corner is the goal.
+\textbf{e},~\textbf{f}, The ELAJ$_{B\,hi}$ latent over all 1{,}577{,}728
+cells, 400{,}000 drawn at random, coloured by cell family and by study. Cells
+without a cell-family label are drawn in grey.}
+\end{figure}
+
 \subsection*{Figure 2 --- How the two knobs move the frontier}
 \note{THE P-SERIES ALONE, AND THE POINTS ARE JOINED. Figure 1 answers whether
 \elaj\ is better, with every method and one Pareto front over the lot. This
