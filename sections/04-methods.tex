@@ -531,64 +531,60 @@ stopping read reconstruction alone.
 
 \subsection*{Cross-donor agreement}
 
-In this corpus, every donor was biopsied only once. Because a donor
-contributes a single sample, that donor has exactly one menstrual phase, one
-disease status, one stage and one grade, and every cell drawn from them
-inherits those values. Each of these labels is therefore a property
-of the donor rather than of the cell. Cell type is the only exception: it
-varies within a single biopsy.
+In this corpus, every donor was biopsied only once. Because of that, each 
+donor has exactly one menstrual phase, one disease status, and one stage or 
+grade. Each of these labels is therefore a property of the donor rather than 
+of the cell. Which means the label does not vary between cells of the same
+donor. Cell type is the only exception as it varies within a single biopsy.
 
 The simplest way to determine whether the latent holds some structure for a 
 given label is: check if cells agree with their neighbours. Functionally, 
 take each cell's nearest neighbours in the latent and measure how often they 
 share its label. We refer to this as plain agreement. However, since labels 
-are constant for a single donor, the model can get away with clumping donors 
-individually and not learning labels. This collapses the latent into a donor 
-identifier instead of a tool to encode biological structure.
+are constant for cells of a single donor, the model can get away with clumping 
+cells by donor without learning labels. This collapses the latent into a donor 
+identifier instead of a tool to encode biological information.
 
-Statistically, plain agreement rests on a per-cell floor. That floor is set
-by how many of a cell's neighbours come from its own donor. Among the hundred nearest
-neighbours of a labelled cell, between a quarter and three-fifths do. So out 
-of the agreement a plain measurement reports, between 44\% and 71\% is the 
-free same-donor part. Plain agreement on a donor-constant label is therefore 
-largely a readout of how well a model memorised the donor, which is the 
-opposite of what this paper aims to measure.
+Naturally, plain agreement is not able to distinguish donor clustering from 
+label clustering. Only the latter is beneficial. Out of the agreement a plain 
+measurement reports, between 44\% and 71\% is the free same-donor part. Plain 
+agreement on a donor-constant label is therefore largely a readout of how 
+well a model memorised the donor.
 
-Instead we calculate cross-donor agreement. For each label,
+Instead we calculate cross-donor agreement. For each label, first 
 the hundred nearest neighbours of every cell are found in the
 sixteen-dimensional latent and assembled into a donor-by-donor matrix. Only
-cells carrying that label take part, as cells and as neighbours alike.
-So, entry $(d, d')$ represents the number of neighbours of donor $d$ coming 
-from donor $d'$ summed over all cells. Each row therefore records where
-the neighbours of one donor's cells came from. 
-To calculate cross-donor relationships, the same-donor relations are removed 
-by discarding the diagonal (where $d$=$d'$). Cross-donor agreement is then a
-fraction. The numerator counts the surviving relations that run between two
-donors with the same label. The denominator counts all of them. Every
-relation that was discarded joined a donor to itself. A label is constant
-within a donor, so each of those was an automatic match. That is the free
-agreement this measure exists to remove.
+cells carrying the label being measured are considered. So, entry $(d, d')$ 
+represents the number of neighbours of donor $d$ coming from donor $d'$ 
+summed over all cells. Each row therefore records where the neighbours of one 
+donor's cells came from. Same-donor relations are removed by discarding the 
+diagonal (where $d$=$d'$) leaving only cross-donor relations in the matrix.
+Cross-donor agreement is then: the number of cross-donor relations 
+with the same label divided by the total number of cross-donor relations. 
+This discards the same-donor part conflating label clustering with donor 
+clustering.
 
 Crucially, the raw cross-donor agreement score is subject to the prevalence 
 of a given label. Chance rate is the probability that two random donors 
-share a label calculated as $\sum_j p_j^2$. It signifies how likely it 
+share a label. It is calculated as $\sum_j p_j^2$. It signifies how likely it 
 is for a model to predict the labels by naively looking at the number of 
 donors with a given label. A label that is very prevalent would be an easy 
-guess. Agreement is reported as excess over the chance rate. Excess is 
-$(a - c)/(1 - c)$, so zero is what a label-blind latent would score, one is
-perfect, and labels with different numbers of levels are 
-comparable.
+guess. Agreement is therefore reported as excess over the chance rate. Excess 
+is $(a - c)/(1 - c)$, so zero is what a label-blind latent would score, one is
+perfect, and labels with different numbers of levels are now comparable.
 
 The framework so far has allowed us to ignore same-donor neighbours and 
 remove the advantage of clumping donor cells together, ignore the effects 
 of prevalent labels, and compare across labels using excess.
-However one critical issue remains. Excess measures how far above the
-chance rate a latent reached. The chance rate is an average. It is the score expected across every way
-these labels could be dealt to these donors. An average says nothing about
-spread. Where few donors carry a label, one
-dealing can put several of them in the same region of the latent by luck.
-That alone produces a large excess. Excess cannot tell such a dealing apart
-from a latent that has genuinely grouped them.
+However one critical issue remains. What we need to know is whether an
+excess could have arisen by accident. Excess answers only half of that. It
+measures the distance between the latent's score and the chance rate, and
+the chance rate is a single average. It marks the middle of what a random
+dealing of labels to donors would produce. It does not say how far from
+that middle a random dealing can land. Where few donors carry a label, the
+answer is far. One dealing can put several same-label donors in the same
+region of the latent and produce a high excess on its own. Excess cannot
+tell that apart from a latent that has genuinely grouped them.
 
 
 The null is obtained by reassigning labels to donors. The matrix is held fixed. Only the
