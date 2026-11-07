@@ -548,31 +548,47 @@ identifier instead of a tool to encode biological structure.
 
 Statistically, plain agreement rests on a per-cell floor set by how many of
 that cell's neighbours come from its own donor. Among the hundred nearest
-neighbours of a labelled cell, between a quarter and three-fifths do: 37\%
-for menstrual phase, 29\% for disease status, 61\% for stage. Each one is an
-automatic match, so of the agreement a plain measurement reports, between
-44\% and 71\% is that free same-donor part. Plain agreement on a
-donor-constant label is therefore largely a readout of how well a model
-memorised the donor, which is the opposite of what this paper aims to
-measure.
+neighbours of a labelled cell, between a quarter and three-fifths do. So out 
+of the agreement a plain measurement reports, between 44\% and 71\% is the 
+free same-donor part. Plain agreement on a donor-constant label is therefore 
+largely a readout of how well a model memorised the donor, which is the 
+opposite of what this paper aims to measure.
 
-\elaj\ is measured with the same-donor neighbours removed. For each label,
-the hundred nearest neighbours of every labelled cell are found in the
-sixteen-dimensional latent and collected into a donor-by-donor matrix. Entry
-$(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
-$d'$, pooled over all of that donor's cells. The diagonal holds the
-same-donor relations and is discarded. Cross-donor agreement is then the
-share of the surviving relations that run between two donors whose labels
-agree. Because a label is constant within a donor, every discarded relation
-was an automatic match, and the share of the graph that survives is reported
-beside each value: 51\% for menstrual phase and 57\% for cell family in the
-arm reported here.
+Instead we calculate cross-donor agreement. For each label,
+the hundred nearest neighbours of every cell carrying that label are
+identified among the cells carrying it, in the sixteen-dimensional latent,
+and a donor-by-donor matrix is assembled over them.
+So, entry $(d, d')$ represents the number of neighbours of donor $d$ coming 
+from donor $d'$ summed over all cells. Each row therefore records where
+the neighbours of one donor's cells came from. 
+To calculate cross-donor relationships, the same-donor relations are removed 
+by discarding the diagonal (where $d$=$d'$). To compute cross-donor agreement 
+for a given label, we divide the surviving relations whose two donors carry
+the same label by the total number of surviving relations. Every discarded
+relation joined a donor to itself and so carried the same label by
+definition, which is the free agreement this measure exists to remove.
 
-Agreement is reported as excess over the chance rate, the share that two
-donors drawn at random would be expected to match on, $\sum_j p_j^2$ over the
-observed label shares across donors. Excess is $(a - c)/(1 - c)$, so zero is
-the agreement a label-blind latent would give, one is perfect, and labels
-with different numbers of levels are comparable.
+Crucially, the raw cross-donor agreement score is subject to the prevalence 
+of a given label. Chance rate is the probability that two random donors 
+share a label calculated as $\sum_j p_j^2$. It signifies how likely it 
+is for a model to predict the labels by naively looking at the number of 
+donors with a given label. A label that is very prevalent would be an easy 
+guess. Agreement is reported as excess over the chance rate. Excess is 
+$(a - c)/(1 - c)$, so zero is what a label-blind latent would score, one is
+perfect, and labels with different numbers of levels are 
+comparable.
+
+The framework so far has allowed us to ignore same-donor neighbours and 
+remove the advantage of clumping donor cells together, ignore the effects 
+of prevalent labels, and compare across labels using excess.
+However one critical issue remains. Excess measures how far above the
+chance rate a latent reached, and the chance rate is an average over every
+way these labels could have been dealt to these donors. An average says
+nothing about spread. Where few donors carry a label, a single dealing can
+place several of them in the same region of the latent by luck and produce a
+large excess with no help from the model. Excess alone cannot separate that
+from a latent that has genuinely grouped them.
+
 
 The null is obtained by reassigning labels to donors. The matrix is held
 fixed and only the donor-to-label map is shuffled, two hundred times, each
