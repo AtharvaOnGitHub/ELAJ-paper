@@ -534,7 +534,7 @@ stopping read reconstruction alone.
 In this corpus, every donor was biopsied only once. Because of that, each 
 donor has exactly one menstrual phase, one disease status, and one stage or 
 grade. Each of these labels is therefore a property of the donor rather than 
-of the cell. Which means the label does not vary between cells of the same
+of the cell. This means the label does not vary between cells of the same
 donor. Cell type is the only exception as it varies within a single biopsy.
 
 The simplest way to determine whether the latent holds some structure for a 
@@ -561,11 +561,11 @@ donor's cells came from. Same-donor relations are removed by discarding the
 diagonal (where $d$=$d'$) leaving only cross-donor relations in the matrix.
 Cross-donor agreement is then: the number of cross-donor relations 
 with the same label divided by the total number of cross-donor relations. 
-This discards the same-donor part conflating label clustering with donor 
-clustering.
+This discards the same-donor part that conflates label clustering with 
+donor clustering.
 
 Crucially, the raw cross-donor agreement score is subject to the prevalence 
-of a given label. Chance rate is the probability that two random donors 
+of a given label. The chance rate is the probability that two random donors 
 share a label. It is calculated as $\sum_j p_j^2$. It signifies how likely it 
 is for a model to predict the labels by naively looking at the number of 
 donors with a given label. A label that is very prevalent would be an easy 
@@ -646,16 +646,38 @@ SOURCE: new.}
 measurable has been measured. What has to be declared?}}
 
 \subsection*{Optimisation}
-\note{PURPOSE: how a run is executed, kept short. AdamW, $10^{-3}$, batch
-256, bf16, cosine over a 20-epoch horizon chosen for its SHAPE rather
-than its length --- the horizon sets how long the learning rate stays
-high, and early stopping is what ends a run. Per-study batch construction
-and domain-specific normalisation are two sentences here rather than
-headings of their own, per your note that most training-procedure
-material is statements belonging inside other passages.\\
-HANDS ON: runs finish. Which checkpoint is the model?\\
-SOURCE: Thesis §Configuration (72). Hyperparameter detail $\rightarrow$
-Supplementary.}
+
+The 44 gene groups are not the same size. Real counts run from 253 to 493
+genes. Running all of them in one batched call means padding every group to
+the largest, and attention is quadratic in sequence length, so 49.0\% of the
+attention arithmetic is spent on padding. That figure is measured against
+this vocabulary rather than estimated.
+
+The groups are therefore sorted by size and run in four buckets, each padded
+only to its own largest member. The indirect saving is the larger one.
+FlashAttention refuses a non-null attention mask, and the only reason a mask
+exists here is to hide padding. A bucket whose groups are all the same size
+needs no padding and therefore no mask, which lets the call reach the flash
+kernel: 62.60~ms against 174.87~ms for the same call with a mask, measured on
+an A100 at the real training shapes. Nothing about the model changes. Each
+group keeps its own weights and its own independence, and only the order they
+are executed in differs.
+
+Training runs in bf16 for the same reason, since FlashAttention has no fp32
+kernel. The Power Spherical sampler and the negative-binomial loss are held
+in fp32 regardless, because neither is numerically safe at reduced precision.
+
+The remaining settings are AdamW at a learning rate of $10^{-3}$, weight decay
+$10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
+Kullback--Leibler term is ramped from zero to its full value over the first
+20\% of steps. The learning rate follows a cosine schedule whose period is set
+to a twenty-epoch horizon. That horizon is a shape rather than a length: it
+fixes how long the learning rate stays high, and no arm in this project
+reaches it. What ends a run is early stopping on held-out reconstruction
+loss, with a patience of five epochs after a two-epoch warmup. A batch is
+drawn from one study by construction.
+
+Every arm reported here is a single run at seed 24.
 
 % =====================================================================
 %  REPORTING  -- budget 200. NOT YET SEEDED.
