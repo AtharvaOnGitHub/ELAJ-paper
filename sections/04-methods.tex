@@ -546,41 +546,40 @@ are constant for a single donor, the model can get away with clumping donors
 individually and not learning labels. This collapses the latent into a donor 
 identifier instead of a tool to encode biological structure.
 
-Statistically, plain agreement would have a per cell floor correlated to the 
-number of cells that belong to the same donor. Among the hundred nearest 
-neighbours of a labelled cell, between a quarter and three-fifths belong to 
-the same donor depending on the label: 37\% for menstrual phase, 29\% for 
-disease status, 61\% for stage. The probability that two cells drawn at 
-random share a donor is defined as the chance rate for any cell statistic. 
-A latent carrying no donor information at all would likely give the chance 
-rate (0.6\% to 3.1\% here). Same-donor neighbours are thus twenty to fifty 
-times over-represented. That enrichment passes straight into
-the score: for a plain agreement between 44\% and 71\% is the free 
-same-donor part. Plain agreement on a donor-constant label is therefore
-largely a readout of how well a model memorised the donor, which is the
-opposite of what this paper aims to measure.
+Statistically, plain agreement rests on a per-cell floor set by how many of
+that cell's neighbours come from its own donor. Among the hundred nearest
+neighbours of a labelled cell, between a quarter and three-fifths do: 37\%
+for menstrual phase, 29\% for disease status, 61\% for stage. Each one is an
+automatic match, so of the agreement a plain measurement reports, between
+44\% and 71\% is that free same-donor part. Plain agreement on a
+donor-constant label is therefore largely a readout of how well a model
+memorised the donor, which is the opposite of what this paper aims to
+measure.
 
 \elaj\ is measured with the same-donor neighbours removed. For each label,
 the hundred nearest neighbours of every labelled cell are found in the
 sixteen-dimensional latent and collected into a donor-by-donor matrix. Entry
 $(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
-$d'$. The diagonal, which is the same-donor part, is discarded, and cross-donor 
-agreement is the share of the remaining neighbour relations that join two
-donors carrying the same label. Chance is the probability that two such
-relations drawn at random would share a label, $\sum_j p_j^2$ over the
-label's shares across donors, and agreement is reported as excess over it,
-$(a - c)/(1 - c)$. The share of neighbour relations that survive the discard
-is reported beside every value, since it is how much of the graph the measure
-is reading: 51\% for menstrual phase and 57\% for cell family in the arm
-reported here. Discarding the diagonal cuts disease status's correlation with
-donor recovery from $+$0.943 to $+$0.429.
+$d'$, pooled over all of that donor's cells. The diagonal holds the
+same-donor relations and is discarded. Cross-donor agreement is then the
+share of the surviving relations that run between two donors whose labels
+agree. Because a label is constant within a donor, every discarded relation
+was an automatic match, and the share of the graph that survives is reported
+beside each value: 51\% for menstrual phase and 57\% for cell family in the
+arm reported here.
 
-The null is obtained by reassigning labels to donors. Two hundred random
-permutations of the donor-to-label map are scored through the same
-expression, which asks what agreement this latent would produce if the same
-labels had been dealt to different donors, the appropriate null for a
-quantity constant within a donor. The reported $p$ is one-sided, the share of
-permutations reaching the observed agreement, counted as
+Agreement is reported as excess over the chance rate, the share that two
+donors drawn at random would be expected to match on, $\sum_j p_j^2$ over the
+observed label shares across donors. Excess is $(a - c)/(1 - c)$, so zero is
+the agreement a label-blind latent would give, one is perfect, and labels
+with different numbers of levels are comparable.
+
+The null is obtained by reassigning labels to donors. The matrix is held
+fixed and only the donor-to-label map is shuffled, two hundred times, each
+shuffle scored through the same expression. This asks what agreement this
+latent would produce if the same labels had been dealt to different donors,
+the appropriate null for a quantity constant within a donor. The reported
+$p$ is one-sided and counts the observed arrangement among the possibilities,
 $(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$, so the smallest
 attainable value is $1/201$.
 
