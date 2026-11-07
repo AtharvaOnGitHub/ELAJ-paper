@@ -534,46 +534,38 @@ stopping read reconstruction alone.
 In this corpus, every donor was biopsied only once. Because a donor
 contributes a single sample, that donor has exactly one menstrual phase, one
 disease status, one stage and one grade, and every cell drawn from them
-inherits those values unchanged. Each of these labels is therefore a property
+inherits those values. Each of these labels is therefore a property
 of the donor rather than of the cell. Cell type is the only exception: it
 varies within a single biopsy.
 
-The obvious way to ask whether a latent carries a label is to check whether
-cells agree with their neighbours: take each cell's nearest neighbours in the
-latent and measure how often they share its label. On this corpus that test
-measures something else. If a label belongs to the donor, then asking whether
-a cell's neighbours share its label is asking whether they come from donors
-carrying that label, and a cell's own donor carries it by definition. Every
-neighbour drawn from the same donor is an automatic match, scored whether or
-not the latent encodes anything about the label at all.
+The simplest way to determine whether the latent holds some structure for a 
+given label is: check if cells agree with their neighbours. Functionally, 
+take each cell's nearest neighbours in the latent and measure how often they 
+share its label. We refer to this as plain agreement. However, since labels 
+are constant for a single donor, the model can get away with clumping donors 
+individually and not learning labels. This collapses the latent into a donor 
+identifier instead of a tool to encode biological structure.
 
-Plain agreement therefore rests on a floor set by how many of a cell's
-neighbours come from its own donor, and on this corpus that floor is high.
-Among the hundred nearest neighbours of a labelled cell, between a quarter
-and three-fifths belong to the same donor depending on the label: 37\% for
-menstrual phase, 29\% for disease status, 61\% for stage. A latent carrying
-no donor information at all would give the chance rate, the probability that
-two cells drawn at random share a donor, which is between 0.6\% and 3.1\%
-here. Same-donor neighbours are thus twenty to fifty times over-represented,
-and because each is an automatic match that enrichment passes straight into
-the score: of the agreement a plain measurement reports, between 44\% and
-71\% is the free same-donor part.
-
-It is also a floor the model can raise, and the size of that effect is
-measurable. Ranking the six single-key arms by plain whole-corpus agreement
-and by donor recovery gives nearly the same order for every label that is
-constant within a donor: Spearman $\rho$ $+$0.943 for disease status and
-$+$0.829 for menstrual phase. Cell family, the one label that varies within a
-donor, gives $+$0.371. Plain agreement on a donor-constant label is therefore
+Statistically, plain agreement would have a per cell floor correlated to the 
+number of cells that belong to the same donor. Among the hundred nearest 
+neighbours of a labelled cell, between a quarter and three-fifths belong to 
+the same donor depending on the label: 37\% for menstrual phase, 29\% for 
+disease status, 61\% for stage. The probability that two cells drawn at 
+random share a donor is defined as the chance rate for any cell statistic. 
+A latent carrying no donor information at all would likely give the chance 
+rate (0.6\% to 3.1\% here). Same-donor neighbours are thus twenty to fifty 
+times over-represented. That enrichment passes straight into
+the score: for a plain agreement between 44\% and 71\% is the free 
+same-donor part. Plain agreement on a donor-constant label is therefore
 largely a readout of how well a model memorised the donor, which is the
-opposite of what this paper measures.
+opposite of what this paper aims to measure.
 
 \elaj\ is measured with the same-donor neighbours removed. For each label,
 the hundred nearest neighbours of every labelled cell are found in the
-sixteen-dimensional latent and collected into a donor-by-donor matrix: entry
+sixteen-dimensional latent and collected into a donor-by-donor matrix. Entry
 $(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
-$d'$. The diagonal is then discarded, which is what cross-donor means here,
-and agreement is the share of the remaining neighbour relations that join two
+$d'$. The diagonal, which is the same-donor part, is discarded, and cross-donor 
+agreement is the share of the remaining neighbour relations that join two
 donors carrying the same label. Chance is the probability that two such
 relations drawn at random would share a label, $\sum_j p_j^2$ over the
 label's shares across donors, and agreement is reported as excess over it,
