@@ -546,8 +546,8 @@ are constant for a single donor, the model can get away with clumping donors
 individually and not learning labels. This collapses the latent into a donor 
 identifier instead of a tool to encode biological structure.
 
-Statistically, plain agreement rests on a per-cell floor set by how many of
-that cell's neighbours come from its own donor. Among the hundred nearest
+Statistically, plain agreement rests on a per-cell floor. That floor is set
+by how many of a cell's neighbours come from its own donor. Among the hundred nearest
 neighbours of a labelled cell, between a quarter and three-fifths do. So out 
 of the agreement a plain measurement reports, between 44\% and 71\% is the 
 free same-donor part. Plain agreement on a donor-constant label is therefore 
@@ -555,18 +555,19 @@ largely a readout of how well a model memorised the donor, which is the
 opposite of what this paper aims to measure.
 
 Instead we calculate cross-donor agreement. For each label,
-the hundred nearest neighbours of every cell carrying that label are
-identified among the cells carrying it, in the sixteen-dimensional latent,
-and a donor-by-donor matrix is assembled over them.
+the hundred nearest neighbours of every cell are found in the
+sixteen-dimensional latent and assembled into a donor-by-donor matrix. Only
+cells carrying that label take part, as cells and as neighbours alike.
 So, entry $(d, d')$ represents the number of neighbours of donor $d$ coming 
 from donor $d'$ summed over all cells. Each row therefore records where
 the neighbours of one donor's cells came from. 
 To calculate cross-donor relationships, the same-donor relations are removed 
-by discarding the diagonal (where $d$=$d'$). To compute cross-donor agreement 
-for a given label, we divide the surviving relations whose two donors carry
-the same label by the total number of surviving relations. Every discarded
-relation joined a donor to itself and so carried the same label by
-definition, which is the free agreement this measure exists to remove.
+by discarding the diagonal (where $d$=$d'$). Cross-donor agreement is then a
+fraction. The numerator counts the surviving relations that run between two
+donors with the same label. The denominator counts all of them. Every
+relation that was discarded joined a donor to itself. A label is constant
+within a donor, so each of those was an automatic match. That is the free
+agreement this measure exists to remove.
 
 Crucially, the raw cross-donor agreement score is subject to the prevalence 
 of a given label. Chance rate is the probability that two random donors 
@@ -582,46 +583,46 @@ The framework so far has allowed us to ignore same-donor neighbours and
 remove the advantage of clumping donor cells together, ignore the effects 
 of prevalent labels, and compare across labels using excess.
 However one critical issue remains. Excess measures how far above the
-chance rate a latent reached, and the chance rate is an average over every
-way these labels could have been dealt to these donors. An average says
-nothing about spread. Where few donors carry a label, a single dealing can
-place several of them in the same region of the latent by luck and produce a
-large excess with no help from the model. Excess alone cannot separate that
+chance rate a latent reached. The chance rate is an average. It is the score expected across every way
+these labels could be dealt to these donors. An average says nothing about
+spread. Where few donors carry a label, one
+dealing can put several of them in the same region of the latent by luck.
+That alone produces a large excess. Excess cannot tell such a dealing apart
 from a latent that has genuinely grouped them.
 
 
-The null is obtained by reassigning labels to donors. The matrix is held
-fixed and only the donor-to-label map is shuffled, two hundred times, each
-shuffle scored through the same expression. This asks what agreement this
-latent would produce if the same labels had been dealt to different donors,
+The null is obtained by reassigning labels to donors. The matrix is held fixed. Only the
+donor-to-label map is shuffled, two hundred times, and each shuffle is
+scored through the same expression. This asks what agreement this latent
+would produce if the same labels had been dealt to different donors. That is
 the appropriate null for a quantity constant within a donor. The reported
-$p$ is one-sided and counts the observed arrangement among the possibilities,
-$(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$, so the smallest
-attainable value is $1/201$.
+$p$ is one-sided. It counts the observed arrangement among the
+possibilities, $(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$, so
+the smallest value it can take is $1/201$.
 
-The width of that null depends on how many donors carry the label, so each
-label is read against its own. Its 95th percentile is reported with every
-value, on the same excess scale: 0.06 for cell family across 34 donors, 0.18
-for menstrual phase across 36, 0.12 for endometriosis grade across 18, and
-0.42 for surgical stage across 16. A label carried by few donors has a wide
-null, and an agreement below that null is reported as undetectable at that
-donor count.
+The width of that null depends on how many donors carry the label. Each
+label is therefore read against its own null rather than a common
+threshold. The null's 95th percentile is reported with every value, on the
+same excess scale: 0.06 for cell family across 34 donors, 0.18 for menstrual
+phase across 36, 0.12 for endometriosis grade across 18, and 0.42 for
+surgical stage across 16. A label carried by few donors has a wide null. An
+agreement that falls below it is reported as undetectable at that donor
+count.
 
 Because the labels are constant within donors, the matrix is a sufficient
-statistic: agreement and its null are arithmetic on a table of integers with
-at most one row per donor, and the neighbour search that produced it is the
-only step needing the whole corpus in memory. Any later regrouping of a label
-is recomputed from the stored matrix without re-embedding a cell.
+statistic. Agreement and its null are arithmetic on a table of integers with
+at most one row per donor. The neighbour search that produced that table is
+the only step needing the whole corpus in memory. Any later regrouping of a
+label is recomputed from the stored matrix without re-embedding a cell.
 
 The construction is a permutation test of assortativity on a fixed graph.
-The statistic is the share of edges joining same-label nodes, which is the
-enumerative mixing coefficient of \citet{newman2003mixing} computed on a
-donor graph rather than its usual node graph; significance by permuting group
-identities against an unchanged proximity structure is the procedure of
-\citet{anderson2001permanova}; and permuting at the level of the donor rather
-than the cell is what \citet{squair2021confronting} prescribe, since donors
-and not cells are the independent replicates in a multi-donor single-cell
-study.
+The statistic is the share of edges joining same-label nodes. That is the
+enumerative mixing coefficient of \citet{newman2003mixing}, computed here on
+a donor graph rather than the usual node graph. Testing it by permuting
+group identities against an unchanged proximity structure is the procedure
+of \citet{anderson2001permanova}. Permuting at the level of the donor rather
+than the cell is what \citet{squair2021confronting} prescribe. Donors, not
+cells, are the independent replicates in a multi-donor single-cell study.
 
 \subsection*{Donor and study recovery}
 \note{PURPOSE: define the two costs, so the frontier has both its axes
