@@ -77,15 +77,17 @@ placed entirely in one partition. Cells from one donor share a genotype,
 a hormonal state, a handling protocol and in most cases a single biopsy,
 so a cell-level split would place near-duplicates on both sides and
 measure the model on cells it had effectively already seen. One study
-pair deposits the same fifteen people under two sets of identifiers,
-which the split could not detect; 17{,}873 held-out cells, 4.3\% of the
+pair deposits the same fifteen people under two sets of identifiers, so
+the 269 identifiers in the corpus resolve to 254 people. The split could
+not detect that: 17{,}873 held-out cells, 4.3\% of the
 held-out set, therefore belong to a person who also appears under the
 other study's identifier.
 
 
-\todo{PRISMA figure. Its own display item, or panel (a) of a composite
-Figure 1. Nature counts items not panels, so a composite costs nothing in
-the item budget and only costs text length.}
+% PRISMA SETTLED 7 November 2026, AW: it becomes panel (d) of Figure 1,
+% replacing the spider chart, and panels (b) and (d) swap so the corpus is
+% assembled before the frontier is drawn. Nature counts items rather than
+% panels, so it costs nothing against the six-item budget.
 
 
 \subsection*{Gene vocabulary}
@@ -620,38 +622,12 @@ of \citet{anderson2001permanova}. Permuting at the level of the donor rather
 than the cell is what \citet{squair2021confronting} prescribe. Donors, not
 cells, are the independent replicates in a multi-donor single-cell study.
 
-\subsection*{Donor and study recovery}
-\note{PURPOSE: define the two costs, so the frontier has both its axes
-before it is plotted. These are the quantities a good model should fail
-at.\\
-HANDS ON: both axes exist. What does the latent's shape look like under
-them?\\
-SOURCE: Thesis 05 §Study mixing.}
-
-
-
-\subsection*{Whole-corpus embedding}
-\note{PURPOSE: licence the paper's discovery half. Once the model is
-fixed, nothing is being selected, and the metadata read below was never
-an input --- so there is nothing a held-out split protects against for
-these labels, and all 1{,}577{,}728 cells can be embedded and read
-together. Phase is the exception, governed by the head. Also the region
-procedure: every cell takes the cell family of its 25 nearest LABELLED
-neighbours searched in the sixteen dimensions, not in the UMAP, because a
-bounding box assumes each family occupies one convex patch and immune
-cells do not.\\
-SOURCE: new.}
-
-\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Everything
-measurable has been measured. What has to be declared?}}
-
 \subsection*{Optimisation}
 
 The 44 gene groups are not the same size. Real counts run from 253 to 493
 genes. Running all of them in one batched call means padding every group to
 the largest, and attention is quadratic in sequence length, so 49.0\% of the
-attention arithmetic is spent on padding. That figure is measured against
-this vocabulary rather than estimated.
+attention arithmetic is spent on padding. 
 
 The groups are therefore sorted by size and run in four buckets, each padded
 only to its own largest member. The indirect saving is the larger one.
@@ -671,18 +647,20 @@ The remaining settings are AdamW at a learning rate of $10^{-3}$, weight decay
 $10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
 Kullback--Leibler term is ramped from zero to its full value over the first
 20\% of steps. The learning rate follows a cosine schedule whose period is set
-to a twenty-epoch horizon. That horizon is a shape rather than a length: it
-fixes how long the learning rate stays high, and no arm in this project
-reaches it. What ends a run is early stopping on held-out reconstruction
-loss, with a patience of five epochs after a two-epoch warmup. A batch is
-drawn from one study by construction.
+to a twenty-epoch horizon. That horizon fixes how long the learning rate stays 
+high, and no arm in this project reaches it. What ends a run is early stopping 
+on held-out reconstruction loss, with a patience of five epochs after a 
+two-epoch warmup. A batch is drawn from one study by construction.
 
 Every arm reported here is a single run at seed 24.
+
+\medskip\noindent\textcolor{elajmuted}{$\rightarrow$ \textit{Everything
+measurable has been measured. What has to be declared?}}
+
 
 % =====================================================================
 %  REPORTING  -- budget 200. NOT YET SEEDED.
 % =====================================================================
-
 
 
 \subsection*{Use of large language models}

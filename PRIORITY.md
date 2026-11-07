@@ -66,24 +66,24 @@ needs is on disk and sourced through the manifest.
 - [ ] **Legends for Figures 1 and 5.**
       *Blocked by:* those two figures.
 
-- [ ] **Methods — *Donor and study recovery*.** 0 words.
-- [ ] **Methods — *Optimisation*.** 0 words.
+- [x] **Methods — *Donor and study recovery*.** CUT 7 Nov, AW: one-liners
+      already stated elsewhere. The study rescaling it would have defined
+      now lives in Table 1's caption.
+- [x] **Methods — *Optimisation*.** Written 7 Nov, 335 words.
 - [x] **Methods — *Use of large language models*.** Written 6 November from
       the thesis's own Appendix A, compressed to ~160 words.
-- [ ] **Methods — *Whole-corpus embedding*.** 11 words.
-- [ ] **Methods — *the severity merge*.** New. rASRM I–II and III–IV from
-      duempelmann\_2026, rASRM I–IV from marecko\_2024, both published, so the
-      merge is sourced and not assumed. Say why
-      `severity (study vocabularies)` is unused: study-prefixed levels.
-- [ ] **Methods — *the whole-corpus rule*.** One paragraph: a label the model
-      never received cannot leak and the estimator already discards same-donor
-      neighbours, so severity, stage, grade and disease are measured on all
-      1,577,728 cells while phase, study and donor recovery are held out.
-- [ ] **Methods — *Cross-donor agreement*.** 812 words, unreviewed. Needs the
-      estimator rewrite and one claim cut: the binding constraint at 16 to 60
-      donors is the width of the null, not the number of permutations.
-- [ ] **Methods — *Study selection*.** Carries a TODO. Also where the fifteen
-      dual-identifier donors go: 269 identifiers, **254 people**.
+- [x] **Methods — *Whole-corpus embedding*.** CUT 7 Nov, AW: a CVAE has a
+      latent space and we read it; the procedure is in the code.
+- [x] **Methods — *the severity merge*.** CUT 7 Nov, AW: `[4]` already
+      states the rASRM I--II / III--IV definition. Only the citation to
+      duempelmann\_2026 on that sentence is outstanding.
+- [x] **Methods — *the whole-corpus rule*.** CUT with the subsection above.
+- [x] **Methods — *Cross-donor agreement*.** Rewritten 7 Nov. The six
+      loopholes resolved, the wrong claim cut, E1 in and then out on AW's
+      edit, and t=1 found not to exist in the code.
+- [x] **Methods — *Study selection*.** PRISMA settled 7 Nov as Figure 1
+      panel (d). 254 is the donor count everywhere; 269 appears once, where
+      the deduplication is explained.
 
 - [ ] **Extend both auditors to Methods.** Results' numbers are covered;
       Methods' are not. Mostly accessions and configuration.

@@ -796,8 +796,14 @@ for _v, _why in LITERATURE:
 # and the percentage is derived against the held-out cell count.
 OVERLAP = ROOT / "Outputs/qc/donor_overlap_261022/donor_overlap.md"
 if OVERLAP.exists():
+    _ov = OVERLAP.read_text()
+    _dup = re.search(r"source_sample_id: (\d+) shared", _ov)
+    if _dup:
+        CONSTANTS_EXTRA[int(_dup.group(1))] = "samples deposited under two identifiers"
+    else:
+        fail(f"{OVERLAP.name} no longer states the shared-sample count")
     _m = re.search(r"Held-out cells belonging to a donor that also appears in "
-                   r"the other study:\s*\*\*([\d,]+)\*\*", OVERLAP.read_text())
+                   r"the other study:\s*\*\*([\d,]+)\*\*", _ov)
     if _m:
         _leak = int(_m.group(1).replace(",", ""))
         CONSTANTS_EXTRA[_leak] = "held-out cells sharing a person across the study pair"
@@ -829,8 +835,10 @@ def annotation_coverage() -> None:
         total = 0
         per_study: dict[str, int] = {}
         per_donor: dict[str, set] = {}
+        all_donors: set = set()
         for r in rd:
             total += 1
+            all_donors.add(r.get("patient_id"))
             st = r.get("study") or ""
             if st in STUDY_SHARES:
                 per_study[st] = per_study.get(st, 0) + 1
@@ -840,6 +848,12 @@ def annotation_coverage() -> None:
             outside += 1
             if any((r.get(c) or "").strip() for c in cols):
                 labelled_outside += 1
+    # 269 identifiers; 254 people once the duplicated pair is resolved.
+    CONSTANTS_EXTRA[len(all_donors)] = "donor identifiers in the corpus"
+    _d = next((k for k, v in CONSTANTS_EXTRA.items()
+               if v == "samples deposited under two identifiers"), None)
+    if _d:
+        CONSTANTS_EXTRA[len(all_donors) - _d] = "people, identifiers minus duplicates"
     for st, n_ in per_study.items():
         STUDY_CELLS[n_] = f"cells from {st}"
         STUDY_CELLS[len(per_donor[st])] = f"donors in {st}"
