@@ -531,8 +531,7 @@ stopping read reconstruction alone.
 
 \subsection*{Cross-donor agreement}
 
-In this corpus, every donor was biopsied only once. This has repercussions in
-how the model performance should be measured on this corpus. Because a donor
+In this corpus, every donor was biopsied only once. Because a donor
 contributes a single sample, that donor has exactly one menstrual phase, one
 disease status, one stage and one grade, and every cell drawn from them
 inherits those values unchanged. Each of these labels is therefore a property
@@ -542,12 +541,11 @@ varies within a single biopsy.
 The obvious way to ask whether a latent carries a label is to check whether
 cells agree with their neighbours: take each cell's nearest neighbours in the
 latent and measure how often they share its label. On this corpus that test
-cannot be trusted, and the reason is the paragraph above. If a label belongs
-to the donor, then asking whether a cell's neighbours share its label is
-asking whether they come from donors carrying that label, and a cell's own
-donor carries it by definition. Every neighbour drawn from the same donor is
-an automatic match, scored whether or not the latent encodes anything about
-the label at all.
+measures something else. If a label belongs to the donor, then asking whether
+a cell's neighbours share its label is asking whether they come from donors
+carrying that label, and a cell's own donor carries it by definition. Every
+neighbour drawn from the same donor is an automatic match, scored whether or
+not the latent encodes anything about the label at all.
 
 Plain agreement therefore rests on a floor set by how many of a cell's
 neighbours come from its own donor, and on this corpus that floor is high.
@@ -561,41 +559,46 @@ and because each is an automatic match that enrichment passes straight into
 the score: of the agreement a plain measurement reports, between 44\% and
 71\% is the free same-donor part.
 
-Worse, it is a floor the model can raise. A model that learns to recognise
-donors increases the share of its own donor among each cell's neighbours and
-improves its own score, so ranking models by plain agreement partly ranks
-them by how well they memorised the donor, the opposite of what this
-paper is measuring.
+It is also a floor the model can raise, and the size of that effect is
+measurable. Ranking the six single-key arms by plain whole-corpus agreement
+and by donor recovery gives nearly the same order for every label that is
+constant within a donor: Spearman $\rho$ $+$0.943 for disease status and
+$+$0.829 for menstrual phase. Cell family, the one label that varies within a
+donor, gives $+$0.371. Plain agreement on a donor-constant label is therefore
+largely a readout of how well a model memorised the donor, which is the
+opposite of what this paper measures.
 
 \elaj\ is measured with the same-donor neighbours removed. For each label,
 the hundred nearest neighbours of every labelled cell are found in the
 sixteen-dimensional latent and collected into a donor-by-donor matrix: entry
 $(d, d')$ counts how many neighbours of donor $d$'s cells belong to donor
-$d'$. The diagonal is then discarded (that discarding
-is what cross-donor means), and agreement is the share of the remaining neighbour relations
-that join two donors carrying the same label. Chance is the probability that
-two such relations drawn at random would share a label, $\sum_j p_j^2$ over
-the label's shares across donors, and agreement is reported as excess over
-it, $(a - c)/(1 - c)$, so labels with different numbers of levels are
-comparable.
+$d'$. The diagonal is then discarded, which is what cross-donor means here,
+and agreement is the share of the remaining neighbour relations that join two
+donors carrying the same label. Chance is the probability that two such
+relations drawn at random would share a label, $\sum_j p_j^2$ over the
+label's shares across donors, and agreement is reported as excess over it,
+$(a - c)/(1 - c)$. The share of neighbour relations that survive the discard
+is reported beside every value, since it is how much of the graph the measure
+is reading: 51\% for menstrual phase and 57\% for cell family in the arm
+reported here. Discarding the diagonal cuts disease status's correlation with
+donor recovery from $+$0.943 to $+$0.429.
 
 The null is obtained by reassigning labels to donors. Two hundred random
 permutations of the donor-to-label map are scored through the same
 expression, which asks what agreement this latent would produce if the same
 labels had been dealt to different donors, the appropriate null for a
-quantity constant within a donor. The reported $p$ is the share of
+quantity constant within a donor. The reported $p$ is one-sided, the share of
 permutations reaching the observed agreement, counted as
-$(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$.
+$(1 + \#\{\text{null} \geq \text{observed}\}) / (1 + 200)$, so the smallest
+attainable value is $1/201$.
 
-That construction puts a floor under $p$, and the floor matters for reading
-this paper's negative results. With two hundred permutations the smallest
-attainable value is $1/201$, and more restrictively the number of distinct
-permutations is set by how many donors carry the label at all. Where a label
-reaches only a handful of donors, no arrangement of them can produce a small
-$p$, so a result that is not significant means the test could not detect an
-effect of any size rather than that no effect exists. Disease stage and
-endometriosis grade reach 58 and 60 donors respectively, against 269 for
-disease status, and are reported as undetectable rather than absent.
+The width of that null depends on how many donors carry the label, so each
+label is read against its own. Its 95th percentile is reported with every
+value, on the same excess scale: 0.06 for cell family across 34 donors, 0.18
+for menstrual phase across 36, 0.12 for endometriosis grade across 18, and
+0.42 for surgical stage across 16. A label carried by few donors has a wide
+null, and an agreement below that null is reported as undetectable at that
+donor count.
 
 Because the labels are constant within donors, the matrix is a sufficient
 statistic: agreement and its null are arithmetic on a table of integers with
@@ -612,90 +615,6 @@ identities against an unchanged proximity structure is the procedure of
 than the cell is what \citet{squair2021confronting} prescribe, since donors
 and not cells are the independent replicates in a multi-donor single-cell
 study.
-
-\note{THIS SUBSECTION IS NOT REVIEWED. AW, 2 November 2026. Everything
-below was established by reading
-\texttt{endo\_model/evaluation/sufficient\_stats.py} on 2 November and is
-recorded here because the prose depends on it and because one error had
-already propagated out of it. The same material is in
-\texttt{axw1008/docs/paper/CROSS\_DONOR\_ESTIMATOR.md}.
-\\
-\\\textbf{WHAT THE TEST IS, IN ITS OWN VARIABLES.}
-\\\quad $\bullet$ \texttt{matrix} is donor $\times$ donor. Entry $(d,d')$
-counts how many of donor $d$'s cells' hundred nearest neighbours belong to
-donor $d'$.
-\\\quad $\bullet$ \texttt{np.fill\_diagonal(matrix, 0.0)} deletes the
-same-donor relations. \textbf{The off-diagonal is the cross-donor part};
-zeroing the diagonal is what makes it so. An earlier draft of this note had
-that backwards.
-\\\quad $\bullet$ \texttt{lab} holds \emph{one label per donor}, which is
-only legitimate because the label is donor-constant.
-\\\quad $\bullet$ \texttt{agree(assignment)} is
-\texttt{(m * same).sum() / total}: of every cross-donor neighbour relation,
-the share joining two donors with the same label.
-\\\quad $\bullet$ \texttt{observed = agree(lab)}.
-\\
-\\\textbf{THE HYPOTHESES.} $H_0$: the latent's donor-level geometry is
-unrelated to the label, so the observed agreement is what any assignment of
-these labels to these donors would give. $H_1$: donors sharing a label sit
-closer, so their cells fall in each other's neighbourhoods more often.
-\\
-\\\textbf{WHAT IS PERMUTED, AND WHAT IS NOT.} The embedding and the
-neighbour graph are computed once and never change. Cells do not move and
-donor membership does not change. Only \texttt{lab} is permuted: the same
-labels are dealt to the same donors in a different order. The donor is the
-exchangeable unit because the label is constant within one, so nothing below
-donor level can carry information about it; permuting cell labels would break
-that constancy and build a null so weak that everything would pass.
-\\
-\\\textbf{\texttt{chance} AND THE NULL ARE NOT THE SAME THING, AND ONLY ONE
-IS CALIBRATED.} \texttt{chance} is $\sum_j p_j^2$ over the label's shares
-\emph{across donors}, weighting every donor equally. But \texttt{observed}
-weights each donor pair by the neighbour relations between them, so large and
-tightly-clustered donors dominate it. The two are computed under different
-weightings, which makes \texttt{excess} $= (a-c)/(1-c)$ a descriptive effect
-size with an approximate correction rather than a calibrated one.
-\textbf{The permutation $p$ is the inferential statistic}, because it
-recomputes under the same weighting.
-\\
-\\\textcolor{elajcoral}{\textbf{LOOPHOLES, WORST FIRST. These belong in the
-Discussion's limitations, not here.}
-\\1. \textbf{\texttt{excess} is not comparable across labels, which was the
-stated purpose of normalising it.} The null's own 95th percentile, carried in
-the benchmark \texttt{note} column, tracks donor count: 0.06 at 34 donors
-(cell family), 0.18 at 36 (phase), 0.12 at 18 (grade), \textbf{0.42 at 16}
-(stage). Reassigning sixteen donors' labels at random reaches 0.42, so
-reading 0.1313 and 0.7346 on one scale is wrong.
-\\2. \textbf{$p$ is one-sided} --- \texttt{(null >= observed).sum()}. It can
-never establish a significantly \emph{negative} value, so grade's
-$-$0.0414 is ``not positive'', never ``negative''.
-\\3. \textbf{For a label spanning several studies the permutation is too
-permissive.} Disease status covers 269 donors across eleven studies and some
-cohorts are entirely cases, so permuting across all of them destroys the
-label--study association and the null never sees the study structure partly
-producing the observed agreement. This is visible in our own numbers: pooled
-disease status is significant at $p=0.005$, and inside each cohort, where the
-permutation is necessarily within-study, nothing is
-($p=0.3433$, $0.0697$, $1.000$). Stage and grade are unaffected because every
-labelled donor for each sits in one cohort.
-\\4. \textbf{The permutation is unstratified by donor size}, so one draw can
-hand a label to donors carrying very different adjacency mass. A size-matched
-permutation would give a tighter null.
-\\5. $k=100$ is a free choice the statistic depends on, with no sensitivity
-analysis.
-\\6. $p$ floors at $1/201$, so 0.005 means ``nothing in two hundred beat
-it'', not a measured small probability.}
-\\
-\\\textcolor{elajcoral}{\textbf{A CLAIM IN THE PROSE ABOVE IS WRONG AND
-NEEDS CUTTING ON REVIEW.} ``the number of distinct permutations is set by how
-many donors carry the label at all'' is not the binding constraint at 16 to
-60 donors, where the number of distinct assignments is astronomical. What
-binds is the \emph{width} of the null, which is loophole 1. The p-floor
-argument should be made that way instead, and it is the stronger version.}}
-
-
-
-
 
 \subsection*{Donor and study recovery}
 \note{PURPOSE: define the two costs, so the frontier has both its axes
