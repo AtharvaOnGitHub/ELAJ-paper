@@ -30,9 +30,9 @@ understanding what \elaj itself is doing. This covers analysis of the \elaj
 latent space, ablation studies, and other ways of understanding the model itself.
 
 % ---------------------------------------------------------------------
-\subsection*{[1] The \elaj frontier}
+\subsection*{The \elaj frontier}
 
-Six models were trained and each was selected on reconstruction loss
+In total, six models were trained and each was selected on reconstruction loss
 on the validation split alone. The models traced a Pareto front on a plot of 
 menstrual phase against study separation or donor recovery. 
 
@@ -52,8 +52,8 @@ were 17.1\% of phase (0.7146 to 0.5922) for 21.3\% of donor recovery (0.5277
 to 0.4154) and 12.3\% of study separation (0.8200 to 0.7190). The sign is the 
 same in all nine readings: information cost traversed the Pareto front.
 
-Raising the adversarial weight moved the front itself, and only up to a
-point. From 7 to 168 at the lower information cost (\texttt{w\_kl\_gauss} 1), donor recovery fell
+Adversarial weight was found to have an optima. From adversarial weight of
+7 to 168 at the lower information cost (\texttt{w\_kl\_gauss} 1), donor recovery fell
 11.1\% (0.5837 to 0.5188) and study separation 11.8\% (0.8636 to 0.7613)
 while phase rose 0.1\% (0.7337 to 0.7346). Both confounds were bought for 
 nothing. The same step at the higher information cost (\texttt{w\_kl\_gauss} 30) bought more 
@@ -99,7 +99,7 @@ cell family 0.9565, donor recovery 0.3975, study separation 0.6544.
 
 
 % ---------------------------------------------------------------------
-\subsection*{[2] Reading 1.58 million cells as sixteen numbers}
+\subsection*{Reading 1.58 million cells as sixteen numbers}
 
 The model was given expression, with study, platform and anatomical site as
 decoder covariates and menstrual phase through a single supervised head. Cell
@@ -136,7 +136,7 @@ held-out set would suggest.
 \note{CARRIES C1. FIGURE 4a, 4c. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
-\subsection*{[3] The menstrual cycle through \elaj}
+\subsection*{The menstrual cycle through \elaj}
 
 The decoder is conditioned on study, platform and tissue alone. Menstrual phase 
 was the only supervised label, provided to the latent through a single linear 
@@ -177,7 +177,7 @@ between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 \note{CARRIES C3 in prose, C2 through FIGURE 5 only. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
-\subsection*{[4] Surgical stage and grade}
+\subsection*{Surgical stage and grade}
 
 Endometriosis severity is recorded across studies as surgical stage or 
 endometriosis grade. It appears as rASRM I--IV in one cohort and mild against 
@@ -222,7 +222,7 @@ on the same cells: cell family reached 0.9820 and menstrual phase reached
 \note{CARRIES the staging result. FIGURE 4h, 4i. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
-\subsection*{[5] What the disease axis measures}
+\subsection*{What the disease axis measures}
 
 Endometriosis is diagnosed by surgical visualisation of ectopic lesions,
 endometrium-like tissue growing outside the uterus, and those lesions are not
@@ -246,7 +246,7 @@ cells, both reached the permutation floor of 0.005 (Fig.~4a, 4d).
 \note{CARRIES A6 and the disease row of the field table. FIGURE 4g. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
-\subsection*{[6] What the latent needs in order to work}
+\subsection*{What the latent needs in order to work}
 
 Five single-key changes were made against the reported arm (ELAJ$_{B\,hi}$), each 
 retrained from scratch and scored under the same protocol. The arms

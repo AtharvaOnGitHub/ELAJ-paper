@@ -988,25 +988,27 @@ PINNED = {
 # the digits alone would certify both against one row. Keyed on the
 # subsection as well, each occurrence is pinned to its own source.
 PINNED_AT = {
-    ("1", "7.7"): ("donor % change across the information cost", "p1_dab7_kl1"),
-    ("6", "7.7"): ("phase % change, BASE against random groups", ""),
-    ("D", "0.0"): ("scib-ilisi_knn", ""),
-    ("D", "1.0"): ("scib-clisi_knn", ""),
-    ("D", "0.04"): ("scib-kbet", ""),
+    ("frontier", "7.7"): ("donor % change across the information cost",
+                          "p1_dab7_kl1"),
+    ("needs", "7.7"): ("phase % change, BASE against random groups", ""),
+    ("discussion", "0.0"): ("scib-ilisi_knn", ""),
+    ("discussion", "1.0"): ("scib-clisi_knn", ""),
+    ("discussion", "0.04"): ("scib-kbet", ""),
     # 11.1 is two unrelated things: years to diagnosis in the Discussion,
     # and the donor-recovery change across the adversarial weight in [1].
-    ("1", "11.1"): ("donor % change across the adversarial weight", "p1_dab7_kl1"),
-    ("D", "11.1"): ("cited: bontempo2025diagnostic", ""),
-    ("D", "2.87"): ("li_2025 as a share of the corpus", ""),
-    ("D", "4.3"): ("leaked held-out cells as a share", ""),
+    ("frontier", "11.1"): ("donor % change across the adversarial weight",
+                           "p1_dab7_kl1"),
+    ("discussion", "11.1"): ("cited: bontempo2025diagnostic", ""),
+    ("discussion", "2.87"): ("li_2025 as a share of the corpus", ""),
+    ("discussion", "4.3"): ("leaked held-out cells as a share", ""),
 }
 
 def subsection_of(pos: int, marks: list[tuple[int, str]]) -> str:
-    """Which [n] subsection a character offset falls in."""
+    """The heading of the subsection a character offset falls in."""
     here = ""
-    for at, num in marks:
+    for at, name in marks:
         if at <= pos:
-            here = num
+            here = name
         else:
             break
     return here
@@ -1075,9 +1077,10 @@ tex = re.sub(r"\d+(?:st|nd|rd|th)\b", "", tex)
 # unsourced prose value, which is the gate working and the wrong target.
 # Offsets into THIS string, recorded before the numbers are stripped, so a
 # pin can name the subsection a prose value sits in.
-SUBSECTION_OFFSETS = [(m.start(), m.group(1)) for m in
-                      re.finditer(r"\\subsection\*\{\[(\w+)\]", tex)]
-tex = re.sub(r"\\subsection\*\{\[\w+\]", r"\\subsection*{", tex)
+SUBSECTION_OFFSETS = [(m.start(), re.sub(r"\\[a-zA-Z]+|[^a-z ]", "",
+                                         m.group(1).lower()).strip())
+                      for m in re.finditer(r"\\subsection\*\{([^}]*)\}", tex)]
+
 # Study identifiers are names, not measurements: marecko\_2024, lin\_2023.
 tex = re.sub(r"[A-Za-z]+\\_\d{4}", "", tex)
 tex = tex.replace("{,}", "").replace(",", "")
@@ -1110,8 +1113,10 @@ for mobj in re.finditer(r"(?<![\d.])(\d+\.\d+|\d+)(?!\d)", tex):
     if not hits:
         unaccounted.append(raw); continue
     where = subsection_of(mobj.start(), SUBSECTION_OFFSETS)
-    if (where, raw) in PINNED_AT:
-        prov = _resolve(raw, dp, PINNED_AT[(where, raw)])
+    hit = next((v for (k, r_), v in PINNED_AT.items()
+                if r_ == raw and k in where), None)
+    if hit is not None:
+        prov = _resolve(raw, dp, hit)
         if prov and not prov.startswith(("MISSING", "PIN ")):
             ok += 1
             print(f"   {raw:<8} <- PINNED in [{where}] {prov}")

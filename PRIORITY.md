@@ -24,6 +24,26 @@ Figure 2 landed.
 
 Main text 2,411 of 3,500. Build: 24 pages, zero overfull, both auditors green.
 
+## To be discussed in person, not over comments
+
+AW, 8 November 2026. Two of the supervisor's untracked edits are losses
+rather than corrections, and AW will raise them face to face rather than
+argue them in a Word thread. Both are SYNCED INTO THE TEX AS HE MADE THEM;
+these are notes on what to put back if the conversation goes that way.
+
+- [ ] **The opening line of the Introduction, cut.** "Pain is a recurring
+      date on a calendar for 190 million people worldwide
+      (`who2025endometriosis`)." It was the hook the whole Introduction was
+      built on, and it is the sentence the abstract's own opening answers
+      to. Its citation is now unused.
+- [ ] **The human-health paragraph, cut.** "A subtle but deliberate choice
+      in this study is to treat this disease as a human health problem
+      rather than a gendered disease. At a scale of hundreds of millions of
+      patients, we believe this to be necessary to bring attention to this
+      problem." It is a stated position rather than a stylistic choice, and
+      it is the one place the paper explains a convention it follows
+      throughout.
+
 ## Compute
 
 Nothing is running and nothing is blocked on compute. Every number the paper
