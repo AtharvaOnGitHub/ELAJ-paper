@@ -157,7 +157,19 @@ def main() -> None:
          r"cross-donor menstrual phase, except the ablations, where the "
          r"base arm leads because the rest are single-key changes against "
          r"it. $\lambda$ is the adversarial weight and $w_{kl}$ the "
-         r"information cost.}",
+         r"information cost. Every value is on the same held-out donors. "
+         r"\\The table is read down the biology columns and across to the "
+         r"cost ones. Four blocks: the six-arm grid that traces the "
+         r"frontier, the five single-key ablations against "
+         r"ELAJ$_{B\,hi}$, five integration and dimension-reduction "
+         r"methods, and four pretrained foundation models. Two readings "
+         r"it is meant to support. Cell family separates nine of the ten "
+         r"methods by 0.0076, so cell identity is something every "
+         r"representation recovers and none can be ranked on, while "
+         r"menstrual phase spans 0.4372 to 0.7397 across the same rows. "
+         r"And the arm with the best reconstruction in the table, the "
+         r"shuffled gene grouping at 0.3911, holds the least disease "
+         r"signal in it.}",
          r"\label{tab:field}",
          r"\begin{tabular}{l r l rrrrr rr r}",
          r"\toprule",

@@ -64,10 +64,14 @@ pathophysiologically related to endometriosis. Physiologically stable
 tissue was included to augment the control samples from other studies.
 
 The corpus was de-duplicated by donor by referencing the paper published
-for each dataset. Each donor was given a unique identifier. Tissue site
-was mapped to UBERON terms and disease state to MONDO terms, so that a 
-cell's origin is recorded in a standard form other datasets in the 
-corpus can follow. No correction was applied to the expression values 
+for each dataset. Each donor was given a unique identifier. Tissue site was mapped to terms from
+Uberon, the integrative multi-species anatomy ontology
+\citep{mungall2012uberon}, and disease state to terms from the Mondo
+Disease Ontology \citep{vasilevsky2022mondo}. Both are controlled
+vocabularies with one identifier per concept, so a site recorded as
+\texttt{endometrium} in one study and as \texttt{uterine lining} in another
+resolve to the same term. A cell's origin is therefore recorded in a
+standard form that any other dataset can follow. No correction was applied to the expression values 
 themselves.
 
 Every study identifies the sample each cell came from, so every cell can
@@ -681,6 +685,11 @@ on held-out reconstruction loss, with a patience of five epochs after a
 two-epoch warmup. A batch is drawn from one study by construction.
 
 Every arm reported here is a single run at seed 24.
+
+All training and evaluation ran on BlueBEAR, the University of Birmingham's
+high performance computing service. Each arm was given one NVIDIA A100 with
+80~GB of device memory, 16 CPU cores and 100~GB of host memory. The reported
+arm reached its selected checkpoint in 10~h~55~min of wall time.
 
 \flow{Everything
 measurable has been measured. What has to be declared?}
