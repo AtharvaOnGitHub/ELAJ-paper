@@ -42,30 +42,30 @@ latent's information cost, and the two knobs did different things.
 Raising the information cost from 1 to 30 reduced cross-donor phase agreement
 and improved donor recovery and study separation, at all three adversarial
 weights. At the
-lowest adversarial weight (\texttt{lambda\_dab} 7) it gave up 7.4\% of phase (0.7337 to 
+lowest adversarial weight ($\lambda_{\text{dab}}$ 7) it gave up 7.4\% of phase (0.7337 to 
 0.6791) for 7.7\% of donor recovery (0.5837 to 0.5389) and 0.6\% of study 
 separation (0.8636 to 0.8587). At the middle adversarial weight 
-(\texttt{lambda\_dab} 168), it gave up 17.9\% of phase (0.7346 to 0.6033) for 23.4\% 
+($\lambda_{\text{dab}}$ 168), it gave up 17.9\% of phase (0.7346 to 0.6033) for 23.4\% 
 of donor recovery (0.5188 to 0.3975) and 14.0\% of study separation (0.7613 
-to 0.6544). At the highest adversarial weight (\texttt{lambda\_dab} 336) the figures 
+to 0.6544). At the highest adversarial weight ($\lambda_{\text{dab}}$ 336) the figures 
 were 17.1\% of phase (0.7146 to 0.5922) for 21.3\% of donor recovery (0.5277 
 to 0.4154) and 12.3\% of study separation (0.8200 to 0.7190). The sign is the 
 same in all nine readings: information cost traversed the Pareto front.
 
 Adversarial weight was found to have an optima. From adversarial weight of
-7 to 168 at the lower information cost (\texttt{w\_kl\_gauss} 1), donor recovery fell
+7 to 168 at the lower information cost ($w_{\text{kl}}$ 1), donor recovery fell
 11.1\% (0.5837 to 0.5188) and study separation 11.8\% (0.8636 to 0.7613)
 while phase rose 0.1\% (0.7337 to 0.7346). Both confounds were bought for 
-nothing. The same step at the higher information cost (\texttt{w\_kl\_gauss} 30) bought more 
+nothing. The same step at the higher information cost ($w_{\text{kl}}$ 30) bought more 
 and charged for it: donor recovery fell 26.2\% (0.5389 to 0.3975) and study 
 separation 23.8\% (0.8587 to 0.6544) against 11.2\% of phase (0.6791 to 
 0.6033). Raising the weight again from 168 to 336 reversed every one of those 
-gains. At the lower information cost (\texttt{w\_kl\_gauss} 1) donor recovery rose from 0.5188 to
+gains. At the lower information cost ($w_{\text{kl}}$ 1) donor recovery rose from 0.5188 to
 0.5277 and study separation from 0.7613 to 0.8200, while phase fell from
 0.7346 to 0.7146; at the higher, donor recovery rose from 0.3975 to 0.4154
 and study separation from 0.6544 to 0.7190, while phase fell from 0.6033 to
 0.5922. So adversarial weight moved the Pareto front itself, with the best results 
-at \texttt{lambda\_dab} 168 (Fig.~2).
+at $\lambda_{\text{dab}}$ 168 (Fig.~\ref{fig:knobs}).
 
 Placed on the same axes as the field, \elaj creates the frontier. Cross-donor
 phase agreement of 0.7346 is the highest of the fifteen representations
@@ -95,7 +95,8 @@ ELAJ$_{B\,lo}$, at the same adversarial weight and the higher information
 cost, gives up cycle signal and removes more of both confounds: phase 0.6033,
 cell family 0.9565, donor recovery 0.3975, study separation 0.6544.
 
-\note{CARRIES B1 and the whole field comparison. FIGURE 2 and FIGURE 3. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES B1 and the field comparison. FIG 2, TABLE 1.
+\\Detail in RESULTS\_NOTES.md.}
 
 
 % ---------------------------------------------------------------------
@@ -116,9 +117,9 @@ on a four-way lineage label over 174{,}848 cells, and 0.8316 on a
 forty-five-way cell type over 220{,}160 cells. Measured across donors, 
 agreement on harmonised cell family was 0.9807 across 118 donors
 ($p=0.005$), the highest of any label measured here. It is clear that the 
-sixteen dimensions group cells largely by cell type (Fig.~4a). It is 
+sixteen dimensions group cells largely by cell type (Fig.~\ref{fig:endo}a). It is 
 relevant to state that cell type classification is unique to endometrial 
-cells and cells from other anatomical sites are not labelled. (Fig.~4c) 
+cells and cells from other anatomical sites are not labelled. Anatomical site (Fig.~\ref{fig:endo}c) 
 hints at what the cells from other anatomical sites could be.
 
 Donor identity is the withheld variable the model is trained to discard
@@ -133,7 +134,7 @@ identity score on the full corpus: 0.3229. The low donor identity makes
 the results on other variables more donor-blind than the number on the 
 held-out set would suggest.
 
-\note{CARRIES C1. FIGURE 4a, 4c. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES C1. FIGURE 4a, 4c (label fig:endo). Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{The menstrual cycle through \elaj}
@@ -149,7 +150,7 @@ representing 22 days between day 5 and 30, showed up in the latent space.
 Advancing through the days one at a time showed a dense mass of cells being 
 progressively arranged in the latent space. As the cycle returned to where it 
 began, so did that region, showing the cycle to be closed in the latent space 
-(Fig.~5a).
+(Fig.~\ref{fig:endo}e).
 
 Cross-donor agreement, defined in Methods, is the share of a cell's hundred
 nearest latent neighbours that carry its label, counting only the neighbours
@@ -174,7 +175,8 @@ dimensions of the \elaj latent space. This was
 calibrated against five quality-control measures with a range of correlation
 between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
 
-\note{CARRIES C3 in prose, C2 through FIGURE 5 only. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES C3 in prose, C2 through FIG 4e and the animation only.
+\\Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{Surgical stage and grade}
@@ -215,11 +217,11 @@ endometrium but the severity, even abstracted to two levels, cannot be
 interpreted from biology. We read this result against other variables measured 
 on the same cells: cell family reached 0.9820 and menstrual phase reached 
 0.7346 in ELAJ$_{B\,hi}$, with no permutation matching either of them
-($p=0.005$; Fig.~4h, 4i).
+($p=0.005$; compare Fig.~\ref{fig:endo}a,d with~\ref{fig:endo}h,i).
 
 
 % ---------------------------------------------------------------------
-\note{CARRIES the staging result. FIGURE 4h, 4i. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES the staging result. FIGURE 4a, 4d, 4h, 4i. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{What the disease axis measures}
@@ -240,10 +242,10 @@ method from which a donor was hardest to identify, at 0.5188, and the method
 with the lowest agreement on disease status.
 
 Cell family and menstrual phase, measured under the same estimator on the same
-cells, both reached the permutation floor of 0.005 (Fig.~4a, 4d).
+cells, both reached the permutation floor of 0.005 (Fig.~\ref{fig:endo}a,d).
 
 % ---------------------------------------------------------------------
-\note{CARRIES A6 and the disease row of the field table. FIGURE 4g. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES A6 and the disease row of Table 1. FIGURE 4g is UNCITED in prose. Detail in RESULTS\_NOTES.md.}
 
 % ---------------------------------------------------------------------
 \subsection*{What the latent needs in order to work}
@@ -282,7 +284,7 @@ less well and separated studies
 0.1021 less, and at the last epoch both arms ran those gaps were 0.0327 
 and 0.0010. The head does more than return phase to the latent. It has a 
 regularising effect on the model which improves biological signal retention 
-in general (Fig.~5).
+in general (Table~\ref{tab:field}).
 
 Disabling the elastic cell similarity head improved every biological axis
 and worsened every cost axis. Disease status rose 8.1\% while cell family,
@@ -313,4 +315,4 @@ menstrual phase and disease status cleared the permutation floor
 ($p=0.005$), merged severity cleared its null in none of them ($p=0.149$ to
 $0.468$), and endometriosis grade was negative in all six.
 
-\note{CARRIES D1--D6. FIGURE 5. Detail in RESULTS\_NOTES.md.}
+\note{CARRIES D1--D6. TABLE 1. Detail in RESULTS\_NOTES.md.}

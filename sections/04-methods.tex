@@ -120,10 +120,6 @@ This has added benefits apparent in the encoder later. Restricted to this
 vocabulary, the proportion of genes a pair of studies holds in common 
 rises from 64–96\% to 87–98\%.
 
-\flow{The corpus is
-one object with a chosen vocabulary. How does a cell's counts over that
-vocabulary become something a transformer can read?}
-
 % =====================================================================
 %  INPUT REPRESENTATION  -- budget 500. NOT YET SEEDED.
 % =====================================================================
@@ -156,8 +152,8 @@ for gene expression. A gene token is therefore computed as:
 \label{eq:token}
 \end{equation}
 
-By using the gene identity vector in projecting gene expression values
-we are able to avoid a trivial low-dimensional projection. The directions
+By using the gene identity vector in projecting gene expression values,
+equation~(\ref{eq:token}) avoids a trivial low-dimensional projection. The directions
 of each gene expression value naturally differ because the gene identity
 embedding is unique per gene. A trivial projection would collapse a
 cell's entire expression profile onto a single line. Conversely, a 
@@ -233,10 +229,6 @@ what each block contains is critical to expressing all genes. That is why
 the pathway grouping is relevant. Without that, we would be restricting the 
 gene space to block diagonal and getting nothing in return. This is tested 
 through an ablation study.
-
-
-\flow{A cell is now
-44 groups of tokens. What reads a group, and what does it hand on?}
 
 % =====================================================================
 %  ENCODER  -- budget 450. Needs MORE than the thesis has: the funnel,
@@ -330,11 +322,6 @@ The merge projects back to width 64 rather than widening the output.
 A cell therefore leaves the encoder as a single vector of width 64,
 narrowed from 15{,}496 gene tokens through 396 group summaries.
 
-
-\flow{A cell is one
-vector of width 64. What does the model keep when it is forced to describe
-that cell in sixteen numbers?}
-
 % =====================================================================
 %  THE LATENT  -- budget 150.
 % =====================================================================
@@ -382,11 +369,6 @@ myometrium in this corpus, so for those 49{,}606 cells the study
 embedding is also a disease indicator. Claims about adenomyosis are 
 therefore selectively made.
 
-
-\flow{The decoder
-knows where the cell came from. Now it has to produce 15{,}496 numbers from
-sixteen.}
-
 \subsection*{Reconstruction head}
 
 The decoder of \elaj consists of 4 heads. The first, and the model’s 
@@ -410,11 +392,12 @@ similar identity embeddings without being confused for one another.
 The cell context is read into two things: a 64-dimensional vector that 
 scores against the gene query, and a scalar that scales the resulting 
 profile. A gene's predicted log-expression is then given as:
-\begin{equation*}
+\begin{equation}
 \log \mu_{ig} \;=\; \frac{(W_k c_i) \cdot q_g}{\sqrt{64}}
-\;\big(\mathbf{w}^\top W_v c_i\big) \;+\; b ,
-\end{equation*}
-where $q_g$ is gene $g$'s query, $c_i$ is cell $i$'s context, and $W_k$,
+\;\big(\mathbf{w}^\top W_v c_i\big) \;+\; b .
+\label{eq:decoder}
+\end{equation}
+In equation~(\ref{eq:decoder}), $q_g$ is gene $g$'s query, $c_i$ is cell $i$'s context, and $W_k$,
 $W_v$, $\mathbf{w}$, and $b$ are learned. $(\mathbf{w}^\top W_v c_i)$ is a
 scalar value. Since there is no per-gene value vector of the kind a regular
 attention layer would have, this is a bilinear scoring layer, closest in
@@ -440,10 +423,6 @@ reconstruction figure in this paper is in nats per gene. Genes hidden
 from the encoder during training are still demanded of the decoder, 
 which makes this masked autoencoding.
 
-
-\flow{A reconstruction
-exists. What stops it being produced WITHOUT the latent?}
-
 \subsection*{Adversarial study removal head}
 
 The second head of the decoder is an adversarial network designed to 
@@ -468,10 +447,6 @@ mode of a weaker discriminator is described in results. \elaj uses a
 discriminator with three linear layers of width 256, with a leaky rectifier, no
 dropout, and layer normalisation after each layer.
 
-
-\flow{One term pushes
-structure OUT of the latent. The next two decide what stays in.}
-
 \subsection*{Elastic cell similarity head}
 
 The third head of the decoder is a selective pressure head adapted from 
@@ -491,10 +466,6 @@ type with a low cosine because of batch effects would be driven further
 apart instead of closer. That puts unnecessary pressure on the adversarial 
 head. Confined to one study the term can sharpen within-study structure, 
 which helps gather biologically similar cells together.
-
-
-\flow{Both terms so
-far shape the latent without being told anything. One term is told.}
 
 \subsection*{Menstrual-phase head}
 
@@ -527,25 +498,22 @@ Menstrual phase is the only label the model is given. Cell type, disease
 status, stage and grade have no head in any configuration reported here, 
 so every result on those is unsupervised.
 
-
-\flow{Five terms
-exist. What does the sum look like?}
-
 \subsection*{Composite objective}
 
 The four heads are trained together through one loss value. 
 Reconstruction acts over all genes with weight 1 while every other 
 term is weighted against it as:
-\begin{equation*}
+\begin{equation}
 \mathcal{L} \;=\; \mathcal{L}_{\text{nb}}
 \;+\; \frac{1}{G}\Big[\,
 \beta(t)\, w_{\text{kl}}\, \mathcal{L}_{\text{kl}}
 \;+\; w_{\text{ecs}}\, \mathcal{L}_{\text{ecs}}
 \;+\; w_{\text{dab}}\, \mathcal{L}_{\text{dab}}
 \;+\; w_{\text{cls}}\, \mathcal{L}_{\text{cls}}
-\,\Big] ,
-\end{equation*}
-with $w_{\text{kl}}$ 1, $w_{\text{ecs}}$ 50, $w_{\text{dab}}$ 0.5 and
+\,\Big] .
+\label{eq:objective}
+\end{equation}
+In equation~(\ref{eq:objective}), $w_{\text{kl}}$ is 1, $w_{\text{ecs}}$ 50, $w_{\text{dab}}$ 0.5 and
 $w_{\text{cls}}$ 40. Reconstruction is a mean over genes while the four
 bracketed terms are per-cell quantities, so each is divided by the number of 
 genes that batch's study measured ($G$).
@@ -558,9 +526,8 @@ reconstruction is established the latent holds nothing worth paying for and
 a full price collapses it first. $w_{\text{kl}}$ is the second of the
 paper's two knobs: at a fixed adversarial strength it moves the model along
 the frontier rather than displacing the frontier itself.
-information cost and is described next.
 
-$\lambda_{\text{dab}}$ is absent from this sum, which is deliberate. It
+$\lambda_{\text{dab}}$ is absent from equation~(\ref{eq:objective}), which is deliberate. It
 scales the gradient as it is reversed on the way to the encoder, so it
 governs how much of the adversarial loss the latent feels while leaving the
 discriminator's own training untouched. That is the knob which traces the
@@ -660,6 +627,38 @@ of \citet{anderson2001permanova}. Permuting at the level of the donor rather
 than the cell is what \citet{squair2021confronting} prescribe. Donors, not
 cells, are the independent replicates in a multi-donor single-cell study.
 
+\subsection*{Comparison methods}
+
+Nine representations were computed on this corpus and scored under the
+estimator above. Five are integration and dimension-reduction methods:
+principal components as implemented in Scanpy \citep{wolf2018scanpy}, scVI
+\citep{lopez2018scvi}, scANVI \citep{xu2021scanvi}, Harmony
+\citep{korsunsky2019harmony} and Scanorama \citep{hie2019scanorama}. Four are
+pretrained single-cell foundation models: scGPT \citep{cui2024scgpt},
+Geneformer \citep{theodoris2023geneformer}, SCimilarity
+\citep{heimberg2025scimilarity} and scFoundation \citep{hao2024scfoundation}.
+Each was run at its own published default width, which is 16 dimensions for
+principal components, scVI and scANVI, 50 for Harmony, 100 for Scanorama, and
+between 256 and 3{,}072 for the foundation models.
+
+Every comparison was given the 30{,}962 genes shared across the corpus rather
+than the 15{,}496 this model selects. Gene selection is part of the
+architecture being evaluated, so handing the selection to a comparison would
+make it part of the comparison instead.
+
+Principal components, scVI and scANVI were fitted on the training donors and
+applied unchanged to held-out ones. Harmony and Scanorama have no
+out-of-sample projection, so each was fitted on the cells it was scored on,
+and Table~\ref{tab:field} marks both. scANVI was given harmonised cell family,
+the label its semi-supervised objective requires.
+
+The four foundation models were used zero-shot, through their published
+checkpoints and their own gene vocabularies, with no fine-tuning. Zero-shot
+transfer is what a pretrained representation offers a corpus it has not seen,
+and it is the setting in which these models have been evaluated directly
+\citep{kedzierska2025zeroshot}. SCimilarity is pretrained with supervision on
+cell type, so cell family is not a withheld label for it.
+
 \subsection*{Optimisation}
 
 The 44 gene groups are not the same size. Real counts run from 253 to 493
@@ -696,10 +695,6 @@ All training and evaluation ran on BlueBEAR, the University of Birmingham's
 high performance computing service. Each arm was given one NVIDIA A100 with
 80~GB of device memory, 16 CPU cores and 100~GB of host memory. The reported
 arm reached its selected checkpoint in 10~h~55~min of wall time.
-
-\flow{Everything
-measurable has been measured. What has to be declared?}
-
 
 % =====================================================================
 %  REPORTING  -- budget 200. NOT YET SEEDED.

@@ -102,5 +102,8 @@
 % Navigation between Methods subsections. Scaffolding for us, noise for a
 % reader, and it used to survive \draftmodetrue because it was written
 % as raw \textcolor rather than as a macro.
+% DEAD since 9 November 2026: all nine \flow{} transitions were cut from
+% Methods under the register review. Macro kept so the nine lines can be
+% restored from git without touching the preamble.
 \newcommand{\flow}[1]{\ifdraftmode\medskip\noindent%
   {\color{elajmuted}$\rightarrow$ \textit{#1}}\fi}
