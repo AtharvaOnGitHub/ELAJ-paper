@@ -69,3 +69,29 @@ Up to now the register was set by AW's own voice and by Springer Nature's
 changes is the vocabulary and sentence construction: the audience is an NMI
 reader who knows what a VAE, a batch effect and a kNN graph are, and does not
 need any of them explained in plain words.
+
+---
+
+## Rulings, 9 November
+
+**Results interprets.** AW's call. The settled "flat, no interpretation" rule
+is reversed. Each subsection states its numbers and then carries one precise
+line of reading; the argument stays in the Discussion. Recorded in
+`CONTINUITY.md`, where the old rule is marked reversed rather than deleted.
+
+**The `\flow{}` transitions in Methods are cut.** All eight. The macro in
+`preamble.tex` goes dead with them.
+
+**Spelling stays British** unless overturned. NMI accepts either if
+consistent; IBDex is American.
+
+## The sequence AW set, 9 November
+
+1. **Set up how this is going to work.** AW is specifying this. Nothing starts
+   before it.
+2. **Cement scGPT and IBDex** as the register reference.
+3. **Populate the priority list** properly, after 1 and 2. The list rebuilt on
+   9 November is provisional until then.
+4. **Then tackle items one at a time.**
+
+Do not run ahead of this order.

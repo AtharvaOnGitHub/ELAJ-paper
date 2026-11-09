@@ -107,7 +107,7 @@ These are different and I have got them wrong in both directions.
 | section | register |
 |---|---|
 | Introduction | argued, with the delay material carrying real weight |
-| **Results** | **flat. State what was done and what came out. No interpretation.** Springer Nature: *"simply state what you found, but do not interpret the results or discuss their implications."* |
+| **Results** | **REVERSED 9 November, see below.** Was: flat, state what was done and what came out, no interpretation. Now: state it, then use it. |
 | Discussion | where every argument I keep smuggling into Results belongs |
 | Methods | precise, no hedging, no pre-empting |
 
@@ -474,6 +474,29 @@ citing `a1_randgroups` as the arm whose held-out loss rose. It falls
 throughout, 0.4062 to 0.3911. The arm that rises is `a1_nophase`. AW had
 the principle right and the arm swapped, and I had the arm right and kept
 arguing past the point he had conceded.
+
+## Two rulings from the register review, 9 November
+
+**1. Results now interprets. This reverses a settled rule.** The old entry
+read *"flat. State what was done and what came out. No interpretation"*, on
+Springer Nature's *"simply state what you found, but do not interpret the
+results or discuss their implications."* The supervisor's review says
+*"Don't leave results or figures to interpretation. Use them and discuss them
+well"*, and his own IBDex Results interprets freely, up to and including a
+sentence on why a negative result mattered. AW ruled the newer instruction
+wins.
+
+**What that means in practice, and the line not to cross:** each Results
+subsection states its numbers flat and then carries **one precise line of
+reading**. The argument still belongs to the Discussion. This is the same
+standard as the Figure 3 legend: the interpretation comes from the numbers the
+reader has just been shown, not from numbers withheld.
+
+**2. The `\flow{}` transitions in Methods are cut.** Eight one-line
+rhetorical questions bridging subsections. Hit by two new rules at once, no
+one or two sentence paragraphs and no lay-reader devices, and IBDex has
+nothing like them. The `\flow{}` macro in `preamble.tex` becomes dead once
+they are gone.
 
 ## Settled 6 to 9 November. Do not reopen.
 
