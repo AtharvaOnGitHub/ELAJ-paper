@@ -50,8 +50,22 @@ s = re.sub(r"\\newcommand\{\\elaj\}\{\{\\fontfamily\{comfortaa\}%.*?\\xspace\}",
            r"\\newcommand{\\elaj}{ELAJ\\xspace}", s, flags=re.S)
 p.write_text(s)
 EOF
+# Citation style. Pandoc's --citeproc default is Chicago author-date, which is
+# why the supervisor's Word copy read "( Bontempo and Schiff 2025)" while the
+# PDF was numbered. NMI wants numbered references, so the DOCX needs a numeric
+# CSL. Drop the official Nature style at assets/nature.csl and it is used
+# automatically; without it the build still runs and says so loudly.
+CSL_ARG=""
+if [ -f assets/nature.csl ]; then
+    CSL_ARG="--csl=assets/nature.csl"
+    echo "citations: numbered, assets/nature.csl"
+else
+    echo "WARNING: assets/nature.csl missing, citations will be author-date."
+    echo "         Get it from https://www.zotero.org/styles/nature"
+fi
+
 $PANDOC main.tex -o ELAJ_draft1.docx \
     --reference-doc=assets/reference.docx \
-    --bibliography=references.bib --citeproc --resource-path=.
+    --bibliography=references.bib --citeproc $CSL_ARG --resource-path=.
 
 ls -la ELAJ_draft1.pdf ELAJ_draft1.docx
