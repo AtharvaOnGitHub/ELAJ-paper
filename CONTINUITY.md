@@ -401,7 +401,11 @@ other than that file."*
 3. I sync his edits into the `.tex` so the two do not drift.
 4. **I hand AW each change as three lines: location, what it is, and the
    exact replacement text.** He applies them in Word himself.
-5. **I do NOT generate a `.docx` each time.** He asked for that explicitly.
+5. ~~**I do NOT generate a `.docx` each time.**~~ **OVERTURNED 9 November.**
+   Every change now follows: edit the `.tex`, **build the Word file**, then
+   hand AW what to add or replace in the guide's OneDrive copy. The register
+   review makes the changes large enough that he wants the converted document
+   in hand each time.
 
 Reading the comments: `word/comments.xml` for the text,
 `word/document.xml` for what each is anchored to via `commentRangeStart`

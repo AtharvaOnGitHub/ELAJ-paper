@@ -38,9 +38,36 @@ only a register sample. It is how he expects this argument to be told.
 
 ---
 
+## Decisions taken, 9 November
+
+Standing until AW overturns them. `REVIEW_FEEDBACK.md` is the contract for the
+feedback itself; this is the running record of what we have settled against it.
+
+- **Results interprets.** The settled "flat, no interpretation" rule is
+  reversed. Each subsection states its numbers and then carries one precise
+  line of reading. The argument still belongs to the Discussion.
+- **The eight `\flow{}` transitions in Methods are cut**, and the `\flow{}`
+  macro in `preamble.tex` goes dead with them.
+- **British English, confirmed.** IBDex is American; we do not follow it there.
+- **The register references live in `Atharva Papers/_txt/`**, extracted to
+  text with a README recording what each is for. **IBDex is the language
+  directive, not the format directive**, because it is submitted to
+  Gastroenterology rather than a Nature journal. **scGPT fills the format
+  gap.** Images are not in the extracted text; reading a figure is a separate
+  task against the PDF.
+- **Every change follows one sequence**, AW's, because the guide's OneDrive
+  Word file is the authoritative document:
+  1. make the change in the `.tex`
+  2. build the corresponding Word file
+  3. hand AW what to add or replace in the guide's file, and he applies it
+  **This overturns the 8 November rule not to generate a `.docx` each time.**
+- **Work order.** Low-hanging fruit first, meaning clear misses that need no
+  judgement. Then the story, which then guides the rest of the changes and the
+  Supplementary section.
+
 ## Tier 0. Decisions needed before rewriting
 
-- [ ] **Does Results interpret?** `CONTINUITY.md` records as settled that
+- [x] **Does Results interpret?** RESOLVED: it does. `CONTINUITY.md` records as settled that
       Results is *"flat. State what was done and what came out. No
       interpretation"*, on Springer Nature's own wording. The new feedback
       says *"Don't leave results or figures to interpretation. Use them and
@@ -48,12 +75,12 @@ only a register sample. It is how he expects this argument to be told.
       (*"This negative clustering result was consequential, so the atlas was
       treated as a continuous molecular reference"*). The newer instruction
       should win, but it reverses a settled rule and AW has to say so.
-- [ ] **Do the `\flow{}` transitions in Methods survive?** Eight one-line
+- [x] **Do the `\flow{}` transitions in Methods survive?** RESOLVED: cut. Eight one-line
       rhetorical questions bridging subsections (*"A reconstruction exists.
       What stops it being produced WITHOUT the latent?"*). They are AW's and
       they work, but they are one-sentence paragraphs and they are the single
       most lay-reader device in the paper. Both new rules point at them.
-- [ ] **British or American spelling?** Ours is British throughout
+- [x] **British or American spelling?** RESOLVED: British. Ours is British throughout
       (normalisation, labelled). IBDex is American (normalization, behavior,
       analyzed). NMI accepts either if consistent. A switch is mechanical but
       it touches every section.
