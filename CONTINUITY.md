@@ -387,55 +387,150 @@ does not** (0.0744, p=0.129 at 57 donors). The model can say whether a person
 has endometriosis and cannot say how severe a surgeon judged it. AW: that is
 the win for the patient with a millimetre lesion whose doctor found nothing.
 
-## Live, as of 5 November
+## The supervisor is in the loop now, and his file is the paper
 
-**Eight of ten methods were always comparable** and I spent three days
-believing otherwise. The corpus is bit-identical across the reported arm and
-all four `fm_*` runs: 416,256 cells, 176,803 / 224,211 / 108,288 labelled.
-Only harmony and scanorama needed re-scoring, and that landed on 4 November.
+**From 8 November the authoritative document is a Word file on his
+SharePoint, not our `.tex`.** Animesh Acharjee made his own version, edited
+it untracked, and commented on it. AW: *"he's not going to work on anything
+other than that file."*
 
-**Running:** three CPU jobs for full-split study mixing on pca, harmony and
-scanorama, with `--dump-latent` so it never needs refitting; four GPU dumps
-for the frontier arms. `dump_cells.sh` had never been executed and failed on
-first use — a wrapper that has never run is not a wrapper.
+**The workflow, and it is not the obvious one:**
 
-**The audit was unsound and is now two independent implementations.**
-`audit_numbers.py` had been choosing each baseline's row by whichever file a
-glob reached first. `verify_numbers.py` is a second implementation, stdlib
-only, pinning every rounded number to a named row, and `build.sh` runs both
-so a PDF cannot be built with an unsourced number.
+1. AW sends the latest `.docx`.
+2. I read the comments and diff his text against ours.
+3. I sync his edits into the `.tex` so the two do not drift.
+4. **I hand AW each change as three lines: location, what it is, and the
+   exact replacement text.** He applies them in Word himself.
+5. **I do NOT generate a `.docx` each time.** He asked for that explicitly.
 
-**Chance was being subtracted twice.** Cross-donor values are already
-`(agreement − chance)/(1 − chance)`. The phase split is **65.5% architecture,
-34.5% head**, not the 69.5% head it was. The claim inverts in our favour.
+Reading the comments: `word/comments.xml` for the text,
+`word/document.xml` for what each is anchored to via `commentRangeStart`
+and `commentRangeEnd`. Tracked changes were off, so his edits only show in
+a paragraph-level diff of the two documents.
 
-**The threshold sweep.** Cross-donor agreement depends on how donor-mixed a
-cell's neighbourhood is — 0.8728 for cells with 1–10 cross-donor
-neighbours, 0.4246 for 76–100. That gradient is larger than the gaps we
-report. The plan is to sweep the threshold and report the curve, with
-coverage beside every scalar. AW's framing, which is right: coverage is a
-separate axis, like mean and variance, not something to fold into one
-number.
+**Comments he has already replied to are his to clear.** AW's rule. As of
+9 November that is `[132]` the ELAJ frontier, `[467]` single-nucleus
+studies, and `[507]` define "corpus".
 
-**Next: rewrite Results `[4]`.** AW's brief: it has no story, reads as a
-number dump, and the per-study paragraph is not needed. The story is there —
-donor-constant disease labels are recoverable only through donor identity,
-shown once across ten methods and once across our own splits.
+**Two of his cuts are losses and AW will raise them in person**, not in a
+comment thread. Both are recorded verbatim in `PRIORITY.md`: the "pain is a
+recurring date on a calendar" opening, and the paragraph stating that this
+is treated as a human health problem rather than a gendered disease.
 
-**Results `[2]` is gone**, merged into `[1]`. Its six suspended figures and
-the audit's verdict on each are in `[1]`'s note.
+## Writing: state the case, then the caveat. Never both in one sentence.
 
-**The ablations and the whole-corpus geometry are writable now.** D1–D6 and
-C1–C6 cross no method boundary, so the unified run does not touch them, and
-`audit/NUMBERS.md` re-derives all of them from the files. AW's words:
-*"the ablations are non-questionables… that means we could write the
-ablation and model-understanding parts of the results. Good to keep in mind
-as the immediate low hanging fruit."* That is subsections `[4]` and `[5]`.
+**The rule AW spent three rounds teaching me on 7 November**, and it is the
+most useful writing instruction in the project after "show the numbers":
 
-**Open question nobody has answered:** where E3 goes — the scIB batch
-metrics being degenerate on this corpus.
+> "Your sentences are long and winding because of the caveats and hedges
+> you keep putting into them. State the full case first then add the
+> hedges... The qualifier breaks up the reader's attention and by the time
+> the reader realises what is meant, they have already lost the train of
+> thought."
 
----
+Worked examples from the cross-donor rewrite:
+
+| wrong | right |
+|---|---|
+| "the hundred nearest neighbours of every cell carrying that label are identified among the cells carrying it, in the sixteen-dimensional latent" | "the hundred nearest neighbours of every cell are found in the sixteen-dimensional latent. Only cells carrying that label take part." |
+| "we divide the surviving relations whose two donors carry the same label by the total" | "The numerator counts the surviving relations that run between two donors with the same label. The denominator counts all of them." |
+
+**And the ordering rule, from the same day: objective, then mechanism, then
+caveat.** A passage that opens on "the chance rate is an average" starts in
+the middle. Say what we need to know first.
+
+**His other register notes.** Name the object before using it ("We refer to
+this as plain agreement"). Signpost the kind of claim ("Functionally,"
+"Statistically,"). State a failure as a mechanism rather than an
+observation. Measured across the cross-donor subsection: mean sentence
+length 16.3 to 15.2 words, longest 75 to 40.
+
+## Methods register, in his words
+
+> "Methods is about stating what we did and why we did it without hedging,
+> without preempting accusations, without giving excuses. There is a good
+> reason for all things in this project, our job is to state them for the
+> reviewer to read. Our job is not to preempt the reviewer to object our
+> work."
+
+That ruling deleted six "loopholes" from *Cross-donor agreement*. Three
+were pre-emption and went; two were facts about the estimator and are now
+stated as facts; one already lived in the Discussion.
+
+## Three times I asserted something wrong this stretch
+
+**1. I claimed the DOCX was dropping every inline equation.** It was not.
+Word stores maths as OMML objects rather than as `w:t` text runs, so my
+extraction missed 1,608 of them. I raised it as a serious bug before
+checking. **Count the OMML nodes before claiming maths is lost.**
+
+**2. I read a restrictive clause as a universal claim.** AW wrote
+"foundation models over 50 times its size" and I softened it, because
+Geneformer is 10 M. The clause names a subset, scFoundation is 100 M, and
+we beat it. His wording was right and mine weakened a true claim.
+
+**3. I argued the wrong arm for two rounds.** On reconstruction loss I kept
+citing `a1_randgroups` as the arm whose held-out loss rose. It falls
+throughout, 0.4062 to 0.3911. The arm that rises is `a1_nophase`. AW had
+the principle right and the arm swapped, and I had the arm right and kept
+arguing past the point he had conceded.
+
+## Settled 6 to 9 November. Do not reopen.
+
+- **Table 1 replaces Figure 5.** Generated by `figures/scripts/table1.py`
+  from the auditors' own sources, 21 rows in four blocks, each sorted by
+  cross-donor phase descending. Regenerate after any re-score.
+- **Figure 1 is six panels**, from AW's sketch: architecture across the top,
+  PRISMA down the left as **b**, two frontier scatters, two UMAPs. The
+  spider chart is gone. He will supply his own flowcharts for **a** and **b**.
+- **The title is the thesis's**: *ELAJ: Endometriosis Latent-space Analysis
+  through Joint-study modelling*.
+- **254 is the donor count everywhere.** 269 appears once, in *Data
+  collection*, where the fifteen duplicated samples are explained.
+- **`t=1` does not exist in the code.** `CONTINUITY` recorded it as settled
+  and `sufficient_stats.py` has no per-cell threshold. What it reports is
+  `kept_fraction`, the share of neighbour relations surviving the diagonal
+  discard: 51% for phase, 57% for cell family.
+- **E3 has a home**: the Discussion, paragraph 4. I proposed Methods and AW
+  overruled it, correctly, because it is a finding about the field's
+  instrument rather than a justification for ours.
+- **Donor and study recovery, Whole-corpus embedding and the severity merge
+  are cut as Methods subsections.** One-liners already stated elsewhere.
+  The study rescaling the first would have defined now lives in Table 1's
+  caption.
+
+## The audit, as it stands
+
+Both scripts now read **Results and the Discussion**. Three capabilities
+added this stretch, each because something slipped through:
+
+- **`LITERATURE`**: a cited value has no file behind it, and "11.1 years to
+  diagnosis" was being certified against an 11.1% change in donor recovery.
+- **Subsection-aware pins**, keyed on **heading text** rather than on the
+  `[n]` numbers, because the supervisor stripped those numbers and the pins
+  stopped resolving.
+- **Two parser bugs fixed**: `%.*$` was eating the rest of any line
+  containing an escaped `\%`, so every number after a percentage had never
+  been checked (34.5 among them); and the scanner rejected any number
+  followed by a full stop. Fixing both took the audit from 194 accounted
+  values to 238.
+
+**`make_draft.sh`** builds the clean PDF and DOCX and puts everything back:
+draft mode, the downsampled figures, the preamble. The DOCX gets a plain
+`\elaj` and Calibri from `assets/reference.docx`.
+
+## Where the paper is, 9 November
+
+| section | words | state |
+|---|---:|---|
+| Abstract | 160 | written from scratch 7 Nov |
+| Introduction | 594 | ¶6 written; two of AW's paragraphs cut by the supervisor |
+| Results | 2,616 | **done**, six subsections |
+| Discussion | 1,249 | **done**, eight paragraphs |
+| Methods | 5,745 | **done**, zero notes |
+
+Figures 1 to 4 and Table 1 all built and wired. 29 pages, zero overfull,
+both auditors green. Nine of the supervisor's nineteen comments cleared.
 
 ## Two things about tone
 

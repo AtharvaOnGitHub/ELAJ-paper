@@ -1,161 +1,120 @@
 # Priority list
 
 **The goal: ELAJ at an NMI reviewer's desk, in the strongest honest shape.**
+Rebuilt 9 November 2026. A line with no *blocked by* can be done now.
 
-One list, in the order to work it. A line with no *blocked by* can be done
-right now. Rebuilt 6 November, after Results `[1]`, `[2]`, `[4]`, `[5]` and
-Figure 2 landed.
+**The paper is written.** Abstract, Introduction, Results, Discussion and
+Methods are all drafted, Figures 1 to 4 and Table 1 are built and wired, and
+29 pages build with zero overfull and both auditors green. What remains is
+the supervisor's comments, two display items, and the externals.
 
-## Where the paper stands
+## Where it stands
 
-| section | prose words | state |
+| section | words | state |
 |---|---:|---|
-| Abstract | 151 | drafted, **pinned** on the referenced-or-not question |
-| Introduction | 476 | ¶4–6 unfinished |
-| Results `[1]` the frontier | ~380 | **done** |
-| Results `[2]` sixteen numbers | ~190 | **done** |
-| Results `[3]` the cycle | ~326 | with AW |
-| Results `[4]` stage and grade | ~430 | **done** |
-| Results `[5]` the disease axis | ~160 | **done** |
-| Results `[6]` what the latent needs | **0** | the last one |
-| Discussion | 1,285 | **done**, 8 paragraphs |
-| Methods | 4,714 | **five subsections empty** |
-| Legends | 733 | Figures 2, 3, 4 written; 1 and 5 not |
+| Abstract | 160 | written from scratch 7 Nov |
+| Introduction | 594 | ¶6 written; two paragraphs cut by the supervisor |
+| Results | 2,616 | **done** |
+| Discussion | 1,249 | **done** |
+| Methods | 5,745 | **done**, zero notes |
+| Figures 1--4, Table 1 | | built, wired, legends written |
 
-Main text 2,411 of 3,500. Build: 24 pages, zero overfull, both auditors green.
+---
+
+## The supervisor's comments
+
+His Word file is authoritative. Hand AW each change as **location / what it
+is / exact text**; he applies them in Word. Do not generate a `.docx`.
+
+**Cleared, 9 of 19.** `[1330]` table legend · `[1077]` BlueBEAR to Methods ·
+`[520]` UBERON and MONDO · `[479]` and `[490]` archive references · `[1046]`
+accession citations · `[471]` the six anatomical sites · `[3]` affiliation ·
+plus his own untracked edits synced into the `.tex`.
+
+**His to clear first** --- AW has replied and is waiting on him:
+`[132]` is the ELAJ frontier "characteristics"? · `[467]` what is a
+single-nucleus study · `[507]` define "corpus".
+
+- [ ] **`[65]` and `[83]`: the Introduction needs rewriting.** The larger of
+      the two. *"This entire section need re written. What other people have
+      done in single cell aspects."* He wants a proper related-work
+      treatment of single-cell endometriosis work, which the paper currently
+      compresses into one sentence of ¶4. `INTRODUCTION_STRUCTURE.md` ¶4 has
+      the plan and `Thesis/literature-evidence.md` has the evidence keyed.
+- [ ] **`[97]`: rephrase** the "questions that make a pooled corpus worth
+      assembling" paragraph.
+- [ ] **`[42]`: avoid the abbreviation in the abstract.** Anchored on
+      `, ELAJ,`. Either expand on first use or drop the name from the
+      abstract.
+- [ ] **`[82]`: trials or studies?** "While some clinical trials are still
+      ongoing" --- check which it is before answering.
+- [ ] **`[503]` and `[511]`:** "A candidate dataset --- record or query?" and
+      "The last constraint --- what was the constraint, and which one is
+      last?" Both in *Data collection*.
 
 ## To be discussed in person, not over comments
 
-AW, 8 November 2026. Two of the supervisor's untracked edits are losses
-rather than corrections, and AW will raise them face to face rather than
-argue them in a Word thread. Both are SYNCED INTO THE TEX AS HE MADE THEM;
-these are notes on what to put back if the conversation goes that way.
+AW's call, 8 November. Both are SYNCED INTO THE TEX AS HE MADE THEM; these
+are the exact words to put back if the conversation goes that way.
 
 - [ ] **The opening line of the Introduction, cut.** "Pain is a recurring
       date on a calendar for 190 million people worldwide
-      (`who2025endometriosis`)." It was the hook the whole Introduction was
-      built on, and it is the sentence the abstract's own opening answers
-      to. Its citation is now unused.
+      (`who2025endometriosis`)." It was the hook the Introduction was built
+      on and the sentence the abstract's own opening answers to. Its
+      citation is now unused.
 - [ ] **The human-health paragraph, cut.** "A subtle but deliberate choice
       in this study is to treat this disease as a human health problem
       rather than a gendered disease. At a scale of hundreds of millions of
       patients, we believe this to be necessary to bring attention to this
-      problem." It is a stated position rather than a stylistic choice, and
-      it is the one place the paper explains a convention it follows
-      throughout.
+      problem." A stated position, and the one place the paper explains a
+      convention it follows throughout.
 
-## Compute
+## Display items
 
-Nothing is running and nothing is blocked on compute. Every number the paper
-needs is on disk and sourced through the manifest.
+- [ ] **Figure 1 panels a and b.** AW will supply his own flowcharts for the
+      architecture and PRISMA. The current versions are minimum viable.
+      Residual: three method labels crowd in panel c.
+- [ ] **Supplementary Figure 1, the ablation UMAPs.** One horizontal figure,
+      study-mixing UMAPs for ELAJ$_{B\,hi}$ and all five ablation arms.
+      Sources on disk at
+      `Outputs/{p_series,a_series}/*/figures/best/latent_umap_epoch*.png`;
+      redraw from the latents rather than crop. What it shows: study
+      territory grows base 0.7613 < -sentinel 0.7818 < -ECS 0.8340, and both
+      ablations develop single-study regions the reported arm does not have.
+- [ ] **Extended Data.** Ten slots, none built. Priority order is in
+      `06-display-items.tex`.
 
----
+## References
 
-- [ ] **Results `[6]`** — what the latent needs. The last subsection. D1, D2,
-      D4, D6 settled; D3 and D5's mixing figures are now full-split
-      (0.7613 base, 0.8340 without ECS, 0.7818 without the sentinel). B2 and
-      B3 need their arms named. All eleven arms are in `Outputs/Benchmarks/full/`.
+- [ ] **Two preprint citations for core infrastructure.** `vasilevsky2022mondo`
+      and `czi2023cellxgene` are both medRxiv/bioRxiv. Check for journal
+      versions; two preprints for ontology and data-platform infrastructure
+      is the kind of thing a reviewer notices.
+- [ ] **Six references cited zero times**, harmless but they will not appear:
+      `gbd2019asthma`, `idf2021diabetes`, `nhs2024noncoding`,
+      `rands2014constrained`, `ballard2006delay`, `li2025factors`. The last
+      two were planned for the Introduction's delay material and would come
+      back with the `[65]`/`[83]` rewrite. `who2025endometriosis` joined them
+      when the opening line was cut.
+- [ ] **Cite duempelmann\_2026 on `[4]`'s rASRM I--II / III--IV sentence**, so
+      the definition is visibly theirs rather than ours.
 
-- [ ] **Supplementary Figure 1, the ablation UMAPs.** Scheduled late, on AW's
-      ruling of 6 November, but `[6]` points at it twice. One horizontal
-      figure: study-mixing UMAPs for ELAJ$_{B\,hi}$ and all five ablation
-      arms, coloured by study, one panel each. Sources are already on disk,
-      each arm's own selected checkpoint:
-      `Outputs/{p_series/p1_dab168_kl1,a_series/a1_*}/figures/best/latent_umap_epoch*.png`
-      is the rendered five-panel version; the figure wants only the *by
-      study* panel from each, redrawn from the latents rather than cropped.
-      What it has to show, and what the benchmark already says: study
-      territory grows in the order base 0.7613 < -sentinel 0.7818 <
-      -ECS 0.8340, and both ablations develop large single-study regions
-      that the reported arm does not have.
+## Externals, and AW owns all of these
 
-- [ ] **Figure 5, the ablations.** AW's proposal, 6 November: replace the
-      five-panel figure with **one long table** carrying cell family,
-      menstrual phase, donor recovery, study separation and the rest, for
-      every p-series and a-series arm, base row marked. NMI counts tables as
-      display items, so this keeps us at five of six.
-      *Blocked by:* `[6]`, which decides what the table has to carry.
-
-- [ ] **Figure 1** — ELAJ as a model and the main findings. Architecture as
-      one wide butterfly panel, **two frontier scatters with every method and
-      the Pareto front drawn** (AW, 6 November: Figure 1 keeps the frontier,
-      Figure 2 keeps the movement), three UMAPs along the bottom. Known
-      defects: whitespace, clipped boxes, the spider label, and a chance line
-      drawn at 0.370 which is the double-counting error.
-
-- [ ] **Legends for Figures 1 and 5.**
-      *Blocked by:* those two figures.
-
-- [x] **Methods — *Donor and study recovery*.** CUT 7 Nov, AW: one-liners
-      already stated elsewhere. The study rescaling it would have defined
-      now lives in Table 1's caption.
-- [x] **Methods — *Optimisation*.** Written 7 Nov, 335 words.
-- [x] **Methods — *Use of large language models*.** Written 6 November from
-      the thesis's own Appendix A, compressed to ~160 words.
-- [x] **Methods — *Whole-corpus embedding*.** CUT 7 Nov, AW: a CVAE has a
-      latent space and we read it; the procedure is in the code.
-- [x] **Methods — *the severity merge*.** CUT 7 Nov, AW: `[4]` already
-      states the rASRM I--II / III--IV definition. Only the citation to
-      duempelmann\_2026 on that sentence is outstanding.
-- [x] **Methods — *the whole-corpus rule*.** CUT with the subsection above.
-- [x] **Methods — *Cross-donor agreement*.** Rewritten 7 Nov. The six
-      loopholes resolved, the wrong claim cut, E1 in and then out on AW's
-      edit, and t=1 found not to exist in the code.
-- [x] **Methods — *Study selection*.** PRISMA settled 7 Nov as Figure 1
-      panel (d). 254 is the donor count everywhere; 269 appears once, where
-      the deduplication is explained.
-
-- [ ] **Extend both auditors to Methods.** Results' numbers are covered;
-      Methods' are not. Mostly accessions and configuration.
-
-- [ ] **Paper title.**
-
-- [ ] **Resolve the abstract reference question.** Read
-      `Nature_websites/NMI_Content_Types.pdf`. The file header quotes it as
-      "up to 150 words, unreferenced"; AW believes otherwise. The draft is
-      written either way.
-
-- [ ] **Verify `hoffmann2001girl` and `chen2008gender`.** Cited zero times.
-      *Unblocks:* Introduction ¶4–6.
-
-- [ ] **Introduction ¶4–6.** 476 words, unfinished.
-      *Blocked by:* the two references above.
-
-- [ ] **Reporting Summary.** Adobe Reader form.
+- [ ] Repository URL, licence and a Zenodo DOI. Methods claims predictions
+      were registered before training, which is only checkable if the repo
+      is public.
+- [ ] Funding and grant numbers for Acknowledgements.
+- [ ] Final author list, if it is more than the two.
+- [ ] **Reporting Summary.** Adobe Reader form, required at submission.
 - [ ] **Cover letter.** The IDAI answers carry the framing.
+- [ ] bioRxiv preprint, which AW wants alongside the NMI submission.
 
-- [x] **Discussion.** Written 6 November, 1,285 words, no subheadings.
-      SUPERSEDED, kept for the record: No subheadings, ~1,000 words, currently nothing but
-      notes. Carries the arguments moved out of Results, C6, F1–F6, the cut
-      Introduction material, and the staging argument in full: the scale
-      describes lesions, lesion burden has never predicted symptoms, patients
-      have said so for decades, and the dissociation in `[4]` is evidence the
-      field should act on.
-      *Blocked by:* `[6]`.
+## Smaller, and none of it blocking
 
-- [ ] **Abstract, final.** 150 words.
-      *Blocked by:* everything above.
-
-- [ ] **Extended Data and Supplementary.** 10 items, none built.
-
-- [ ] **Foundation models on the whole corpus.** AW wants it; not a blocker.
-      `embed_pretrained.sh` hardcodes its arguments and forwards nothing, so
-      `--splits train val test` and a separate `OUT` cannot be passed and the
-      existing val+test latents must not be overwritten. Then four GPU jobs at
-      roughly 24 h each.
-
-- [ ] **Code availability.** No public repo, licence, tag or DOI. Methods
-      claims predictions were registered before training, which is only
-      checkable if the repo is public.
-      *Blocked by:* external, a licence choice and a Zenodo deposit.
-
-- [~] **Backmatter.** Competing interests written. Acknowledgements and
-      author contributions seeded with coral placeholders: BlueBEAR
-      publishes a form of words it asks to be used verbatim, and the author
-      list is not final.
-
-- [ ] **Cite duempelmann\_2026 and marecko\_2024 for their methods sections.**
-
-- [ ] **Verify the remaining six references.** `gbd2019asthma`,
-      `idf2021diabetes`, `nhs2024noncoding`, `rands2014constrained`,
-      `ballard2006delay`, `li2025factors`. All cited zero times.
+- [ ] **Extend both auditors to Methods.** Results and the Discussion are
+      covered; Methods is not. Mostly accessions and configuration.
+- [ ] **Abstract against the 150-word limit.** It is 160 after the
+      supervisor's edits.
+- [ ] **One skipped test** in the suite of 1,945, unnamed because the run did
+      not use `-rs`. Not worth a card unless it matters at submission.
