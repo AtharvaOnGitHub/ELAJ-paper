@@ -1,44 +1,44 @@
 #!/usr/bin/env python
 """Figure 1 — ELAJ as a model, and the main findings.
 
-LAYOUT FROM AW'S SKETCH, 7 November 2026, rebuilt 10 November.
+REBUILT 10 NOVEMBER against scGPT (Nat. Methods 21, 1470-1480) and
+scFoundation (Nat. Methods 21, 1481-1491), whose figure conventions were
+measured out of the published PDFs rather than guessed at.
+
   a  the architecture, one wide strip across the top
-  b  PRISMA, a tall column down the left
-  c  frontier: cycle against donor recovery        d  against study separation
-  e  UMAP by cell family                           f  UMAP by study
+  b  frontier: cycle against donor recovery    c  against study separation
+  d  UMAP by cell family                       e  UMAP by study
 
-PANEL a IS AW'S OWN DRAWING, not drawn here. `panel_a_architecture.png` is
-his ELAJ-2 export, flattened onto white and trimmed to its ink. Measured at
-3,274 px it carries 462 dpi at 180 mm and its type runs 5.2 to 6.4 pt, so it
-sits inside NMI's 300 dpi and 5-7 pt. It has NO headroom below 180 mm: at
-100 mm its smallest labels would fall to about 3 pt. The panel therefore
-takes the full text width and the rest of the figure is built around it.
+WHAT CHANGED AND WHY. The six-panel version was crowded, and AW was right
+about the cause: it carried three different column structures at once and no
+air anywhere. PRISMA has moved to Extended Data Figure 1, which is reporting
+apparatus rather than a finding, leaving a clean 2x2 under panel a.
 
-THE PALETTE IS PANEL a's, sampled from the PNG rather than guessed, so the
-figure reads as one object. Latent amber carries ELAJ everywhere it appears;
-the four head colours carry the cell families; the DAB salmon carries PRISMA
-exclusions and the DSBN periwinkle the stage spine.
+THE TYPE SCALE IS scGPT's, and it is three levels deep with nothing outside
+it. Measured by character count across its figure pages: panel letters 9.3,
+panel titles 6.5, secondary labels 5.5, the bulk of in-panel text 4.5. Note
+the direction of the surprise: published Nature-family figures run SMALLER
+than NMI's stated 5-7 pt, because that guidance governs submitted artwork and
+typesetting reduces it. 5.5 pt is therefore generous, not risky, and it is
+what AW's own panel a uses for its annotations.
 
-LAYOUT IS EXPLICIT, IN MILLIMETRES. GridSpec's hspace is a fraction of the
-mean axes height, which makes "4 mm of air under panel a" unexpressible when
-rows differ in height. Every axes below is placed by `mm()` instead, so the
-gaps are the numbers written down and panel a's axes matches its image
-aspect exactly, which is what stops imshow letterboxing it.
+FOUR CONVENTIONS TAKEN FROM scGPT, all of which the old version broke.
+  * UMAPs carry no frame, no ticks and no box. Bare scatter on white.
+  * A panel title sits ABOVE the panel on the letter's own line, regular
+    weight beside the bold letter. What goes below a panel in scGPT is a
+    condition label, not a title.
+  * A categorical colouring gets a titled dot-list legend beside it. The old
+    panel f coloured eleven studies and named none of them.
+  * Blocks are separated by real space, not by the minimum that fits.
 
-PRISMA COUNTS CORRECTED. The thesis diagram is from the r-series era and
-ends at twelve included studies; the corpus has eleven. The split is
-derived from Data availability rather than guessed: seven GEO accessions,
-one ArrayExpress and two CELLxGENE came through the API branch, and
-CNP0006183 (li et al.) through the hand search of CNGBdb.
+PANEL a IS AW'S OWN DRAWING, not drawn here, flattened onto white and
+trimmed to its ink. At 3.87:1 it can only run full width: narrowed to two
+thirds its type would fall to about 3.4 pt. That constraint sets the whole
+layout, so panel a takes the top row and everything else is built beneath it.
 
 THE FRONTIER PANELS READ THE TABLE'S OWN SOURCES. table1.collect() is
 imported rather than copied, so a point here and a row there cannot come
 from different runs.
-
-NOTE ON TYPE SIZE. Everything is sized for 180 mm, NMI's full text width.
-Our own preamble is a4 with 25 mm margins, so \\linewidth is 160 mm and the
-local PDF renders this at 89%. Nothing here is set below 5.6 pt, which
-still clears 5 pt after that reduction.
 """
 from __future__ import annotations
 import os, sys
@@ -50,7 +50,6 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 import pandas as pd
-from matplotlib.patches import FancyBboxPatch
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from table1 import collect, MANIFEST, BASELINES, FOUNDATION   # noqa: E402
@@ -60,128 +59,75 @@ ARM = "p1_dab168_kl1"
 HERE = Path(__file__).resolve().parents[1] / "pinned"
 ARCH = HERE / "panel_a_architecture.png"
 
-# ── palette, sampled from panel a ────────────────────────────────────────
+# ── palette ──────────────────────────────────────────────────────────────
+# SAMPLED FROM PANEL a so the figure reads as one object. If AW redraws the
+# architecture in a new scheme, this block is the only thing to change.
 INK, SOFT, HAIR = "#2B3038", "#6F7681", "#C9CDD4"
-AMBER,  AMBER_F  = "#CC4E00", "#FFDDA6"      # the latent, and so ELAJ
-TEAL,   TEAL_F   = "#008573", "#00C2A8"      # the encoder path
-BLUE,   BLUE_F   = "#1071E5", "#CFE4FF"      # reconstruction
-GREEN,  GREEN_F  = "#008A0E", "#C3F7C8"      # ECS
-PURPLE, PURPLE_F = "#BA23F6", "#F4D9FF"      # phase
-SALMON, SALMON_F = "#825252", "#F78D8D"      # DAB, and so exclusions
-PERI,   PERI_F   = "#7D87FA", "#C2C6FA"      # DSBN, and so the stage spine
+AMBER = "#CC4E00"; AMBER_F = "#FFDDA6"       # the latent, and so ELAJ
+TEAL = "#00A896"; BLUE = "#1071E5"
+GREEN = "#008A0E"; PURPLE = "#BA23F6"; SALMON_F = "#F78D8D"; PERI = "#7D87FA"
 
-FAMILY_C = [TEAL_F, AMBER, BLUE, PURPLE]     # stromal, epi, endo, immune
-STUDY_C = [TEAL_F, AMBER, BLUE, PURPLE, GREEN, SALMON_F, PERI, "#3A414A",
+# ── study display names ──────────────────────────────────────────────────
+# THE CORPUS'S INTERNAL KEYS NAME THE WRONG AUTHOR FOR FOUR STUDIES, and the
+# figure must not print them. The chain is checkable at both ends:
+# `src/configs/data/study_platform.csv` maps each key to its accession, and
+# Methods, Data availability maps each accession to its citation.
+#
+#   ferrero_2024  -> GSE247695     -> sarsenova2024metabolic
+#   lin_2023      -> GSE214411     -> huang2023immune
+#   wang_2022     -> GSE218044     -> chen2022adenomyosis
+#   marecko_2024  -> E-MTAB-14039  -> mareckova2024heca   (missing "va")
+#
+# The keys are a pipeline artefact; the citations are the fact. Renaming the
+# data would mean re-deriving everything keyed on it, so the map lives here.
+STUDY_NAME = {
+    "duempelmann_2026":     "Dümpelmann 2026",
+    "ferrero_2024":         "Sarsenova 2024",
+    "fonseca_2023":         "Fonseca 2023",
+    "garcia_alonso_2021_a": "García-Alonso 2021a",
+    "garcia_alonso_2021_b": "García-Alonso 2021b",
+    "li_2025":              "Li 2025",
+    "lin_2023":             "Huang 2023",
+    "marecko_2024":         "Marečková 2024",
+    "shih_2022":            "Shih 2022",
+    "tan_2022":             "Tan 2022",
+    "wang_2022":            "Chen 2022",
+}
+
+FAMILY_C = [TEAL, AMBER, BLUE, PURPLE]       # stromal, epi, endo, immune
+STUDY_C = [TEAL, AMBER, BLUE, PURPLE, GREEN, SALMON_F, PERI, "#3A414A",
            "#E8B4B8", "#00806E", "#F2A74B", "#6B5BA6", "#9ACD32"]
 
-FS_MIN = 5.6                                  # 5 pt after the 89% reduction
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": FS_MIN,
+# ── type scale, scGPT's, and nothing outside it ──────────────────────────
+FS_LETTER, FS_TITLE, FS_BODY = 9.0, 6.5, 5.5
+plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": FS_BODY,
                      "text.color": INK, "axes.labelcolor": INK,
                      "xtick.color": SOFT, "ytick.color": SOFT,
                      "axes.edgecolor": HAIR, "axes.linewidth": .5,
                      "mathtext.fontset": "dejavusans"})
 
 
-def bf(s) -> str:
-    """A number in bold, inline. AW: every n and every count is bold."""
-    return r"$\mathbf{" + str(s).replace(",", "{,}") + r"}$"
+def head(ax, letter, title=None, dx=0.0):
+    """scGPT's heading: bold letter, then the title on the same line."""
+    ax.text(dx, 1.022, letter, transform=ax.transAxes, fontsize=FS_LETTER,
+            fontweight="bold", va="bottom", ha="left")
+    if title:
+        ax.text(dx + 0.052, 1.028, title, transform=ax.transAxes,
+                fontsize=FS_TITLE, va="bottom", ha="left", color=INK)
 
 
 # ═════════════════════════════════════════════════════════════════════════
-# a — AW's architecture drawing, placed rather than redrawn
-# ═════════════════════════════════════════════════════════════════════════
-def panel_a(ax):
-    ax.imshow(mpimg.imread(ARCH), interpolation="antialiased")
-    ax.axis("off")
-
-
-# ═════════════════════════════════════════════════════════════════════════
-# b — PRISMA, in the PRISMA 2020 grammar
-# ═════════════════════════════════════════════════════════════════════════
-# The convention carries meaning: an amber bar names the identification
-# route, a spine names the three stages, the main flow runs straight down,
-# and exclusions branch sideways. A reader who has seen one PRISMA reads
-# this one without the legend.
-#
-# ONE FLOW RATHER THAN TWO, because the thesis's parallel columns need four
-# sub-columns and do not fit a portrait panel legibly. The arithmetic
-# reconciles exactly: 455 + 98 identified, less 98 duplicates, 42 further
-# deposits and the 58 manual records the APIs had already returned, leaves
-# 355 screened; 293 excluded leaves 62 sought and assessed; 39 not single
-# cell and 12 for other reasons leaves 11.
-def tbox(ax, x, y, w, h, label, fc, ec, fs=FS_MIN, lw=.6, weight=None, tc=None):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, "round,pad=0,rounding_size=0.8",
-                                fc=fc, ec=ec, lw=lw, zorder=2))
-    ax.text(x + w / 2, y + h / 2, label, ha="center", va="center",
-            fontsize=fs, zorder=3, linespacing=1.3,
-            color=tc or INK, fontweight=weight or "normal")
-
-
-def arrow(ax, x0, y0, x1, y1, c=SOFT, lw=.6, rad=0.0):
-    ax.annotate("", xy=(x1, y1), xytext=(x0, y0), zorder=1,
-                arrowprops=dict(arrowstyle="-|>", color=c, lw=lw,
-                                shrinkA=0, shrinkB=0,
-                                connectionstyle=f"arc3,rad={rad}",
-                                mutation_scale=6))
-
-
-def panel_b(ax):
-    ax.set_xlim(0, 100); ax.set_ylim(0, 100); ax.axis("off")
-    MX, MW, EX, EW = 10.0, 42.0, 57.0, 42.0
-
-    tbox(ax, MX, 94.4, MW + EW + 2.0, 5.0, "Database APIs and manual search",
-         AMBER_F, AMBER, fs=FS_MIN, weight="bold", tc="#8A4000")
-
-    # rows: (bottom, height, main text, exclusion text)
-    rows = [(78.5, 12.5,
-             "Records identified\nDatabase APIs  " + bf(455) +
-             "\nCNGBdb  " + bf(98),
-             "Records removed\nbefore screening\nDuplicates  " + bf(98) +
-             "\nFurther deposits  " + bf(42) +
-             "\nAlready found  " + bf(58)),
-            (62.0, 9.0, "Records screened\n" + bf("n = 355"),
-                        "Records excluded\n" + bf("n = 293")),
-            (47.0, 9.0, "Reports sought\n" + bf("n = 62"),
-                        "Reports not retrieved\n" + bf("n = 0")),
-            (29.5, 11.5, "Reports assessed\nfor eligibility\n" + bf("n = 62"),
-                         "Reports excluded\nNot single cell  " + bf(39) +
-                         "\nOther reasons  " + bf(12))]
-    for y, h, mt, et in rows:
-        tbox(ax, MX, y, MW, h, mt, "#FFFFFF", INK)
-        tbox(ax, EX, y, EW, h, et, SALMON_F, SALMON)
-        arrow(ax, MX + MW, y + h / 2, EX, y + h / 2, c=SALMON)
-
-    tbox(ax, MX, 8.5, MW + 24.0, 13.0,
-         bf(11) + " studies included\n" + bf("1,577,728") + " cells\n" +
-         bf(254) + " donors\n" + bf(6) + " anatomical sites",
-         AMBER_F, AMBER, fs=FS_MIN, weight="bold")
-
-    # the three-stage spine, keyed to the rows it spans
-    for y0, y1, lab in ((78.0, 93.0, "Identification"),
-                        (29.0, 72.0, "Screening"),
-                        (8.0, 22.0, "Included")):
-        tbox(ax, 1.5, y0, 5.2, y1 - y0, "", PERI_F, PERI)
-        ax.text(4.1, (y0 + y1) / 2, lab, ha="center", va="center",
-                rotation=90, fontsize=FS_MIN, color="#3B43A8", weight="bold")
-
-    x = MX + MW / 2
-    for a, b in ((78.5, 71.4), (62.0, 56.4), (47.0, 41.4), (29.5, 22.0)):
-        arrow(ax, x, a, x, b, c=INK)
-
-
-# ═════════════════════════════════════════════════════════════════════════
-# c, d — the frontier over every method, with the Pareto front
+# b, c — the frontier over every method, with the Pareto front
 # ═════════════════════════════════════════════════════════════════════════
 def place_labels(ax, fig, pts):
-    """Greedy label placement, scored on the label's FOOTPRINT.
+    """Greedy placement scored on the label's FOOTPRINT, not its anchor.
 
     Two earlier versions failed the same way. The first took the first of
     four fixed offsets no earlier label had claimed, which let a label land
     on a DIFFERENT point. The second scored the anchor only, so a long name
-    anchored just inside the axes still ran out of it: "Geneformer" sat on
-    the x-axis in both panels. This one measures the text box the label will
-    actually occupy and rejects any candidate whose box leaves the axes, so
-    a point near an edge is labelled inwards instead.
+    anchored just inside the axes still ran out of it and "Geneformer" sat
+    on the x-axis in both panels. This one measures the box the text will
+    occupy and rejects any candidate leaving the axes.
     """
     x0, x1 = ax.get_xlim(); y0, y1 = ax.get_ylim()
     sx, sy = (x1 - x0) or 1.0, (y1 - y0) or 1.0
@@ -189,38 +135,35 @@ def place_labels(ax, fig, pts):
     aw_pt = pos.width * fig.get_figwidth() * 72.0
     ah_pt = pos.height * fig.get_figheight() * 72.0
     norm = [((p[0] - x0) / sx, (p[1] - y0) / sy) for p in pts]
-
     cands = [(0, 6.5, "center", "bottom"), (0, -6.5, "center", "top"),
              (6.0, 0, "left", "center"), (-6.0, 0, "right", "center"),
              (4.8, 4.8, "left", "bottom"), (-4.8, 4.8, "right", "bottom"),
              (4.8, -4.8, "left", "top"), (-4.8, -4.8, "right", "top"),
              (0, 11.0, "center", "bottom"), (0, -11.0, "center", "top")]
     placed: list[tuple[float, float, float, float]] = []
-    order = sorted(range(len(pts)), key=lambda i: -len(pts[i][2]))
     chosen: dict[int, tuple] = {}
-    for i in order:
+    for i in sorted(range(len(pts)), key=lambda i: -len(pts[i][2])):
         x, y, nm, ours = pts[i]
         px, py = norm[i]
-        # DejaVu Sans at this size averages ~0.55 em per character; the
-        # subscripted B labels render narrower than their source string.
         chars = 2.2 if ours else len(nm)
-        w = chars * 0.55 * FS_MIN / aw_pt
-        h = 1.15 * FS_MIN / ah_pt
+        w = chars * 0.55 * FS_BODY / aw_pt
+        h = 1.15 * FS_BODY / ah_pt
         best, best_score = None, -1e9
         for dx, dy, ha, va in cands:
             cx, cy = px + dx / aw_pt, py + dy / ah_pt
             lx0 = cx if ha == "left" else cx - w if ha == "right" else cx - w / 2
             ly0 = cy if va == "bottom" else cy - h if va == "top" else cy - h / 2
-            lx1, ly1 = lx0 + w, ly0 + h
-            if not (-.01 <= lx0 and lx1 <= 1.01 and -.01 <= ly0 and ly1 <= 1.01):
+            if not (-.01 <= lx0 and lx0 + w <= 1.01
+                    and -.01 <= ly0 and ly0 + h <= 1.01):
                 continue
-            ccx, ccy = (lx0 + lx1) / 2, (ly0 + ly1) / 2
-            dmin = min([(((ccx - ox) * aw_pt) ** 2 + ((ccy - oy) * ah_pt) ** 2) ** .5
+            ccx, ccy = lx0 + w / 2, ly0 + h / 2
+            dmin = min([(((ccx - ox) * aw_pt) ** 2
+                         + ((ccy - oy) * ah_pt) ** 2) ** .5
                         for j, (ox, oy) in enumerate(norm) if j != i] or [999])
-            lmin = min([max(abs(ccx - ox) * aw_pt - (w * aw_pt + ow * aw_pt) / 2,
+            lmin = min([max(abs(ccx - ox) * aw_pt - (w + ow) * aw_pt / 2,
                             abs(ccy - oy) * ah_pt - h * ah_pt)
                         for ox, oy, ow, _ in placed] or [999])
-            score = min(dmin, 26) + 1.5 * min(lmin, 26)
+            score = min(dmin, 30) + 1.5 * min(lmin, 30)
             if score > best_score:
                 best_score, best = score, (dx, dy, ha, va, lx0, ly0)
         if best is None:
@@ -232,7 +175,7 @@ def place_labels(ax, fig, pts):
     for i, (x, y, nm, ours) in enumerate(pts):
         dx, dy, ha, va = chosen[i]
         ax.annotate(nm, (x, y), textcoords="offset points", xytext=(dx, dy),
-                    ha=ha, va=va, fontsize=FS_MIN, clip_on=False,
+                    ha=ha, va=va, fontsize=FS_BODY, clip_on=False,
                     color=AMBER if ours else SOFT,
                     fontweight="bold" if ours else "normal")
 
@@ -257,16 +200,16 @@ def frontier(ax, D, cost_test, cost_label, xlabel):
     ax.plot([p[0] for p in front], [p[1] for p in front], "-",
             color=AMBER, lw=1.1, alpha=.5, zorder=2)
     for x, y, nm, ours in pts:
-        ax.scatter(x, y, s=34 if ours else 20, zorder=4,
+        ax.scatter(x, y, s=36 if ours else 20, zorder=4,
                    c=AMBER_F if ours else "#FFFFFF",
                    edgecolors=AMBER if ours else SOFT,
                    linewidths=1.0 if ours else .7)
 
-    ax.margins(x=.19, y=.17)
-    ax.grid(True, lw=.35, color=HAIR, alpha=.65)
+    ax.margins(x=.16, y=.15)
+    ax.grid(True, lw=.35, color=HAIR, alpha=.6)
     ax.set_axisbelow(True)
-    ax.set_xlabel(xlabel, fontsize=FS_MIN + .4, labelpad=1.5)
-    ax.tick_params(length=2, pad=1.5, labelsize=FS_MIN)
+    ax.set_xlabel(xlabel, fontsize=FS_BODY, labelpad=2.0)
+    ax.tick_params(length=2, pad=2.0, labelsize=FS_BODY)
     ax.xaxis.set_major_locator(plt.MaxNLocator(5))
     ax.yaxis.set_major_locator(plt.MaxNLocator(6))
     for s in ("top", "right"):
@@ -275,25 +218,35 @@ def frontier(ax, D, cost_test, cost_label, xlabel):
 
 
 # ═════════════════════════════════════════════════════════════════════════
-# e, f — the latent
+# d, e — the latent. No frame, no ticks: scGPT does this in every UMAP.
 # ═════════════════════════════════════════════════════════════════════════
-def umap(ax, xy, series, order, colours, title):
+def umap(ax, lax, xy, series, order, colours, names=None):
     ax.scatter(xy[:, 0], xy[:, 1], s=.05, c="#E6E8EB", lw=0, rasterized=True)
     for lev, c in zip(order, colours):
         k = (series == lev).to_numpy()
         if k.any():
             ax.scatter(xy[k, 0], xy[k, 1], s=.05, color=c, lw=0,
                        rasterized=True)
-    # crop to the cloud rather than to stray outliers, which is most of the
-    # white space these panels used to carry
     lo = np.percentile(xy, 0.15, axis=0); hi = np.percentile(xy, 99.85, axis=0)
-    padx = (hi[0] - lo[0]) * .02; pady = (hi[1] - lo[1]) * .02
-    ax.set_xlim(lo[0] - padx, hi[0] + padx)
-    ax.set_ylim(lo[1] - pady, hi[1] + pady)
-    ax.set_title(title, fontsize=FS_MIN + .4, pad=2.0)
+    px, py = (hi - lo) * .02
+    ax.set_xlim(lo[0] - px, hi[0] + px); ax.set_ylim(lo[1] - py, hi[1] + py)
     ax.set_xticks([]); ax.set_yticks([])
     for s in ax.spines.values():
-        s.set_color(HAIR)
+        s.set_visible(False)
+
+    # the titled dot-list beside the panel, scGPT's form
+    # the dot-list beside the panel, scGPT's form. No title on it: the
+    # panel heading already names the variable and repeating it reads as
+    # two labels for one thing.
+    lax.set_xlim(0, 1); lax.set_ylim(0, 1); lax.axis("off")
+    n = len(order) + 1
+    step = min(0.072, 0.94 / n)
+    y = 0.5 + step * (n - 1) / 2
+    for lev, c in list(zip(order, colours)) + [("unlabelled", "#E6E8EB")]:
+        lax.scatter([0.035], [y], s=7, color=c, lw=0, clip_on=False)
+        lax.text(0.12, y, (names or {}).get(lev, str(lev)),
+                 fontsize=FS_BODY, va="center", ha="left", color=SOFT)
+        y -= step
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -310,52 +263,55 @@ def main() -> None:
 
     # ── layout, every number a millimetre ────────────────────────────────
     W = 180.0
-    L, R, T, B = 2.5, 2.0, 2.5, 3.5
-    aw = W - L - R                                   # panel a, full width
+    L, R, T, B = 3.0, 2.0, 4.0, 4.0
+    aw = W - L - R
     arch = mpimg.imread(ARCH)
-    ah = aw * arch.shape[0] / arch.shape[1]          # its own aspect, exactly
-    GAP_A = 3.5                                      # air under panel a
-    BW, GAP_B = 56.0, 11.0                           # PRISMA column, then air
-    #           ^ GAP_B carries c's y-axis label and its tick labels. At
-    #           5.5 mm the label printed on top of panel b's exclusions.
-    GAP_C = 6.5                                      # between c|d and e|f
-    GAP_R = 12.5                                     # between the two rows
-    #       ^ holds c/d's xlabel AND e/f's title, which collided at 9 mm.
-    cw = (aw - BW - GAP_B - GAP_C) / 2
-    ch, eh = 48.0, 46.0
-    H = T + ah + GAP_A + ch + GAP_R + eh + B
-
-    def mm(x, y, w, h):
-        """Axes from millimetres, measured from the top left."""
-        return fig.add_axes([x / W, 1 - (y + h) / H, w / W, h / H])
+    ah = aw * arch.shape[0] / arch.shape[1]      # panel a's own aspect, exactly
+    GAP_A = 11.0                                 # air under panel a
+    GAP_COL = 13.0                               # between the two columns
+    GAP_ROW = 13.0                               # between the two plot rows
+    cw = (aw - GAP_COL) / 2                      # 82 mm per column
+    UW, ULG = 54.0, 3.0                          # UMAP square, then its legend
+    bh, dh = 52.0, 54.0
+    H = T + ah + GAP_A + bh + GAP_ROW + dh + B
 
     fig = plt.figure(figsize=(W / 25.4, H / 25.4))
+
+    def mm(x, y, w, h):
+        return fig.add_axes([x / W, 1 - (y + h) / H, w / W, h / H])
+
     y_a = T
-    y_cd = y_a + ah + GAP_A
-    y_ef = y_cd + ch + GAP_R
+    y_bc = y_a + ah + GAP_A
+    y_de = y_bc + bh + GAP_ROW
+    x2 = L + cw + GAP_COL
 
-    ax_a = mm(L, y_a, aw, ah);                      panel_a(ax_a)
-    ax_b = mm(L, y_cd, BW, ch + GAP_R + eh);        panel_b(ax_b)
-    ax_c = mm(L + BW + GAP_B, y_cd, cw, ch)
-    ax_d = mm(L + BW + GAP_B + cw + GAP_C, y_cd, cw, ch)
-    ax_e = mm(L + BW + GAP_B, y_ef, cw, eh)
-    ax_f = mm(L + BW + GAP_B + cw + GAP_C, y_ef, cw, eh)
+    ax_a = mm(L, y_a, aw, ah)
+    ax_a.imshow(mpimg.imread(ARCH), interpolation="antialiased")
+    ax_a.axis("off")
 
-    frontier(ax_c, D, "knn-agreement", "patient_id", "donor recovery")
-    frontier(ax_d, D, "study-mixing", "all studies", "study separation")
-    ax_c.set_ylabel("cross-donor cycle agreement", fontsize=FS_MIN + .4,
-                    labelpad=1.5)
+    # the y-axis label needs a gutter the UMAP row does not
+    GUT = 9.0
+    ax_b = mm(L + GUT, y_bc, cw - GUT, bh)
+    ax_c = mm(x2 + GUT, y_bc, cw - GUT, bh)
+    frontier(ax_b, D, "knn-agreement", "patient_id", "donor recovery")
+    frontier(ax_c, D, "study-mixing", "all studies", "study separation")
+    ax_b.set_ylabel("cross-donor cycle agreement", fontsize=FS_BODY,
+                    labelpad=2.0)
+
+    ax_d = mm(L, y_de, UW, dh);  lax_d = mm(L + UW + ULG, y_de, cw - UW - ULG, dh)
+    ax_e = mm(x2, y_de, UW, dh); lax_e = mm(x2 + UW + ULG, y_de, cw - UW - ULG, dh)
 
     FAM = ["stromal", "epithelial", "endothelial", "immune"]
-    umap(ax_e, xy, m["cell family"], FAM, FAMILY_C, "cell family")
+    umap(ax_d, lax_d, xy, m["cell family"], FAM, FAMILY_C)
     studies = sorted(m["study"].dropna().unique())
-    umap(ax_f, xy, m["study"], studies, STUDY_C[:len(studies)], "study")
+    umap(ax_e, lax_e, xy, m["study"], studies, STUDY_C[:len(studies)],
+         names=STUDY_NAME)
 
-    for ax, lab, dx in ((ax_a, "a", -.004), (ax_b, "b", -.012),
-                        (ax_c, "c", -.10), (ax_d, "d", -.10),
-                        (ax_e, "e", -.045), (ax_f, "f", -.045)):
-        ax.text(dx, 1.012, lab, transform=ax.transAxes, fontsize=8.0,
-                fontweight="bold", va="bottom", ha="left")
+    head(ax_a, "a", "The model")
+    head(ax_b, "b", "Cycle against donor recovery", dx=-GUT / (cw - GUT))
+    head(ax_c, "c", "Cycle against study separation", dx=-GUT / (cw - GUT))
+    head(ax_d, "d", "Cell family")
+    head(ax_e, "e", "Study")
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
