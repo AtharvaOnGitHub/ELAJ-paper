@@ -682,8 +682,8 @@ in fp32 regardless, because neither is numerically safe at reduced precision.
 
 The remaining settings are AdamW at a learning rate of $10^{-3}$, weight decay
 $10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
-Kullback--Leibler term is ramped from zero to its full value over the first
-20\% of steps. The learning rate follows a cosine schedule whose period is set
+Kullback--Leibler term is ramped from zero to 0.5 over the first 5\% of
+steps, as above. The learning rate follows a cosine schedule whose period is set
 to a twenty-epoch horizon. That horizon fixes how long the learning rate stays 
 high, and no arm in this project reaches it. What ends a run is early stopping 
 on held-out reconstruction loss, with a patience of five epochs after a 
