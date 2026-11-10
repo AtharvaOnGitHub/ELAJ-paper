@@ -132,6 +132,30 @@ This is the spine of the work and the rest is mechanical beside it.
       were restored once on the tone-is-mine rule, so they come back as
       current / proposed / why, but the new feedback is explicitly about this.
 
+## Pinned, built but unplaced
+
+- [ ] **The dissociation panel**, `figures/scripts/panel_dissociation.py`,
+      `pinned/panel_dissociation.png`. IBDex Figure 2c's form applied to the
+      cross-donor results: forest on the left against each label's own
+      permutation null, the numbers aligned on the right, non-significant
+      rows greyed and badged `ns`. Grouped so the argument is visible before
+      a number is read: every contrast including control donors clears, and
+      neither contrast restricted to patients does. **AW: built, looks right,
+      no home yet. Pinned 10 November.** Candidates are Figure 4 or Extended
+      Data.
+- [ ] **It surfaces a number the paper does not carry.** Surgical stage on
+      the whole corpus is $+$0.3320, $p=0.005$ at 58 donors. Results only
+      reports the held-out reading, 0.1313 at $p=0.303$ over 16 donors. It
+      does not contradict the paper, because stage clears precisely through
+      the control contrast and the patients-only tests still fail, but a
+      reviewer reading the panel would ask. **Either the number goes into
+      Results `[4]` or the row comes out of the panel.**
+- [ ] **Panel a mock-up**, `figures/scripts/panel_a_mockup.py`. The
+      architecture redrawn in IBDex's grammar: four role headings, one hue
+      family each, detail pushed out of the boxes into grey lines, dimensions
+      annotated under every stage. Awaiting AW's call on whether it replaces
+      his own drawing.
+
 ## Tier 2. Display items
 
 - [ ] **Every panel must be referenced in prose, and almost none is.**
