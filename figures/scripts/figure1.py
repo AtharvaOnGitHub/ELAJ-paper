@@ -32,9 +32,15 @@ FOUR CONVENTIONS TAKEN FROM scGPT, all of which the old version broke.
   * Blocks are separated by real space, not by the minimum that fits.
 
 PANEL a IS AW'S OWN DRAWING, not drawn here, flattened onto white and
-trimmed to its ink. At 3.87:1 it can only run full width: narrowed to two
-thirds its type would fall to about 3.4 pt. That constraint sets the whole
-layout, so panel a takes the top row and everything else is built beneath it.
+trimmed to its ink. It can only run full width: at 3.24:1 its smallest type
+is already 5.1 pt at 180 mm, so narrowing it to two thirds would put that
+text near 3.4 pt, under NMI's floor. That constraint sets the whole layout,
+so panel a takes the top row and everything else is built beneath it.
+
+ITS TYPE IS MEASURED, NOT ASSUMED: headings 6.9 pt, text in shapes 6.5,
+foot annotations 5.1, which is the scale the rest of this figure matches at
+6.5 / 6.0 / 5.5. AW draws it in LucidChart at 11 / 10 / 8 pt; that tool
+renders at 0.623 of its own point size once the export is placed at 180 mm.
 
 THE FRONTIER PANELS READ THE TABLE'S OWN SOURCES. table1.collect() is
 imported rather than copied, so a point here and a row there cannot come
@@ -276,7 +282,9 @@ def main() -> None:
     aw = W - L - R
     arch = mpimg.imread(ARCH)
     ah = aw * arch.shape[0] / arch.shape[1]      # panel a's own aspect, exactly
-    GAP_A = 11.0                                 # air under panel a
+    GAP_A = 8.0                                  # air under panel a
+    #       ^ less than the other gaps: the drawing already carries
+    #       its own foot annotations and their whitespace.
     GAP_COL = 13.0                               # between the two columns
     GAP_ROW = 13.0                               # between the two plot rows
     cw = (aw - GAP_COL) / 2                      # 82 mm per column
@@ -316,7 +324,9 @@ def main() -> None:
     umap(ax_e, lax_e, xy, m["study"], studies, STUDY_C[:len(studies)],
          names=STUDY_NAME)
 
-    head(ax_a, "a", "The model")
+    # no title on a: the drawing carries its own stage headings, and a
+    # second heading on the same line just crowds "Input".
+    head(ax_a, "a")
     head(ax_b, "b", "Cycle against donor recovery", dx=-GUT / (cw - GUT))
     head(ax_c, "c", "Cycle against study separation", dx=-GUT / (cw - GUT))
     head(ax_d, "d", "Cell family")
