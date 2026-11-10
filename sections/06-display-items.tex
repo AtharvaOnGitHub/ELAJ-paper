@@ -58,23 +58,27 @@ frontier panels also overlap Figure 2 and that overlap has not been resolved.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure1.png}
-\caption{\textbf{About \elaj} \textbf{a}, The architecture. A cell enters as the
-30{,}962 genes shared across the corpus and is reduced to the 15{,}496 that
-map to a pathway group, with genes a study never assayed carried by a
-did-not-sample sentinel rather than by a zero. Those genes are read in 44
-pathway groups, normalised per study, and summarised by one transformer per
-group before a cell-level stage compresses them to sixteen dimensions. Four
-heads read that latent: the study adversary (DAB), whose gradient is reversed
-on the way back to the encoder; reconstruction; elastic cell similarity (ECS);
-and menstrual phase (Phase CLS). Study, platform and anatomical site condition
-the decoder alone, reaching neither the encoder nor the other three heads.
-Disease status is given to nothing. \textbf{b},~\textbf{c}, Cross-donor
+\caption{\textbf{About \elaj} \textbf{a}, The architecture, in five stages. A
+cell enters as the 30{,}962 genes shared across the corpus and is reduced to
+the 15{,}496 that map to a pathway group, with genes a study never assayed
+carried by a did-not-sample sentinel rather than by a zero. The gene encoder
+reads those genes in 44 pathway groups, normalises each group per study, and
+summarises it with its own transformer into nine tokens of 32 dimensions. The
+cell encoder compresses the resulting 396 tokens to sixteen. Four heads read
+that latent: the study adversary (DAB), whose gradient is reversed on the way
+back to the encoder; reconstruction; elastic cell similarity (ECS), which
+holds similar cells together; and the supervised menstrual-phase classifier
+(Phase CLS). Study, platform and anatomical site condition the reconstruction
+head alone and never reach the encoder. Disease status is given to nothing.
+\textbf{b},~\textbf{c}, Cross-donor
 agreement on menstrual phase against each of the two costs, over all ten
 representations on the same held-out donors, with the Pareto front drawn.
 Higher is better vertically and lower is better horizontally, so the upper
 left corner is the goal. \textbf{d},~\textbf{e}, The ELAJ$_{B\,hi}$ latent
 over all 1{,}577{,}728 cells, 400{,}000 drawn at random, coloured by cell
-family and by study; cells with no cell-family label are grey.
+family and by study. Cells with no cell-family label are grey; every cell
+carries a study. Studies are named by the first author of the paper the data
+come from and ordered by the number of cells they contribute.
 \\Two readings. In \textbf{b} the front is two points and both are ours:
 ELAJ$_{B\,hi}$ holds the most cycle signal of anything tested (0.7346) while
 giving up the least donor identity (0.5188), and the nearest competitor on
