@@ -53,6 +53,13 @@ FS_HEAD, FS_BOX, FS_NOTE = 6.5, 6.0, 5.5   # headings / box labels / annotations
 plt.rcParams.update({"font.family": "Arial", "text.color": "#2B3038"})
 
 
+def vdots(ax, x, y, colour):
+    """Three dots, drawn. Arial has no U+22EE vertical ellipsis, and a font
+    that silently drops a glyph is worse than one that never had it."""
+    for dy in (-1.6, 0.0, 1.6):
+        ax.add_patch(Circle((x, y + dy), .32, fc=colour, ec="none", zorder=4))
+
+
 def box(ax, x, y, w, h, label, fc, ec, tc, fs=FS_BOX, rot=0, weight=None):
     ax.add_patch(FancyBboxPatch((x, y), w, h, "round,pad=0,rounding_size=1.1",
                                 fc=fc, ec=ec, lw=.75, zorder=3))
@@ -104,7 +111,7 @@ def main() -> None:
         box(ax, 27.0, y, 23.0, 6.5, lab, BLUE_F, BLUE_E, BLUE_T)
         arrow(ax, 22.5, MID, 27.0, y + 3.25, rad=0 if y == rows[1] else
               (-.10 if y > MID else .10))
-    ax.text(38.5, 25.0, "⋮", ha="center", va="center", fontsize=9, color=BLUE_E)
+    vdots(ax, 38.5, 25.5, BLUE_E)
 
     box(ax, 53.5, 14.0, 6.5, 32.0, "Domain-specific\nbatch normalisation",
         BLUE_F, BLUE_E, BLUE_T, fs=FS_NOTE, rot=90)
@@ -115,7 +122,7 @@ def main() -> None:
                        "Group transformer 44"), rows):
         box(ax, 63.5, y, 27.0, 6.5, lab, BLUE_F, BLUE_E, BLUE_T)
         arrow(ax, 60.0, y + 3.25, 63.5, y + 3.25)
-    ax.text(77.0, 25.0, "⋮", ha="center", va="center", fontsize=9, color=BLUE_E)
+    vdots(ax, 77.0, 25.5, BLUE_E)
     note(ax, 59.0, NOTE_Y, "44 groups, 9 summary tokens each")
 
     # ── Cell encoder ────────────────────────────────────────────────────
