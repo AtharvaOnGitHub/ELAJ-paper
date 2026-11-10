@@ -514,6 +514,26 @@ because a caption lives inside a float.
 with them in Nature style, since his file's bibliography is plain text rather
 than live fields.
 
+## All four heads are the decoder side. Settled, do not reopen.
+
+**AW, 10 November, and he says he has cleared this before:** *"All 4 heads
+fall under the decoder side of the model. Reconstruction is the primary
+objective of the model but all are part of the decoder."*
+
+I argued that only Reconstruction is the decoder, because DAB is an adversary
+on the latent, ECS a geometric regulariser and Phase CLS supervision, and
+Methods gives those three their own subsections. He overruled it. The split
+the figure draws is encoder, latent, then everything consuming the latent,
+which is a normal way to divide a VAE diagram and it is his architecture.
+Figure 1's panel a heading is therefore **Decoder**, not "Training
+objectives". Do not raise it a third time.
+
+**No grey glosses under the four heads either.** AW: the acronyms are the
+legend's job. DAB, ECS and Phase CLS are still expanded nowhere in the paper,
+so Figure 1's legend has to carry all three.
+
+**The second CELL representation bar stays.** AW likes it.
+
 ## Two rulings from the register review, 9 November
 
 **1. Results now interprets. This reverses a settled rule.** The old entry
