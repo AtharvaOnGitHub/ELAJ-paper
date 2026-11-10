@@ -106,9 +106,36 @@ STUDY_NAME = {
     "wang_2022":            "Chen 2022",
 }
 
-FAMILY_C = [TEAL, AMBER, BLUE, PURPLE]       # stromal, epi, endo, immune
-STUDY_C = [TEAL, AMBER, BLUE, PURPLE, GREEN, SALMON_F, PERI, "#3A414A",
-           "#E8B4B8", "#00806E", "#F2A74B", "#6B5BA6", "#9ACD32"]
+# Cell families: Okabe-Ito. Four hues designed to stay separable under
+# every common colour-vision deficiency, and they land almost exactly on
+# panel a's own hues anyway: its encoder blue, its decoder teal-green and
+# its latent amber, plus the vermillion AW asked for. Blue to the largest
+# family so the biggest area carries the calmest colour.
+FAMILY_C = ["#0072B2",   # stromal      blue
+            "#D55E00",   # epithelial   vermillion / burnt sienna
+            "#009E73",   # endothelial  bluish green
+            "#E69F00"]   # immune       amber
+
+# Studies: Paul Tol's muted scheme, ORDERED LIGHT TO DARK and handed out
+# largest study first. Eleven categories is past the point where hand-picking
+# stays separable, so the scheme is published rather than invented; the
+# ordering is the part that matters here. Alphabetical assignment gave the
+# biggest study the darkest ink and it swallowed the panel, which is the
+# opposite of what e is for: the claim is that no study owns territory, and
+# a dark mass reads as though one does.
+STUDY_C = ["#DDCC77",   # sand
+           "#88CCEE",   # cyan
+           "#6699CC",   # steel blue
+           "#44AA99",   # teal
+           "#CC6677",   # rose
+           "#999933",   # olive
+           "#AA4499",   # purple
+           "#117733",   # green
+           "#882255",   # wine
+           "#661100",   # brick
+           "#332288"]   # indigo
+
+GREY_PT = "#DCE0E4"      # cells with no label, in both panels
 
 # ── type scale, scGPT's, and nothing outside it ──────────────────────────
 FS_LETTER, FS_TITLE, FS_BODY = 9.0, 6.5, 5.5
@@ -236,7 +263,7 @@ def frontier(ax, D, cost_test, cost_label, xlabel):
 # d, e — the latent. No frame, no ticks: scGPT does this in every UMAP.
 # ═════════════════════════════════════════════════════════════════════════
 def umap(ax, lax, xy, series, order, colours, names=None):
-    ax.scatter(xy[:, 0], xy[:, 1], s=.05, c="#E6E8EB", lw=0, rasterized=True)
+    ax.scatter(xy[:, 0], xy[:, 1], s=.05, c=GREY_PT, lw=0, rasterized=True)
     for lev, c in zip(order, colours):
         k = (series == lev).to_numpy()
         if k.any():
@@ -257,7 +284,7 @@ def umap(ax, lax, xy, series, order, colours, names=None):
     n = len(order) + 1
     step = min(0.072, 0.94 / n)
     y = 0.5 + step * (n - 1) / 2
-    for lev, c in list(zip(order, colours)) + [("unlabelled", "#E6E8EB")]:
+    for lev, c in list(zip(order, colours)) + [("unlabelled", GREY_PT)]:
         lax.scatter([0.035], [y], s=7, color=c, lw=0, clip_on=False)
         lax.text(0.12, y, (names or {}).get(lev, str(lev)),
                  fontsize=FS_BODY, va="center", ha="left", color=SOFT)
@@ -320,7 +347,9 @@ def main() -> None:
 
     FAM = ["stromal", "epithelial", "endothelial", "immune"]
     umap(ax_d, lax_d, xy, m["cell family"], FAM, FAMILY_C)
-    studies = sorted(m["study"].dropna().unique())
+    # largest first, so the lightest ink covers the most area and the legend
+    # reads in the order the eye meets the colours
+    studies = list(m["study"].value_counts().index)
     umap(ax_e, lax_e, xy, m["study"], studies, STUDY_C[:len(studies)],
          names=STUDY_NAME)
 
