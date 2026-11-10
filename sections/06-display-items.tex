@@ -58,14 +58,17 @@ frontier panels also overlap Figure 2 and that overlap has not been resolved.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure1.png}
-\caption{\textbf{About \elaj} \textbf{a}, The architecture. A cell enters as 15{,}496
-genes read in 44 pathway groups, normalised per study, and summarised by one
-transformer per group before a cell-level stage compresses them to sixteen
-dimensions. Four heads read that latent: an adversarial study discriminator
-whose gradient is reversed on the way back to the encoder, reconstruction,
-elastic cell similarity, and menstrual phase. Study, platform and anatomical
-site are given to the decoder and never to the encoder. Disease status is
-given to neither. \textbf{b}, Record selection, following PRISMA 2020, with
+\caption{\textbf{About \elaj} \textbf{a}, The architecture. A cell enters as the
+30{,}962 genes shared across the corpus and is reduced to the 15{,}496 that
+map to a pathway group, with genes a study never assayed carried by a
+did-not-sample sentinel rather than by a zero. Those genes are read in 44
+pathway groups, normalised per study, and summarised by one transformer per
+group before a cell-level stage compresses them to sixteen dimensions. Four
+heads read that latent: the study adversary (DAB), whose gradient is reversed
+on the way back to the encoder; reconstruction; elastic cell similarity (ECS);
+and menstrual phase (Phase CLS). Study, platform and anatomical site condition
+the decoder alone, reaching neither the encoder nor the other three heads.
+Disease status is given to nothing. \textbf{b}, Record selection, following PRISMA 2020, with
 the database and manual routes shown as one flow. Of 553 records identified,
 198 were removed before screening, 293 were excluded at screening and 51 of
 the 62 assessed were excluded, leaving 11 studies, 1{,}577{,}728 cells and
