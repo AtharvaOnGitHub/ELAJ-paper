@@ -59,7 +59,10 @@ feedback itself; this is the running record of what we have settled against it.
   Word file is the authoritative document:
   1. make the change in the `.tex`
   2. build the corresponding Word file
-  3. hand AW what to add or replace in the guide's file, and he applies it
+  3. hand AW a changeset of short **maths-free** find-and-replace
+     fragments, built by `make_changeset.py`, and he applies them.
+     Word maths does not survive a copy, so a paragraph paste would
+     destroy equations already correct in his file.
   **This overturns the 8 November rule not to generate a `.docx` each time.**
 - **Work order.** Low-hanging fruit first, meaning clear misses that need no
   judgement. Then the story, which then guides the rest of the changes and the

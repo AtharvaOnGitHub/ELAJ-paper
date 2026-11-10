@@ -479,6 +479,41 @@ throughout, 0.4062 to 0.3911. The arm that rises is `a1_nophase`. AW had
 the principle right and the arm swapped, and I had the arm right and kept
 arguing past the point he had conceded.
 
+## Word maths does not survive a copy, and it shapes every handover
+
+**AW, 10 November: equations do not come across when a paragraph is copied
+from one Word document to another.** Word stores maths as OMML objects and the
+clipboard drops them. There is no fix; the workaround is that AW re-inserts
+each symbol with Word's own equation tool.
+
+**The consequence is bigger than the equations.** A whole-paragraph paste
+*destroys* any maths the target paragraph already held. In the first batch,
+eleven of sixteen paragraphs contained maths and most of it was incidental:
+already correct in his file, and nothing to do with our change. Pasting over
+them would have replaced working equations with nothing.
+
+**So the unit of a handover is a short maths-free fragment, never a
+paragraph.** `make_changeset.py` enforces this. Three kinds of entry:
+
+| kind | what it is |
+|---|---|
+| `edit` | find/repl, both asserted maths-free. The default and the commonest |
+| `maths` | find/repl where the replacement is a symbol AW inserts by hand |
+| `paste` | genuinely new prose, and the script **refuses to build** if a paste block contains maths |
+
+Changesets live in `changesets/`, one `.md` and one `.docx` per batch, built
+from the same `assets/reference.docx` so pasted text lands in Calibri.
+
+**Two bugs that tool had on its first run, both worth remembering.** `\;`
+inside the decoder equation was being stripped to a bare `;`, which would have
+handed AW a corrupted equation; maths spans are now held out of the prose
+cleanup entirely. And the Figure 2 legend leaked `\begin{figure}` scaffolding,
+because a caption lives inside a float.
+
+**New citations need their reference list entries too.** The changeset closes
+with them in Nature style, since his file's bibliography is plain text rather
+than live fields.
+
 ## Two rulings from the register review, 9 November
 
 **1. Results now interprets. This reverses a settled rule.** The old entry

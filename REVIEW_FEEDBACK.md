@@ -79,8 +79,10 @@ is reversed. Each subsection states its numbers and then carries one precise
 line of reading; the argument stays in the Discussion. Recorded in
 `CONTINUITY.md`, where the old rule is marked reversed rather than deleted.
 
-**The `\flow{}` transitions in Methods are cut.** All eight. The macro in
+**The `\flow{}` transitions in Methods are cut.** All nine. The macro in
 `preamble.tex` goes dead with them.
+
+**Handovers are maths-free fragments, not paragraph pastes.** AW, 10 November: Word maths does not survive a copy between documents, and a paragraph paste would destroy maths already correct in his file. `make_changeset.py` enforces it and refuses to emit a paste block containing maths.
 
 **Spelling stays British** unless overturned. NMI accepts either if
 consistent; IBDex is American.
