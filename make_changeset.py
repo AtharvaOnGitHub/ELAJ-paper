@@ -33,7 +33,9 @@ FILES = {"intro": "sections/01-introduction.tex",
 REFS = {"fig:model": "1", "fig:knobs": "2", "fig:latents": "3", "fig:endo": "4",
         "tab:field": "1", "eq:token": "1", "eq:decoder": "2", "eq:objective": "3"}
 
-CHANGES = [
+BATCHES = {}
+
+BATCHES["2026-11-09"] = [
  # ---- symbols. The replacement is maths, so it goes in by hand. ----------
  dict(k="maths", w='Results, "The ELAJ frontier", the two paragraphs beginning '
                    '"Raising the information cost" and "Adversarial weight was found"',
@@ -134,6 +136,29 @@ CHANGES = [
         "references are uncapped, so this costs nothing against the 50."),
 ]
 
+BATCHES["2026-11-10"] = [
+ dict(k="figure", w="Figure 1, the image itself",
+      find="the current Figure 1 image",
+      repl="figures/pinned/figure1.png",
+      y="Rebuilt. It is now FIVE panels, a to e, not six: the PRISMA diagram "
+        "has moved out to Extended Data Figure 1. a is your architecture "
+        "drawing, b and c the two frontier scatters, d and e the UMAPs. "
+        "180 x 185.6 mm at 600 dpi, so it is placed at full text width."),
+ dict(k="paste_tex", f="disp", a="The architecture, in five stages",
+      w="Figure 1's caption, all of it",
+      y="Rewritten for the new panel a and the new panel lettering. It is "
+        "also now the only place in the paper that expands DAB, ECS and "
+        "Phase CLS, since the glosses stayed out of the drawing.",
+      maths=["ELAJ B-hi, twice: subscript the \u2018B hi\u2019 after ELAJ"]),
+ dict(k="figure", w="A NEW Extended Data Figure 1, after the main figures",
+      find="(nothing, this is an insertion)",
+      repl="figures/pinned/extdata1_prisma.png",
+      y="PRISMA, moved out of Figure 1. Place it at about 72% of text width."),
+ dict(k="paste_tex", f="disp", a="Record selection, following PRISMA 2020",
+      w="The caption for that new Extended Data Figure 1",
+      y="Carries the arithmetic that used to sit in Figure 1's caption."),
+]
+
 NEW_REFERENCES = [
  "Wolf, F. A., Angerer, P. & Theis, F. J. SCANPY: large-scale single-cell "
  "gene expression data analysis. Genome Biol. 19, 15 (2018).",
@@ -160,13 +185,50 @@ def paragraphs(path):
     t = re.sub(r"\\note\{(?:[^{}]|\{(?:[^{}]|\{[^{}]*\})*\})*\}", "", t)
     return re.split(r"\n\s*\n", t)
 
-def to_markdown(s):
+def demath(m: str) -> str:
+    """Inline maths as plain readable text, for a paste that cannot carry it.
+
+    Deleting the span (the behaviour this replaces) silently turned
+    "ELAJ$_{B hi}$" into "ELAJ", so the reader could not see where the
+    subscript belonged.
+    """
+    s = m.strip("$")
+    s = re.sub(r"\\text(?:rm|bf|it)?\{([^}]*)\}", r"\1", s)
+    s = re.sub(r"[_^]\{([^}]*)\}", r" \1", s)
+    s = re.sub(r"[_^]", " ", s)
+    s = s.replace(r"\,", " ").replace(r"\;", " ").replace(r"\!", "")
+    s = re.sub(r"\\[a-zA-Z]+", "", s)
+    return re.sub(r"\s+", " ", s.replace("{", "").replace("}", "")).strip()
+
+
+def to_markdown(s, keep_maths=True):
+    """LaTeX to pandoc markdown.
+
+    MATHS IS HELD ASIDE during the prose cleanup and only then restored or
+    flattened. Two regressions have come from getting this wrong. Stripping
+    a backslash inside maths turned \; into a bare ; and corrupted the
+    decoder equation. Then a later rewrite of this very function silently
+    dropped both the maths guard AND the \caption strip, which went unseen
+    because that batch happened to have no maths in its one paste.
+    """
     s = s.strip()
     s = re.sub(r"\\begin\{figure\*?\}(\[[^\]]*\])?", "", s)
     s = re.sub(r"\\end\{figure\*?\}", "", s)
     s = re.sub(r"\\includegraphics(\[[^\]]*\])?\{[^}]*\}", "", s)
     s = s.replace(r"\centering", "")
+    s = re.sub(r"\\begin\{(equation\*?)\}(.*?)\\end\{\1\}",
+               lambda m: "\n$$" + re.sub(r"\\label\{[^}]*\}", "",
+                                         m.group(2)).replace("\n", " ") + "$$\n",
+               s, flags=re.S)
+
+    held = []
+    def hold(m):
+        held.append(m.group(0))
+        return f"\x00{len(held) - 1}\x00"
+    s = re.sub(r"\$\$.*?\$\$|\$[^$]*\$", hold, s, flags=re.S)
+
     s = re.sub(r"\\(?:sub)*section\*\{([^}]*)\}", r"## \1", s)
+    s = re.sub(r"\\caption\{", "", s)
     s = re.sub(r"\\label\{[^}]*\}", "", s)
     s = re.sub(r"\\ref\{([^}]*)\}", lambda m: REFS.get(m.group(1), "??"), s)
     for cmd in ("citep", "cite"):
@@ -183,33 +245,57 @@ def to_markdown(s):
     s = s.replace(r"\,", " ").replace("--", "\u2013")
     s = re.sub(r"\\(?![a-zA-Z])", "", s)
     s = re.sub(r"[ \t]+", " ", s)
-    return s.strip().rstrip("}").strip()
+    s = s.strip().rstrip("}").strip()
+
+    def restore(m):
+        raw = held[int(m.group(1))]
+        if keep_maths:
+            return raw
+        flat = demath(raw)
+        # a subscript flattened to text has to keep a word boundary, or
+        # "ELAJ$_{B hi}$" comes out as "ELAJB hi"
+        before = s[m.start() - 1] if m.start() else " "
+        return (" " if before.isalnum() and flat[:1].isalnum() else "") + flat
+    s = re.sub("\x00(\\d+)\x00", restore, s)
+    return s
+
 
 def main():
     tag = sys.argv[1] if len(sys.argv) > 1 else "changeset"
+    CHANGES = BATCHES[tag]
     cache = {k: paragraphs(v) for k, v in FILES.items()}
     out = ["# Changes for the supervisor's file", "",
            f"Batch {tag}. {len(CHANGES)} changes.", "",
-           "**Word maths does not survive a copy between documents, so almost "
-           "nothing here is a paragraph paste.** Each change below is a short "
-           "find-and-replace that contains no maths, so the equations and "
-           "symbols already in his file are never touched. The few that are "
-           "marked MATHS need Word's equation tool and cannot be automated.", ""]
+           "**Word maths does not survive a copy between documents.** Every "
+           "FIND and REPLACE string below is free of maths, so nothing here "
+           "can destroy an equation already in his file. Where a whole block "
+           "has to be pasted, any maths inside it is written out in plain "
+           "words and flagged under \"re-apply by hand\".", ""]
 
     for i, c in enumerate(CHANGES, 1):
         kind = c["k"]
         out += [f"## {i} of {len(CHANGES)}  \u2014  {kind.upper()}", "",
                 f"**Where:** {c['w']}", ""]
-        if kind == "paste":
-            hits = [p for p in cache[c["f"]] if c["a"] in p]
+        if kind == "figure":
+            out += [f"**Do:** replace the image.", "",
+                    f"**New file:** `{c['repl']}`", "",
+                    f"**Why:** {c['y']}", ""]
+        elif kind in ("paste", "paste_tex"):
+            src = cache[c["f"]]
+            hits = [p for p in src if c["a"] in p]
             if len(hits) != 1:
                 sys.exit(f"ERROR {i}: anchor matched {len(hits)} paragraphs")
-            body = to_markdown(hits[0])
-            if "$" in body:
-                sys.exit(f"ERROR {i}: a paste block contains maths, which will "
-                         f"not survive the copy. Split it into edits.")
-            out += ["**Do:** paste everything between the rules below.", "",
-                    f"**Why:** {c['y']}", "", "---", "", body, "", "---", ""]
+            body = to_markdown(hits[0], keep_maths=not c.get("maths"))
+            if "$" in body and not c.get("maths"):
+                sys.exit(f"ERROR {i}: a paste block contains maths and declares "
+                         f"no `maths` note. Either split it into edits or say "
+                         f"what has to be re-applied by hand.")
+            body = re.sub(r"\$[^$]*\$", "", body)
+            out += ["**Do:** paste everything between the rules below.", ""]
+            if c.get("maths"):
+                out += ["**Then re-apply by hand (maths will not copy):** "
+                        + "; ".join(c["maths"]), ""]
+            out += [f"**Why:** {c['y']}", "", "---", "", body, "", "---", ""]
         else:
             times = f", {c['n']} times" if c.get("n", 1) > 1 else ""
             verb = ("Insert by hand with Word's equation tool" + times
