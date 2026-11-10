@@ -29,6 +29,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+# ARIAL THROUGHOUT, and it is a shared decision rather than a default.
+# Panel a is drawn in LucidChart and the rest here, so one typeface has
+# to span both. Arial ships on macOS as a .ttf LucidChart can import,
+# matplotlib resolves it to the same file, and it is the grotesque the
+# Nature family sets its own figures in. It also carries every mark this
+# paper needs: Dümpelmann, Marečková, García-Alonso, lambda, subscripts.
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -44,8 +50,11 @@ PERI, PERI_F = "#7D87FA", "#C2C6FA"
 # The type scale is Figure 1's, measured off scGPT and scFoundation:
 # panel letter 9, title 6.5, body 5.5. Extended Data has no panel letter.
 FS_BODY = 5.5
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": FS_BODY,
-                     "text.color": INK, "mathtext.fontset": "dejavusans"})
+plt.rcParams.update({"font.family": "Arial", "font.size": FS_BODY,
+                     "text.color": INK, "mathtext.fontset": "custom",
+                     "mathtext.rm": "Arial",
+                     "mathtext.it": "Arial:italic",
+                     "mathtext.bf": "Arial:bold"})
 
 
 def bf(s) -> str:

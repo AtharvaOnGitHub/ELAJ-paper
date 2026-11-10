@@ -33,6 +33,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+# ARIAL THROUGHOUT, and it is a shared decision rather than a default.
+# Panel a is drawn in LucidChart and the rest here, so one typeface has
+# to span both. Arial ships on macOS as a .ttf LucidChart can import,
+# matplotlib resolves it to the same file, and it is the grotesque the
+# Nature family sets its own figures in. It also carries every mark this
+# paper needs: Dümpelmann, Marečková, García-Alonso, lambda, subscripts.
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -50,8 +56,11 @@ AMBER, AMBER_F = "#CC4E00", "#FFDDA6"
 SALMON, SALMON_F = "#825252", "#F78D8D"
 NULLC = "#DDE0E4"
 FS_LETTER, FS_TITLE, FS_BODY = 9.0, 6.5, 5.5
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": FS_BODY,
-                     "text.color": INK, "mathtext.fontset": "dejavusans"})
+plt.rcParams.update({"font.family": "Arial", "font.size": FS_BODY,
+                     "text.color": INK, "mathtext.fontset": "custom",
+                     "mathtext.rm": "Arial",
+                     "mathtext.it": "Arial:italic",
+                     "mathtext.bf": "Arial:bold"})
 
 # (display label, file, test, label-in-file, which block)
 ROWS = [
