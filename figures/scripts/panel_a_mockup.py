@@ -49,7 +49,7 @@ PURP_F, PURP_E, PURP_T = "#F2EAF7", "#6750A4", "#4A3878"
 ROSE = "#C2544E"
 NOTE = "#7A818C"
 
-FS_HEAD, FS_BOX, FS_NOTE = 6.5, 6.0, 5.2
+FS_HEAD, FS_BOX, FS_NOTE = 6.5, 6.0, 5.5   # headings / box labels / annotations
 plt.rcParams.update({"font.family": "Arial", "text.color": "#2B3038"})
 
 
