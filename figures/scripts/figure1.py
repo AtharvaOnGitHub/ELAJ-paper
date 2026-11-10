@@ -116,24 +116,31 @@ FAMILY_C = ["#0072B2",   # stromal      blue
             "#009E73",   # endothelial  bluish green
             "#E69F00"]   # immune       amber
 
-# Studies: Paul Tol's muted scheme, ORDERED LIGHT TO DARK and handed out
-# largest study first. Eleven categories is past the point where hand-picking
-# stays separable, so the scheme is published rather than invented; the
-# ordering is the part that matters here. Alphabetical assignment gave the
-# biggest study the darkest ink and it swallowed the panel, which is the
-# opposite of what e is for: the claim is that no study owns territory, and
-# a dark mass reads as though one does.
-STUDY_C = ["#DDCC77",   # sand
-           "#88CCEE",   # cyan
-           "#6699CC",   # steel blue
-           "#44AA99",   # teal
-           "#CC6677",   # rose
-           "#999933",   # olive
-           "#AA4499",   # purple
-           "#117733",   # green
-           "#882255",   # wine
-           "#661100",   # brick
-           "#332288"]   # indigo
+# Studies: distinct hues, with the muddy band removed.
+#
+# THREE ATTEMPTS, and each failure said something different. Alphabetical
+# assignment handed the largest study the darkest ink and the panel read as
+# one dark mass, which is the opposite of what e claims. Tol's muted scheme
+# fixed the ordering but carries sand and olive, and yellow overplotted
+# against everything averages to brown; AW: "very closely resembles vomit".
+# Going cool-dominant killed the mud but made eleven studies look like one
+# colour, which defeats having a legend at all.
+#
+# What was actually wrong was the yellow-olive-brown band, not the hue
+# spread. So: eleven well-separated hues around the wheel with nothing
+# between yellow and olive, ordered so the largest studies take the clean
+# mid-tones and the smallest take the deep ones.
+STUDY_C = ["#5BA3A0",   # teal         (largest study)
+           "#4C78A8",   # blue
+           "#E45756",   # red
+           "#54A24B",   # green
+           "#B279A2",   # mauve
+           "#F58518",   # orange
+           "#2E5C8A",   # navy
+           "#7B4FA0",   # purple
+           "#FF9DA6",   # pink
+           "#1B7A6B",   # deep teal
+           "#8C2D3F"]   # wine         (smallest study)
 
 GREY_PT = "#DCE0E4"      # cells with no label, in both panels
 
@@ -281,10 +288,16 @@ def umap(ax, lax, xy, series, order, colours, names=None):
     # panel heading already names the variable and repeating it reads as
     # two labels for one thing.
     lax.set_xlim(0, 1); lax.set_ylim(0, 1); lax.axis("off")
-    n = len(order) + 1
+    n = len(order) + (1 if series.isna().any() else 0)
     step = min(0.072, 0.94 / n)
     y = 0.5 + step * (n - 1) / 2
-    for lev, c in list(zip(order, colours)) + [("unlabelled", GREY_PT)]:
+    # "unlabelled" only where such cells exist. Every cell has a study, so
+    # claiming the category in e invented a class with nothing in it; cell
+    # family genuinely has unlabelled cells and keeps it.
+    entries = list(zip(order, colours))
+    if bool(series.isna().any()):
+        entries.append(("unlabelled", GREY_PT))
+    for lev, c in entries:
         lax.scatter([0.035], [y], s=7, color=c, lw=0, clip_on=False)
         lax.text(0.12, y, (names or {}).get(lev, str(lev)),
                  fontsize=FS_BODY, va="center", ha="left", color=SOFT)
@@ -350,6 +363,8 @@ def main() -> None:
     # largest first, so the lightest ink covers the most area and the legend
     # reads in the order the eye meets the colours
     studies = list(m["study"].value_counts().index)
+    n_nolabel = int(m["study"].isna().sum())
+    print(f"  studies: {len(studies)}, cells with no study label: {n_nolabel}")
     umap(ax_e, lax_e, xy, m["study"], studies, STUDY_C[:len(studies)],
          names=STUDY_NAME)
 
