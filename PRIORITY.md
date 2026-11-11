@@ -60,12 +60,20 @@ Discuss before drawing.
       The order of work, AW's: **claims laid out by paper → pick what is
       most relevant → scripts and inferences.**
 
+      **Step 1 is done.** 30 disease claims from the ten corpus papers are
+      in `CLAIMS_LEDGER.md`, read from the PDFs. Protocols and status live
+      in `EXPERIMENTS.md` as X1 to X15. **Step 2, picking what is most
+      relevant, is with AW.**
+
       The standing rule "no per-study numbers for metadata in the latent"
       still binds. Testing a published claim against the pooled corpus runs
       the other way and is allowed; a reproduction needing a per-study
       latent breakdown is out.
+
+      Nothing in this axis needs a GPU or a retrain. The two prerequisites
+      are **X1 label transfer** and **X2 fetching `vocabulary_v1.json`**.
 - [ ] **Group embeddings, for Supplementary.** AW's own addition. Needs
-      work and possibly HPC time. Not scoped yet.
+      work and possibly HPC time. Not scoped yet. Tracked as X15.
 
 ## Tier 1. The sections. **Abstract first this time.**
 
@@ -97,6 +105,29 @@ outright until the claims axis lands and Figure 2 is decided.
       the warning attached: *"I'd be careful of overreaching here."*
       The message that must land is that **a disease atlas is a great thing
       to have for a disease**.
+
+      **Three quotations the Introduction must carry.** The first is the
+      strongest licence the project has found and it is endometriosis
+      specific, which Hrovatin is not. All three are AW's call to place.
+
+      1. HECA, Marečková 2024, *Nat. Genet.*: *"Conflicting evidence exists
+         about whether and to what extent the endometrium itself (that is,
+         the eutopic endometrium) differs between those with and without
+         endometriosis. ... Larger sample sets are now needed to unpick
+         whether and how the endometrium differs in those with and without
+         endometriosis."* The field's own reference atlas asking for the
+         thing our corpus is. ⚠ The full sentence uses "women"; quoting it
+         verbatim is reporting the source, which is still the open question
+         in `INTRODUCTION_STRUCTURE.md`.
+      2. HECA again: *"Previous endometrial single-cell atlases profiled
+         few donors and lacked consensus in defining cell types."* AW:
+         quote and cite.
+      3. Dümpelmann 2026: *"recent single-cell endometriosis studies
+         including the eutopic endometrium faced limitations, such as small
+         eutopic sample size, cell type exclusion, exogenous hormone
+         treatment, or did not consider menstrual cycle phase changes."*
+         AW: quote and cite. Every item is a design limitation pooling
+         addresses.
 - [ ] **Results: remould, do not rewrite.** The numbers stand. What changes
       is the framing and the subsection headers, which must name the
       **stage or the constraint**, not the dataset, or a reviewer reads the

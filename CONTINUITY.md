@@ -784,3 +784,65 @@ failure, not disagreement.
 **This is a "get it to the reviewer's desk" draft**, not a
 hold-on-for-dear-life Nature submission. Scale criticality accordingly. He
 has said this twice.
+
+## The claims axis, opened 11 November. Two convergences worth remembering.
+
+The supervisor's group asked for published endometriosis claims to be tested
+at our scale. AW ruled it a **new results axis**. The ledger is
+`CLAIMS_LEDGER.md`, the protocols are `EXPERIMENTS.md`.
+
+**The thing that came out of reading the ten papers properly: independent
+studies keep landing on the same findings, and none of them can confirm
+another**, because no two share a cohort or a cell vocabulary. That is the
+atlas's job stated precisely, and it is the answer to "what would an atlas
+do that a study cannot".
+
+**Convergence 1, perivascular and mural cells.** Dümpelmann: the only
+case-control composition change in 57 cell types is a 1.6-fold rise in
+secretory mural cells. Tan: a perivascular population specific to peritoneal
+lesions. Sarsenova: perivascular cells carry the largest metabolic
+reprogramming. Three designs, three tissues, 60 and 14 and 4 donors.
+
+**Convergence 2, lesions carry a less differentiated epithelium.**
+García-Alonso: lesions enriched for SOX9+ LGR5+ progenitor signature, and
+they reached it by **deconvoluting bulk microarray because they had no lesion
+single cells**. Tan: a progenitor-like epithelial subpopulation in 14 people.
+We hold 58 ectopic donors, so testing it is a first direct test rather than a
+replication.
+
+**The hardest constraint, and it reframes the whole axis.** Only four of
+eleven keys brought cell annotations and two carry nearly all of them. Six
+brought none: Fonseca, Huang, Tan, Shih, Chen, Sarsenova, which is 782,016
+cells and 115 donors. So almost every composition claim in the literature
+concerns cell types we have no labels for **in the study that made the
+claim**, and testing them needs label transfer through the latent first.
+That is not a workaround; it is the atlas performing its defining function.
+
+**Shih cannot be tested at all.** Our copy of that cohort is 11 donors, all
+eutopic. Its controls and its thirteen symptomatic-undiagnosed subjects are
+not in the corpus, and all four of its claims are case-versus-control. Those
+are the largest effect sizes claimed anywhere in the corpus, both at
+p < 10⁻¹⁶, and the paper should say plainly that we could not test them.
+
+## A fourth instance of the same failure: I summarised the summary again
+
+I built the first claims ledger from `Thesis/literature-evidence.md` rather
+than from the papers. It is AW's own verified extraction, so the quotes were
+sound, but it was made for a literature review and collects whatever
+positions the field. Half of what it yielded was not a claim about
+endometriosis at all, and AW sent it back.
+
+**One concrete error it produced.** I recorded Sarsenova's "no difference
+between cases and controls" as their own N=3 vs N=3 comparison and called it
+the strongest test available. They have no controls; the comparison borrows
+an **external dataset**, and it covers metabolic pathway activity only, not
+expression. The claim is narrower than I wrote and the test that settles it
+is narrower too.
+
+This is the Wikipedia failure wearing different clothes. **Check the paper,
+not the summary of the paper** now has a second half: an extraction made for
+one purpose does not transfer to another.
+
+**All ten corpus PDFs were on disk the whole time**, at
+`Endo research/My paper/Final 10/`, now extracted to `_txt/` there. I spent
+a round reporting García-Alonso as an unclosable gap without looking.
