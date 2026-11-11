@@ -566,6 +566,27 @@ fixed point and no curve. Affordable retraining is what makes the trade-off
 measurable at all, so inductive-bias-instead-of-scale is what buys the
 measurement. Say this in the Introduction; a reader will not infer it.
 
+**HOW IT WAS REACHED, because the process matters more than the answer.**
+The line took about a dozen rounds and most of my contributions were wrong.
+What actually broke the deadlock was AW naming the trap as a quadrilemma:
+
+> "Is this an endometriosis paper? If so, what endometriosis result do we
+> have. Is this an ML paper? Ok show the model on more than one dataset.
+> Is this an evaluation framework paper? Show on other datasets. Is this a
+> frontier paper? What is it doing in NMI?"
+
+Every framing that puts a METHOD at the centre owes a second dataset, and
+there is no second endometriosis corpus. The escape was to stop centring a
+method. AW's own thesis line is the key and it should go in the paper:
+**this corpus is not a sample of the field, it is the field.**
+
+**The step that unstuck it was research, not thinking.** AW: *"Can you do
+some research on this instead of plainly agreeing/disagreeing. This needs
+searching and outside help not mulling over."* He was right. Three rounds
+of me reasoning from what I already knew produced nothing; one search found
+Hrovatin, whose "no one-size-fits-all protocol" sentence licensed the whole
+framing. **When a framing argument stalls, go and read something.**
+
 **Four framings were tried and rejected, with AW's reasons:**
 
 | framing | why it died |
@@ -585,6 +606,64 @@ the framework is not wrong.
 field already names our frontier as an open problem" and sourced it from a
 Wikipedia page. The Hrovatin paper never uses the word trade-off. Check the
 paper, not the summary of the paper.
+
+## Figure 1, rebuilt 11 November. Four panels.
+
+| panel | what it is |
+|---|---|
+| **a** | the graphical abstract: Data, The Model, Outcomes |
+| **b** | the architecture, AW's own LucidChart drawing |
+| **c** | the frontier, cycle against donor recovery |
+| **d** | the ELAJ latent by cell family |
+
+**Two panels were cut.** The study UMAP duplicated Figure 4b. The second
+frontier scatter, cycle against study separation, belongs in Figure 2 with
+the rest of the frontier. PRISMA left earlier, to Extended Data Fig. 1.
+
+**Panel a states what the paper DOES, not the architecture.** That is
+scGPT's own Fig. 1a and AW spotted it: *"their fig 1 a is not architecture,
+it is the problem and solution stated in one image."* Its three beats are
+the one-line story in order, and the generator is
+`figures/scripts/mock_fig1a_opt8.py` writing `panel_a_abstract.png`.
+
+**Six attempts, and the failures are instructive.** A table of sentences in
+boxes (AW: "too literal with too many words"). A version so harmonious the
+eleven studies looked like one colour. Tol's muted palette, whose sand and
+olive overplot to brown (AW: "very closely resembles vomit"). A ring of
+ellipses that read as a decorative wreath. A frontier plot duplicating
+panel c. A DAB pictogram with a strike, a ring and two arrow pairs crammed
+into 26 mm.
+
+**THE TYPE-SIZE RULE I BROKE AND MUST NOT BREAK AGAIN.** Panel a was
+authored at 4.0 and 5.0 pt so the content would fit. It is placed at 175 mm
+inside a figure authored at 180, so those rendered at **3.89 and 4.86 pt**,
+under NMI's 5 pt floor. **Size the layout to fit the type, never the type
+to fit the layout.** Nothing in panel a is now below 5.6 pt and it measures
+5.54 to 5.67 in situ.
+
+**AW's LucidChart conversion, measured: 0.623 rendered points per
+LucidChart point** once the export is placed at 180 mm. His 11 / 10 / 8 pt
+gives 6.9 / 6.5 / 5.1. Tied to canvas width, so fix the canvas first and
+set type last.
+
+**Arial everywhere**, because panel a comes from LucidChart and the rest
+from matplotlib and one typeface has to span both. It ships on macOS as a
+.ttf LucidChart can import and matplotlib resolves to the same file. Note
+Arial has NO U+22EE vertical ellipsis; matplotlib drops it with a warning
+only.
+
+**Palettes, settled after three failures.** Cell families are Okabe-Ito,
+which is colourblind-safe by construction and lands on panel a's own hues.
+Studies are eleven distinct hues with the yellow-olive-brown band removed,
+ordered light to dark and handed out largest study first so the big areas
+stay readable.
+
+**The donor arithmetic in panel a, and the error it caught.** Eleven tiles
+from `patient_id` sum to **269**, not 254, because García-Alonso 2021a and
+2021b are the same fifteen people under two sets of identifiers and each
+collection relabelled its own. Methods, Data collection says so. The tiles
+now merge that pair: **ten donor groups summing to 254, eleven studies.**
+An `assert` fails the build if that drifts.
 
 ## All four heads are the decoder side. Settled, do not reopen.
 
@@ -673,18 +752,26 @@ added this stretch, each because something slipped through:
 draft mode, the downsampled figures, the preamble. The DOCX gets a plain
 `\elaj` and Calibri from `assets/reference.docx`.
 
-## Where the paper is, 9 November
+## Where the paper is, 11 November
 
-| section | words | state |
-|---|---:|---|
-| Abstract | 160 | written from scratch 7 Nov |
-| Introduction | 594 | ¶6 written; two of AW's paragraphs cut by the supervisor |
-| Results | 2,616 | **done**, six subsections |
-| Discussion | 1,249 | **done**, eight paragraphs |
-| Methods | 5,745 | **done**, zero notes |
+| section | state |
+|---|---|
+| Abstract | **stale. Full rewrite against the new line.** |
+| Introduction | **stale. Full rewrite; also clears `[65]` and `[83]`.** |
+| Results | written, 2,616 words, **needs remoulding** to the case-study shape |
+| Discussion | written, 1,249 words, **needs remoulding** |
+| Methods | done, 5,745 words, **tweaks only** |
+| Supplementary | **nothing exists.** Entirely pending. |
+| Extended Data | one item: PRISMA. Nine slots open. |
 
-Figures 1 to 4 and Table 1 all built and wired. 29 pages, zero overfull,
-both auditors green. Nine of the supervisor's nineteen comments cleared.
+Figures 1 to 4 and Table 1 build. 32 pages, zero overfull, both auditors
+green. `main.pdf` is current.
+
+**The changeset workflow is live and batch 2026-11-10 is with AW**, not yet
+confirmed applied: two images to swap and two captions to paste. Figure 1
+has changed again since, so the NEXT changeset must carry the new figure
+and a rewritten legend. **Figure 1's legend still describes the old
+five-panel set and panel a has never been described at all.**
 
 ## Two things about tone
 
