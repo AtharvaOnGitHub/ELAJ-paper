@@ -325,7 +325,8 @@ def main() -> None:
              (BX + cw * .5, BY + ch * .5),       (BX + cw * 1.5, BY + ch * .5)]
     # AW's captions, one bold line each. The article in the sentinel line
     # is a grammar fix on his wording and the only change to it.
-    draw = [(pic_groups,   [("Pathway groups", True)]),
+    draw = [(pic_groups,   [("genes read into", False),
+                            ("pathway groups", True)]),
             (pic_sentinel, [("a gene never assayed is a", False),
                             ("Did Not Sample sentinel", True)]),
             (pic_dsbn,     [("DSBN normalises study", True),
