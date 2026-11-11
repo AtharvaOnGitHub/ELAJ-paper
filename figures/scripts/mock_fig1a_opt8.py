@@ -63,15 +63,24 @@ def thick_arrow(ax, x, y, length=6.0):
 
 
 def stacked(ax, x, y, w, h, parts, colours, total):
+    """One bar, naming its levels. Percentages told the reader nothing they
+    could use; the level names say what the corpus actually contains."""
     cx = x
+    spill = []
     for (lab, n), c in zip(parts, colours):
         bw = w * n / total
         ax.add_patch(Rectangle((cx, y), bw, h, fc=c, ec="none", zorder=3))
-        if n / total >= 0.14:
-            ax.text(cx + bw / 2, y + h / 2, f"{100*n/total:.0f}%", ha="center",
-                    va="center", fontsize=FS_S, color="#FFFFFF",
-                    fontweight="bold", zorder=4)
+        if bw >= len(lab) * 1.05:
+            ax.text(cx + bw / 2, y + h / 2, lab, ha="center", va="center",
+                    fontsize=FS_S, color="#FFFFFF", zorder=4)
+        else:
+            spill.append((lab, c))
         cx += bw
+    for i, (lab, c) in enumerate(spill):
+        ax.add_patch(Circle((x + 0.8 + i * 16.0, y - 2.6), .62, fc=c,
+                            ec="none", zorder=4))
+        ax.text(x + 2.2 + i * 16.0, y - 2.6, lab, ha="left", va="center",
+                fontsize=FS_S, color=NOTE, zorder=4)
 
 
 # ── the six pictograms. Each draws around (cx, cy); captions are placed
@@ -121,37 +130,34 @@ def pic_dsbn(ax, cx, cy):
 
 
 def pic_dab(ax, cx, cy):
-    """Adversarial: coloured in, grey out, gradient pulling the other way.
+    """Back to the simpler shape AW preferred, tidied.
 
-    Polished from the previous pass. Everything now sits on one baseline,
-    the discriminator is a crossed-out study symbol rather than a question,
-    and the reversed gradient is the only thing below the line so it reads
-    as the counter-force rather than as more plumbing.
+    The crossed-circle version packed a strike, a ring, a filled disc and
+    two arrow pairs into 26 mm and read as noise. This is the earlier one:
+    study-coloured cells in, a discriminator asked which study, grey cells
+    out, and the reversed gradient as the single thing below the line.
     """
     for k, c in enumerate(SC[:3]):
-        ax.add_patch(Circle((cx - 7.9 + (k % 2) * 1.5, cy + 2.0 - k * 1.5),
-                            .52, fc=c, ec="none", zorder=4))
-    ax.annotate("", xy=(cx - 3.3, cy + 1.0), xytext=(cx - 5.4, cy + 1.0),
+        ax.add_patch(Circle((cx - 7.8, cy + 2.2 - k * 1.7), .52, fc=c,
+                            ec="none", zorder=4))
+    ax.annotate("", xy=(cx - 3.3, cy + 0.5), xytext=(cx - 6.6, cy + 0.5),
                 arrowprops=dict(arrowstyle="-|>", color=GREY_E, lw=.9,
                                 mutation_scale=6), zorder=4)
-    # a crossed-out study colour, not a crossed-out word: the previous
-    # version struck through its own label and neither survived
-    ax.add_patch(Circle((cx - 1.1, cy + 1.0), 1.7, fc=SC[1], ec="none",
-                        zorder=4))
-    ax.add_patch(Circle((cx - 1.1, cy + 1.0), 2.3, fc="none", ec=ROSE,
-                        lw=1.2, zorder=6))
-    ax.plot([cx - 2.7, cx + 0.5], [cy - 0.6, cy + 2.6], color=ROSE, lw=1.4,
-            solid_capstyle="round", zorder=6)
-    ax.annotate("", xy=(cx + 4.9, cy + 1.0), xytext=(cx + 1.2, cy + 1.0),
+    ax.add_patch(FancyBboxPatch((cx - 3.0, cy - 1.0), 4.6, 3.0,
+                                "round,pad=0,rounding_size=.7",
+                                fc="#FFFFFF", ec=ROSE, lw=.9, zorder=4))
+    ax.text(cx - 0.7, cy + 0.5, "study?", ha="center", va="center",
+            fontsize=FS_S, color=ROSE, zorder=5)
+    ax.annotate("", xy=(cx + 5.0, cy + 0.5), xytext=(cx + 1.9, cy + 0.5),
                 arrowprops=dict(arrowstyle="-|>", color=GREY_E, lw=.9,
                                 mutation_scale=6), zorder=4)
     for k in range(3):
-        ax.add_patch(Circle((cx + 6.0 + (k % 2) * 1.5, cy + 2.0 - k * 1.5),
-                            .52, fc="#C9CDD4", ec="none", zorder=4))
-    ax.annotate("", xy=(cx - 6.4, cy - 2.6), xytext=(cx + 2.2, cy - 2.6),
+        ax.add_patch(Circle((cx + 6.2, cy + 2.2 - k * 1.7), .52, fc="#C9CDD4",
+                            ec="none", zorder=4))
+    ax.annotate("", xy=(cx - 6.8, cy - 2.6), xytext=(cx + 1.4, cy - 2.6),
                 arrowprops=dict(arrowstyle="-|>", color=ROSE, lw=1.5,
                                 mutation_scale=7), zorder=5)
-    ax.text(cx - 2.1, cy - 3.0, "reversed gradient", ha="center", va="top",
+    ax.text(cx - 2.7, cy - 3.2, "reversed gradient", ha="center", va="top",
             fontsize=FS_S, color=ROSE, zorder=5)
 
 
@@ -290,13 +296,13 @@ def main() -> None:
                 fontsize=FS_T, color=NOTE)
         ax.text(cx2 + 23.3, cy2, str(n), ha="right", va="center",
                 fontsize=FS_T, color=INK)
-    dis = m.disease_status.value_counts(); tis = m.tissue.value_counts()
-    stacked(ax, 3, 13.4, 49, 3.6,
+    # ONE bar, not two. The anatomical-site bar was a second chart saying
+    # nothing the disease bar did not, in a beat that is about the corpus.
+    dis = m.disease_status.value_counts()
+    stacked(ax, 3, 9.4, 49, 4.2,
             [(k, dis[k]) for k in DIS_C], list(DIS_C.values()), len(m))
-    ax.text(3, 17.4, "disease status", fontsize=FS_S, color=NOTE, va="bottom")
-    stacked(ax, 3, 6.6, 49, 3.6, list(tis.items())[:6], TIS_C, len(m))
-    ax.text(3, 10.6, "anatomical site", fontsize=FS_S, color=NOTE, va="bottom")
-    ax.text(27.5, 2.6, "1,577,728 cells   ·   254 donors   ·   11 studies",
+    ax.text(3, 14.0, "disease status", fontsize=FS_S, color=NOTE, va="bottom")
+    ax.text(27.5, 2.2, "1,577,728 cells   ·   254 donors   ·   11 studies",
             ha="center", va="bottom", fontsize=FS_T, color=INK,
             fontweight="bold")
 
