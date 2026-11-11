@@ -171,3 +171,49 @@ in the latent" stands. Testing a published claim against the pooled corpus
 runs the other way, their claim against our 1.58M cells, and is allowed. Any
 reproduction that needs a per-study breakdown of a latent metadata test is
 not, and has to be redesigned or dropped.
+
+## AW's rulings on the 11 November batch
+
+**1. The current Figure 3 goes to Supplementary.** Both latents by cell
+family and phase. Agreed without argument.
+
+**2. Results starts with the frontier, then the UMAPs. This overrules the
+supervisor's "fig 4 should be fig 2".** AW's reasons, both of them
+structural rather than aesthetic:
+
+> "Without explaining the frontier, the model has no credibility on the
+> UMAPs. Plus we need to state why we are only talking about one ELAJ model
+> throughout first before displaying its capabilities in the UMAPs."
+
+So the main set is **Fig 1 as it stands, Fig 2 the frontier, Fig 3 the nine
+endometriosis UMAPs, Table 1.** Four display items, not three plus a table,
+and the order is the argument's order.
+
+**3. Figure 2 has to stop looking like a benchmark.** AW: *"If the frontier
+is to become fig 2, it needs to be a little more interesting and less cold
+and scientific looking. I might consider supplementing the frontier plots
+with some other panels."* **This is a to-do item and a discussion, not a
+decision taken.**
+
+**4. The reproduction work is approved and is top priority.** AW:
+
+> "We need to lay out all the major claims of each dataset and see if we can
+> support or reject them in our architecture. That is a results axis we
+> hadn't considered yet."
+
+**A new results axis**, not a citation-gathering exercise. Every dataset in
+the corpus must be accounted for even where its claims go untested.
+
+**5. The Abstract goes before the Introduction.** Reversing the order in
+PRIORITY. AW: *"I agree on the intro structure. But now it requires work on
+the HPC. I feel like this intro needs an abstract to work better. So I'll
+place abstract first this time."*
+
+**6. The Discussion is deferred**, and deliberately. It needs the HPC
+results and the figure placement settled before it can be structured.
+
+**7. Supplementary gains an item: analysing the group embeddings.** AW's,
+and it may need HPC time of its own.
+
+**The order of work AW set**: claims laid out by paper, then pick what is
+most relevant, then scripts and inferences.

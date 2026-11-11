@@ -22,40 +22,62 @@ overturns three things recorded here as settled.
 
 ---
 
-## Decisions AW owes before the next block of work
+## The display items, settled 11 November
 
-1. **Three figures and a table, or six display items?** The supervisor's
-   number against the settled one. He also wants the frontier explained in
-   far more depth and the Figure 4 UMAPs discussed in detail, which argues
-   for more figure space, not less. The resolution the feedback itself
-   offers: depth goes into the **prose and the supplementary**, and the main
-   set shrinks. AW has already said grain of salt.
-2. **If three: which three, and in what order?** The supervisor asked for
-   current Fig 4 to become Fig 2. The set that falls out is Fig 1 unchanged,
-   Fig 2 the nine endometriosis UMAPs, Fig 3 the frontier in depth, Table 1.
-   That sends the current Fig 3, both latents by family and phase, to
-   Supplementary, and it puts the atlas before the integration evidence.
-   **Results has to reorder with it.**
-3. **Is the reproduction analysis in scope?** *"Some work on reproducing
-   individual dataset results on the full corpus is needed."* New analysis,
-   needs HPC, and it overturns "no further calculation". See Tier 0.
+**Four, and the order is the argument's order.** AW overruled the
+supervisor's "fig 4 becomes fig 2" with a structural reason: the model has
+no credibility on the UMAPs until the frontier has been explained, and the
+paper has to say why only one ELAJ arm is discussed before showing what that
+arm can do.
+
+| | what it is | change |
+|---|---|---|
+| Fig 1 | graphical abstract, architecture, frontier, cell-family latent | none |
+| Fig 2 | **the frontier** | was Fig 2, stays, but **must stop looking like a benchmark** |
+| Fig 3 | **the nine endometriosis UMAPs** | was Fig 4, renumbered |
+| Table 1 | every arm | none |
+| — | both latents by family and phase | **was Fig 3, goes to Supplementary** |
+
+**Figure 2 is an open design question, not a settled one.** AW: *"it needs
+to be a little more interesting and less cold and scientific looking. I
+might consider supplementing the frontier plots with some other panels."*
+Discuss before drawing.
 
 ---
 
-## Tier 0. New analysis, because it gates three sections at once
+## Tier 0. New analysis. Everything else waits on it.
 
-- [ ] **Reproduce individual-study results on the pooled corpus.** The
-      supervisor's words: *"this is partially results and discussions because
-      we compare what they have shown and what we are able to show."* It
-      feeds the Introduction's "what other studies have shown", a Results
-      passage, and the Discussion's third comparison. **Nothing else in this
-      list needs compute; this does.** Scope it with AW first: which claims,
-      from which of the eleven studies, measurable how. The standing rule
-      "no per-study numbers for metadata in the latent" still binds, so any
-      reproduction needing a per-study latent breakdown is out.
+- [ ] **The claims axis.** AW, approving it: *"We need to lay out all the
+      major claims of each dataset and see if we can support or reject them
+      in our architecture. That is a results axis we hadn't considered
+      yet."* Not a citation exercise and not a literature table. It is a
+      new axis of results, and it gates the Abstract, the Introduction, the
+      Discussion's third section and part of Results.
 
-## Tier 1. The sections, in the order they should be done
+      **Every dataset in the corpus is accounted for even where its claims
+      go untested.** AW's condition.
 
+      The order of work, AW's: **claims laid out by paper → pick what is
+      most relevant → scripts and inferences.**
+
+      The standing rule "no per-study numbers for metadata in the latent"
+      still binds. Testing a published claim against the pooled corpus runs
+      the other way and is allowed; a reproduction needing a per-study
+      latent breakdown is out.
+- [ ] **Group embeddings, for Supplementary.** AW's own addition. Needs
+      work and possibly HPC time. Not scoped yet.
+
+## Tier 1. The sections. **Abstract first this time.**
+
+AW, 11 November: *"I feel like this intro needs an abstract to work better.
+So I'll place abstract first this time."* The Discussion is deferred
+outright until the claims axis lands and Figure 2 is decided.
+
+- [ ] **Abstract: full rewrite. FIRST.** Cannot be patched; it was written
+      to a different story. Also still carries `[42]`, avoid the
+      abbreviation, and runs 160 words against NMI's 150. It goes first
+      because the Introduction has to expand something, and 150 words is
+      the cheapest place to find out whether the story holds.
 - [ ] **Introduction: full rewrite.** Stale against the new line, and it is
       also `[65]` and `[83]`, the supervisor's largest comments. The shape
       AW set: open on the atlas-building problem, then what each study in
@@ -75,9 +97,6 @@ overturns three things recorded here as settled.
       the warning attached: *"I'd be careful of overreaching here."*
       The message that must land is that **a disease atlas is a great thing
       to have for a disease**.
-- [ ] **Abstract: full rewrite.** Cannot be patched; it was written to a
-      different story. Also still carries `[42]`, avoid the abbreviation,
-      and runs 160 words against NMI's 150.
 - [ ] **Results: remould, do not rewrite.** The numbers stand. What changes
       is the framing and the subsection headers, which must name the
       **stage or the constraint**, not the dataset, or a reviewer reads the
@@ -93,7 +112,10 @@ overturns three things recorded here as settled.
       detail rather than pointed at. This sits against the 9 November rule
       to keep Results tight; depth here means more reading per number, not
       more words per number.
-- [ ] **Discussion: remould, and it is now sectioned.** Eight paragraphs
+- [ ] **Discussion: DEFERRED, then remould, and it is now sectioned.** AW,
+      11 November: *"Discussions can come later. It needs HPC work as well
+      as figures placement decided. Without these things it is hard to
+      structure the discussion section."* Eight paragraphs
       written to the old framing become subheaded sections comparing us to
       three things, in the supervisor's order: **foundation models** (an
       atlas gives more about one disease than a foundation model does),
@@ -139,12 +161,14 @@ overturns three things recorded here as settled.
 
 - [ ] **Figure 1's legend is stale.** It describes five panels; there are
       now four, and **panel a has never been described at all**.
-- [ ] **The renumbering, once decision 2 lands.** Script names match paper
-      numbers, so `figure4.py` becoming Figure 2 renames files, captions,
-      every `\ref`, and both auditors' pins.
-- [ ] **The frontier figure** must carry the frontier properly, including
-      the cycle-against-study-separation scatter cut from Figure 1, and it
-      now has to carry the SOTA argument visually as well as in prose.
+- [ ] **The renumbering.** `figure4.py` becomes Figure 3 and the old
+      Figure 3 leaves the main set. Script names match paper numbers, so
+      this renames files, captions, every `\ref`, and both auditors' pins.
+- [ ] **Figure 2, the frontier, needs a redesign discussion before any
+      drawing.** It must carry the cycle-against-study-separation scatter
+      cut from Figure 1, it must carry the SOTA argument visually as well
+      as in prose, and per AW it must stop reading as a cold benchmark.
+      Possibly supplemented with panels that are not scatters.
 - [ ] **Every panel referenced in prose.** Figures 2, 3 and 4 still have
       panels that no sentence points at.
 - [x] Figure 1 panel c's x-label was clipped by the canvas edge. Bottom
