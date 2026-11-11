@@ -46,7 +46,12 @@ DIS_C = {"eutopic": "#4C78A8", "control": "#5BA3A0",
          "ectopic": "#E45756", "adenomyosis": "#B279A2"}
 TIS_C = ["#2E5C8A", "#5BA3A0", "#E8A23C", "#B279A2", "#CC6677", "#999933"]
 
-FS_H, FS_B, FS_T, FS_S = 6.5, 5.5, 5.0, 4.0
+# NOTHING BELOW 5.6 pt. This panel is authored at 180 mm and placed at
+# 175 mm inside Figure 1, a 97% reduction, so an authored 5.0 renders at
+# 4.86 and an authored 4.0 at 3.89 — both under NMI's 5 pt floor. The
+# earlier sizes were chosen to fit content, which is the wrong way round:
+# the floor is fixed and the layout has to give.
+FS_H, FS_B, FS_T, FS_S = 6.8, 5.8, 5.6, 5.6
 plt.rcParams.update({"font.family": "Arial", "text.color": INK})
 
 
@@ -74,13 +79,15 @@ def stacked(ax, x, y, w, h, parts, colours, total):
             ax.text(cx + bw / 2, y + h / 2, lab, ha="center", va="center",
                     fontsize=FS_S, color="#FFFFFF", zorder=4)
         else:
-            spill.append((lab, c))
+            spill.append((lab, c, cx + bw / 2))   # keep where it actually is
         cx += bw
-    for i, (lab, c) in enumerate(spill):
-        ax.add_patch(Circle((x + 0.8 + i * 16.0, y - 2.6), .62, fc=c,
-                            ec="none", zorder=4))
-        ax.text(x + 2.2 + i * 16.0, y - 2.6, lab, ha="left", va="center",
-                fontsize=FS_S, color=NOTE, zorder=4)
+    # a level too narrow to hold its name is labelled BENEATH ITS OWN
+    # SEGMENT with a leader, not parked at the far left where the reader
+    # has to match it back by colour
+    for lab, c, sx in spill:
+        ax.plot([sx, sx], [y, y - 1.5], color=c, lw=.7, zorder=4)
+        ax.text(min(sx + 0.8, x + w), y - 2.0, lab, ha="right", va="top",
+                fontsize=FS_S, color=c, zorder=4)
 
 
 # ── the six pictograms. Each draws around (cx, cy); captions are placed
@@ -143,16 +150,16 @@ def pic_dab(ax, cx, cy):
     ax.annotate("", xy=(cx - 3.3, cy + 0.5), xytext=(cx - 6.6, cy + 0.5),
                 arrowprops=dict(arrowstyle="-|>", color=GREY_E, lw=.9,
                                 mutation_scale=6), zorder=4)
-    ax.add_patch(FancyBboxPatch((cx - 3.0, cy - 1.0), 4.6, 3.0,
+    ax.add_patch(FancyBboxPatch((cx - 3.4, cy - 1.1), 6.4, 3.2,
                                 "round,pad=0,rounding_size=.7",
                                 fc="#FFFFFF", ec=ROSE, lw=.9, zorder=4))
-    ax.text(cx - 0.7, cy + 0.5, "study?", ha="center", va="center",
+    ax.text(cx - 0.2, cy + 0.5, "study?", ha="center", va="center",
             fontsize=FS_S, color=ROSE, zorder=5)
-    ax.annotate("", xy=(cx + 5.0, cy + 0.5), xytext=(cx + 1.9, cy + 0.5),
+    ax.annotate("", xy=(cx + 5.4, cy + 0.5), xytext=(cx + 3.3, cy + 0.5),
                 arrowprops=dict(arrowstyle="-|>", color=GREY_E, lw=.9,
                                 mutation_scale=6), zorder=4)
     for k in range(3):
-        ax.add_patch(Circle((cx + 6.2, cy + 2.2 - k * 1.7), .52, fc="#C9CDD4",
+        ax.add_patch(Circle((cx + 6.6, cy + 2.2 - k * 1.7), .52, fc="#C9CDD4",
                             ec="none", zorder=4))
     ax.annotate("", xy=(cx - 6.8, cy - 2.6), xytext=(cx + 1.4, cy - 2.6),
                 arrowprops=dict(arrowstyle="-|>", color=ROSE, lw=1.5,
@@ -268,19 +275,19 @@ def main() -> None:
     assert per.sum() == 254, f"tiles sum to {per.sum()}, not 254"
     names = dict(STUDY_NAME); names["garcia_alonso_2021"] = "García-Alonso 2021"
 
-    W, H = 180.0, 66.0
+    W, H = 180.0, 78.0
     fig = plt.figure(figsize=(W / 25.4, H / 25.4))
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, W); ax.set_ylim(0, H)
     ax.axis("off")
-    TOP = 60.0
+    TOP = 72.0
 
     # ── Data ────────────────────────────────────────────────────────────
     head(ax, 3, TOP, "Data", "every eligible study, sized by donors", GREY_E)
     rng = np.random.default_rng(5); placed = []
     for i, (s, n) in enumerate(per.items()):
-        r = 5.0 * (n / per.max()) ** 0.5
+        r = 5.6 * (n / per.max()) ** 0.5
         for _ in range(900):
-            ex, ey = 3 + rng.uniform(r, 49 - r), 37 + rng.uniform(r * .7, 14 - r * .7)
+            ex, ey = 3 + rng.uniform(r, 49 - r), 46 + rng.uniform(r * .7, 17 - r * .7)
             if all((ex - px) ** 2 + ((ey - py) * 1.5) ** 2 > (r + pr) ** 2 * .95
                    for px, py, pr in placed):
                 break
@@ -289,28 +296,32 @@ def main() -> None:
                              alpha=.92, zorder=3))
     rows = 5
     for i, (s, n) in enumerate(per.items()):
-        cx2 = 3 + (i // rows) * 25.5
-        cy2 = 31.0 - (i % rows) * 2.8
+        cx2 = 3 + (i // rows) * 28.5
+        cy2 = 38.0 - (i % rows) * 3.3
         ax.add_patch(Circle((cx2 + .8, cy2), .68, fc=SC[i], ec="none", zorder=4))
-        ax.text(cx2 + 2.3, cy2, names.get(s, s), ha="left", va="center",
+        nm = names.get(s, s)
+        # 0.55 em per character is DejaVu/Arial's rough average; the count
+        # is right-aligned at +25.0, so anything past ~21 mm would overlap
+        assert len(nm) * 0.55 * FS_T / 72 * 25.4 < 21.0, f"legend name too long: {nm}"
+        ax.text(cx2 + 2.3, cy2, nm, ha="left", va="center",
                 fontsize=FS_T, color=NOTE)
-        ax.text(cx2 + 23.3, cy2, str(n), ha="right", va="center",
+        ax.text(cx2 + 25.0, cy2, str(n), ha="right", va="center",
                 fontsize=FS_T, color=INK)
     # ONE bar, not two. The anatomical-site bar was a second chart saying
     # nothing the disease bar did not, in a beat that is about the corpus.
     dis = m.disease_status.value_counts()
-    stacked(ax, 3, 9.4, 49, 4.2,
+    stacked(ax, 3, 11.0, 49, 5.2,
             [(k, dis[k]) for k in DIS_C], list(DIS_C.values()), len(m))
-    ax.text(3, 14.0, "disease status", fontsize=FS_S, color=NOTE, va="bottom")
-    ax.text(27.5, 2.2, "1,577,728 cells   ·   254 donors   ·   11 studies",
+    ax.text(3, 16.6, "disease status", fontsize=FS_S, color=NOTE, va="bottom")
+    ax.text(27.5, 2.6, "1,577,728 cells   ·   254 donors   ·   11 studies",
             ha="center", va="bottom", fontsize=FS_T, color=INK,
             fontweight="bold")
 
-    thick_arrow(ax, 54.0, 33.0)
+    thick_arrow(ax, 56.0, 46.0)
 
     # ── The Model ───────────────────────────────────────────────────────
-    head(ax, 63, TOP, "The Model", "inductive bias in place of scale", BLUE_E)
-    BX, BY, BW, BH = 63.0, 4.5, 57.0, 47.5
+    head(ax, 62, TOP, "The Model", "inductive bias in place of scale", BLUE_E)
+    BX, BY, BW, BH = 62.0, 5.0, 58.0, 59.0
     ax.add_patch(FancyBboxPatch((BX, BY), BW, BH,
                                 "round,pad=0,rounding_size=1.7",
                                 fc=BLUE_F, ec=BLUE_E, lw=.9, zorder=2))
@@ -340,11 +351,11 @@ def main() -> None:
             ax.text(ccx, ctop - ch * 0.68 - j * 2.3, txt, ha="center",
                     va="top", fontsize=FS_T, color=NOTE, zorder=5)
 
-    thick_arrow(ax, 122.0, 33.0)
+    thick_arrow(ax, 122.5, 46.0)
 
     # ── Outcomes ────────────────────────────────────────────────────────
     head(ax, 131, TOP, "Outcomes", "what they hold, and how they compare", AMB_E)
-    RX, RY, RW, RH = 131.0, 4.5, 46.0, 47.5
+    RX, RY, RW, RH = 131.0, 5.0, 46.0, 59.0
     rh = RH / 4
     rdraw = [(res_dominance, ["better than all nine", "on both axes at once"]),
              (res_donor, ["least donor identity", "of anything tested"]),

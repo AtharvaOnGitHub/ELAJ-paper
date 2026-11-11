@@ -5,9 +5,18 @@ REBUILT 10 NOVEMBER against scGPT (Nat. Methods 21, 1470-1480) and
 scFoundation (Nat. Methods 21, 1481-1491), whose figure conventions were
 measured out of the published PDFs rather than guessed at.
 
-  a  the architecture, one wide strip across the top
-  b  frontier: cycle against donor recovery    c  against study separation
-  d  UMAP by cell family                       e  UMAP by study
+  a  the graphical abstract: data, the model, outcomes
+  b  the architecture, AW's own drawing
+  c  frontier: cycle against donor recovery
+  d  UMAP by cell family
+
+RESTRUCTURED 11 NOVEMBER, on AW's ruling once the paper's story settled.
+Panel a is no longer the architecture: following scGPT's own Figure 1a, it
+states what the paper DOES, and the architecture moves to b. Two panels
+were cut outright. The study UMAP duplicated what Figure 4b already shows,
+and the second frontier scatter, cycle against study separation, belongs
+with the rest of the frontier in Figure 2. What is left is four panels that
+each say something no other panel says.
 
 WHAT CHANGED AND WHY. The six-panel version was crowded, and AW was right
 about the cause: it carried three different column structures at once and no
@@ -69,6 +78,7 @@ from table1 import collect, MANIFEST, BASELINES, FOUNDATION   # noqa: E402
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
 ARM = "p1_dab168_kl1"
 HERE = Path(__file__).resolve().parents[1] / "pinned"
+ABSTRACT = HERE / "panel_a_abstract.png"
 ARCH = HERE / "panel_a_architecture.png"
 
 # ── palette ──────────────────────────────────────────────────────────────
@@ -320,8 +330,10 @@ def main() -> None:
     W = 180.0
     L, R, T, B = 3.0, 2.0, 4.0, 4.0
     aw = W - L - R
-    arch = mpimg.imread(ARCH)
-    ah = aw * arch.shape[0] / arch.shape[1]      # panel a's own aspect, exactly
+    absm = mpimg.imread(ABSTRACT)
+    abh = aw * absm.shape[0] / absm.shape[1]     # each panel's own aspect,
+    arch = mpimg.imread(ARCH)                    # exactly, or imshow letterboxes
+    ah = aw * arch.shape[0] / arch.shape[1]
     GAP_A = 8.0                                  # air under panel a
     #       ^ less than the other gaps: the drawing already carries
     #       its own foot annotations and their whitespace.
@@ -329,8 +341,8 @@ def main() -> None:
     GAP_ROW = 13.0                               # between the two plot rows
     cw = (aw - GAP_COL) / 2                      # 82 mm per column
     UW, ULG = 54.0, 3.0                          # UMAP square, then its legend
-    bh, dh = 52.0, 54.0
-    H = T + ah + GAP_A + bh + GAP_ROW + dh + B
+    ph = 54.0                                    # the plot row
+    H = T + abh + GAP_A + ah + GAP_ROW + ph + B
 
     fig = plt.figure(figsize=(W / 25.4, H / 25.4))
 
@@ -338,43 +350,32 @@ def main() -> None:
         return fig.add_axes([x / W, 1 - (y + h) / H, w / W, h / H])
 
     y_a = T
-    y_bc = y_a + ah + GAP_A
-    y_de = y_bc + bh + GAP_ROW
+    y_b = y_a + abh + GAP_A
+    y_cd = y_b + ah + GAP_ROW
     x2 = L + cw + GAP_COL
 
-    ax_a = mm(L, y_a, aw, ah)
-    ax_a.imshow(mpimg.imread(ARCH), interpolation="antialiased")
-    ax_a.axis("off")
+    ax_a = mm(L, y_a, aw, abh)
+    ax_a.imshow(absm, interpolation="antialiased"); ax_a.axis("off")
+    ax_b = mm(L, y_b, aw, ah)
+    ax_b.imshow(arch, interpolation="antialiased"); ax_b.axis("off")
 
-    # the y-axis label needs a gutter the UMAP row does not
+    # the frontier's y-axis label needs a gutter the UMAP does not
     GUT = 9.0
-    ax_b = mm(L + GUT, y_bc, cw - GUT, bh)
-    ax_c = mm(x2 + GUT, y_bc, cw - GUT, bh)
-    frontier(ax_b, D, "knn-agreement", "patient_id", "donor recovery")
-    frontier(ax_c, D, "study-mixing", "all studies", "study separation")
-    ax_b.set_ylabel("cross-donor cycle agreement", fontsize=FS_BODY,
+    ax_c = mm(L + GUT, y_cd, cw - GUT, ph)
+    frontier(ax_c, D, "knn-agreement", "patient_id", "donor recovery")
+    ax_c.set_ylabel("cross-donor cycle agreement", fontsize=FS_BODY,
                     labelpad=2.0)
 
-    ax_d = mm(L, y_de, UW, dh);  lax_d = mm(L + UW + ULG, y_de, cw - UW - ULG, dh)
-    ax_e = mm(x2, y_de, UW, dh); lax_e = mm(x2 + UW + ULG, y_de, cw - UW - ULG, dh)
-
+    ax_d = mm(x2, y_cd, UW, ph)
+    lax_d = mm(x2 + UW + ULG, y_cd, cw - UW - ULG, ph)
     FAM = ["stromal", "epithelial", "endothelial", "immune"]
     umap(ax_d, lax_d, xy, m["cell family"], FAM, FAMILY_C)
-    # largest first, so the lightest ink covers the most area and the legend
-    # reads in the order the eye meets the colours
-    studies = list(m["study"].value_counts().index)
-    n_nolabel = int(m["study"].isna().sum())
-    print(f"  studies: {len(studies)}, cells with no study label: {n_nolabel}")
-    umap(ax_e, lax_e, xy, m["study"], studies, STUDY_C[:len(studies)],
-         names=STUDY_NAME)
 
-    # no title on a: the drawing carries its own stage headings, and a
-    # second heading on the same line just crowds "Input".
+    # neither a nor b takes a title: both drawings carry their own headings
     head(ax_a, "a")
-    head(ax_b, "b", "Cycle against donor recovery", dx=-GUT / (cw - GUT))
-    head(ax_c, "c", "Cycle against study separation", dx=-GUT / (cw - GUT))
+    head(ax_b, "b")
+    head(ax_c, "c", "Cycle against donor recovery", dx=-GUT / (cw - GUT))
     head(ax_d, "d", "Cell family")
-    head(ax_e, "e", "Study")
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
