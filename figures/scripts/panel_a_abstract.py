@@ -1,31 +1,32 @@
 #!/usr/bin/env python
-"""Candidate Figure 1a — the paper in one image.
+"""Candidate Figure 1a — the paper in one image, IBDex's idiom.
 
-AW, 11 November: panel a stops being the architecture and becomes what
-scGPT's Figure 1a is, which is the paper's claim stated visually. The
-architecture moves to 1b.
+AW, 11 November, on the previous attempt: "too literal with too many words.
+That is not a graphical abstract." He was right. It was a table of sentences
+with boxes drawn round it.
 
-THE FIGURE IS THE AGREED ONE-LINE STORY, IN ORDER. Every box in the lower
-band is one clause of it and nothing appears that is not in it:
+WHAT IBDex FIG. 1a ACTUALLY DOES (Acharjee, medRxiv 2026.10.20.26365993),
+read off the PDF rather than remembered:
+  * bold coloured headings over each group, and almost no prose anywhere
+  * stacked proportional bars with the count AND the percentage set inside
+    the coloured block, in white
+  * pictograms where a picture will do
+  * numbers as the content. Sentences are the caption's job, not the
+    figure's.
 
-  "In this paper we build a single-cell disease atlas where inductive bias
-   replaces pretraining scale, and use that to measure the trade-off between
-   removing batch effects and keeping biology on a corpus limited by donors."
+So this version carries four beats, each a heading, a three-word subtitle
+and a picture made of real numbers. The argument is in the comparison of
+the pictures, not in text:
 
-  corpus limited by donors -> inductive bias not scale -> measure -> frontier
+  corpus -> donors are the binding constraint -> small model -> the frontier
 
-GRAMMAR BORROWED FROM scGPT FIG. 1a (Nat. Methods 21, 1470-1480), read off
-the published PDF rather than remembered:
-  * rounded group boxes with a coloured outline and a dark pill tab sitting
-    ON the bottom border, naming the stage. That tab is their signature.
-  * row labels on the far left, set in the row's own colour.
-  * chunky grey arrows between groups, so the eye reads stages not wiring.
-  * real content inside the boxes rather than abstractions, which is why
-    the last box holds the actual frontier rather than a cartoon of one.
+which is the agreed one-line story, with the prose removed.
 
-THE UPPER BAND IS THE PROBLEM, and it is deliberately wordy and numberless:
-a graphical abstract is read in ten seconds, so the numbers all sit in the
-lower band where the evidence is.
+THE DONOR COUNT IS 254, NOT THE 269 THE TABLE RETURNS. 269 is the
+pre-deduplication count of patient identifiers; fifteen samples are
+duplicated across studies. 254 is the settled number everywhere in the
+paper and 269 appears only in Data collection where the merge is explained.
+The assert below fails loudly if that ever stops being true.
 """
 from __future__ import annotations
 import os, sys
@@ -34,50 +35,142 @@ from pathlib import Path
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib.patches import FancyBboxPatch
+import pandas as pd
+from matplotlib.patches import FancyBboxPatch, Rectangle
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from table1 import collect, MANIFEST, BASELINES, FOUNDATION   # noqa: E402
 
+ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
+ARM = "p1_dab168_kl1"
 OUT = Path(__file__).resolve().parents[1] / "pinned"
 
-INK, NOTE, HAIR = "#2B3038", "#6F7681", "#C9CDD4"
-PROB = "#B4463C"                      # the problem band
-GREY_F, GREY_E = "#EDEFF2", "#6B7380"
-BLUE_F, BLUE_E = "#E9F2FC", "#3F6FB4"
-TEAL_F, TEAL_E = "#DCEFEC", "#2F8F88"
-AMB_F,  AMB_E  = "#FFF3DE", "#D89120"
+DONORS = 254          # see the docstring
+PARAMS_ELAJ, PARAMS_FM = 1.883986, 100.0      # millions
 
-FS_PILL, FS_BODY, FS_PROB, FS_OUT = 6.0, 5.5, 5.5, 6.0
+INK, NOTE, HAIR = "#2B3038", "#6F7681", "#C9CDD4"
+GREY_E, BLUE_E, TEAL_E, AMB_E = "#6B7380", "#3F6FB4", "#2F8F88", "#D89120"
+DIS_C = {"eutopic": "#4C78A8", "control": "#5BA3A0",
+         "ectopic": "#E45756", "adenomyosis": "#B279A2"}
+TIS_C = ["#2E5C8A", "#5BA3A0", "#E8A23C", "#B279A2", "#CC6677", "#999933"]
+
+FS_HEAD, FS_SUB, FS_NUM, FS_TINY = 6.5, 5.5, 5.5, 4.8
 plt.rcParams.update({"font.family": "Arial", "text.color": INK})
 
 
-def group(ax, x, y, w, h, fc, ec, pill, body):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, "round,pad=0,rounding_size=1.6",
-                                fc=fc, ec=ec, lw=.9, zorder=2))
-    ax.text(x + w / 2, y + h - 2.6, body, ha="center", va="top",
-            fontsize=FS_BODY, color=INK, zorder=4, linespacing=1.55)
-    # the pill sits ON the bottom border, scGPT's device
-    pw, ph = w * 0.78, 4.6
-    ax.add_patch(FancyBboxPatch((x + (w - pw) / 2, y - ph / 2), pw, ph,
-                                "round,pad=0,rounding_size=2.3",
-                                fc=ec, ec=ec, lw=0, zorder=5))
-    ax.text(x + w / 2, y + 0.05, pill, ha="center", va="center",
-            fontsize=FS_PILL, color="#FFFFFF", fontweight="bold", zorder=6)
+def heading(ax, x, y, text, sub, colour):
+    ax.text(x, y, text, ha="left", va="bottom", fontsize=FS_HEAD,
+            fontweight="bold", color=colour)
+    ax.text(x, y - 2.4, sub, ha="left", va="top", fontsize=FS_SUB, color=NOTE)
 
 
-def arrow(ax, x0, x1, y):
-    ax.annotate("", xy=(x1, y), xytext=(x0, y), zorder=1,
-                arrowprops=dict(arrowstyle="-|>", color="#B9BEC5", lw=2.4,
-                                shrinkA=0, shrinkB=0, mutation_scale=9))
+def stacked(ax, x, y, w, h, parts, colours, total, inside_min=0.10):
+    """IBDex's bar: counts and percents set inside the block, in white."""
+    cx = x
+    for (lab, n), c in zip(parts, colours):
+        bw = w * n / total
+        ax.add_patch(Rectangle((cx, y), bw, h, fc=c, ec="none", zorder=3))
+        if n / total >= inside_min:
+            ax.text(cx + bw / 2, y + h * 0.60, lab, ha="center", va="center",
+                    fontsize=FS_TINY, color="#FFFFFF", fontweight="bold", zorder=4)
+            ax.text(cx + bw / 2, y + h * 0.24, f"{100*n/total:.0f}%",
+                    ha="center", va="center", fontsize=FS_TINY,
+                    color="#FFFFFF", zorder=4)
+        cx += bw
 
 
-def mini_frontier(ax, x, y, w, h):
-    """The real frontier, not a cartoon of one. Same source as Table 1."""
+def main() -> None:
+    m = pd.read_csv(ROOT / f"Outputs/cells/{ARM}/metadata.csv.gz",
+                    low_memory=False,
+                    usecols=["study", "tissue", "disease_status", "patient_id"])
+    assert m.patient_id.nunique() == 269, "the 269/254 note in the docstring is stale"
+    n_cells, n_studies = len(m), m.study.nunique()
+    dis = m.disease_status.value_counts()
+    tis = m.tissue.value_counts()
+    per_study = m.groupby("study").patient_id.nunique().sort_values(ascending=False)
+
+    W, H = 180.0, 60.0
+    fig = plt.figure(figsize=(W / 25.4, H / 25.4))
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, W); ax.set_ylim(0, H)
+    ax.axis("off")
+
+    GAP = 7.0
+    bw = (W - 6.0 - 3 * GAP) / 4
+    xs = [3.0 + i * (bw + GAP) for i in range(4)]
+    TOP = 54.0
+
+    # ── 1. the corpus ───────────────────────────────────────────────────
+    x = xs[0]
+    heading(ax, x, TOP, "Corpus", "every eligible study", GREY_E)
+    ax.text(x, TOP - 7.0, f"{n_cells:,}", ha="left", va="top",
+            fontsize=11, fontweight="bold", color=INK)
+    ax.text(x, TOP - 14.0, f"cells  ·  {n_studies} studies", ha="left",
+            va="top", fontsize=FS_NUM, color=NOTE)
+    stacked(ax, x, 24.0, bw, 5.2,
+            [(k, dis[k]) for k in ["eutopic", "control", "ectopic", "adenomyosis"]],
+            [DIS_C[k] for k in ["eutopic", "control", "ectopic", "adenomyosis"]],
+            n_cells)
+    ax.text(x, 30.2, "disease status", ha="left", va="bottom",
+            fontsize=FS_TINY, color=NOTE)
+    stacked(ax, x, 13.0, bw, 5.2, list(tis.items())[:6], TIS_C, n_cells)
+    ax.text(x, 19.2, "anatomical site", ha="left", va="bottom",
+            fontsize=FS_TINY, color=NOTE)
+
+    # ── 2. the binding constraint ───────────────────────────────────────
+    x = xs[1]
+    heading(ax, x, TOP, "Donors", "the binding constraint", BLUE_E)
+    ax.text(x, TOP - 7.0, f"{DONORS}", ha="left", va="top",
+            fontsize=11, fontweight="bold", color=BLUE_E)
+    ax.text(x, TOP - 14.0, "donors in the whole record", ha="left", va="top",
+            fontsize=FS_NUM, color=NOTE)
+    bh, step = 1.9, 2.9
+    y = 30.5
+    for s, n in per_study.items():
+        ax.add_patch(Rectangle((x, y), bw * 0.62 * n / per_study.max(), bh,
+                               fc=BLUE_E, ec="none", alpha=.80, zorder=3))
+        ax.text(x + bw * 0.62 * n / per_study.max() + 1.0, y + bh / 2, str(n),
+                ha="left", va="center", fontsize=FS_TINY, color=NOTE)
+        y -= step
+    ax.text(x, 33.0, "donors per study", ha="left", va="bottom",
+            fontsize=FS_TINY, color=NOTE)
+
+    # ── 3. the model ────────────────────────────────────────────────────
+    x = xs[2]
+    heading(ax, x, TOP, "Model", "inductive bias, not scale", TEAL_E)
+    ax.text(x, TOP - 7.0, "1.88M", ha="left", va="top",
+            fontsize=11, fontweight="bold", color=TEAL_E)
+    ax.text(x, TOP - 14.0, "parameters", ha="left", va="top",
+            fontsize=FS_NUM, color=NOTE)
+    # The ELAJ bar is a sliver and that IS the point, so its number sits
+    # outside the bar; scFoundation's fills the column so its number goes
+    # inside, in white. The first version put both outside and the 100M
+    # label fell off the right edge of the figure.
+    for i, (lab, v, c) in enumerate((("ELAJ", PARAMS_ELAJ, TEAL_E),
+                                     ("scFoundation, the largest tested",
+                                      PARAMS_FM, "#B9BEC5"))):
+        yy = 27.0 - i * 9.5
+        barw = bw * v / PARAMS_FM
+        ax.add_patch(Rectangle((x, yy), barw, 5.2, fc=c, ec="none", zorder=3))
+        ax.text(x, yy + 6.2, lab, ha="left", va="bottom", fontsize=FS_TINY,
+                color=NOTE)
+        if barw > bw * 0.35:
+            ax.text(x + barw / 2, yy + 2.6, f"{v:.0f}M", ha="center",
+                    va="center", fontsize=FS_NUM, color="#FFFFFF",
+                    fontweight="bold", zorder=4)
+        else:
+            ax.text(x + barw + 1.4, yy + 2.6, f"{v:.2f}M", ha="left",
+                    va="center", fontsize=FS_NUM, color=TEAL_E,
+                    fontweight="bold", zorder=4)
+    ax.text(x, 6.5, "44 pathway groups  ·  16 dimensions", ha="left",
+            va="bottom", fontsize=FS_TINY, color=NOTE)
+
+    # ── 4. the frontier, the real one ───────────────────────────────────
+    x = xs[3]
+    heading(ax, x, TOP, "Frontier", "measured, not assumed", AMB_E)
     D = collect()
     pts = []
-    for m in list(BASELINES) + list(FOUNDATION):
-        g = D[m]
+    for mm in list(BASELINES) + list(FOUNDATION):
+        g = D[mm]
         a = g.get(("cross-donor", "menstrual phase"))
         b = g.get(("knn-agreement", "patient_id"))
         if a and b:
@@ -86,78 +179,30 @@ def mini_frontier(ax, x, y, w, h):
         g = D[key]
         pts.append((float(g[("knn-agreement", "patient_id")]),
                     float(g[("cross-donor", "menstrual phase")]), True))
-    xs = [p[0] for p in pts]; ys = [p[1] for p in pts]
-    x0, x1 = min(xs), max(xs); y0, y1 = min(ys), max(ys)
-    def px(v): return x + w * (0.14 + 0.72 * (v - x0) / (x1 - x0))
-    def py(v): return y + h * (0.20 + 0.70 * (v - y0) / (y1 - y0))
+    px0, py0, pw, ph = x + 3.0, 14.0, bw - 5.0, 26.0
+    X = [p[0] for p in pts]; Y = [p[1] for p in pts]
+    sx, sy = (max(X) - min(X)), (max(Y) - min(Y))
+    fx = lambda v: px0 + pw * (0.06 + 0.88 * (v - min(X)) / sx)
+    fy = lambda v: py0 + ph * (0.08 + 0.84 * (v - min(Y)) / sy)
     ours = sorted([p for p in pts if p[2]])
-    ax.plot([px(p[0]) for p in ours], [py(p[1]) for p in ours], "-",
-            color=AMB_E, lw=1.0, alpha=.65, zorder=6)
+    ax.plot([fx(p[0]) for p in ours], [fy(p[1]) for p in ours], "-",
+            color=AMB_E, lw=1.2, alpha=.7, zorder=6)
     for bx, by, mine in pts:
-        ax.scatter([px(bx)], [py(by)], s=13 if mine else 7, zorder=7,
-                   c=AMB_F if mine else "#FFFFFF",
-                   edgecolors=AMB_E if mine else NOTE, linewidths=.7)
-    ax.annotate("", xy=(x + w * 0.10, y + h * 0.95), xytext=(x + w * 0.10, y + h * 0.14),
-                arrowprops=dict(arrowstyle="-", color=HAIR, lw=.6), zorder=5)
-    ax.annotate("", xy=(x + w * 0.95, y + h * 0.14), xytext=(x + w * 0.10, y + h * 0.14),
-                arrowprops=dict(arrowstyle="-", color=HAIR, lw=.6), zorder=5)
-    ax.text(x + w * 0.52, y + h * 0.02, "donor identity kept", ha="center",
-            va="bottom", fontsize=4.8, color=NOTE)
-    ax.text(x + w * 0.055, y + h * 0.55, "cycle kept", ha="center", va="center",
-            rotation=90, fontsize=4.8, color=NOTE)
-
-
-def main() -> None:
-    W, H = 180.0, 68.0
-    fig = plt.figure(figsize=(W / 25.4, H / 25.4))
-    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, W); ax.set_ylim(0, H)
-    ax.axis("off")
-
-    GUT, GAP = 19.0, 5.0
-    bw = (W - GUT - 3.0 - 3 * GAP) / 4
-    xs = [GUT + i * (bw + GAP) for i in range(4)]
-    BY, BH = 13.0, 36.0                      # the solution band
-    PY = BY + BH + 4.0                       # the problem band
-
-    ax.text(3.0, PY + 5.0, "Where it\nbreaks", ha="left", va="top",
-            fontsize=FS_BODY, color=PROB, fontweight="bold", linespacing=1.4)
-    ax.text(3.0, BY + BH - 2.0, "What we\ndid", ha="left", va="top",
-            fontsize=FS_BODY, color=INK, fontweight="bold", linespacing=1.4)
-
-    problems = [
-        "The record is scattered\nacross four archives",
-        "Below pretraining scale.\nPretrained models give\nno advantage here",
-        "The batch covariate is\nconfounded with the\nbiology of interest",
-        "A single score hides\nwhere on the trade-off\nyou chose to stand",
-    ]
-    for x, p in zip(xs, problems):
-        ax.text(x + bw / 2, PY + 5.2, p, ha="center", va="top",
-                fontsize=FS_PROB, color=PROB, linespacing=1.5)
-
-    group(ax, xs[0], BY, bw, BH, GREY_F, GREY_E, "Corpus",
-          "Every eligible study,\nassembled once\n\n"
-          "11 studies\n1,577,728 cells\n254 donors\n6 anatomical sites")
-    group(ax, xs[1], BY, bw, BH, BLUE_F, BLUE_E, "ELAJ",
-          "Inductive bias in place\nof pretraining scale\n\n"
-          "1.88M parameters\n44 pathway groups\nDNS sentinel\nper-study normalisation")
-    group(ax, xs[2], BY, bw, BH, TEAL_F, TEAL_E, "Cross-donor agreement",
-          "Count donors, not cells\n\n"
-          "same-donor neighbours\ndiscarded\n\n"
-          "donor-level\npermutation null")
-    group(ax, xs[3], BY, bw, BH, AMB_F, AMB_E, "The frontier",
-          "Retrained 11 times,\nso the trade-off is\nmeasured not assumed")
-    mini_frontier(ax, xs[3] + bw * 0.06, BY + 2.0, bw * 0.88, BH * 0.52)
-
-    for i in range(3):
-        arrow(ax, xs[i] + bw + 0.6, xs[i + 1] - 0.6, BY + BH / 2)
-
-    ax.add_patch(FancyBboxPatch((GUT, 1.6), W - GUT - 3.0, 6.4,
-                                "round,pad=0,rounding_size=1.4",
-                                fc="#FFFFFF", ec=HAIR, lw=.7, zorder=2))
-    ax.text(GUT + (W - GUT - 3.0) / 2, 4.8,
-            "Read through the model: a person's disease status is legible in "
-            "their own endometrium, their rASRM stage is not",
-            ha="center", va="center", fontsize=FS_OUT, color=INK, zorder=3)
+        ax.scatter([fx(bx)], [fy(by)], s=17 if mine else 9, zorder=7,
+                   c="#FFDDA6" if mine else "#FFFFFF",
+                   edgecolors=AMB_E if mine else NOTE, linewidths=.8)
+    ax.annotate("", xy=(px0, py0 + ph), xytext=(px0, py0),
+                arrowprops=dict(arrowstyle="-|>", color=HAIR, lw=.7,
+                                mutation_scale=6), zorder=5)
+    ax.annotate("", xy=(px0 + pw, py0), xytext=(px0, py0),
+                arrowprops=dict(arrowstyle="-|>", color=HAIR, lw=.7,
+                                mutation_scale=6), zorder=5)
+    ax.text(px0 + pw / 2, py0 - 1.6, "donor identity kept", ha="center",
+            va="top", fontsize=FS_TINY, color=NOTE)
+    ax.text(px0 - 1.8, py0 + ph / 2, "cycle kept", ha="center", va="center",
+            rotation=90, fontsize=FS_TINY, color=NOTE)
+    ax.text(x, 6.5, "11 arms retrained  ·  every result from a named point",
+            ha="left", va="bottom", fontsize=FS_TINY, color=NOTE)
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / "panel_a_abstract.png",
