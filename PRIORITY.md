@@ -95,7 +95,10 @@ feedback itself; this is the running record of what we have settled against it.
 
 This is the spine of the work and the rest is mechanical beside it.
 
-- [ ] **The story.** Stated most strongly of the abstract and Introduction
+- [x] **The story. SETTLED 11 November**, see CONTINUITY. It is a case
+      study, framed against `hrovatin2025atlases`. Everything below now
+      has to be re-planned against that line.
+- [ ] ~~The story.~~ Stated most strongly of the abstract and Introduction
       but *"has significant reflections in other sections"*. IBDex's own story
       is one sentence long and everything serves it: historical data
       accumulate without becoming a reference, so build a frozen atlas new

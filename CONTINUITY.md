@@ -514,6 +514,73 @@ because a caption lives inside a float.
 with them in Nature style, since his file's bibliography is plain text rather
 than live fields.
 
+## THE STORY OF THE PAPER. Settled 11 November, after a dozen rounds.
+
+**The line, AW's:**
+
+> In this paper we build a single-cell disease atlas where inductive bias
+> replaces pretraining scale, and use that to measure the trade-off between
+> removing batch effects and keeping biology on a corpus with a donor count
+> constraint.
+
+**It is a CASE STUDY, deliberately.** Not a framework, not a method paper.
+That word is load-bearing and it is what finally escaped the trap AW named:
+every framing that puts a *method* at the centre owes a reviewer a second
+dataset, and there is no second endometriosis corpus because we used all of
+it. A case study owes nothing of the kind.
+
+**What licenses it is Hrovatin et al., Nat. Methods 22, 41-57 (2025)**,
+`hrovatin2025atlases`, the canonical atlas-building review by Theis and
+Luecken's group. Its own abstract says *"no one-size-fits-all protocol for
+atlas building exists, but rather we discuss context-specific considerations
+and workflows"*. So a worked context is the thing the field's own review
+says is missing. Its five stages are atlas conceptualization, data
+collection, curation and integration, atlas evaluation, atlas sharing, and
+they are the spine to hang the paper and the graphical abstract on.
+
+**The gap we fill, quoted exactly so nobody paraphrases it wrong.** From
+*Determining the level of integration by setting the batch covariate*:
+
+> "A particular challenge arises when batches directly correspond to
+> biological variables of interest. ... In such cases, one may select a
+> coarser batch covariate that is not directly confounded by the covariate
+> of interest, such as dataset instead of sample."
+
+Their examples are all DATASET-level: organoid protocols, species, organ
+locations, disease. A phenotype constant within a subject because each
+subject was sampled once is not in that list. And their fix has a cost
+nobody measures: coarsen to dataset and subject-level variation simply
+survives in the representation. **Donor recovery is not a nuisance we
+removed, it is the cost axis we report.** That is the frontier's reason to
+exist, in one sentence.
+
+**Why the two halves of the line connect, and it is not obvious.** A
+1.88M-parameter model can be retrained ELEVEN times, six frontier arms and
+five ablations at about eleven hours each. A 100M pretrained model gives one
+fixed point and no curve. Affordable retraining is what makes the trade-off
+measurable at all, so inductive-bias-instead-of-scale is what buys the
+measurement. Say this in the Introduction; a reader will not infer it.
+
+**Four framings were tried and rejected, with AW's reasons:**
+
+| framing | why it died |
+|---|---|
+| the confound as headline | every field has batch effects; we have not solved them off one disease |
+| parameter efficiency alone | true but it is evidence, not a story |
+| an evaluation framework | "how any model should be evaluated" overreaches from one corpus |
+| a framework or playbook | a framework owes proof on other datasets, same trap |
+
+**Also settled.** "Foundation models are useless" cannot be written; only
+that four of them give no advantage on this corpus. The word "playbook"
+stays out. scIB criticism must be scrupulously fair, because Hrovatin's
+authors wrote scIB: its biological half is saturated ON THIS CORPUS, and
+the framework is not wrong.
+
+**I got one thing wrong here and it is worth remembering.** I told AW "the
+field already names our frontier as an open problem" and sourced it from a
+Wikipedia page. The Hrovatin paper never uses the word trade-off. Check the
+paper, not the summary of the paper.
+
 ## All four heads are the decoder side. Settled, do not reopen.
 
 **AW, 10 November, and he says he has cleared this before:** *"All 4 heads
