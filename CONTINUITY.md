@@ -520,8 +520,13 @@ than live fields.
 
 > In this paper we build a single-cell disease atlas where inductive bias
 > replaces pretraining scale, and use that to measure the trade-off between
-> removing batch effects and keeping biology on a corpus with a donor count
-> constraint.
+> removing batch effects and keeping biology on a corpus limited by donors.
+
+**"Limited by donors" is the final wording and it was chosen carefully.**
+Not "few donors": 254 is about four times the largest existing integration,
+so any phrasing that sounds like a shortage fights the paper's own strongest
+number. Limited by donors names the binding variable, implies cells are
+plentiful, and concedes nothing.
 
 **It is a CASE STUDY, deliberately.** Not a framework, not a method paper.
 That word is load-bearing and it is what finally escaped the trap AW named:
