@@ -97,3 +97,77 @@ consistent; IBDex is American.
 4. **Then tackle items one at a time.**
 
 Do not run ahead of this order.
+
+---
+
+# Group feedback, 11 November 2026
+
+**Verbatim, as AW gave it.** Presented Figure 1 and Figure 4 to the
+supervisor and others in his group. Same contract as above: nothing here is
+softened or quietly dropped.
+
+- Fig 1 is good now (the x-axis label in fig 1 c is getting cut off though)
+- I presented our current fig 1 and current fig 4. My guide believes that 3
+  figures and a table should be enough. I would take that with a grain of
+  salt though. He suggested that our current fig 4 should be fig 2.
+- There needs to be a lot of supplementary figures and data. Tables, figures
+  of all kinds, etc. See IBDex supplementary for reference. Reducing figures
+  in the main prose is countered by figures in supplementary. All your crazy
+  ideas can fit here.
+- Intro needs to clear up the story a little more from the foundations:
+  - why scRNA
+  - why endometriosis
+  - why disease atlas
+- Intro also needs to say:
+  - what other endometriosis studies have shown (this is partially results
+    and discussions because we compare what they have shown and what we are
+    able to show. Some work on reproducing individual dataset results on the
+    full corpus is needed)
+  - what foundation models are capable of saying on a single disease level
+    and how having a disease atlas on a study beats foundation model
+    approach. (I'd be careful of overreaching here. However, the main message
+    of; having a disease atlas is a great thing for a disease, should be very
+    evident)
+- Results should focus deeply on what is coming out of the model:
+  - discuss UMAPs from fig 4 in more detail.
+  - Frontier needs to be explained clearly and in detail. It needs to
+    highlight the significance of beating everybody, highlight the usefulness
+    of having a disease atlas against smaller datasets, etc. This cements the
+    paper's place in a journal like NMI. SOTA status is important.
+- Discussion needs to be sectioned and should talk about us in comparison to
+  3 things: foundation models (how having a disease atlas gives more info
+  than a foundation model does), baselines (how building a better
+  architecture helps), single datasets (how we can prove or disprove the
+  claims made by smaller datasets because of a much larger scale).
+- We need to be clear that it is a disease atlas especially because we are
+  comparing against foundation models. It is easy for the reader to ask "does
+  this translate into a great foundation model" or "what can you say about
+  foundation models being shit" or "does that mean it would work on any
+  disease". This needs to be future work and limitations.
+
+## What this batch changes, and what it does not
+
+**The one-line story survives intact and is reinforced.** "We need to be
+clear that it is a disease atlas" is the first noun of the line AW settled on
+11 November. Nothing here reopens the framing; this batch is about making the
+framing legible.
+
+**Three rules are overturned or bent by this feedback.** Each is recorded in
+`CONTINUITY.md` as settled, so each needs AW's explicit word:
+
+| settled rule | what this batch does to it |
+|---|---|
+| "Six display items, not eight" | the supervisor says three figures and a table. AW: grain of salt |
+| "No further calculation unless a reviewer asks or something is wrong" | reproducing individual-study results on the pooled corpus is new analysis, and a reviewer has in effect now asked |
+| my failure mode 1, "do not pre-empt objections nobody has made" | the three reader questions are now named by the supervisor, so answering them is required rather than defensive |
+
+**One instruction is new work, not writing**: *"Some work on reproducing
+individual dataset results on the full corpus is needed."* It is the largest
+item in this batch by effort and the only one that needs HPC. Scope it with
+AW before building anything.
+
+**It also brushes a standing rule.** "No per-study numbers for any metadata
+in the latent" stands. Testing a published claim against the pooled corpus
+runs the other way, their claim against our 1.58M cells, and is allowed. Any
+reproduction that needs a per-study breakdown of a latent metadata test is
+not, and has to be redesigned or dropped.

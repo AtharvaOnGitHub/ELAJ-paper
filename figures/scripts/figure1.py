@@ -155,7 +155,7 @@ STUDY_C = ["#5BA3A0",   # teal         (largest study)
 GREY_PT = "#DCE0E4"      # cells with no label, in both panels
 
 # ── type scale, scGPT's, and nothing outside it ──────────────────────────
-FS_LETTER, FS_TITLE, FS_BODY = 9.0, 6.5, 5.5
+FS_LETTER, FS_TITLE, FS_BODY = 10.0, 6.5, 5.5
 plt.rcParams.update({"font.family": "Arial", "font.size": FS_BODY,
                      "text.color": INK, "axes.labelcolor": INK,
                      "xtick.color": SOFT, "ytick.color": SOFT,
@@ -328,7 +328,10 @@ def main() -> None:
 
     # ── layout, every number a millimetre ────────────────────────────────
     W = 180.0
-    L, R, T, B = 3.0, 2.0, 4.0, 4.0
+    L, R, T, B = 3.0, 2.0, 4.0, 8.0
+    #                         ^ panel c spends ~6 mm below its axes on
+    #                         tick labels and the x-label. At B=4 the
+    #                         x-label was clipped by the canvas edge.
     aw = W - L - R
     absm = mpimg.imread(ABSTRACT)
     abh = aw * absm.shape[0] / absm.shape[1]     # each panel's own aspect,
@@ -376,6 +379,13 @@ def main() -> None:
     head(ax_b, "b")
     head(ax_c, "c", "Cycle against donor recovery", dx=-GUT / (cw - GUT))
     head(ax_d, "d", "Cell family")
+
+    # the clipped x-label was invisible until a reader found it, so it is
+    # now a build failure rather than a defect someone has to spot
+    fig.canvas.draw()
+    for ax, what in ((ax_c, "panel c x-label"),):
+        bb = ax.xaxis.label.get_window_extent()
+        assert bb.y0 >= 0, f"{what} is clipped {-bb.y0:.1f} px off the canvas"
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
