@@ -8,12 +8,12 @@ the claims axis; it is the place for any experiment, not just those.
 
 | X | what | for | status | cost |
 |---|---|---|---|---|
-| X1 | kNN label transfer in the latent | prerequisite for X6–X9, X14 | todo | CPU, hours |
+| X1 | kNN label transfer, **four families only** | prerequisite for X7–X9, X14 | **validated**, see below | CPU, hours |
 | X2 | Fetch `vocabulary_v1.json` from HPC | prerequisite for X10–X13 | todo | minutes |
 | X3 | Cycle agreement split by disease status | H1, H2 | todo | CPU, small |
 | X4 | Severity dose-response write-up | D2, H4 | todo, **numbers exist** | writing |
 | X5 | Disease displacement by family, read against HECA | M1 | todo, **numbers exist** | writing |
-| X6 | Perivascular and mural cells across three studies | D3, T1, T2, S2, M1 | blocked on X1 | CPU, small |
+| X6 | Perivascular and mural cells across three studies | D3, T1, T2, S2, M1 | **future work**, AW 12 Nov: finer cell types are out of this paper | — |
 | X7 | Progenitor-like epithelium in lesions | G1, T3, H2 | blocked on X1 | CPU, small |
 | X8 | Composition, case vs control | D1, D3 | blocked on X1 | CPU, small |
 | X9 | Composition, lesion vs eutopic | S2 | blocked on X1 | CPU, small |
@@ -66,11 +66,43 @@ Marečková 53%, so a transfer that merely inherited the source prior would
 collapse. Balanced accuracy 0.969 against a 0.527 baseline says it does not.
 Worst cell in either confusion matrix is immune into Marečková at 0.887.
 
-⚠ **What this does not show.** Both studies are endometrium on droplet
-capture and both are the best annotated in the corpus. The six unlabelled
-studies include peritoneum, ovary, myometrium and follicular fluid, and
-**there are no labels there to validate against**. That risk cannot be
-measured away.
+**Out-of-tissue validation on `li_2025`, the only one available.** Li brought
+its own `celltype` column for 45,312 follicular-fluid cells. Trained on
+Dümpelmann and Marečková endometrium, predicting Li:
+
+| Li's own label | n | called immune | called stromal |
+|---|---:|---:|---:|
+| Neutrophils, Macro/Mono, T/NKT, DC, B | 30,207 | **0.997** | 0.003 |
+| Li's own "Stromal" | 49 | 0.020 | 0.939 |
+| **Granulosa 1–3** | 15,056 | 0.010 | **0.989** |
+
+**Immune transfers across tissue at 0.997.** That is the encouraging half.
+
+⚠ **The granulosa row is the warning and it is the important result.**
+Granulosa cells have no counterpart in an endometrial vocabulary, and 98.9%
+of them were confidently called stromal. A cell type the reference does not
+contain is not flagged, it is absorbed.
+
+**Rejection rules do not fix it.** Median kNN vote is 1.00 for granulosa,
+for Li's immune cells and for held-out Marečková alike, so confidence is
+useless. Distance is worse than useless: granulosa sits *closer* to the
+reference (mean distance to the 25th neighbour 1.773) than Li's correctly
+called immune cells do (2.134).
+
+| distance cut | granulosa rejected | Li immune lost | Marečková lost |
+|---|---:|---:|---:|
+| 1.5 | 79.0% | 99.3% | 34.2% |
+| 2.0 | 22.8% | 64.1% | 9.1% |
+| 3.0 | 0.3% | 0.8% | 0.4% |
+
+Every threshold discards more correct labels than wrong ones. **The transfer
+cannot tell us when it is wrong.**
+
+**Scoping that follows from this.** Assigning families to cells whose types
+exist in the endometrial reference is sound. **Composition in tissue with
+novel cell types is not**, because unknowns silently inflate whichever
+family absorbs them. That lands on exactly the lesion claims: ovary,
+peritoneum and myometrium are where the unlabelled ectopic donors are.
 
 ## X2 — Fetch the gene-group vocabulary
 
