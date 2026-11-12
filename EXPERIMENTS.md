@@ -17,14 +17,14 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X4 | Severity dose-response write-up | D2, H4 | todo, **numbers exist** | writing |
 | X5 | Disease displacement by family, read against HECA | M1 | todo, **numbers exist** | writing |
 | X6 | Perivascular and mural cells across three studies | D3, T1, T2, S2, M1 | **future work**, AW 12 Nov: finer cell types are out of this paper | — |
-| X7 | Progenitor-like epithelium in lesions | G1, T3, H2 | blocked on X1 | CPU, small |
-| X8 | Composition, case vs control | D1, D3 | blocked on X1 | CPU, small |
-| X9 | Composition, lesion vs eutopic | S2 | blocked on X1 | CPU, small |
+| X7 | Progenitor-like epithelium in lesions | G1, T3, H2 | **dropped**: needs finer labels or expression | — |
+| X8 | Composition, case vs control | D1, D3 | **done, supports D3** | CPU, small |
+| X9 | Composition, lesion vs eutopic | S2 | **done, one hit, confounded** | CPU, small |
 | X10 | Metabolic pathway activity, case vs control | S3 vs D1 | blocked on X2 | CPU, medium |
 | X11 | Pathway activity, lesion vs eutopic | S1, S4, F2, L1 | blocked on X2 | CPU, medium |
-| X12 | Genes distinguishing control from case | D5 inverse, H3 | **step A done**: no global direction; immune only | medium–large |
+| X12 | Genes distinguishing control from case | D5 inverse, H3 | step A done; **step B queued on HPC** | medium |
 | X13 | Reproducible marker signatures across studies | M2 | todo | large |
-| X14 | Tissue effect within a transferred label | F1 | blocked on X1 | CPU, small |
+| X14 | Tissue effect within a transferred label | F1 | **dropped**: circular, tissue is a decoder input |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
 
 ---
@@ -384,6 +384,57 @@ metabolic change is perivascular.
 **Step B is unblocked in principle** -- there is a direction to push through
 the decoder -- but it should be the immune one, computed on all 207 donors,
 not the global one.
+
+## X8 and X9 — composition, on all eleven studies
+
+`axw1008/src/scripts/composition_by_disease.py`, transferred labels, 5,000
+permutations, study as a covariate.
+
+**X8, control against eutopic endometrium. Nothing moves.** 194 donors.
+
+| family | control | eutopic | p |
+|---|---:|---:|---:|
+| immune | 0.1006 | 0.2302 | 0.619 |
+| stromal | 0.5226 | 0.5836 | 0.736 |
+| epithelial | 0.3308 | 0.1469 | 0.902 |
+| endothelial | 0.0460 | 0.0393 | 0.236 |
+
+**This is D3 confirmed at 194 donors across eleven studies.** Dümpelmann
+claimed composition barely differs between case and control once phase is
+accounted for; at more than three times their donor count, nothing clears.
+A clean positive for a published claim, and it is the result that says you
+cannot find endometriosis by counting cell types.
+
+**X9, eutopic against ectopic. One large hit, and it is confounded.** 151
+donors.
+
+| family | eutopic | ectopic | p |
+|---|---:|---:|---:|
+| epithelial | 0.1469 | **0.0222** | **<0.0001** |
+| immune | 0.2302 | 0.4015 | 0.119 |
+| endothelial | 0.0393 | 0.0805 | 0.700 |
+| stromal | 0.5836 | 0.4958 | 0.818 |
+
+Epithelium is **6.6 times lower** in lesions. The direction agrees with
+Sarsenova S2, which has stromal larger in eutopic tissue and the other
+compartments larger in lesions.
+
+⚠ **Sarsenova names the confound herself**: "we observed a small population of
+epithelial cells in both EuE and EcE, most likely due to the cell loss during
+the tissue dissociation procedure." Lesion tissue is fibrous and epithelium is
+fragile, so a lower epithelial fraction may be protocol rather than biology,
+and nothing in the corpus separates the two. **Report it as a limitation of
+the data.**
+
+⚠ The mesothelial absorption error runs the other way -- it would push
+epithelial *up* in lesions -- so it does not explain this and the finding is
+conservative with respect to that particular error.
+
+**X7 and X14 dropped.** X7 needs epithelial subtypes finer than our four
+families, or measured expression, and has neither. X14 asks whether tissue
+separates cells within a family, but tissue is a decoder covariate, so a
+positive result would partly be the model returning what it was given. Both
+go to future work rather than being forced.
 
 ## X13 — Reproducible marker signatures
 
