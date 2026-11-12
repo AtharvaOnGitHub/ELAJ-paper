@@ -346,6 +346,41 @@ HELD-OUT DONOR COUNTS ARE SIXTEEN AND EIGHTEEN, not 58 and 60. The larger
 pair are the whole-corpus counts and belong to 0.332 and 0.0263. An earlier
 seed attached the corpus counts to the held-out numbers.
 
+X4, 12 NOVEMBER. THE SEVERITY DISSOCIATION NOW HAS A PUBLISHED CLAIM TO SIT
+AGAINST, which it did not when this subsection was written. Dümpelmann 2026
+reports that **severe endometriosis gives a fivefold increase in
+differentially expressed genes over mild**, against the same non-disease
+controls. That is a dose-response claim: the further from control, the more
+severe.
+
+Our numbers, unchanged, now read as an engagement with it rather than as a
+standalone negative:
+
+| quantity | value | donors |
+|---|---|---|
+| merged severity, clears its null | 0.1286, p=0.025 | 118 |
+| mild against severe, patients only | 0.0744, p=0.129 | 57 |
+| surgical stage, whole corpus | 0.3320, p=0.005 | 58 |
+| surgical stage, held out | 0.1313, p=0.3035 | 16 |
+
+So Dümpelmann finds the gradient in gene counts and we do not recover it as
+a separable axis in sixteen dimensions at 57 donors. **Those are compatible**:
+a fivefold DEG difference is a statement about how many genes move, not
+about whether a donor-constant ordinal label is linearly recoverable from a
+compressed representation. The honest line is the one already settled, that
+the model says whether a person has the disease and not how severe a surgeon
+judged it, with Dümpelmann now cited as the claim we could not reproduce at
+this donor count.
+
+Huang 2023 is the other half of the same thread and belongs with it. Their
+cohort is rASRM stage I-II only, and they report strong immune differences
+there. If the distance from control really grows with severity, a
+minimal-disease cohort finding large effects is informative, and it is
+another reason not to write our result as "severity carries nothing".
+
+NOT DECIDED: whether the whole-corpus stage number comes into the prose with
+these. It is still the open question on the pinned dissociation panel.
+
 → hands on: which parts of the model are load-bearing?
 
 ---
