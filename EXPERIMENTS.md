@@ -22,7 +22,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X9 | Composition, lesion vs eutopic | S2 | **done, one hit, confounded** | CPU, small |
 | X10 | Metabolic pathway activity, case vs control | S3 vs D1 | blocked on X2 | CPU, medium |
 | X11 | Pathway activity, lesion vs eutopic | S1, S4, F2, L1 | blocked on X2 | CPU, medium |
-| X12 | Genes distinguishing control from case | D5 inverse, H3 | step A done; **step B queued on HPC** | medium |
+| X12 | Genes distinguishing control from case | D5 inverse, H3 | **done**, one half usable | medium |
 | X13 | Reproducible marker signatures across studies | M2 | todo | large |
 | X14 | Tissue effect within a transferred label | F1 | **done**, weak but real | CPU, small |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
@@ -502,6 +502,58 @@ which is the Fonseca F1 direction.
 peritoneum are almost all ectopic donors. So this is the latent-level
 companion to X9 rather than an independent axis, and neither family clears
 0.05.
+
+## X12 step B — the immune disease direction, in genes
+
+Ran on the HPC 12 November, `decode_dx_61604807`. 4,000 immune cells against
+15,496 genes, direction from 94 donors. **Step-size check passed: rank
+correlation 0.9973 between eps 0.5 and 1.0**, so the attribution is locally
+stable and not an artefact of how far the latent was nudged.
+
+**The case end is coherent and interpretable.** Top genes moving toward case:
+
+    CCL3, CCL13     macrophage chemokines
+    ITGAX (CD11c)   myeloid and dendritic
+    SIGLEC7         NK and myeloid receptor
+    TNFRSF17 (BCMA) plasma cells
+    MMP3, MMP27, LRRC15   matrix remodelling
+
+That is an inflammatory, myeloid-weighted immune profile, and it is the
+direction Dümpelmann D1 describes from a completely different method:
+macrophage-centred ligand-receptor changes, inflammation enriched.
+
+**TNFRSF17 is worth noting and not over-reading.** It is a plasma-cell gene,
+and Shih Sh4 claims B cells are enriched in cases -- a claim we cannot test,
+because our copy of that cohort has no controls. One gene on a ranked list is
+not a test of it, but the directions agree.
+
+⚠ **The control end is contaminated and must not be read as biology.** It is
+topped by epithelial identity genes: WNT7A, LGR5, SOX17, MSLN, TFF3, VTCN1.
+Measured: the immune disease direction has cosine **+0.21** with the
+immune-to-epithelial axis in the latent. That is modest -- the two family
+axes themselves sit at +0.62 -- but epithelial identity genes have the
+steepest decoder response of anything in the vocabulary, so a small component
+along that axis is enough to put them on top. **Report the case end only.**
+
+**HECA's genes, and I set the test up wrongly.** I checked four genes in
+immune cells. Only ONE of them is a macrophage claim: HECA reports GREB1 up,
+DKK1 down and IGF2 down in *decidualised stromal* cells, and IGF1 up in *both*
+dStromal and uM2 macrophages.
+
+| gene | HECA's compartment | agrees? |
+|---|---|---|
+| **IGF1** | **macrophage (uM2) and stromal** | **yes, up in case, percentile 0.040** |
+| GREB1 | stromal only | shift 0.000, untestable here |
+| DKK1 | stromal only | wrong compartment, do not score |
+| IGF2 | stromal only | wrong compartment, do not score |
+
+So the one HECA gene that is genuinely a macrophage claim agrees with our
+immune direction. The other three were never ours to test in this compartment,
+and re-testing them properly would need a stromal direction -- which step A
+says does not generalise (AUC 0.592, p 0.175), so there is nothing to push
+through. **That goes in limitations.**
+
+Outputs: `axw1008/docs/paper/x12_gene_shifts.csv` on the HPC.
 
 ## X13 — Reproducible marker signatures
 
