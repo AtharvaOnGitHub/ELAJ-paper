@@ -188,9 +188,15 @@ phase, and the estimator already discards same-donor neighbours. Held out
 cost two thirds of the donors for nothing.
 
 **Result, held-out donors (16 per arm):** control excess 0.830, eutopic
-0.665, difference **+0.164** in Huang's direction. Permuting which donors are
-control, 2000 times, gives a null of 95% [-0.485, +0.475]. **p = 0.72.**
-The direction matches and the number means nothing. All-donor run pending.
+0.665, difference **+0.164** in Huang's direction, null 95% [-0.485, +0.475],
+**p = 0.72**. The direction matches and the number means nothing.
+
+**Result, all 112 donors:** control 0.6825, eutopic 0.7474, difference
+**-0.0650**, null 95% [-0.180, +0.195], **p = 0.505**.
+
+**The sign flips and the null tightens threefold**, from +-0.48 to +-0.19. So
+the held-out estimate was noise, this run had the power the first one lacked,
+and the answer is that there is no difference. X3 and X3b now agree.
 
 ⚠ **Phase labels come from three keys of eleven**, so both arms are
 Dümpelmann and Marečková. Not a general corpus result.
