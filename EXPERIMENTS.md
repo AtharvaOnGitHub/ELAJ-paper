@@ -152,35 +152,55 @@ The direction matches and the number means nothing. All-donor run pending.
 ⚠ **Phase labels come from three keys of eleven**, so both arms are
 Dümpelmann and Marečková. Not a general corpus result.
 
-## X3b — cycle against immune composition, by disease
+## X3b — cycle against composition, by disease
 
 `axw1008/src/scripts/cycle_composition_by_disease.py`
 
 **Why it is better than X3.** Huang's claim is about cell proportions, not
-about latent geometry. Cell family, phase and disease status all arrived with
-the data, so this tests the claim as made, at 101 donors against Huang's 13,
-and a reader cannot attribute it to ELAJ being good or bad. **It uses no
-model output**, which is the point.
+latent geometry. Cell family, phase and disease all arrived with the data, so
+this tests the claim as made, at 101 donors against Huang's 13, and nobody
+can attribute it to ELAJ being good or bad. **It uses no model output.**
 
-**Result: no support, and the estimate is unstable.**
+**REBUILT 12 November on AW's ruling.** The first version standardised within
+study and compared the two arms separately, then I read the single-study row
+as the trustworthy one. That is the move the project has ruled against: our
+power is the pooling, and splitting by study destroys it. AW: *"our power
+comes from the scale... I would take the pooled numbers over single study."*
 
-| | eta² control | eta² eutopic | difference | one-sided p |
-|---|---:|---:|---:|---:|
-| pooled, 101 donors | 0.0081 | 0.0764 | −0.0683 | 0.966 |
-| Dümpelmann, 60 donors | 0.0753 | 0.0458 | **+0.0295** | 0.413 |
-| Marečková, 41 donors | 0.1277 | 0.4973 | −0.3695 | 0.926 |
+The fix was to pool properly rather than to drop a study. Study goes **in**
+the model as a covariate:
 
-**The sign flips between the two studies**, which is the finding. Dümpelmann
-is the trustworthy row: 25 control and 35 eutopic donors spread over three
-phases, a small effect in Huang's direction that does not clear its null.
-Marečková's eutopic arm is 10 donors over 2 phases, so its 0.4973 is noise,
-and it dominated the pooled estimate.
+    logit(fraction) ~ study + phase + disease + phase:disease
 
-⚠ **This is a power statement, not a refutation.** Null standard deviations
-are 0.064 and 0.197 against effects of 0.03 and 0.37. Writing "Huang does
-not replicate" would be reporting the sample size, which is failure mode 7b.
-The defensible line is that the claim is neither confirmed nor refuted at
-this donor count, and that the two best-annotated cohorts disagree in sign.
+The interaction is Huang's claim as arithmetic. The null permutes disease
+across donors within study, keeping each donor's phase and composition
+together. 5,000 permutations, 101 donors.
+
+**Result: no interaction. F = 0.263, p = 0.76.** The null's 95th percentile
+is 3.06, so the observed value is not close. Huang's claim does not hold at
+this scale.
+
+**The main effects are the more interesting half, and they test Dümpelmann
+D3 rather than Huang.** Same model, testing disease after study and phase:
+
+| family | control | disease | p, uncorrected |
+|---|---:|---:|---:|
+| immune | 0.0717 | 0.0272 | 0.063 |
+| endothelial | 0.0550 | 0.0289 | 0.049 |
+| stromal | 0.6628 | 0.8148 | 0.75 |
+| epithelial | 0.2105 | 0.1291 | 0.91 |
+
+⚠ **Four families tested, so neither small p survives correction.** Bonferroni
+needs 0.0125. Writing either as a finding would be the thing failure mode 7b
+warns about.
+
+**What it does support is D3.** Dümpelmann claims that, stratified by phase,
+cell composition barely differs between case and control, with one 1.6-fold
+exception in secretory mural cells. At 101 donors we find the same: stromal
+and epithelial are flatly null, and the two compartments with any signal at
+all do not clear four-way correction. **A 60-donor claim reproduced at 101.**
+Mural cells are not one of our four families, so the exception itself is out
+of reach and stays future work.
 
 ## X4 — Severity dose-response
 
