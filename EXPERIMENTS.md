@@ -50,8 +50,27 @@ graph, so this is a new readout rather than new infrastructure.
   honest.
 - What confidence threshold leaves a cell unlabelled.
 
-**Validation.** Hold out annotated donors and measure recovery. A transfer
-nobody can audit is worth nothing.
+**Validation, run 12 November on the Mac from `Outputs/cells/p1_dab168_kl1/`.**
+k=25, 60,000 cells sampled per study, four-level `cell family`.
+
+| direction | accuracy | balanced | majority baseline |
+|---|---:|---:|---:|
+| train Marečková → predict Dümpelmann | 0.987 | 0.962 | 0.883 |
+| train Dümpelmann → predict Marečková | 0.987 | 0.969 | 0.527 |
+| within Dümpelmann, 20 of 60 donors held out | 0.995 | 0.970 | 0.882 |
+| within Marečková, 19 of 58 donors held out | 0.997 | 0.996 | 0.640 |
+
+**Crossing the study barrier costs almost nothing at four levels.** The
+control that matters is the second row: Dümpelmann is 88% stromal and
+Marečková 53%, so a transfer that merely inherited the source prior would
+collapse. Balanced accuracy 0.969 against a 0.527 baseline says it does not.
+Worst cell in either confusion matrix is immune into Marečková at 0.887.
+
+⚠ **What this does not show.** Both studies are endometrium on droplet
+capture and both are the best annotated in the corpus. The six unlabelled
+studies include peritoneum, ovary, myometrium and follicular fluid, and
+**there are no labels there to validate against**. That risk cannot be
+measured away.
 
 ## X2 — Fetch the gene-group vocabulary
 
