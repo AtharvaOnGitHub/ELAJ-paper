@@ -30,7 +30,10 @@ tissue. *Epithelial* is the lining and glands. *Endothelial* is the lining of
 blood vessels. *Immune* is white blood cells of every kind.
 
 **Composition.** What fraction of one person's cells belong to each family.
-A headcount.
+A headcount of cell types in a sample. **It is not about what is inside any
+one cell.** Two samples can have identical composition while every cell in
+one of them is behaving differently. X8 measures composition; X12 measures
+what the cells are doing. They are the two halves of one statement.
 
 **Cross-donor agreement.** For each cell, find the cells nearest to it in the
 16-number space, ignoring every cell from the same person. Then ask what
@@ -183,8 +186,8 @@ labels. Then: does disease status change those fractions, after accounting
 for which study the person came from?
 
 **Corresponding claim.** Dümpelmann 2026, from 60 people: once you account
-for cycle phase, cell composition **barely differs** between people with and
-without endometriosis. Of 57 cell types they examined, exactly one changed
+for cycle phase, **the mix of cell types barely differs** between people with
+and without endometriosis. Of 57 cell types they examined, exactly one changed
 notably, a 1.6-fold rise in one kind of blood-vessel support cell.
 
 **Verdict: agree, strongly, at more than three times their donor count.**
@@ -386,6 +389,28 @@ vocabulary, so a small tilt is enough to put them on top.
 asymmetry is the tell: the disease end is immune-specific and reads
 coherently; the control end reads as a different cell type.
 
+**Which of these genes the corpus papers already name**, checked against all
+ten PDFs:
+
+| gene | named in a corpus paper? |
+|---|---|
+| **CCL3** | **yes, and it is a direct hit.** Dümpelmann lists it among "the key genes in the unified PCA, ranked by integrated gradients importance scores" -- the genes *their own neural network* found most important for predicting endometriosis, beside IL1B, CCL4, HLA-DRA, CD74, A2M, ACKR1 |
+| **ITGAX** | **yes.** Dümpelmann reports ICAM1-(ITGAX+ITGB2) among the ligand-receptor interactions enhanced in disease |
+| MMP3 | yes, Shih and Marečková |
+| LRRC15 | Dümpelmann, but only as a figure axis label, so weak |
+| IGF1 | Fonseca, García-Alonso, Marečková, Tan |
+| **CCL13, SIGLEC7, TNFRSF17, MMP27** | **named by no corpus paper** |
+
+CCL3 is the strongest single line in this whole exercise: **two different
+models, two different architectures, two different training objectives, and
+the same gene comes out as important for endometriosis.** Theirs is a
+supervised classifier told the labels; ours is an unsupervised representation
+that never saw them.
+
+⚠ "Not named in any corpus paper" is not the same as "new to endometriosis".
+It means these eleven papers do not mention them. A novelty claim needs a
+proper literature search, which has not been done.
+
 One more worth a sentence and not a claim: TNFRSF17 is a plasma cell gene,
 and Shih reports B cells enriched in cases. We cannot test that claim, since
 our copy of Shih's cohort has no controls. One gene on a ranked list is not a
@@ -395,8 +420,11 @@ test, but it points the same way.
 
 # 9. X14 — does it matter which tissue a cell came from?
 
-**What we did.** Within one cell family, can the 16 numbers tell lesion
-tissue from endometrium? 262 people, with each person-and-tissue pair counted
+**What we did.** Within one cell family, can the 16 numbers tell a cell taken
+from a lesion (ovary or peritoneum) from a cell taken from endometrium inside
+the uterus? **This is a question about tissue site, not about disease.** It
+never compares healthy endometrium to disease endometrium; that contrast is
+X8 and X12. 262 people, with each person-and-tissue pair counted
 once, and the splits made by person.
 
 **Corresponding claim.** Fonseca 2023: the same cell type is transcriptionally
