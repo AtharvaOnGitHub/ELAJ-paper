@@ -24,7 +24,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X11 | Pathway activity, lesion vs eutopic | S1, S4, F2, L1 | blocked on X2 | CPU, medium |
 | X12 | Genes distinguishing control from case | D5 inverse, H3 | step A done; **step B queued on HPC** | medium |
 | X13 | Reproducible marker signatures across studies | M2 | todo | large |
-| X14 | Tissue effect within a transferred label | F1 | **dropped**: circular, tissue is a decoder input |
+| X14 | Tissue effect within a transferred label | F1 | **done**, weak but real | CPU, small |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
 
 ---
@@ -416,10 +416,10 @@ donors.
 | stromal | 0.5836 | 0.4958 | 0.818 |
 
 Epithelium is **6.6 times lower** in lesions. The direction agrees with
-Sarsenova S2, which has stromal larger in eutopic tissue and the other
+Sarsenova S2, which reports stromal larger in eutopic tissue and the other
 compartments larger in lesions.
 
-⚠ **Sarsenova names the confound herself**: "we observed a small population of
+⚠ **The Sarsenova paper names the confound itself**: "we observed a small population of
 epithelial cells in both EuE and EcE, most likely due to the cell loss during
 the tissue dissociation procedure." Lesion tissue is fibrous and epithelium is
 fragile, so a lower epithelial fraction may be protocol rather than biology,
@@ -435,6 +435,68 @@ families, or measured expression, and has neither. X14 asks whether tissue
 separates cells within a family, but tissue is a decoder covariate, so a
 positive result would partly be the model returning what it was given. Both
 go to future work rather than being forced.
+
+## X8 reached to severity — a second leg for the rASRM argument
+
+AW, 12 November: can X8 support the severity result? It can, and the two
+measurements are independent of each other.
+
+Composition against surgical severity, patients only, low = mild or rASRM
+stage 1-2, high = severe or stage 3-4. 51 donors, study as a covariate:
+
+| family | low | high | p |
+|---|---:|---:|---:|
+| immune | 0.0911 | 0.0314 | 0.209 |
+| endothelial | 0.0285 | 0.0281 | 0.162 |
+| stromal | 0.7024 | 0.7907 | 0.970 |
+| epithelial | 0.1780 | 0.1498 | 0.913 |
+
+**Nothing tracks severity.** Put beside the latent result -- merged severity
+clears at 118 donors (0.1286, p = 0.025) while mild against severe among
+patients does not (0.0744, p = 0.129 at 57) -- two independent readouts, one
+from the representation and one from raw composition, both fail to recover
+the surgeon's severity grade among patients at about 55 donors each.
+
+**The argument this supports**: rASRM staging describes where lesions are and
+how extensive they look, not what the tissue is doing. It is anatomy, not
+biology.
+
+⚠ **Both legs are nulls at ~55 donors**, so neither is decisive alone, and
+the pairing is the argument rather than either number. And Dümpelmann's D2
+is the honest counterpoint that must be cited with it: they report severe
+disease giving fivefold more differentially expressed genes than mild, so a
+gradient does exist in gene counts even if neither of our readouts recovers
+it.
+
+## X14 — tissue inside one cell family
+
+`axw1008/src/scripts/tissue_within_family.py`. 262 donors, units are
+(donor, tissue) pairs, split by donor.
+
+| family | units | AUC | null | p |
+|---|---:|---:|---:|---:|
+| stromal | 229 | 0.623 | 0.495 | 0.078 |
+| endothelial | 175 | 0.618 | 0.494 | 0.095 |
+| immune | 215 | 0.562 | 0.502 | 0.240 |
+| epithelial | 194 | 0.522 | 0.494 | 0.401 |
+
+**I had the logic backwards and AW corrected it.** I called this circular
+because tissue is a decoder covariate. The covariate does the opposite:
+conditioning the decoder on tissue removes the latent's *obligation* to
+encode it, which is the stated purpose. So tissue structure surviving in the
+latent is structure the model had every reason to discard, and a positive
+result is evidence rather than an artefact. AW: *"tissue information being
+less in the latent is a support to our claim rather than a detriment."*
+
+**Read that way the result is good for the paper in both halves.** Most
+tissue structure is gone, which is the covariate working as designed. What
+remains sits in stromal and endothelial cells, weakly, at p = 0.08 and 0.10,
+which is the Fonseca F1 direction.
+
+⚠ Tissue is near-perfectly confounded with disease status: ovary and
+peritoneum are almost all ectopic donors. So this is the latent-level
+companion to X9 rather than an independent axis, and neither family clears
+0.05.
 
 ## X13 — Reproducible marker signatures
 
