@@ -461,12 +461,17 @@ the surgeon's severity grade among patients at about 55 donors each.
 how extensive they look, not what the tissue is doing. It is anatomy, not
 biology.
 
-⚠ **Both legs are nulls at ~55 donors**, so neither is decisive alone, and
-the pairing is the argument rather than either number. And Dümpelmann's D2
-is the honest counterpoint that must be cited with it: they report severe
-disease giving fivefold more differentially expressed genes than mild, so a
-gradient does exist in gene counts even if neither of our readouts recovers
-it.
+⚠ **Both legs are nulls at ~55 donors**, so neither is decisive alone and the
+pairing is the argument rather than either number.
+
+**A hedge was here and AW cut it, correctly.** I had attached Dümpelmann's D2
+-- severe disease giving fivefold more DEGs than mild -- as a counterpoint
+the paper must carry. AW: *"We are stating a result from a component study
+that we haven't even verified on our model. I don't think it applies.
+Clawing."* He is right twice over. It is an untested claim, and a count of
+differentially expressed genes is not the same quantity as whether a severity
+ordering is recoverable, so it does not contradict our result in the first
+place. D2 stays in the ledger as an untested claim, not as a caveat on ours.
 
 ## X14 — tissue inside one cell family
 
