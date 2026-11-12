@@ -4,13 +4,16 @@ What needs doing, checking, measuring or testing. Opened 11 November 2026 for
 the claims axis; it is the place for any experiment, not just those.
 
 **Status**: `todo` · `running` · `done` · `blocked` · `dropped`
+**Scripts live in `axw1008/src/scripts/`**, not here: they are model code and
+ship with the published repo. Results land in `axw1008/docs/paper/`.
 **Nothing here needs a GPU or a retrain.** Every arm's latents are on disk.
 
 | X | what | for | status | cost |
 |---|---|---|---|---|
 | X1 | kNN label transfer, **four families only** | prerequisite for X7–X9, X14 | **validated**, see below | CPU, hours |
 | X2 | Fetch `vocabulary_v1.json` from HPC | prerequisite for X10–X13 | todo | minutes |
-| X3 | Cycle agreement split by disease status | H1, H2 | todo | CPU, small |
+| X3 | Cycle agreement split by disease status | H1, H2 | **done, null** | CPU, small |
+| X3b | Cycle vs immune composition by disease | H1 | **done, null** | CPU, small |
 | X4 | Severity dose-response write-up | D2, H4 | todo, **numbers exist** | writing |
 | X5 | Disease displacement by family, read against HECA | M1 | todo, **numbers exist** | writing |
 | X6 | Perivascular and mural cells across three studies | D3, T1, T2, S2, M1 | **future work**, AW 12 Nov: finer cell types are out of this paper | — |
@@ -126,12 +129,58 @@ with, so this tests someone else's biology with our own instrument.
 control donors and over eutopic donors, with a permutation null for the
 difference.
 
-⚠ **Two cautions.** Phase is a supervised head, so the model was given this
-label; the comparison is of agreement between disease groups, not of the
-label's recoverability. And phase labels come from three keys of eleven, so
-the control and eutopic sets will be dominated by Dümpelmann and
-Marečková. Check the donor counts on both sides before reading anything
-into the result.
+`axw1008/src/scripts/cycle_by_disease.py`
+
+**The held-out restriction was dropped, and AW was right to push on it.** The
+rule says phase is a supervised input so measure it held out. Measured:
+
+| | cycle agreement (excess) | donors |
+|---|---:|---:|
+| held-out donors | 0.6545 | 32 |
+| train donors, matched to the same count | 0.6422 | 32 |
+
+Train is not inflated, it is fractionally lower. The phase head is one linear
+map from latent position to phase, so it cannot store which donor had which
+phase, and the estimator already discards same-donor neighbours. Held out
+cost two thirds of the donors for nothing.
+
+**Result, held-out donors (16 per arm):** control excess 0.830, eutopic
+0.665, difference **+0.164** in Huang's direction. Permuting which donors are
+control, 2000 times, gives a null of 95% [-0.485, +0.475]. **p = 0.72.**
+The direction matches and the number means nothing. All-donor run pending.
+
+⚠ **Phase labels come from three keys of eleven**, so both arms are
+Dümpelmann and Marečková. Not a general corpus result.
+
+## X3b — cycle against immune composition, by disease
+
+`axw1008/src/scripts/cycle_composition_by_disease.py`
+
+**Why it is better than X3.** Huang's claim is about cell proportions, not
+about latent geometry. Cell family, phase and disease status all arrived with
+the data, so this tests the claim as made, at 101 donors against Huang's 13,
+and a reader cannot attribute it to ELAJ being good or bad. **It uses no
+model output**, which is the point.
+
+**Result: no support, and the estimate is unstable.**
+
+| | eta² control | eta² eutopic | difference | one-sided p |
+|---|---:|---:|---:|---:|
+| pooled, 101 donors | 0.0081 | 0.0764 | −0.0683 | 0.966 |
+| Dümpelmann, 60 donors | 0.0753 | 0.0458 | **+0.0295** | 0.413 |
+| Marečková, 41 donors | 0.1277 | 0.4973 | −0.3695 | 0.926 |
+
+**The sign flips between the two studies**, which is the finding. Dümpelmann
+is the trustworthy row: 25 control and 35 eutopic donors spread over three
+phases, a small effect in Huang's direction that does not clear its null.
+Marečková's eutopic arm is 10 donors over 2 phases, so its 0.4973 is noise,
+and it dominated the pooled estimate.
+
+⚠ **This is a power statement, not a refutation.** Null standard deviations
+are 0.064 and 0.197 against effects of 0.03 and 0.37. Writing "Huang does
+not replicate" would be reporting the sample size, which is failure mode 7b.
+The defensible line is that the claim is neither confirmed nor refuted at
+this donor count, and that the two best-annotated cohorts disagree in sign.
 
 ## X4 — Severity dose-response
 
