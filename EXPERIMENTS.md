@@ -10,7 +10,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 
 | X | what | for | status | cost |
 |---|---|---|---|---|
-| X1 | kNN label transfer, **four families only** | prerequisite for X7–X9, X14 | **validated**, see below | CPU, hours |
+| X1 | kNN label transfer, **four families only** | prerequisite for X7–X9, X14 | **DONE** | CPU, 3 h |
 | X2 | Fetch `vocabulary_v1.json` from HPC | prerequisite for X10–X13 | todo | minutes |
 | X3 | Cycle agreement split by disease status | H1, H2 | **done, null** | CPU, small |
 | X3b | Cycle vs immune composition by disease | H1 | **done, null** | CPU, small |
@@ -106,6 +106,49 @@ exist in the endometrial reference is sound. **Composition in tissue with
 novel cell types is not**, because unknowns silently inflate whichever
 family absorbs them. That lands on exactly the lesion claims: ovary,
 peritoneum and myometrium are where the unlabelled ectopic donors are.
+
+**X1 COMPLETED 12 November.** 937,122 cells labelled. Written to
+`Outputs/cells/p1_dab168_kl1/cell_family_transferred.csv.gz`.
+
+| | |
+|---|---|
+| stromal / immune / epithelial / endothelial | 474,116 / 277,730 / 115,889 / 69,387 |
+| vote unanimous across all 25 neighbours | 94.3% |
+| vote below 0.6 | 0.45% |
+| neighbourhoods drawing on more than one donor | 98.8% |
+| neighbourhoods drawing on more than one study | 28.8% |
+
+⚠ **`garcia_alonso_2021_b` comes out 99.9% epithelial.** Worth checking what
+that deposit actually is before any composition claim uses it.
+
+⚠ **Li's 66.8% immune / 33.1% stromal is the known granulosa failure**, exactly
+as the validation predicted. Shih at 78.2% immune is plausible: menstrual
+effluent is blood-rich.
+
+## X12 step A at 207 donors: the signal WEAKENS
+
+Transferred labels, every study, `--transferred`:
+
+| family | donors | AUC | null | p | (118-donor, real labels) |
+|---|---:|---:|---:|---:|---|
+| all mixed | 202 | 0.518 | 0.471 | 0.268 | 0.605, p 0.155 |
+| stromal | 175 | 0.492 | 0.480 | 0.445 | 0.592, p 0.175 |
+| epithelial | 176 | 0.470 | 0.478 | 0.535 | 0.466, p 0.590 |
+| **immune** | 162 | **0.596** | 0.482 | **0.073** | **0.708, p 0.015** |
+| endothelial | 134 | 0.595 | 0.478 | 0.103 | 0.682, p 0.050 |
+
+**Immune stays the strongest family at both scales and stays the same sign,
+but it does not strengthen with scale, which is what we would want.**
+
+Two explanations and I cannot separate them: transferred labels add noise, or
+the nine extra studies are genuinely heterogeneous. Tissue labels do not
+explain it -- nearly every donor is labelled endometrium, including Li's
+follicular fluid and Shih's menstrual effluent, which are different tissues
+wearing the same label.
+
+**What to report**: the 118-donor figure with real labels is the cleaner
+measurement and the 207-donor figure is the honest limitation. Neither should
+be quoted alone.
 
 ## X2 — Fetch the gene-group vocabulary
 
