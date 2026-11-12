@@ -22,7 +22,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X9 | Composition, lesion vs eutopic | S2 | blocked on X1 | CPU, small |
 | X10 | Metabolic pathway activity, case vs control | S3 vs D1 | blocked on X2 | CPU, medium |
 | X11 | Pathway activity, lesion vs eutopic | S1, S4, F2, L1 | blocked on X2 | CPU, medium |
-| X12 | Genes distinguishing control from case | D5 inverse, H3 | todo, **needs a decision** | medium–large |
+| X12 | Genes distinguishing control from case | D5 inverse, H3 | **step A done**: no global direction; immune only | medium–large |
 | X13 | Reproducible marker signatures across studies | M2 | todo | large |
 | X14 | Tissue effect within a transferred label | F1 | blocked on X1 | CPU, small |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
@@ -290,6 +290,57 @@ importances. Two routes:
 
 They answer different questions. The second is not really a result about our
 model; the first is, and it is more work.
+
+## X12 step A — where in the latent the disease signal lives
+
+`axw1008/src/scripts/disease_direction.py` and `disease_direction_by_family.py`
+
+**The premise failed and then AW fixed it.** Step A was meant to find the one
+direction in the 16-dimensional latent separating control donors from cases,
+so step B could push it through the decoder for per-gene weights. Globally
+there is no such direction: held-out donor AUC **0.536** against a
+shuffled-label null of 0.482, with 28% of shuffles beating it. 207 donor
+records, study centred out, donors not cells.
+
+That does not contradict our 0.3364 cross-donor disease number, which is a
+**local** measure: a cell's neighbours from other donors can share its label
+without any global axis existing.
+
+AW, 12 November: *"We already know that the latent splits by cell-family. We
+should check for disease signal within cell family inside the latent."*
+
+**Inside a family the direction appears, and it is immune.** Real labels, so
+duempelmann_2026 and marecko_2024 only, 400 donor-level splits:
+
+| family | donors | held-out AUC | null | p |
+|---|---:|---:|---:|---:|
+| all mixed | 114 | 0.605 | 0.503 | 0.155 |
+| stromal | 101 | 0.592 | 0.499 | 0.175 |
+| epithelial | 98 | 0.466 | 0.490 | 0.590 |
+| **immune** | 94 | **0.708** | 0.481 | **0.015** |
+| endothelial | 85 | 0.682 | 0.486 | 0.050 |
+
+**Mixing families destroys the signal.** Pooled across all four it is 0.605
+and does not clear its null; inside immune it is 0.708 and does.
+
+⚠ **Four families tested.** Bonferroni puts immune at about 0.06 and
+endothelial at 0.20. Immune is the only one worth calling real, and it is
+borderline rather than emphatic.
+
+⚠ **Two studies, 118 donors.** The transferred-label run extends this to 207
+donor records and is the test that matters. Blocked on X1.
+
+**It converges with four independent claims.** HECA names macrophages from
+GWAS (M1). Our own displacement numbers put immune highest in Marecko (X5).
+X3b's main effect has immune proportion lower in disease. Dümpelmann's
+ligand-receptor changes are macrophage-centred (D1). And endothelial being
+second is the vascular thread: Dümpelmann's only composition change is mural
+cells, Tan's lesion-specific population is perivascular, Sarsenova's largest
+metabolic change is perivascular.
+
+**Step B is unblocked in principle** -- there is a direction to push through
+the decoder -- but it should be the immune one, computed on all 207 donors,
+not the global one.
 
 ## X13 — Reproducible marker signatures
 
