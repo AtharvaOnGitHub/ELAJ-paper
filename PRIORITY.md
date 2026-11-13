@@ -45,7 +45,33 @@ Discuss before drawing.
 
 ---
 
-## Tier 0. New analysis. Everything else waits on it.
+## Tier 0. New analysis. **DONE, 13 November.** Writing can start.
+
+`CLAIMS_LEDGER.md` holds the 30 published claims. `EXPERIMENTS.md` holds the
+protocols as X1-X15. **`CLAIMS_SUMMARY.md` is the one to read**: every
+experiment in plain language with the claim it tests and the verdict.
+
+**What the paper can now say**, all of it measured:
+
+- composition does not differ between control and eutopic endometrium, 194
+  donors, eleven studies -- Dümpelmann's claim confirmed at 3x their donors
+- immune cells carry a disease direction that holds on unseen donors, 118
+  donors, AUC 0.708 against a 0.481 null, p 0.015
+- that direction reads in genes as macrophage-led inflammation, and **four of
+  its top fifteen replicate an external cohort's upregulated list at
+  p = 4.0e-07**; IL1B is first in Dümpelmann's own classifier's importance list
+- four genes in that list have no prior endometriosis report in the corpus,
+  Open Targets or PubMed: SIGLEC7, ADAMDEC1, ALPK2, KCNH1
+- neither severity readout recovers the surgical grade: an argument that
+  rASRM staging is anatomy, not biology
+- Huang's claim that disease flattens the cycle does not hold, two ways
+- tissue structure is largely absent from the latent, which is the decoder
+  conditioning working as designed
+
+**Still open and NOT blocking**: X13 marker signatures, unscoped; X15 group
+embeddings, unscoped. Both are Supplementary-level.
+
+## Tier 0 as it was framed
 
 - [ ] **The claims axis.** AW, approving it: *"We need to lay out all the
       major claims of each dataset and see if we can support or reject them
