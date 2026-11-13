@@ -644,6 +644,31 @@ if b and n:
 else:
     fail("could not locate both phase values for the D1 split")
 
+# ---------------------------------------------------------------------
+# Donor memorisation, Results R1. validation.csv carries the chance-corrected
+# EXCESS for patient_id, not the raw agreement, so both numbers the prose
+# quotes are derivations and neither can be found by searching a row.
+#   raw  = excess + (1 - excess) * chance
+#   fold = raw / chance
+# The chance rate itself is sum n_d(n_d-1) / N(N-1) over 269 donor
+# identifiers, recorded in NUMBERS.md. It is a property of the corpus, not a
+# scored quantity, so it is stated here with its derivation beside it.
+_DONOR_CHANCE = 0.0060
+_dx = next((v for v, p in LEDGER
+            if "validation.csv" in p and "knn-agreement/patient_id" in p), None)
+if _dx is None:
+    fail("could not locate knn-agreement/patient_id for the donor-memorisation split")
+else:
+    _draw = _dx + (1 - _dx) * _DONOR_CHANCE
+    DERIVED += [
+        (_DONOR_CHANCE * 100, "same-donor chance rate as a percentage, "
+                              "sum n_d(n_d-1)/N(N-1) over 269 donor identifiers"),
+        (_draw * 100, f"donor agreement as a percentage, excess {_dx:.4f} "
+                      f"inverted through chance {_DONOR_CHANCE:.4f}"),
+        (_draw / _DONOR_CHANCE, "donor agreement over its own chance rate, "
+                                "the memorisation fold-enrichment"),
+    ]
+
 donor = next((v for v, p in LEDGER if "validation.csv" in p
               and "knn-agreement/patient_id" in p), None)
 if donor is not None:
@@ -952,6 +977,15 @@ PINNED = {
     # comment strip was eating the rest of the line.
     "34.5": ("the head's share", ""),
     "1.58": ("corpus cells in millions", ""),
+    # Donor memorisation, Results R1. Both are derived from validation.csv
+    # rather than read from it: the file carries the EXCESS 0.3229 against a
+    # chance rate of 0.0060 over 269 donor identifiers. Raw agreement is
+    # 0.3229 + (1 - 0.3229) * 0.0060 = 0.3270, and 0.3270 / 0.0060 = 54.5.
+    # NUMBERS.md states both. Pinned because a derivation cannot be searched
+    # for in a benchmark row.
+    "32.7": ("donor agreement as a percentage", ""),
+    "54.5": ("the memorisation fold-enrichment", ""),
+    "0.60": ("same-donor chance rate as a percentage", ""),
     # The cross-method correlations and their p-values. Rounded in prose, so
     # pinned to the axis they belong to rather than searched for.
     "0.721": ("donor recovery vs disease", ""),

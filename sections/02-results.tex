@@ -1,318 +1,104 @@
 % =====================================================================
-% RESULTS — NMI, Content Types: "Results and Methods should be divided
-% by topical subheadings". Budget ~2,000 words of the 3,500 main text.
+% RESULTS — rewritten 13 November 2026 against RESULTS_STRUCTURE.md.
+% The previous five-subsection version is in git history; nothing was
+% carried over except the numbers, which are re-derived by
+% audit_numbers.py on every build.
 %
-% HEADINGS ARE PLACEHOLDERS. AW will retitle on the editing pass. NMI
-% wants headings that state the finding rather than the activity:
-% "The latent separates donors without erasing the cycle", never
-% "Evaluation of latent structure".
+% REGISTER, measured against IBDex (the supervisor's own paper) rather
+% than asserted. Targets, from its Results section:
+%   mean sentence 17 words, median 16, longest 34
+%   decimals per 100 words 5.5          (we were already at 5.6)
+%   words of 9+ characters 23.1%        (we were at 11.5%, half)
+% The gap is NOT number density. It is sentence length and vocabulary.
+% Shorter sentences, heavier noun phrases, no term explained that an
+% NMI reader already knows.
 %
-% FIVE SUBSECTIONS, ~400 WORDS EACH, and the arithmetic matters: six
-% figures carry 24 of the 32 findings between their panels and legends,
-% and legends do not count against the 3,500. So prose states a claim
-% and points at a panel. It does not enumerate.
+% STRUCTURE. Six subsections, headers stating the result per the
+% supervisor's 9 November rule. R7 (how the field measures) moved to
+% the Discussion on AW's 13 November ruling.
 %
-% [2] "against the field" was MERGED INTO [1] on 2 November 2026. Its
-% material is in [1]'s note, suspended until the unified scoring run
-% returns. Subsections were renumbered; AW retitles on the editing pass.
-%
-% Finding labels (A1, C2, D3 ...) are RESULTS_STRUCTURE.md's.
-% Overlap between subsections is expected to shift once prose exists.
+% No opening paragraph. NMI Articles go from the Results heading
+% straight into the first subheading; the old "divided across 2 main
+% categories" preamble was scaffolding and is cut.
 % =====================================================================
 
 \section*{Results}
 
-The results of this study are divided across 2 main categories. The first is 
-about how \elaj performs against foundation models and other baselines. These 
-represent a numerical evaluation of the model, describe the frontier, and 
-outline model performance against benchmarks. The second category of results is 
-understanding what \elaj itself is doing. This covers analysis of the \elaj 
-latent space, ablation studies, and other ways of understanding the model itself.
+% ---------------------------------------------------------------------
+\subsection*{Removing the donor costs cycle signal, and two knobs trace
+the trade-off}
+
+Donor identity dominates the representation this corpus invites. Across all
+1,577,728 cells, 32.7\% of a cell's hundred nearest neighbours originate from
+the same donor, against a chance rate of 0.60\% computed over 269 donor
+identifiers. Provenance is enriched 54.5-fold, and no biological covariate
+measured here approaches that concentration. Each donor contributed a single
+biopsy, so menstrual phase is constant within a donor and a per-donor offset
+is geometrically indistinguishable from a batch effect. Suppression of
+provenance therefore removes cycle-dependent variation alongside it, and the
+quantity worth reporting is the exchange rate rather than either term alone.
+
+Two training-time coefficients govern that suppression: the weight on the
+domain-adversarial branch and the KL coefficient on the latent
+(Methods, \emph{Composite objective}). Six arms span them. Donor recovery
+ranges from 0.3975 to 0.5837 and cross-donor cycle agreement from 0.5922 to
+0.7346, moving together monotonically (Fig.~\ref{fig:knobs}a). Adversarial
+pressure is not uniformly priced. Raising the weight from 7 to 168 reduces
+donor recovery from 0.5837 to 0.5188 while cycle agreement remains
+indistinguishable, 0.7337 against 0.7346. Raising it to 336 recovers nothing:
+donor recovery returns to 0.5277 and cycle agreement falls to 0.7146. The
+adversary saturates, and beyond saturation the KL coefficient is the only
+remaining lever.
+
+Two arms are reported throughout. \elaj$_{B\,hi}$ retains cycle agreement at
+0.7346 with donor recovery 0.5188; \elaj$_{B\,lo}$ suppresses study structure
+substantially harder, 0.6544 against 0.7613, and concedes cycle agreement to
+0.6033. Scored against nine competing representations on the identical
+corpus, \elaj$_{B\,hi}$ is not merely competitive. Every one of the nine is
+simultaneously worse on both axes, with higher donor recovery, 0.5421 to
+0.7892, and lower cycle agreement, 0.4372 to 0.7303
+(Fig.~\ref{fig:knobs}b). Four pretrained foundation models are among them.
+\elaj{} carries 1,883,986 parameters across sixteen latent dimensions, against
+scFoundation's 100 million across 3,072 (Fig.~\ref{fig:knobs}c).
+
+Donor recovery is not a neutral nuisance axis. Across the ten representations
+it predicts the disease score, Spearman $\rho = +0.721$ at $p = 0.019$, and
+does not predict cycle agreement, $\rho = +0.176$ at $p = 0.627$
+(Fig.~\ref{fig:knobs}d). Both labels are constant within a donor, so the
+asymmetry is not a property of the annotation. A representation retaining
+individual identity scores better on disease specifically, which makes the
+disease axis a partial readout of memorisation rather than a clean
+performance axis.
 
 % ---------------------------------------------------------------------
-\subsection*{The \elaj frontier}
+\subsection*{Sixteen dimensions carry cell identity and the menstrual
+cycle}
 
-In total, six models were trained and each was selected on reconstruction loss
-on the validation split alone. The models traced a Pareto front on a plot of 
-menstrual phase against study separation or donor recovery. 
+Representation content was quantified on all 1,577,728 cells with parameters
+frozen, so none of the labels below participated in checkpoint selection
+(Methods, \emph{Whole-corpus embedding}). Agreement is cross-donor
+throughout: same-donor neighbour pairs are discarded before scoring, and each
+value is reported against its own permutation null rather than against an
+arbitrary threshold.
 
-The models crossed three adversarial weights with two settings of the
-latent's information cost, and the two knobs did different things.
+Cell family agreement reaches 0.9807 across 630,689 annotated cells from 118
+donors ($p = 0.005$), and the four compartments occupy contiguous,
+non-overlapping territory (Fig.~\ref{fig:model}d). Cross-donor menstrual phase
+agreement reaches 0.6796 across 723,599 cells from 142 donors ($p = 0.005$).
+The asymmetry between those two is instructive. Phase was supplied to a single
+linear classification head during training; cell family was supplied to
+nothing, and is recovered from reconstruction pressure and pathway grouping
+alone.
 
-Raising the information cost from 1 to 30 reduced cross-donor phase agreement
-and improved donor recovery and study separation, at all three adversarial
-weights. At the
-lowest adversarial weight ($\lambda_{\text{dab}}$ 7) it gave up 7.4\% of phase (0.7337 to 
-0.6791) for 7.7\% of donor recovery (0.5837 to 0.5389) and 0.6\% of study 
-separation (0.8636 to 0.8587). At the middle adversarial weight 
-($\lambda_{\text{dab}}$ 168), it gave up 17.9\% of phase (0.7346 to 0.6033) for 23.4\% 
-of donor recovery (0.5188 to 0.3975) and 14.0\% of study separation (0.7613 
-to 0.6544). At the highest adversarial weight ($\lambda_{\text{dab}}$ 336) the figures 
-were 17.1\% of phase (0.7146 to 0.5922) for 21.3\% of donor recovery (0.5277 
-to 0.4154) and 12.3\% of study separation (0.8200 to 0.7190). The sign is the 
-same in all nine readings: information cost traversed the Pareto front.
-
-Adversarial weight was found to have an optima. From adversarial weight of
-7 to 168 at the lower information cost ($w_{\text{kl}}$ 1), donor recovery fell
-11.1\% (0.5837 to 0.5188) and study separation 11.8\% (0.8636 to 0.7613)
-while phase rose 0.1\% (0.7337 to 0.7346). Both confounds were bought for 
-nothing. The same step at the higher information cost ($w_{\text{kl}}$ 30) bought more 
-and charged for it: donor recovery fell 26.2\% (0.5389 to 0.3975) and study 
-separation 23.8\% (0.8587 to 0.6544) against 11.2\% of phase (0.6791 to 
-0.6033). Raising the weight again from 168 to 336 reversed every one of those 
-gains. At the lower information cost ($w_{\text{kl}}$ 1) donor recovery rose from 0.5188 to
-0.5277 and study separation from 0.7613 to 0.8200, while phase fell from
-0.7346 to 0.7146; at the higher, donor recovery rose from 0.3975 to 0.4154
-and study separation from 0.6544 to 0.7190, while phase fell from 0.6033 to
-0.5922. So adversarial weight moved the Pareto front itself, with the best results 
-at $\lambda_{\text{dab}}$ 168 (Fig.~\ref{fig:knobs}).
-
-Placed on the same axes as the field, \elaj creates the frontier. Cross-donor
-phase agreement of 0.7346 is the highest of the fifteen representations
-measured, above scanorama's 0.7303, and donor recovery of 0.5188 is lower
-than every one of the nine competing methods, the nearest being Geneformer at
-0.5421. No other method is simultaneously better on both. 
-
-Only one method competes on study removal. Harmony reaches 0.6697, between 
-ELAJ$_{B\,lo}$ at 0.6544 and ELAJ$_{B\,hi}$ at 0.7613, and it pays for it in 
-cycle signal: fitted transductively on the same cells as principal components, 
-it cuts study separation by 30.3\% and cross-donor phase agreement by 8.2\%. 
-The trade is demonstrated by the field's own correction tool.
-
-Cell type does not separate these methods. Cross-donor agreement on cell
-family runs from 0.9023 to 0.9896 across all fifteen, a spread of 0.0873,
-so a representation can be judged on it only in the sense that all of them
-pass. Scale does not help either: across the ten methods, the width of the
-representation is negatively associated with cross-donor phase agreement
-($\rho=-0.6503$, $p=0.0418$), and the two widest, scFoundation at 3{,}072
-dimensions and scGPT at 512, reach 0.6449 and 0.4869 against \elaj's sixteen
-dimensions.
-
-Two arms are carried forward. ELAJ$_{B\,hi}$, at the middle adversarial
-weight and the lower information cost, holds the most cycle signal: phase
-0.7346, cell family 0.9820, donor recovery 0.5188, study separation 0.7613.
-ELAJ$_{B\,lo}$, at the same adversarial weight and the higher information
-cost, gives up cycle signal and removes more of both confounds: phase 0.6033,
-cell family 0.9565, donor recovery 0.3975, study separation 0.6544.
-
-\note{CARRIES B1 and the field comparison. FIG 2, TABLE 1.
-\\Detail in RESULTS\_NOTES.md.}
-
+Technical variation bounds the alternative explanation rather than competing
+with it. Under a best-of-sixteen linear criterion, mitochondrial fraction,
+total counts and doublet score reach 0.3396, 0.2514 and 0.1366, against 0.4725
+for serum progesterone and 0.5801 for epithelial pseudotime
+(Supplementary Table~S1). The criterion takes the strongest correlation
+available across sixteen dimensions, so these controls are upper bounds and do
+not sit near zero by construction. Biological covariates the model never
+received nonetheless exceed every technical one.
 
 % ---------------------------------------------------------------------
-\subsection*{Reading 1.58 million cells as sixteen numbers}
-
-The model was given expression, with study, platform and anatomical site as
-decoder covariates and menstrual phase through a single supervised head. Cell
-family, cell type, cycle day, serum progesterone, donor identity, disease
-status, surgical stage and severity reached neither the encoder nor the
-decoder. Once training ended and the checkpoint was fixed, all 1{,}577{,}728
-cells were embedded and read together. Menstrual phase, the supervised
-exception, is reported on held-out donors throughout while others are 
-interpreted on the whole corpus.
-
-Of the withheld variables, cell identity is the one the latent holds most
-completely. Agreement among a cell's thirty nearest neighbours was 0.9975 
-on a four-way lineage label over 174{,}848 cells, and 0.8316 on a 
-forty-five-way cell type over 220{,}160 cells. Measured across donors, 
-agreement on harmonised cell family was 0.9807 across 118 donors
-($p=0.005$), the highest of any label measured here. It is clear that the 
-sixteen dimensions group cells largely by cell type (Fig.~\ref{fig:endo}a). It is 
-relevant to state that cell type classification is unique to endometrial 
-cells and cells from other anatomical sites are not labelled. Anatomical site (Fig.~\ref{fig:endo}c) 
-hints at what the cells from other anatomical sites could be.
-
-Donor identity is the withheld variable the model is trained to discard
-rather than to hold. On the held-out set, \elaj scored 0.5188 against a 
-range of 0.5421 to 0.7892 for other models. As seen in the previous
-section, \elaj is the best at retaining biological information while 
-removing donor identity.
-
-The next few sections use the whole corpus, not just the held-out set, to 
-interpret \elaj. These interpretations are underpinned by \elaj's donor 
-identity score on the full corpus: 0.3229. The low donor identity makes 
-the results on other variables more donor-blind than the number on the 
-held-out set would suggest.
-
-\note{CARRIES C1. FIGURE 4a, 4c (label fig:endo). Detail in RESULTS\_NOTES.md.}
-
+% R3 to R6 pending. See RESULTS_STRUCTURE.md.
 % ---------------------------------------------------------------------
-\subsection*{The menstrual cycle through \elaj}
-
-The decoder is conditioned on study, platform and tissue alone. Menstrual phase 
-was the only supervised label, provided to the latent through a single linear 
-map over all sixteen dimensions. Other related metadata variables such as cycle 
-day, serum progesterone, cell type and disease status were never provided as 
-inputs to the model.
-
-Cycle day, recorded for 466{,}176 cells in only one cohort of 60 donors 
-representing 22 days between day 5 and 30, showed up in the latent space. 
-Advancing through the days one at a time showed a dense mass of cells being 
-progressively arranged in the latent space. As the cycle returned to where it 
-began, so did that region, showing the cycle to be closed in the latent space 
-(Fig.~\ref{fig:endo}e).
-
-Cross-donor agreement, defined in Methods, is the share of a cell's hundred
-nearest latent neighbours that carry its label, counting only the neighbours
-belonging to other donors. It is reported as excess over chance such that zero 
-is the agreement the label's frequencies alone would produce and one is perfect. 
-Significance is assessed by reassigning the same labels to different donors two 
-hundred times and recomputing \cite{newman2003mixing,anderson2001permanova}, 
-the donor being the unit that can be exchanged when a label is constant within 
-one \cite{squair2021confronting}. On held-out donors, agreement on menstrual 
-phase was 0.7346 across 36 donors ($n_{\text{cells}}=195{,}879$), and no 
-permutation reached it ($p=0.005$, the smallest value two hundred permutations 
-can return). It remained high when all 1{,}577{,}728 cells were read together, 
-at 0.6796 across 142 donors ($p=0.005$). 
-
-Removing the phase head reduced that agreement to 0.4812, so just under
-two-thirds of the signal survived the loss of supervision (65.5\%) and the
-head accounted for the remaining third.
-
-Epithelial pseudotime and serum progesterone correlated highly (0.58 and 0.47, 
-respectively) with the single best-matched of the sixteen
-dimensions of the \elaj latent space. This was 
-calibrated against five quality-control measures with a range of correlation
-between 0.14 and 0.34, the highest being the fraction of mitochondrial reads.
-
-\note{CARRIES C3 in prose, C2 through FIG 4e and the animation only.
-\\Detail in RESULTS\_NOTES.md.}
-
-% ---------------------------------------------------------------------
-\subsection*{Surgical stage and grade}
-
-Endometriosis severity is recorded across studies as surgical stage or 
-endometriosis grade. It appears as rASRM I--IV in one cohort and mild against 
-severe in the other, where mild and severe are defined as rASRM I--II and 
-III--IV respectively. Merged onto one three-level scale (control, mild, severe) 
-it covers 34 held-out donors and 118 total donors across the whole corpus.
-
-On the 34 held-out donors, ELAJ$_{B\,hi}$ reached 0.1157 on the merged scale
-and did not clear its permutation null ($p=0.289$), as did ELAJ$_{B\,lo}$ at
-0.1155 ($p=0.249$). Read across the whole
-corpus, agreement on it was 0.1286 ($p=0.025$) on ELAJ$_{B\,hi}$, and 0.1114
-($p=0.020$) on ELAJ$_{B\,lo}$. While \elaj is
-able to identify severity with some confidence, further analysis revealed that 
-\elaj, being the best in the group, was only able to separate control from 
-disease and not the severity reported between disease cases. With 57 donors 
-having some severity of endometriosis, the best model (ELAJ$_{B\,hi}$) scored
-0.0744 and could not clear its permutation null at $p=0.129$. Meanwhile,
-disease status on its own, control endometrium against eutopic endometrium,
-reached 0.3364 comfortably clearing the permutation null with $p=0.005$.
-
-The field corroborates this result. No model is able to reliably interpret 
-severity from biological signal alone. On held-out donors, agreement on the merged
-scale ran from 0.0759 to 0.1860 across the ten methods with the lowest $p$ 
-being 0.080, and not one of them reached its own permutation null. The
-highest was Geneformer at 0.1860 ($p=0.080$), pretrained on corpora far
-larger than this one; the lowest was scANVI at 0.0759 ($p=0.418$). Scanorama,
-the method from which a donor is most easily identified in this corpus
-(0.7892), reached 0.1505 ($p=0.219$), and scFoundation, the widest
-representation tested at a 3{,}072-dimensional latent space, reached 0.1695
-($p=0.139$). Testing the severity separability without control samples,
-every one of the ten fell at or below zero, with the lowest $p$ at 0.627.
-
-This indicates that whether a person has endometriosis is legible in their 
-endometrium but the severity, even abstracted to two levels, cannot be
-interpreted from biology. We read this result against other variables measured 
-on the same cells: cell family reached 0.9820 and menstrual phase reached 
-0.7346 in ELAJ$_{B\,hi}$, with no permutation matching either of them
-($p=0.005$; compare Fig.~\ref{fig:endo}a,d with~\ref{fig:endo}h,i).
-
-
-% ---------------------------------------------------------------------
-\note{CARRIES the staging result. FIGURE 4a, 4d, 4h, 4i. Detail in RESULTS\_NOTES.md.}
-
-% ---------------------------------------------------------------------
-\subsection*{What the disease axis measures}
-
-Endometriosis is diagnosed by surgical visualisation of ectopic lesions,
-endometrium-like tissue growing outside the uterus, and those lesions are not
-sampled here. Every cell in this test is endometrium in its normal location,
-eutopic, so the label separates donors whose lesions lie elsewhere from donors
-with none. In the \elaj latent, cross-donor agreement
-on it was 0.3364 across 36 held-out donors
-($n_{\text{cells}}=172{,}740$; $p=0.005$). This was the lowest of the ten
-methods tested. The highest was scanorama at 0.4290, on the same donors.
-
-Across those ten methods, agreement on disease status tracked donor recovery
-($\rho=+0.721$; $p=0.019$). Menstrual phase, measured on the same embeddings
-and the same cells, did not ($\rho=+0.176$; $p=0.63$). \elaj was both the
-method from which a donor was hardest to identify, at 0.5188, and the method
-with the lowest agreement on disease status.
-
-Cell family and menstrual phase, measured under the same estimator on the same
-cells, both reached the permutation floor of 0.005 (Fig.~\ref{fig:endo}a,d).
-
-% ---------------------------------------------------------------------
-\note{CARRIES A6 and the disease row of Table 1. FIGURE 4g is UNCITED in prose. Detail in RESULTS\_NOTES.md.}
-
-% ---------------------------------------------------------------------
-\subsection*{What the latent needs in order to work}
-
-Five single-key changes were made against the reported arm (ELAJ$_{B\,hi}$), each 
-retrained from scratch and scored under the same protocol. The arms
-are ordered by how far the change moves the model away from a regular 
-CVAE.
-
-Gene grouping was tested by reassigning every gene to a group at random,
-while group sizes, parameter count, bucketing and the gene space were 
-preserved exactly. It produced the best held-out reconstruction in the 
-project (0.3911 against 0.4024 for ELAJ$_{B\,hi}$). However, every biological 
-reading fell: cross-donor agreement on disease status by 19.8\%, on cell 
-family by 2.2\%, on merged severity by 50.6\%, and on menstrual phase by
-7.7\%. The decoder reached the better reconstruction by reading provenance
-instead of cells, its reliance on the latent relative to the covariates it
-is told about falling from 7.46 to 2.43. The pathway grouping 
-therefore carries biology along with parameter efficiency: a random partition
-of the same shape reconstructs the corpus better but holds less of what is 
-in it.
-
-The phase head was ablated by setting its loss weight to zero. 
-Cross-donor phase agreement fell 34.5\%. The architecture supplied 65.5\% of the
-margin and the head the remaining 34.5\%. Read on the frontier axes alone
-the rest of the arm looks unremarkable: donor recovery fell 27.6\% and study
-separation 14.3\%, which is what less pressure on the latent should do to
-both. The training curves say otherwise. Read every epoch on the validation 
-split, phase agreement in the head-free arm climbed from 0.4977 to 0.7488, 
-while its held-out reconstruction loss was lowest at the first epoch and rose 
-at every epoch after, so the selection rule returned the model before that 
-structure had arrived. Training loss stayed within 0.0009 of ELAJ$_{B\,hi}$
-at every epoch, so the head cost nothing in fit. At the selected checkpoints, 
-on that same per-epoch readout, the head-free arm recovered donors 0.1203 
-less well and separated studies 
-0.1021 less, and at the last epoch both arms ran those gaps were 0.0327 
-and 0.0010. The head does more than return phase to the latent. It has a 
-regularising effect on the model which improves biological signal retention 
-in general (Table~\ref{tab:field}).
-
-Disabling the elastic cell similarity head improved every biological axis
-and worsened every cost axis. Disease status rose 8.1\% while cell family,
-menstrual phase and cell type each rose by less than 1\%, against donor
-recovery worsening 6.4\% and study separation 9.5\%. The most remarkable 
-outcome of ECS can be seen in the UMAPs produced. ECS creates a push and pull 
-between cells that keeps the latent organised by similarity while adversarial 
-pressure pulls studies together. Without it, cells reorganise by provenance: 
-large single-study territories appear that ELAJ$_{B\,hi}$ does not have 
-(Supplementary figure reference).
-
-To ablate for DNS sentinel, genes never assayed in a study were set to zero 
-instead of the special embedding. The ablation worsened study separation by 
-2.7\% and moved cell family, menstrual phase and donor recovery by less 
-than 1\% each. The biggest difference, despite everything else being the same, 
-was again seen in the UMAPs. The DNS sentinel seems to act as a catalyst for 
-removing study separation. Absence of measurement is not a measured absence.
-
-Taking the eight order statistics out of each group's readout and leaving
-the single learned query, which reduces what a group hands forward from 288
-numbers to 32, cost menstrual phase 13.1\% and cell type 2.8\%, against
-less than 0.3\% on cell family. What a weighted average discards is the shape of a
-group's distribution, and on this corpus that shape is a menstrual-phase
-mechanism rather than a general one.
-
-Across all six configurations, cross-donor agreement on cell family,
-menstrual phase and disease status cleared the permutation floor
-($p=0.005$), merged severity cleared its null in none of them ($p=0.149$ to
-$0.468$), and endometriosis grade was negative in all six.
-
-\note{CARRIES D1--D6. TABLE 1. Detail in RESULTS\_NOTES.md.}
