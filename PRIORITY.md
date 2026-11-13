@@ -290,6 +290,22 @@ outright until the claims axis lands and Figure 2 is decided.
       the render rather than leaving it for a reader to spot.
 - [ ] Figure 1 is 213.5 mm tall. It fits, but it is close to a full page.
 
+## Tier 3b. Citations, and this is a whole-paper pass
+
+- [ ] **AW, 14 November: the paper is under-cited throughout.** His own
+      observation and it matches what the register reading found. Five of the
+      eight published Discussions read for `DISCUSSION_REGISTER.md` cite
+      twelve or more references in that section alone; MIDAS cites 35 in 995
+      words. Our Discussion now cites 18 after the rewrite, up from one, and
+      **the Introduction, Results and Methods have not been reviewed this
+      way.** Do this as one pass over the whole paper once the sections are
+      drafted, not section by section.
+- [ ] **`Supplementary Note~X` is now referenced from the Discussion.** The
+      limitations paragraph redirects three corpus constraints there:
+      overlapping donor identifiers across one study pair, the single cohort
+      recording cycle day, and the unstratified permutation null. That note
+      has to exist before submission, and the placeholder has to resolve.
+
 ## Tier 4. Mechanical, none of it blocking
 
 - [ ] **Numbered references in the DOCX.** The `.tex` is already numbered;
