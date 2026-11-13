@@ -407,9 +407,28 @@ the same gene comes out as important for endometriosis.** Theirs is a
 supervised classifier told the labels; ours is an unsupervised representation
 that never saw them.
 
-⚠ "Not named in any corpus paper" is not the same as "new to endometriosis".
-It means these eleven papers do not mention them. A novelty claim needs a
-proper literature search, which has not been done.
+**The four unnamed genes, searched outside the corpus, 13 November.** Three
+are already reported in endometriosis by studies NOT in our corpus, which
+makes them external validation rather than novelty -- a better outcome.
+
+| gene | outside the corpus | direction |
+|---|---|---|
+| **MMP27** | **upregulated in eutopic endometrium of endometriosis against healthy controls**, and expressed by CD163+/CD206+ M2 macrophages in cycling endometrium and superficial lesions | **matches ours exactly: same direction, same tissue, same cell type** |
+| **TNFRSF17 (BCMA)** | **BCMA mRNA overexpressed in endometriosis against control endometrium** (Hever et al., PNAS 2007, the paper that established plasma cells in endometriosis) | matches ours |
+| **CCL13 (MCP-4)** | named among the critical chemokines driving the mononuclear phagocyte system in endometriosis peritoneal fluid; MCP-4 altered across lesion types | matches ours in kind |
+| SIGLEC7 | **no direct report.** The surrounding biology is established -- inhibitory NK receptors increased and NK cytotoxicity reduced in endometriosis -- but SIGLEC7 itself is not reported as differentially expressed | consistent, unconfirmed |
+
+**MMP27 is the strongest line in the whole claims axis.** An unsupervised
+16-number representation, which was never given disease labels, puts MMP27 on
+the disease side of its immune direction. The literature has MMP27 up in the
+eutopic endometrium of cases, in macrophages. Direction, tissue and cell type
+all agree, and no paper in our corpus mentions the gene at all.
+
+⚠ **These came from web searches and I have not read the primary papers.**
+Before any of this reaches the manuscript each one needs checking against the
+source, for the same reason the Hrovatin claim did: a summary of a paper is
+not the paper. Sources to verify: Hever et al. PNAS 2007 for BCMA; the MMP27
+M2-macrophage work; the peritoneal-fluid single-cell paper for CCL13.
 
 One more worth a sentence and not a claim: TNFRSF17 is a plasma cell gene,
 and Shih reports B cells enriched in cases. We cannot test that claim, since
