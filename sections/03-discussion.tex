@@ -33,17 +33,18 @@ biopsied once, which created a confound between biology and batch effects
 \citep{hrovatin2025atlases}. In \elaj's sixteen-dimensional latent space,
 donor identity is suppressed while cell identity and the menstrual cycle
 remain recoverable. Cell identity separates without ever having been
-supervised, and the cycle resolves within cell types rather than across the
-corpus as a whole.
+supervised, and the cycle resolves within cell types known to interact 
+with the menstrual cycle.
 
 \elaj\ carries 1{,}883{,}986 parameters against scFoundation's 100 million, 
 pretrained on over 50 million profiles \citep{hao2024scfoundation}. Four 
 pretrained models conferred no advantage on this corpus over \elaj\
 \citep{cui2024scgpt,theodoris2023geneformer,heimberg2025scimilarity,kedzierska2025zeroshot}.
 scGPT's own authors note that its pretraining does not itself mitigate 
-batch effects \citep{cui2024scgpt}. Its size is what made the trade-off
+batch effects \citep{cui2024scgpt}. \elaj's size is what made the trade-off
 measurable: eleven configurations were trained and scored on identical cells,
-where a representation of fixed pretrained weights yields a single point.
+where a zero-shot representation from fixed pretrained weights yields a 
+single point.
 
 The \elaj frontier, defined on menstrual phase against donor or study identity,
 is shaped by adversarial weight and information cost. While adversarial weight 
@@ -54,9 +55,8 @@ this trade-off rather than an optimum
 \citep{korsunsky2019harmony,lopez2018scvi,xu2021scanvi,hie2019scanorama}.
 None of the nine competing representations reached \elaj's cross-donor cycle
 agreement at a lower donor recovery. Cell identity was recovered by every one
-of them and separates none (Table~1), so the cycle and donor identity are the
-axes on which these representations differ at all
-\citep{luecken2022benchmarking}.
+of them (Table~1), so the cycle and donor identity are the axes on which these 
+representations differ \citep{luecken2022benchmarking}.
 
 Cell composition does not differ between control and eutopic endometrium,
 confirming at 194 donors a claim made in 60
@@ -77,8 +77,9 @@ rASRM staging does not correspond to anything the latent separates. Whether a
 person has endometriosis was recoverable from endometrium inside the uterus.
 Severity, a grouping derived from rASRM staging, was legible only when
 controls were included. A headcount of cell families did not separate severity
-either. Severity divided control from disease and nothing within disease, so
-what a surgeon scores is not what the tissue distinguishes.
+either. Only the separation of control from disease passed its permutation
+null, indicating that rASRM staging is not recoverable from single-cell
+expression.
 
 The main architectural bet made by \elaj is the replacement of scale with
 inductive bias. Ablation of pathway groups showed the biological axis
@@ -89,44 +90,42 @@ have. Replacing the dataset-native sentinel with zeros reorganises the latent
 the same visible way. Removing the pooled order statistics,
 which cuts what each group hands forward from 288 numbers to 32, cost the
 menstrual cycle heavily and cell identity almost nothing. A weighted average
-discards the shape of a group's distribution, and on this corpus that shape
-carries the cycle.
+discards the shape of a group's distribution, and we suspect that on this 
+corpus the cycle requires it.
 
-Epithelial pseudotime and serum progesterone were recovered more strongly
-than mitochondrial fraction, library size or doublet score, so biology
-outranks technical variation across the sixteen dimensions, none of which the model was given.
+Epithelial pseudotime and serum progesterone, neither of which the model was
+given, were recovered more strongly than mitochondrial fraction, library size
+or doublet score. The sixteen dimensions are therefore organised by biology
+rather than by assay variation.
 Tissue of origin, the one label supplied through decoder conditioning, is
 largely absent from the latent, which is the conditioning working as designed.
 Cell-family labels also transfer across studies accurately enough to annotate
-the cohorts that deposited none, which is what brought them into the
-composition tests above.
+the cohorts that didn't have them, which enabled the composition tests 
+above.
 
-Notably, the negative results reported here are
-bounded by donor count rather than by biology, since the width of a
-permutation null is set by the number of people contributing to it. Severity
-and surgical stage remain claims that a larger corpus could settle. Three
-further constraints on this corpus, overlapping donor identifiers across one
-study pair, a single cohort recording cycle day, and an unstratified
-permutation null, are detailed in Supplementary Note~X.
+Notably, the negative results reported here are bounded by donor count rather 
+than by biology, since the width of a permutation null is set by the number 
+of people contributing to it. Severity and surgical stage remain claims that 
+a larger corpus could settle. Three further constraints on this corpus, 
+overlapping donor identifiers across one study pair, a single cohort 
+recording cycle day, and an unstratified permutation null, are detailed 
+in Supplementary Note~X.
 
 Transfer beyond endometriosis rests on two conditions rather than on the
-disease, scarce donors and severe batch structure, which hold wherever
-diagnosis requires surgery. A less differentiated epithelium has been
-reported in lesions from deconvoluted bulk and from fourteen donors
-\citep{garciaalonso2021endometrium,tan2022singlecell}, and the fifty-eight
-ectopic donors pooled here could test it directly once epithelial subtypes are
-resolved. Because \elaj\ retrains in hours, each new cohort can extend this
-reference rather than wait on a pretraining run to be repeated. Whether the
-same inductive bias scales into a pretrained model is the question these
-results raise and do not answer, since bias and corpus size are independent
-levers.
+disease, scarce donors and severe batch structure. A less differentiated 
+epithelium has been reported in lesions from deconvoluted bulk and from 
+fourteen donors \citep{garciaalonso2021endometrium,tan2022singlecell}, and 
+the fifty-eight ectopic donors pooled here could test it directly if 
+epithelial subtypes are resolved. Because \elaj\ retrains in hours, each 
+new cohort can extend this reference rather than wait on a pretraining run 
+to be repeated. Whether the same inductive bias scales into a pretrained 
+model is the question these results cannot answer, since bias and corpus 
+size are independent levers.
 
 \elaj\ establishes a sixteen-dimensional reference for pooled endometrial
 single-cell data. It prices donor removal against biology, recovers cell
 identity and the cycle's compartment structure without supervision, places the
 disease signal inside immune cells, and arbitrates published claims no single
-cohort could settle. The
-broader contribution is not the representation but the corpus made legible
-through it: eleven studies that could previously only be read one at a
-time.
+cohort could settle. The broader contribution is the corpus: eleven studies 
+that could previously only be read one at a time.
 

@@ -300,6 +300,16 @@ outright until the claims axis lands and Figure 2 is decided.
       **the Introduction, Results and Methods have not been reviewed this
       way.** Do this as one pass over the whole paper once the sections are
       drafted, not section by section.
+- [ ] **The Discussion's paragraph 6 must reference the ablation Supplementary
+      figures.** AW, 14 November. That paragraph asserts four ablation
+      outcomes, and two of them, the single-study territories that appear
+      without the elastic cell similarity head and the latent reorganising
+      when the sentinel is replaced with zeros, **are claims about an
+      embedding the reader cannot see**. Results carries the same two with
+      `(Fig.~X)` placeholders, so the panels are already owed; the Discussion
+      needs its own pointer to them. `FIGURES_NEEDED.md` F4 and F5 are those
+      panels, and they were provisionally one four-panel Supplementary
+      figure, which is now load-bearing for two sections rather than one.
 - [ ] **`Supplementary Note~X` is now referenced from the Discussion.** The
       limitations paragraph redirects three corpus constraints there:
       overlapping donor identifiers across one study pair, the single cohort
