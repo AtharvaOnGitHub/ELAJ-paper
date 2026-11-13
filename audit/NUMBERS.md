@@ -397,5 +397,10 @@ own docstring under `axw1008/src/scripts/`.
 |---|---|---|---|---|---|
 | p1_dab168_kl1 | 207 | 0.536 | 0.482 | 0.28 | 0.8526 |
 
-**`replication_external.csv`** — not generated yet.
+**`replication_external.csv`**
+
+| end | n_top | external_list | external_n | hits | genes | p_hypergeometric | fold_INHBA | fold_LRRC15 | fold_MMP27 | fold_SERPINB2 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| disease side | 15 | upregulated | 66 | 4 | INHBA;LRRC15;MMP27;SERPINB2 | 3.954e-07 | 15.33 | 25.2 | 40.93 | 72.95 |
+| control side | 15 | upregulated | 66 | 0 |  | 1 |  |  |  |  |
 
