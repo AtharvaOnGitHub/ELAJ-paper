@@ -846,6 +846,26 @@ tex = "\n".join(
      else "\\subsection*{[D] discussion}\n" + f.read_text())
     for f in TEX_FILES if f.exists())
 tex = re.sub(r"\\note\{.*?\n\n", "", tex, flags=re.S)       # prose only, not my notes
+_CDIR = ROOT / "axw1008" / "docs" / "paper"
+_CFILES = ["x8_x9_composition.csv", "x12_by_family_annotated.csv",
+           "x12_by_family_transferred.csv", "x14_tissue_within_family.csv",
+           "x3b_results.csv", "x1_validation.csv",
+           "x12_direction_quality.csv", "replication_external.csv"]
+# The claims-axis CSVs count as sources here too, not only in the printed
+# table below. Without this the auditor prints a value and then reports the
+# same value as unaccounted, which is exactly the kind of self-contradiction
+# that made the first audit unsound.
+for _fn in _CFILES:
+    _f = _CDIR / _fn
+    if not _f.exists():
+        continue
+    import csv as _csv2
+    with open(_f, newline="") as _fh2:
+        for _row in _csv2.DictReader(_fh2):
+            for _cell in _row.values():
+                if _is_num(_cell):
+                    derived.add(f"{float(_cell):.4f}")
+
 unaccounted = []
 for mobj in re.finditer(r"\b0\.\d{3,4}\b", tex):
     v = mobj.group(0)
@@ -934,11 +954,6 @@ lines += ["## Not yet auditable", "",
 # Experiments written after the main battery, so none of them reach MANIFEST.
 # Tabulated here so NUMBERS.md shows them beside the benchmark reads rather
 # than leaving half the Results section undocumented.
-_CDIR = ROOT / "axw1008" / "docs" / "paper"
-_CFILES = ["x8_x9_composition.csv", "x12_by_family_annotated.csv",
-           "x12_by_family_transferred.csv", "x14_tissue_within_family.csv",
-           "x3b_results.csv", "x1_validation.csv",
-           "x12_direction_quality.csv", "replication_external.csv"]
 lines += ["", "## The claims axis", "",
           "Written after the main scoring battery, so these are read from the",
           "scripts' own CSVs in `axw1008/docs/paper/` rather than from a",
