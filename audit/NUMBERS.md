@@ -322,3 +322,80 @@ from project documents rather than from a `benchmark.csv` read here.
 | 0.77 / 0.83 vs 0.22 | disease in marecko's immune cells | `Outputs/validate/` |
 | +0.883, +0.890 | adversary loss vs donor / study kNN | `axw1008/docs/paper/LEVERS.md` |
 
+
+## The claims axis
+
+Written after the main scoring battery, so these are read from the
+scripts' own CSVs in `axw1008/docs/paper/` rather than from a
+`benchmark.csv`. The generating script for each is named in its
+own docstring under `axw1008/src/scripts/`.
+
+**`x8_x9_composition.csv`**
+
+| contrast | family | mean_control | mean_eutopic | F | p | n_donors | mean_ectopic | mean_low | mean_high |
+|---|---|---|---|---|---|---|---|---|---|
+| control_vs_eutopic | immune | 0.1006 | 0.2302 | 0.2486 | 0.6186 | 194 |  |  |  |
+| control_vs_eutopic | stromal | 0.5226 | 0.5836 | 0.125 | 0.736 | 194 |  |  |  |
+| control_vs_eutopic | epithelial | 0.3308 | 0.1469 | 0.01741 | 0.9016 | 194 |  |  |  |
+| control_vs_eutopic | endothelial | 0.04598 | 0.03926 | 1.445 | 0.2358 | 194 |  |  |  |
+| eutopic_vs_ectopic | immune |  | 0.2302 | 2.864 | 0.1194 | 151 | 0.4015 |  |  |
+| eutopic_vs_ectopic | stromal |  | 0.5836 | 0.04409 | 0.818 | 151 | 0.4958 |  |  |
+| eutopic_vs_ectopic | epithelial |  | 0.1469 | 20.9 | 0 | 151 | 0.02223 |  |  |
+| eutopic_vs_ectopic | endothelial |  | 0.03926 | 0.2076 | 0.7002 | 151 | 0.08048 |  |  |
+| severity_low_vs_high | immune |  |  | 1.62 | 0.2092 | 51 |  | 0.0911 | 0.03138 |
+| severity_low_vs_high | stromal |  |  | 0.001574 | 0.9696 | 51 |  | 0.7024 | 0.7907 |
+| severity_low_vs_high | epithelial |  |  | 0.01232 | 0.913 | 51 |  | 0.178 | 0.1498 |
+| severity_low_vs_high | endothelial |  |  | 2.038 | 0.1624 | 51 |  | 0.02854 | 0.02814 |
+
+**`x12_by_family_annotated.csv`**
+
+| auc | auc_lo | auc_hi | null | p | n_donors | n_control | n_case | family |
+|---|---|---|---|---|---|---|---|---|
+| 0.6048 | 0.4543 | 0.7501 | 0.5028 | 0.155 | 114 | 60 | 54 | ALL FAMILIES |
+| 0.592 | 0.4374 | 0.7531 | 0.4986 | 0.175 | 101 | 54 | 47 | stromal |
+| 0.4663 | 0.304 | 0.6318 | 0.4898 | 0.59 | 98 | 51 | 47 | epithelial |
+| 0.7084 | 0.5657 | 0.8556 | 0.4806 | 0.015 | 94 | 50 | 44 | immune |
+| 0.6818 | 0.5235 | 0.827 | 0.4864 | 0.05 | 85 | 43 | 42 | endothelial |
+
+**`x12_by_family_transferred.csv`**
+
+| auc | auc_lo | auc_hi | null | p | n_donors | n_control | n_case | family |
+|---|---|---|---|---|---|---|---|---|
+| 0.5176 | 0.4106 | 0.6237 | 0.471 | 0.2675 | 202 | 106 | 96 | ALL FAMILIES |
+| 0.4921 | 0.3787 | 0.6099 | 0.4804 | 0.445 | 175 | 86 | 89 | stromal |
+| 0.4701 | 0.3381 | 0.5811 | 0.478 | 0.535 | 176 | 93 | 83 | epithelial |
+| 0.596 | 0.4708 | 0.7106 | 0.4821 | 0.0725 | 162 | 76 | 86 | immune |
+| 0.5947 | 0.4812 | 0.7091 | 0.4782 | 0.1025 | 134 | 65 | 69 | endothelial |
+
+**`x14_tissue_within_family.csv`**
+
+| family | units | auc | null | p | n_endometrium | n_lesion |
+|---|---|---|---|---|---|---|
+| stromal | 229 | 0.6226 | 0.4946 | 0.0775 | 171 | 58 |
+| epithelial | 194 | 0.5222 | 0.4936 | 0.401 | 173 | 21 |
+| immune | 215 | 0.5618 | 0.5019 | 0.24 | 158 | 57 |
+| endothelial | 175 | 0.6175 | 0.4935 | 0.095 | 131 | 44 |
+
+**`x3b_results.csv`**
+
+| family | n_donors | eta2_control | eta2_eutopic | difference | null_mean | null_sd | p_one_sided | n_permutations |
+|---|---|---|---|---|---|---|---|---|
+| immune | 101 | 0.008102 | 0.07644 | -0.06834 | 0.02589 | 0.04723 | 0.966 | 2000 |
+| immune | 101 | pooled_interaction | 0.2633 | 0.9961 | 3.061 | 0.7618 | 5000 |  |
+
+**`x1_validation.csv`**
+
+| test | accuracy | balanced | majority_baseline |
+|---|---|---|---|
+| marecko_2024 -> duempelmann_2026 | 0.9862 | 0.9596 | 0.8805 |
+| duempelmann_2026 -> marecko_2024 | 0.9845 | 0.964 | 0.5252 |
+| li_2025 immune recall (out of tissue) | 0.9966 |  |  |
+
+**`x12_direction_quality.csv`**
+
+| arm | n_donors | auc_heldout | auc_null | share_null_above | cosine_stability |
+|---|---|---|---|---|---|
+| p1_dab168_kl1 | 207 | 0.536 | 0.482 | 0.28 | 0.8526 |
+
+**`replication_external.csv`** — not generated yet.
+

@@ -115,6 +115,13 @@ for f in sorted(glob.glob(str(ROOT / "Outputs/Benchmarks/full/full_p1_*/benchmar
 # other row, and the three foundation models re-scored bit-exactly, but a
 # table that mixed a full-split ELAJ against a capped baseline would be the
 # same error as the glob this manifest replaced.
+def _is_num(x) -> bool:
+    try:
+        float(x); return True
+    except (TypeError, ValueError):
+        return False
+
+
 MANIFEST = {
     # method:        (benchmark.csv,                    gene_policy,  fit_on)
     "pca":          ("wide_full_inductive",             "all30962",   "train"),
@@ -923,6 +930,40 @@ lines += ["## Not yet auditable", "",
           "| 0.4140 → 0.3772, 0.4083 → 0.4256 | train/val NB without the phase head | `Outputs/a_series/a1_nophase/metrics.csv` |",
           "| 0.77 / 0.83 vs 0.22 | disease in marecko's immune cells | `Outputs/validate/` |",
           "| +0.883, +0.890 | adversary loss vs donor / study kNN | `axw1008/docs/paper/LEVERS.md` |", ""]
+# ── THE CLAIMS AXIS, 13 November 2026 ───────────────────────────────────
+# Experiments written after the main battery, so none of them reach MANIFEST.
+# Tabulated here so NUMBERS.md shows them beside the benchmark reads rather
+# than leaving half the Results section undocumented.
+_CDIR = ROOT / "axw1008" / "docs" / "paper"
+_CFILES = ["x8_x9_composition.csv", "x12_by_family_annotated.csv",
+           "x12_by_family_transferred.csv", "x14_tissue_within_family.csv",
+           "x3b_results.csv", "x1_validation.csv",
+           "x12_direction_quality.csv", "replication_external.csv"]
+lines += ["", "## The claims axis", "",
+          "Written after the main scoring battery, so these are read from the",
+          "scripts' own CSVs in `axw1008/docs/paper/` rather than from a",
+          "`benchmark.csv`. The generating script for each is named in its",
+          "own docstring under `axw1008/src/scripts/`.", ""]
+for _fn in _CFILES:
+    _f = _CDIR / _fn
+    if not _f.exists():
+        lines += [f"**`{_fn}`** — not generated yet.", ""]
+        continue
+    import csv as _csv
+    with open(_f, newline="") as _fh:
+        _rows = list(_csv.DictReader(_fh))
+    if not _rows:
+        continue
+    _cols = list(_rows[0].keys())
+    lines += [f"**`{_fn}`**", "",
+              "| " + " | ".join(_cols) + " |",
+              "|" + "---|" * len(_cols)]
+    for _r in _rows:
+        lines.append("| " + " | ".join(
+            (f"{float(_r[c]):.4g}" if _is_num(_r[c]) else str(_r[c] or ""))
+            for c in _cols) + " |")
+    lines.append("")
+
 OUT.parent.mkdir(exist_ok=True)
 OUT.write_text("\n".join(lines) + "\n")
 print(f"wrote {rel(OUT)}  ({len(arms)} arms, {len(base)} baselines)")
