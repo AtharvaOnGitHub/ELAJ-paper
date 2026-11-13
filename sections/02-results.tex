@@ -67,6 +67,17 @@ on this corpus.
 % ---------------------------------------------------------------------
 \subsection*{Biology is an emergent property of training}
 
+\elaj{} sees only gene expression, read in forty-four Reactome and GO
+pathway groups, with study, tissue and platform supplied to the decoder as
+covariates. Exactly one biological label reaches it during training:
+menstrual phase, through a single linear classification head. Cell type,
+disease status, surgical stage, severity and grade are withheld entirely
+(Methods, \emph{Composite objective}). Any of those appearing in the
+sixteen-dimensional latent was therefore never taught, and each is tested on
+the frozen model across all 1,577,728 cells, discarding same-donor
+neighbours so that no label can be recovered by grouping a person with
+themselves (Methods, \emph{Cross-donor agreement}).
+
 Supervision accounts for a minority of the cycle signal. Removing the phase
 head and retraining left cross-donor cycle agreement at 0.4812 against
 0.7346, so 65.5\% of the chance-corrected signal survived the loss of the
