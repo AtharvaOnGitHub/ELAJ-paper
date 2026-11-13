@@ -101,7 +101,51 @@ embeddings, unscoped. Both are Supplementary-level.
 - [ ] **Group embeddings, for Supplementary.** AW's own addition. Needs
       work and possibly HPC time. Not scoped yet. Tracked as X15.
 
-## Tier 1. The sections. **Abstract first this time.**
+## Tier 1. The sections. **RESULTS IS DRAFTED, 13 November.**
+
+**Five subsections, 1,650 words, both auditors green, zero overfull.**
+Delivered to AW's supervisor as `changesets/ELAJ_results_2026-11-13.docx`,
+a wholesale replacement with **nothing to re-insert by hand**: the section
+is now maths-free, so italics, subscripts and superscripts all survive the
+Word paste.
+
+| subsection | words |
+|---|---:|
+| Batch effects and biology have a measurable trade-off | 227 |
+| Biology is an emergent property of training | 364 |
+| Endometriosis severity is not biologically rooted | 268 |
+| Immune genes identify endometriosis | 394 |
+| Ablation studies | 397 |
+
+**How it was written is in `REGISTER.md` and it should not be re-derived.**
+Eleven rules, each with the correction from AW that produced it, and the
+working loop: AW sets the header, I produce a numbers sheet saying what each
+value will and will not support, AW writes the opening or tells me to, I
+write the rest, AW edits the tex and I fix only spelling, grammar and tense.
+
+### What is next, in order
+
+1. **The five figures.** `FIGURES_NEEDED.md` says what each must show, why
+   prose cannot, and roughly what it might look like. Two are main-text
+   candidates and take the paper to NMI's six-item cap exactly.
+2. **The Abstract.** AW's ruling of 11 November: it goes before the
+   Introduction, because the Introduction has to expand something and 150
+   words is the cheapest place to find out whether the story holds. It now
+   has to carry the claims axis, which did not exist when the order was set.
+3. **The Introduction**, to the supervisor's spine: why scRNA, why
+   endometriosis, why a disease atlas, what other studies showed, what
+   foundation models can say, what we do.
+4. **The Discussion.** Deferred until figures were settled; now unblocked.
+   Three comparisons, plus limitations. **Four pieces of Results material
+   were moved here and must not be lost**: the ρ = +0.721 donor-memorisation
+   asymmetry, Huang's overturned cycle claim, scIB's saturation on this
+   corpus, and Shih's four untestable claims.
+5. **Supplementary.** Still nothing exists.
+
+⚠ **NMI forbids Discussion subheadings and the supervisor asked for a
+sectioned Discussion.** Unresolved.
+
+## Tier 1 as originally framed. **Abstract first this time.**
 
 AW, 11 November: *"I feel like this intro needs an abstract to work better.
 So I'll place abstract first this time."* The Discussion is deferred
