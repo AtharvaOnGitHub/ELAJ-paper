@@ -168,14 +168,19 @@ cells carry nothing at all at 0.4663 (Fig.~X).
 
 Decoding that direction through the decoder names the genes it moves, and
 they are macrophage and inflammatory transcripts: TREM1, IL1B, CCL13,
-SIGLEC7, ADAMDEC1, SERPINB2, MMP19, MMP27, LRRC15 and INHBA. Four appear in
-an independent cohort's 66 upregulated genes, SERPINB2 at 72.95-fold, MMP27
-at 40.93, LRRC15 at 25.20 and INHBA at 15.33, a hypergeometric
-$P = 3.95 \times 10^{-7}$ drawn against 15,496 \citep{zhao2017transcriptome}.
-None of the fifteen at the control end of the same ranking appears there.
-IL1B is separately the highest-ranked gene in \texttt{duempelmann\_2026}'s
-own supervised classifier, so two unrelated models trained on different
-objectives select it. Four of the fifteen, SIGLEC7, ADAMDEC1, ALPK2 and
+SIGLEC7, ADAMDEC1, SERPINB2, MMP19, MMP27, LRRC15 and INHBA. Four of them were reported
+as upregulated in the eutopic endometrium of patients by a cohort outside
+this corpus, which sequenced eight cases against five controls and published
+66 upregulated genes \citep{zhao2017transcriptome}: SERPINB2 at 72.95-fold,
+MMP27 at 40.93, LRRC15 at 25.20 and INHBA at 15.33. Drawing fifteen genes
+from 15,496, that overlap carries a hypergeometric
+$P = 3.95 \times 10^{-7}$, and none of the fifteen at the control end of the
+same ranking appears in their list. MMP27 agrees on cell type as well as
+direction, having been localised to CD163$^{+}$CD206$^{+}$ macrophages in
+endometrium and in superficial lesions \citep{cominelli2014mmp27}. IL1B is
+separately the highest-ranked gene in \texttt{duempelmann\_2026}'s own
+supervised classifier \citep{duempelmann2026endometrium}, so two unrelated
+models trained on different objectives select it. Four of the fifteen, SIGLEC7, ADAMDEC1, ALPK2 and
 KCNH1, are reported as altered in endometriosis neither by the eleven
 pooled studies, nor by the Open Targets Platform, nor by PubMed.
 
