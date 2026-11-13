@@ -38,38 +38,40 @@ for the new discoveries made from this work.
 % ---------------------------------------------------------------------
 \subsection*{Batch effects and biology have a measurable trade-off}
 
-In this corpus, each donor is sampled only once which creates a structural 
+In this corpus, each donor is sampled only once, which creates a structural 
 confound between batch effects and biological signal that cannot be 
 disentangled. Two training-time coefficients, the adversarial weight and the 
-KL term, \elaj{} optimises both confounding variables together creating a 
-Pareto front we call the \elaj frontier. 
+KL term, let \elaj{} optimise both confounding variables together, creating a 
+Pareto front we call the \elaj{} frontier. Table 1 compares \elaj against 
+nine other models and we find that \elaj is simultaneously better on 
+preserving biological signal and removing donor identity.
 
 
-Across six arms donor recovery spans 0.3975 to 
-0.5837 and cross-donor cycle agreement 0.5922 to 0.7346, varying monotonically 
-together (Fig.~\ref{fig:knobs}a). [rewrite this sentence...] What is being removed is substantial: donor 
-provenance is enriched 54.5-fold over chance, 32.7\% of a cell's hundred nearest neighbours against 0.60\% expected
-across 269 identifiers. 
+Six arms spanned the two coefficients. Donor recovery ranged from 0.3975 to
+0.5837 and cross-donor cycle agreement from 0.5922 to 0.7346, varying
+monotonically together (Fig.~\ref{fig:knobs}a). Adversarial pressure was not
+uniformly priced. Raising the weight from 7 to 168 reduced donor recovery
+from 0.5837 to 0.5188 at no cost in cycle agreement, 0.7337 against 0.7346.
+Raising it to 336 reversed both, to 0.5277 and 0.7146. The frontier therefore
+has a knee, and the two arms reported throughout bracket it:
+\elaj$_{B\,hi}$ holds cycle agreement at 0.7346, and \elaj$_{B\,lo}$ concedes
+it to 0.6033 for donor recovery 0.3975.
 
-No competing representation reaches that frontier. Scored on the identical corpus,
-\elaj$_{B\,hi}$ dominates all nine simultaneously on both axes. Donor
-recovery is 0.5188 against their 0.5421 to 0.7892; cycle agreement is 0.7346
-against their 0.4372 to 0.7303 (Fig.~\ref{fig:knobs}b). Four are pretrained
-foundation models, and \elaj{} carries 1,883,986 parameters across sixteen
-latent dimensions against scFoundation's 100 million across 3,072
-(Fig.~\ref{fig:knobs}c). Across these ten, donor recovery predicts the
-disease score ($\rho = +0.721$, $p = 0.019$). It does not predict cycle
-agreement ($\rho = +0.176$, $p = 0.627$). The cycle advantage is therefore
-not an artefact of retained identity.
+No competing representation reached that frontier. Scored on the identical
+corpus, \elaj$_{B\,hi}$ was better than all nine on both axes at once: donor
+recovery 0.5188 against 0.5421 to 0.7892, and cycle agreement 0.7346 against
+0.4372 to 0.7303 (Table~1). Four of the nine were pretrained foundation
+models. \elaj{} carries 1,883,986 parameters and sixteen latent dimensions,
+against scFoundation's 100 million parameters, 3,072 dimensions and 50
+million pretraining cells \citep{hao2024scfoundation}.
 
-Adversarial pressure is not uniformly priced. Raising the weight from 7 to
-168 reduces donor recovery from 0.5837 to 0.5188 at no measurable cost in
-cycle agreement, 0.7337 against 0.7346. Raising it to 336 reverses both:
-donor recovery returns to 0.5277 and cycle agreement falls to 0.7146. The
-frontier has a knee, and the two arms reported throughout bracket it.
-\elaj$_{B\,hi}$ holds cycle agreement at 0.7346 for donor recovery 0.5188;
-\elaj$_{B\,lo}$ concedes cycle to 0.6033 and buys study mixing 0.6544 against
-0.7613.
+Suppression was incomplete. Across the whole corpus, 32.7\% of a cell's
+hundred nearest neighbours still came from its own donor, against 0.60\%
+expected over 269 identifiers, an enrichment of 54.5-fold. No representation
+tested retained less, and none approached donor-blindness. Across the ten,
+donor recovery predicted the disease score ($\rho = +0.721$, $P = 0.019$) and
+not cycle agreement ($\rho = +0.176$, $P = 0.627$). The cycle advantage was
+therefore not a by-product of retained identity.
 
 % ---------------------------------------------------------------------
 \subsection*{Sixteen dimensions carry cell identity and the menstrual
