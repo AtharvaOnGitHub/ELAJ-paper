@@ -51,7 +51,7 @@ spanning 0.3975 to 0.5837 and 0.5922 to 0.7346 respectively
 (Fig.~\ref{fig:knobs}a). The exchange rate between them was not constant.
 Raising the adversarial weight from 7 to 168 bought a substantial reduction
 in donor recovery, 0.5837 to 0.5188, at no measurable cost in cycle
-agreement. Raising it to 336 was simply wasteful, worsening both. Adversarial
+agreement. Raising it to 336 was wasteful and worsened both. Adversarial
 pressure is therefore cheap until it saturates, and the two reported arms
 bracket the point at which it does.
 
@@ -60,17 +60,9 @@ corpus, \elaj$_{B\,hi}$ was better than all nine on both axes at once, with
 donor recovery 0.5188 against 0.5421 to 0.7892 and cycle agreement 0.7346
 against 0.4372 to 0.7303 (Table~1). Four of the nine were pretrained
 foundation models, the largest carrying 100 million parameters and 50 million
-pretraining cells \citep{hao2024scfoundation} against \elaj{}'s 1,883,986 and
-none. Pretraining scale conferred no advantage on this corpus.
-
-Suppression was nonetheless incomplete. Across the whole corpus, 32.7\% of a
-cell's hundred nearest neighbours still came from its own donor, against
-0.60\% expected over 269 identifiers, a 54.5-fold enrichment. Donor identity
-is reduced further here than by any representation tested and remains the
-dominant structure in the latent. That residue does not explain the cycle
-result: across the ten, donor recovery predicted the disease score
-($\rho = +0.721$, $P = 0.019$) and not cycle agreement ($\rho = +0.176$,
-$P = 0.627$).
+pretraining cells \citep{hao2024scfoundation} against \elaj{}'s 1,883,986 
+parameters and zero pretraining. Pretraining scale conferred no advantage 
+on this corpus.
 
 % ---------------------------------------------------------------------
 \subsection*{Sixteen dimensions carry cell identity and the menstrual

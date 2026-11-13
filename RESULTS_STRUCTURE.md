@@ -134,6 +134,16 @@ on blood vessels and immune cells. It arrived there.
 Discussion carries the matching paragraph.
 
 ## [R4] Disease status is recoverable; surgical severity is not
+
+**MOVED HERE FROM R1, 13 November.** The cross-method asymmetry belongs with
+disease, not with the trade-off. Across the ten representations donor
+recovery predicts the disease score ($\rho = +0.721$, $P = 0.019$) and not
+cycle agreement ($\rho = +0.176$, $P = 0.627$). Both labels are donor
+constant, so the asymmetry is not a property of the annotation: the disease
+metric reads out memorisation as well as biology. It is a caveat on our own
+0.3364 as much as on anyone's, and it is the reason the disease row was cut
+from the frontier figure. **If R4 cannot carry it, it goes to the Discussion
+with R7.**
 **~320 words. Dissociation panel.**
 
 C3, C6, C7, E5 together, because they are one claim with four measurements.
