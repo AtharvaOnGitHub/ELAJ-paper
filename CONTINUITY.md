@@ -903,3 +903,71 @@ R3 carries a third `(Fig.~X)`, for composition against severity.
 **Figures were deferred deliberately** until Results is drafted, AW's call:
 *"Let's leave the figures for after results is done."* Three placeholders
 are now outstanding and they are the input to that pass.
+
+## Results is drafted. 13 November, and here is what matters about it.
+
+**Five subsections, 1,650 words, both auditors green.** Written over one
+session in a loop that worked and should be reused: AW sets or renames the
+header, I produce a numbers sheet saying what each value **will not**
+support, AW writes the opening paragraph or tells me to, I write the rest,
+AW edits the tex directly and I fix only spelling, grammar and tense.
+
+**`REGISTER.md` is the file to read before writing any more prose.** Eleven
+rules, each carrying the correction from AW that produced it. The three that
+cost the most rounds: every number must land a stated conclusion; never
+concede a limitation in the paragraph after the one that won the comparison;
+and the first paragraph gives context because Methods comes later.
+
+**Prose statistics are a smoke alarm, not a target.** I measured our Results
+against IBDex and reported that the measurement had diagnosed the register.
+It diagnosed half of it. AW: *"Those stats are a very high-level, very
+blurry view of the prose. Stop relying on them for everything."* They caught
+a 52-word sentence. They cannot tell a hedging paragraph from a good one,
+and writing to them produced exactly that.
+
+**THE RESULTS SECTION IS NOW MATHS-FREE AND THIS SOLVES A STANDING
+PROBLEM.** Word stores maths as OMML objects that do not survive a copy
+between documents, which has shaped every handover since 9 November. The
+draft had 22 maths spans, every one needing re-insertion by hand. But
+P-values, arm subscripts and the CD marker superscripts are **character
+formatting, not equations**, and character formatting copies fine. Written
+as `\textit{P}`, `\textsubscript{}` and `\textsuperscript{}` the whole
+section converts to a docx with **zero OMML objects**, verified on the
+generated file. The same trick should be applied to the other sections.
+
+**Four results were moved out of Results and into the Discussion. Do not
+lose them.** The ρ = +0.721 asymmetry showing the disease metric reads out
+donor memorisation; Huang's cycle claim failing at 112 and 101 donors
+against their 13; scIB's biological half being saturated on this corpus; and
+Shih's four claims being untestable because our copy of that cohort has no
+controls.
+
+## Five mistakes from this session, each with its lesson
+
+**1. I recommended cutting a subsection because I read the summary.** I
+proposed dropping the ablations as thin, having read the benchmark deltas
+and not the old subsection, which was in git and which I had read four days
+earlier. The real findings were a reliance ratio falling 7.46 to 2.43, a
+training curve whose best epoch is its first, and two UMAPs. **When a result
+looks thin, check whether the thin version is the summary rather than the
+finding.**
+
+**2. I quoted a severity number that is readable off study identity.**
+`severity (study vocabularies)` 0.2655 is the raw union of each study's own
+levels, `stage_0` from marecko and `grade_mild` from duempelmann, so
+agreeing on a level means agreeing on a study. `scorer.py` says so in a
+comment. The quotable figure is the merged three-level scale, 0.1286.
+`NUMBERS.md` now carries a DO NOT QUOTE warning on the union.
+
+**3. I called the external cohort Lin for two days.** The first author is
+Zhao. It propagated into three tracking files before AW's citation request
+made me open the XML.
+
+**4. I framed our own residual donor memorisation as the problem we solved.**
+32.7% against a 0.60% chance rate is measured on **our** latent, and the
+file's own note column says "high is BAD". AW caught it. He also made the
+sharper point: a fold-enrichment against a chance rate set by donor count
+describes the corpus, not the model.
+
+**5. I wrote paragraphs that scored well and read badly.** Twice. Both times
+the fix was AW asking what a paragraph was *for*.
