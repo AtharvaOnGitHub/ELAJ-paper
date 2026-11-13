@@ -185,7 +185,50 @@ KCNH1, are reported as altered in endometriosis neither by the eleven
 pooled studies, nor by the Open Targets Platform, nor by PubMed.
 
 % ---------------------------------------------------------------------
-% R5 pending: the remaining ablations (ECS, DNS sentinel, statistics path).
-% D1 and D3 moved into R2 when its header became "Biology is an emergent
-% property of training". See RESULTS_STRUCTURE.md.
+\subsection*{Ablation studies}
+
+Five single-key changes were made against \elaj$_{B\,hi}$, each retrained
+from scratch and scored under one protocol (Table~1). They are ordered here
+by how far the change moves the model away from a conventional CVAE.
+
+Reassigning every gene to a random group, with group sizes, parameter count
+and gene space preserved exactly, produced the best held-out reconstruction
+in the project, 0.3911 against 0.4024. Every biological reading fell with
+it, merged severity by 50.6\%. The decoder had found a cheaper route: its
+reliance on the latent relative to the covariates it is handed fell from
+7.46 to 2.43, so it reconstructed by reading provenance rather than cells.
+A random partition of the same shape fits the corpus better and holds less
+of what is in it.
+
+The phase head's contribution is not phase. Read at every epoch on the
+validation split, the head-free arm's cycle agreement climbed from 0.4977 to
+0.7488, while its held-out reconstruction was lowest at the first epoch and
+rose at every epoch after, so checkpoint selection returned that arm before
+the structure had arrived. Training loss stayed within 0.0009 of
+\elaj$_{B\,hi}$ throughout, so the head costs nothing in fit. At the selected
+checkpoints the head-free arm recovered donors 0.1203 less well and separated
+studies 0.1021 less, gaps that close to 0.0327 and 0.0010 by the last epoch
+both arms ran. The head acts as a regulariser on the whole latent rather
+than as a route by which one label re-enters it.
+
+Two components are nearly invisible in the metrics and plain in the latent.
+Disabling the elastic cell similarity head moved every biological axis by
+under 1\% except disease status, which rose 8.1\%, while donor recovery
+worsened 6.4\% and study separation 9.5\%; the embedding shows why, with
+large single-study territories appearing that \elaj$_{B\,hi}$ does not have
+(Fig.~X). Replacing the DNS sentinel with zeros for genes a study never
+assayed worsened study separation by 2.7\% and moved everything else by
+under 1\%, and there too the reorganisation is visible rather than
+measurable (Fig.~X). Absence of measurement is not a measured absence.
+
+Taking the eight order statistics out of each group's readout, which cuts
+what a group hands forward from 288 numbers to 32, cost menstrual phase
+13.1\% and cell type 2.8\% against under 0.3\% on cell family. What a
+weighted average discards is the shape of a group's distribution, and on
+this corpus that shape is a cycle mechanism rather than a general one.
+Across all six configurations cross-donor agreement on cell family,
+menstrual phase and disease status cleared the permutation floor at
+$p = 0.005$; merged severity cleared its null in none of them, $p = 0.149$
+to 0.468, and endometriosis grade was negative in all six.
+
 % ---------------------------------------------------------------------
