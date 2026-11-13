@@ -846,3 +846,36 @@ one purpose does not transfer to another.
 **All ten corpus PDFs were on disk the whole time**, at
 `Endo research/My paper/Final 10/`, now extracted to `_txt/` there. I spent
 a round reporting García-Alonso as an unclosable gap without looking.
+
+## The Results register is written down. Use it, do not re-derive it.
+
+**`REGISTER.md`, 13 November.** Eleven rules, each with the correction from
+AW that produced it, plus the working loop that produced R1 and R2. Written
+because the register took four rejected drafts to find and a compaction would
+lose all of it.
+
+**The three that cost the most rounds:**
+
+1. **Every number must land a conclusion.** AW: *"IBDex always tries to make
+   a point with the numbers. You seem to be stating them to no conclusion."*
+   Test each numeric sentence by deleting it; if no claim weakens, the
+   numbers were decoration.
+2. **Do not claw.** A paragraph conceding a limitation immediately after the
+   paragraph that won the comparison is self-harm. AW cut one whole.
+3. **The first paragraph gives context, because Methods comes later.** The
+   supervisor's rule, and AW had to remind me of it after I opened R2 on a
+   result the reader had no way to parse.
+
+**And the one I was wrong about.** I told AW that measured prose statistics
+had diagnosed the register. They diagnosed half of it: sentence length and
+vocabulary, correctly. They cannot tell a hedging paragraph from a good one,
+and writing to them produced exactly that. His words: *"Those stats are a
+very high-level, very blurry view of the prose. Stop relying on them for
+everything."*
+
+**The working loop**: AW sets the header, I produce a numbers sheet with what
+each value will and will not support, AW writes the opening or tells me to,
+I write the rest, AW edits the tex and I fix only spelling, grammar and
+tense. The numbers sheet is the part that earns its keep: it caught that
+cell family cannot support an emergence claim, since PCA recovers it better
+than we do.
