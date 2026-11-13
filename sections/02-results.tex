@@ -112,21 +112,24 @@ interpretation placed on it.
 % ---------------------------------------------------------------------
 \subsection*{Endometriosis severity is not biologically rooted}
 
-Severity in endometriosis is assigned at surgery rather than measured. The
-revised American Society for Reproductive Medicine system scores lesion
+Severity in endometriosis is assigned through surgery rather than measured. The
+revised American Society for Reproductive Medicine (rASRM) system scores lesion
 count, depth and adhesion into stages I to IV; \texttt{duempelmann\_2026}
 grades its patients mild or severe and \texttt{marecko\_2024} records rASRM
-stage, two renderings of one instrument (Methods, \emph{Severity}). Neither
-was given to the model.
+stage (Methods, \emph{Severity}). Neither was given to the model.
 
 Disease status is legible and severity is not. Cross-donor agreement
 separating control from eutopic endometrium reached 0.3364 at $P = 0.005$.
 Restricted to patients, mild against severe reached 0.0744 and failed its
 permutation null at $P = 0.129$ over 57 donors; surgical grade failed at
 0.0263 and $P = 0.408$ over 60, and was negative in all six frontier arms.
-The two contrasts that did clear both carry controls at the foot of their
-scale, merged severity at 0.1286 and rASRM stage at 0.3320, the latter with
-36 of its 58 donors at stage 0. Removing the controls removes the signal.
+The only contrasts that cleared their nulls were those
+containing controls: merged severity at 0.1286 and rASRM stage at 0.3320,
+the latter with 36 of its 58 donors at stage 0. Nor is the failure peculiar
+to \elaj{}. Scored on the same held-out donors, severity among patients was
+negative in all ten representations, between $-$0.0090 and $-$0.1592, and
+not one cleared its permutation null ($P \geq 0.627$). Restoring the
+controls turns every one of the ten positive.
 
 Cell composition does not track severity either. Across fifty-one patients
 the share of each family was unchanged between low and high severity, at
@@ -134,7 +137,7 @@ $P = 0.2092$ for immune cells, 0.1624 endothelial, 0.9696 stromal and 0.9130
 epithelial (Fig.~X). The two readouts are independent, one a geometry in the
 latent and the other a count over transferred labels, and both fail on the
 same contrast. The latent separates people who have endometriosis from
-people who do not, and not those a surgeon judged to have more of it.
+people who do not, but does not separate stages of endometriosis.
 
 % ---------------------------------------------------------------------
 % R4 to R6 pending. See RESULTS_STRUCTURE.md.

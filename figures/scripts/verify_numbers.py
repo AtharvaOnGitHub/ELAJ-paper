@@ -1058,6 +1058,10 @@ PINNED = {
     # exactly 0.149, so the unpinned search certified the wrong row.
     "0.149": ("a1_nophase/benchmark.csv", "cross-donor-p/severity"),
     "7.46": ("BASE decoder reliance on ratio", ""),
+    # R3 quotes the most negative patients-only severity across the ten
+    # representations. scgpt's STAGE permutation p is also 0.1592, so the
+    # unpinned search cannot tell a severity magnitude from a stage p.
+    "0.1592": ("severity_ind_scvi", "cross-donor/severity (patients only)"),
     # R2 quotes three values that collide with unrelated quantities. The
     # stage and grade figures are the WHOLE-CORPUS reads from validation.csv,
     # not the held-out benchmark rows they tie with; 7.7 is the random-groups
@@ -1116,7 +1120,12 @@ def _resolve(raw: str, dp: int, want):
     if not cands:
         fail(f"prose value {raw} is pinned to {want} and no such row exists")
         return "MISSING PIN"
-    exact = [(v, prov) for v, prov in cands if round(v, dp) == float(raw)]
+    # Match |value| as well, for the same reason the unpinned path does: the
+    # prose writes a negative excess as a sign plus a magnitude, so a stored
+    # -0.1592 must satisfy a written 0.1592. Added 13 November when R3 pinned
+    # the most negative patients-only severity across the ten methods.
+    exact = [(v, prov) for v, prov in cands
+             if round(v, dp) == float(raw) or round(abs(v), dp) == float(raw)]
     if not exact:
         fail(f"prose value {raw} is pinned to {want}, whose value(s) "
              f"{[round(v, 4) for v, _ in cands]} do not round to it")
