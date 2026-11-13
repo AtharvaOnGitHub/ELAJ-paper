@@ -67,24 +67,38 @@ on this corpus.
 % ---------------------------------------------------------------------
 \subsection*{Biology is an emergent property of training}
 
-Both labels are recovered cross-donor on all 1,577,728 cells with parameters
-frozen, discarding same-donor neighbour pairs before scoring
-(Methods, \emph{Whole-corpus embedding}). Cell family agreement reaches
-0.9807 across 630,689 annotated cells from 118 donors ($p = 0.005$), and the
-four compartments occupy contiguous, non-overlapping territory
-(Fig.~\ref{fig:model}d). Cross-donor menstrual phase agreement reaches 0.6796
-across 723,599 cells from 142 donors ($p = 0.005$). Phase was supplied to a
-single linear classification head during training; cell family was supplied
-to nothing, and emerges from reconstruction pressure and pathway grouping
-alone.
+Supervision accounts for a minority of the cycle signal. Removing the phase
+head and retraining left cross-donor cycle agreement at 0.4812 against
+0.7346, so 65.5\% of the chance-corrected signal survived the loss of the
+only biological label the model was given (Table~1). What remains is produced
+by reconstruction through pathway groups rather than by the classifier.
 
-Technical variation does not account for either. Under a best-of-sixteen
-linear criterion, mitochondrial fraction, total counts and doublet score
-reach 0.3396, 0.2514 and 0.1366. Serum progesterone reaches 0.4725 and
-epithelial pseudotime 0.5801 (Supplementary Table~S1). That criterion
-takes the strongest correlation available across sixteen dimensions, making
-the technical values upper bounds. Biological covariates the model never
-received still exceed every one of them.
+The cycle's cellular structure was never supplied at all. Displacement from
+proliferative to secretory phase, scaled by each compartment's own spread,
+reached 1.0677 in stromal cells and 0.9824 in epithelial cells, against
+0.3918 in endothelial and 0.3409 in immune cells. The phase head is a single
+linear map over the whole latent and received no cell-type information, so
+that threefold ordering cannot have come from the objective. It is also the
+correct ordering, since the endometrial cycle acts principally on the
+stromal and epithelial compartments.
+
+Labels withheld from training entirely were nonetheless recoverable on the
+frozen model. Cell family reached 0.9807 across 630,689 annotated cells,
+merged severity 0.2655 and surgical stage 0.3320, each at $P = 0.005$
+against its own permutation null. Surgical grade did not, at 0.0263 and
+$P = 0.408$. That these labels are legible at all is what makes the disease
+analyses below interpretable, and the single failure is what makes the
+successes credible.
+
+Two controls bound the alternative explanations. Under a best-of-sixteen
+linear criterion the strongest technical correlations, mitochondrial fraction
+at 0.3396 and genes detected at 0.3366, remained below serum progesterone at
+0.4725 and epithelial pseudotime at 0.5801, neither of which the model
+received. Replacing the forty-four Reactome and GO groups with random groups of
+identical size then degraded every biological axis: cell family by 2.2\%,
+menstrual phase by 7.7\% and disease by 19.8\%. Biological structure in the
+input is therefore a cause of the biology in the latent rather than an
+interpretation placed on it.
 
 % ---------------------------------------------------------------------
 % R3 to R6 pending. See RESULTS_STRUCTURE.md.

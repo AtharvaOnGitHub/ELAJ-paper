@@ -1011,6 +1011,14 @@ PINNED = {
     # exactly 0.149, so the unpinned search certified the wrong row.
     "0.149": ("a1_nophase/benchmark.csv", "cross-donor-p/severity"),
     "7.46": ("BASE decoder reliance on ratio", ""),
+    # R2 quotes three values that collide with unrelated quantities. The
+    # stage and grade figures are the WHOLE-CORPUS reads from validation.csv,
+    # not the held-out benchmark rows they tie with; 7.7 is the random-groups
+    # phase change, which ties with an unrelated donor change across the
+    # information cost. All three are named by subject in the prose.
+    "0.3320": ("validation.csv", "cross-donor/Endometriosis_stage"),
+    "0.0263": ("validation.csv", "cross-donor/EndometriosisGrade"),
+    "7.7": ("phase % change, BASE against random groups", ""),
     "2.43": ("random groups decoder reliance on ratio", ""),
     "0.468": ("a1_randgroups/benchmark.csv", "cross-donor-p/severity"),
 }
