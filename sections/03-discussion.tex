@@ -1,125 +1,137 @@
 % =====================================================================
-% DISCUSSION — NMI's own guidance: no more than ~1,000 words, and it
-% must not restate Results. Limitations go HERE and in the open, not in
-% a defensive final paragraph.
+% DISCUSSION — rewritten 14 November 2026 against DISCUSSION_REGISTER.md,
+% which was built by reading eight published Discussions in full: IBDex,
+% scGPT, and six NMI papers (sources in Atharva Papers/NMI_register).
+% The 6 November version is in git history.
+%
+% WHAT THAT READING CHANGED, and none of it was guessable:
+%   1. NO MEASURED VALUES. Eight published Discussions quote six between
+%      them; the old draft quoted 25. Data and cohort scale are quoted
+%      freely; agreements, AUCs and rhos are not. One P value survives
+%      here, as the hook for a mechanism, which is the one licensed use.
+%   2. LENGTH TRACKS RESULTS. 30% across the six NMI papers, 44% in
+%      IBDex. Results is 1,650 words, so the ceiling is ~840.
+%   3. NO SUBHEADINGS, eight out of eight. The supervisor's four
+%      sections are carried by a topic-sentence ladder instead: read the
+%      first clause of each paragraph down the page.
+%   4. CITATION-DENSE. Five of eight cite 12+ references. The old draft
+%      cited one.
+%   5. LIMITATIONS IN A SIGNPOSTED BLOCK near the end, never inside a
+%      paragraph that is winning, and each one paired with its bound.
+%
+% The ladder, which is the structure:
+%   1 what this establishes      2 foundation models    3 baselines
+%   4 the field's instruments    5 single datasets      6 the clinic
+%   7 limitations                8 future work          9 close
 % =====================================================================
 
 \section*{Discussion}
 
-\note{WRITTEN AND CLOSED 6 November 2026. Eight paragraphs, 1{,}285 words. The paragraph plans these notes carried, and what was cut from each, are in DISCUSSION\_STRUCTURE.md.}
+Eleven endometriosis studies, 1{,}577{,}728 cells and 254 donors reduce to
+sixteen numbers per cell. The menstrual cycle survives in them and the donor
+is hard to recover. Every donor was biopsied once, so menstrual phase is
+constant within a donor and varies between them, which is the geometry of a
+batch effect \citep{hrovatin2025atlases}. A correction aimed at either
+reaches for the other. The supervised head supplies a third of that cycle
+margin. The rest is structure: the cycle splits by cell type in the latent,
+and a single linear map that was never told which cell it was reading cannot
+have produced that.
 
+Neither result required scale. \elaj\ carries 1{,}883{,}986 parameters
+against scFoundation's 100 million, pretrained on over 50 million profiles
+\citep{hao2024scfoundation}, and four pretrained models conferred no
+advantage on this corpus
+\citep{cui2024scgpt,theodoris2023geneformer,heimberg2025scimilarity,kedzierska2025zeroshot}.
+Pretraining is mismatched to the question rather than worthless. Its own
+authors note that scGPT's pretraining does not itself mitigate batch effects
+\citep{cui2024scgpt}, and a frozen representation yields one point where this
+question needs a curve. A model of this size retrains in hours, so eleven
+configurations were trained and scored on identical cells. Affordable
+retraining is what made the trade-off measurable at all.
 
-This work set out to read a pooled endometriosis corpus without losing the
-biology that pooling threatens. Eleven studies and 1{,}577{,}728 cells
-reduce to sixteen numbers per cell in which the menstrual cycle survives 
-but the donor is hard to recover, and that combination is the
-point. Every donor here was biopsied once, so menstrual phase is constant
-within a donor and varies between donors, which is the geometry of a batch
-effect. A correction aimed at the one necessarily reaches for the other.
-What survives is more specific than the cycle itself. The phase head
-accounts for 34.5\% of the chance-corrected phase margin. The head is a single
-linear map over all sixteen dimensions and was never told what kind of cell
-it was reading, yet cycle structure in the latent is sharp in stromal
-cells, present in epithelial and close to absent in endothelial and immune.
-That is the order in which those compartments remodel across the cycle, and
-no supervision in this model could have produced it.
+A single correction strength does not describe the operation either. The
+adversarial weight moved the achievable trade-off and then stopped improving
+it. The information cost slid the model along that trade-off without moving
+it. Two models both described as corrected can therefore occupy different
+points on one curve
+\citep{korsunsky2019harmony,lopez2018scvi,xu2021scanvi,hie2019scanorama}.
+Stating the trade-off, measuring both axes and naming the point occupied is
+the practice this corpus argues for. Held-out reconstruction is no guide to
+that point, since the arm that reconstructed best held the least biology.
 
-The confound is not peculiar to endometriosis. Wherever tissue is hard to
-obtain, each donor contributes one sample at one moment, and whatever
-varies with that moment becomes collinear with the donor. The field's
-usual response is correction strength, turned up until batch
-structure disappears. The \elaj\ frontier shows that one number cannot
-describe the operation. The adversarial weight moves the achievable
-trade-off and stops improving it past a critical point, while the
-information cost slides a model along the trade-off without moving it.
-Reporting a single correction strength conflates the two. This study offers
-a way of working where data is scarce and batch structure is severe: 
-state the trade-off, measure both axes, and report the point on the 
-frontier the model occupies. Notably, the arm with the best held-out 
-reconstruction in this project (\texttt{val\_nb} 0.3911) falls short of the 
-reported arm (\texttt{val\_nb} 0.4024) on biology. So validation 
-reconstruction loss is a criterion for epoch selection, not for model 
-performance.
+The instruments the field scores this operation with do not discriminate on a
+corpus of this shape. Cross-donor agreement discards same-donor pairs before
+scoring, so no representation can win it by giving each person their own
+territory \citep{squair2021confronting}. Two standard batch metrics were
+perfectly degenerate across all ten representations. The biological half saturated:
+cell identity is something every method here recovers, and therefore
+something that cannot rank methods \citep{luecken2022benchmarking}. Agreement
+on disease status is worse than uninformative. It tracked donor recovery
+across the ten while cycle agreement did not, and disease status is constant
+within a donor, so a representation that remembers donors is handed that
+label free. The framework is sound; it is being read outside the regime it
+was built for.
 
-Size did not produce any of this. \elaj\ carries 1{,}883{,}986
-parameters and 16 latent dimensions against pretrained models at 256
-to 3{,}072 latent dimensions. Across the ten representations width is 
-negatively associated with cross-donor phase agreement ($\rho=-0.6503$, 
-$p=0.0418$), and a 16-component PCA reaches 0.6457 on that axis 
-against scGPT's 0.4869 at 512 dimensions. For diseases where 
-data is scarce and unconsolidated, an efficient model architecture can 
-transform what the field is able to say about the disease.
+What the pooled corpus settles is what its component cohorts could not.
+Eleven studies have converged on overlapping findings and none can confirm
+another, because no two share donors or a cell vocabulary
+\citep{mareckova2024heca}. Cell composition does not differ between control
+and eutopic endometrium, confirming at 194 donors a claim made in 60
+\citep{duempelmann2026endometrium}. The claim that endometriosis abolishes
+cyclical variation in immune composition failed at 112 and 101 donors against
+the 13 that produced it \citep{huang2023immune}. The disease signal that does
+survive lies inside immune cells. Decoding it returned macrophage-led
+inflammation, whose leading genes overlap an independent cohort's upregulated
+list at \textit{P}~=~3.95~\texttimes~10\textsuperscript{--7}
+\citep{zhao2017transcriptome}, two of them absent from the resources that
+index gene-disease associations \citep{cominelli2014mmp27}. Confirmation,
+contradiction and external replication are three functions no cohort can
+perform on itself.
 
-The way the field scores batch correction does not work on a corpus of this
-nature. Two of the standard scIB metrics are perfectly degenerate across all
-ten representations (iLISI=0.0 and cLISI=1.0 for all, kBET $\leq$ 0.04), one from each half of the scorecard.
-The axis used in their place is little better as a ranking instrument:
-cross-donor agreement on cell family separates nine of the ten methods by
-0.0076 in total (0.9820 to 0.9896), with only Geneformer outside the
-band (0.9023). Cell identity is something every method here recovers and
-therefore something that cannot rank methods. Agreement on disease status 
-tracks donor recovery across the ten ($\rho=+0.721$, $p=0.019$) while 
-agreement on menstrual phase does not ($+0.176$). Disease status is 
-constant within a donor, so a representation that remembers donors is 
-handed the disease label at no cost, and Methods quantifies how large that 
-free component is. A disease score reported on pooled single-cell data is 
-therefore partly a memorisation score, and the methods that look strongest 
-on it are the ones from which donors are most easily recovered.
+Read through the latent, the clinical scale comes apart. Whether a person has
+endometriosis was recoverable from endometrium inside the uterus. It was
+recoverable in the representation from which donors are hardest to identify,
+which makes that score the least contaminated available. Severity was legible
+only through the contrast with its absence: among donors who have the disease
+the surgical grades did not separate, and a headcount of cell families did
+not separate them either. Revised American Society for
+Reproductive Medicine staging scores what a surgeon sees at one operation,
+and was built to predict fertility outcomes rather than symptoms. It is
+nonetheless what cohorts record, what trials stratify on, and the number a
+patient is handed to account for their pain. Diagnosis still takes 11.1 years
+and ends in laparoscopy \citep{bontempo2025diagnostic}. A scale graded by
+what affected tissue distinguishes is the one worth building.
 
-Revised American Society for Reproductive Medicine (rASRM) scoring rates 
-what a surgeon sees. The size and depth of lesions and the adhesions between 
-organs determine staging in endometriosis. It was built to predict fertility 
-outcomes rather than symptoms. Read through the latent, the scale comes apart.
-Whether a person has endometriosis is recoverable from their endometrium, and
-recoverable even in the representation from which donors are hardest to
-identify (0.3364, $p=0.005$). Severity is legible only because it carries
-a contrast between disease and no disease; among donors with disease the
-grades do not separate ($p=0.129$). Nothing tested here does better, 
-including four models pretrained on corpora far larger than
-this corpus. So, the presence of disease is legible in endometrium sampled 
-from its normal location while the rASRM stage is not. It is
-nonetheless what every cohort records, what trials stratify on, and the
-number a patient is handed to account for their pain. It has never tracked
-how much a person hurts, and patients have been saying so for decades.
-The staging worth building is one graded by what the affected tissue 
-distinguishes rather than anatomical cues. Diagnosis today takes 11.1 years and 
-ends in laparoscopy \citep{bontempo2025diagnostic}. The case for changing both 
-the scale and the route rests on every patient told that a lesion a 
-millimetre across could not account for their pain.
+Several limitations bound these interpretations. One study pair deposits the
+same fifteen people under two sets of identifiers, which a donor-level split
+cannot detect. So 4.3\% of held-out cells carry a same-person neighbour
+scored as cross-donor. Phase and disease are donor-constant, which makes that
+fraction the ceiling on the inflation. Cell families outside the
+two annotated studies are themselves model predictions, which is why the
+immune result is reported on annotated donors alone. Cycle-day continuity
+rests on the one cohort that records it, and 2.87\% of cells came from a
+follicular-fluid aspirate that entered labelled as endometrium, contributing
+neither cell-family nor phase labels. The permutation null reassigns labels
+across all eleven studies at once, so it never sees residual study structure.
+A within-study permutation is the remedy and is not built here. Two published
+claims could not be tested at all: the largest effects reported anywhere in
+this corpus come from a cohort whose controls we do not hold
+\citep{shih2022menstrual}, and metabolic reprogramming
+\citep{sarsenova2024metabolic} needs pathway groups finer than our vocabulary.
 
-These conclusions are bound by some notable factors. First, the split
-leaks. One study pair deposits the same fifteen people under two sets of
-identifiers, which a donor-level split cannot detect. 17{,}873 held-out
-cells, 4.3\% of the held-out set, belong to a person who also appears under
-the other study's identifier, and those cells carry both a menstrual phase
-and a disease status. The cross-donor
-estimator discards a neighbour that carries the same donor identifier. For
-these fifteen, a neighbour recorded under the other identifier is counted as
-cross-donor when it is not. Phase, disease and severity are constant within
-a donor, so the error inflates those agreements rather than depressing them.
-4.3\% is its ceiling. Second, \elaj\ is
-read at sixteen dimensions against representations at 256 to 3{,}072. Width
-is unlikely to be what separates them, since across the ten it is
-negatively associated with cycle agreement. Third, the continuity of cycle day
-rests on one cohort of 60 donors. No other study here records the day, so
-the closed trajectory is replicated nowhere in this corpus. Fourth, one of the
-eleven studies is a follicular-fluid aspirate that entered labelled as
-endometrium and was conditioned accordingly: 45{,}312 cells, 2.87\% of the
-corpus, 6 of 254 donors. It carries no cell-family and no phase labels, so
-the cycle and cell-type results do not rest on it. Generically, the corpus holds
-only part of the metadata that matters. No cohort records cycle day, serum
-progesterone, surgical stage and treatment history together. The
-permutation null reassigns the donor-to-label map across all eleven studies
-at once. That breaks the link between a label and the cohort it came from,
-so the null never sees whatever study structure survives in the latent. Our
-own study separation figure, 0.7613, bounds how much that can matter. A
-permutation stratified within study is the correct remedy and is not built
-here.
+Three questions follow. Whether this architecture scales into a pretrained
+model is untested and worth testing, since the inductive bias it carries is
+orthogonal to corpus size. Whether it transfers beyond endometriosis depends
+on two conditions rather than on the disease, scarce donors and severe batch
+structure, which hold wherever diagnosis requires surgery. And the claims
+this corpus cannot yet settle, chiefly the less differentiated epithelium
+reported in lesions \citep{garciaalonso2021endometrium,tan2022singlecell},
+now await annotation rather than scale.
 
-What a sixteen-number cell is useful for is a common coordinate system. A 
-new cohort can be placed beside the eleven already here without being 
-corrected into them. A pattern reported in one study can be looked for in 
-another rather than argued about. The model is small enough to retrain, so 
-the next cohort to be published does not need anyone to repeat a pretraining 
-run before it can be included. Endometriosis research has been held back by 
-cohorts that cannot be read together. This is a way to read them together.
+A sixteen-number cell is useful because it is a common coordinate system. A
+new cohort can be placed beside the eleven here without being corrected into
+them. A pattern reported in one study can be looked for in another rather
+than argued about. The model is small enough that the next cohort published
+does not wait on anyone repeating a pretraining run. Endometriosis research
+has been held back by cohorts that cannot be read together. This is a way to
+read them together.

@@ -811,8 +811,29 @@ CELLS_META = ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz"
 LITERATURE = [
     (11.1, "cited: bontempo2025diagnostic, mean years to diagnosis"),
 ]
+# An integer from the literature cannot ride in LITERATURE, because integers
+# are resolved against CONSTANTS and only floats reach the ledger.
+CONSTANTS_EXTRA[13] = "cited: huang2023immune, donors in the cohort that made the cycle claim"
+
 for _v, _why in LITERATURE:
     LEDGER.append((_v, _why))
+
+# X3, THE CYCLE-BY-DISEASE TEST. This one claims file is written beside its
+# own script rather than into docs/paper, because cycle_by_disease.py writes
+# to Path(__file__).parent. Registered from where it actually lives instead
+# of being moved, since moving it would break the script that produces it.
+# The prose quotes the TOTAL donor count, which is the sum of the two arms,
+# so the sum is derived here. Derive only what the prose quotes.
+_X3 = ROOT / "axw1008" / "src" / "scripts" / "x3_cycle_by_disease.csv"
+if _X3.exists():
+    _r = next(iter(rows(_X3)))
+    _nc = int(float(_r["n_control_donors"]))
+    _ne = int(float(_r["n_eutopic_donors"]))
+    CONSTANTS_EXTRA[_nc] = "x3_cycle_by_disease.csv :: control donors"
+    CONSTANTS_EXTRA[_ne] = "x3_cycle_by_disease.csv :: eutopic donors"
+    CONSTANTS_EXTRA[_nc + _ne] = "x3_cycle_by_disease.csv :: donors, both arms summed"
+    for _col in ("observed_difference", "p_two_sided"):
+        LEDGER.append((float(_r[_col]), f"x3_cycle_by_disease.csv :: {_col}"))
 
 # THE SPLIT LEAK. Measured once by check_donor_overlap.sh over all 55 study
 # pairs and written to a report; the dumped metadata carries only patient_id
