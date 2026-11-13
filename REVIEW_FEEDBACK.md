@@ -217,3 +217,40 @@ and it may need HPC time of its own.
 
 **The order of work AW set**: claims laid out by paper, then pick what is
 most relevant, then scripts and inferences.
+
+---
+
+# Third batch, 14 November 2026. Verbatim.
+
+Delivered on a call, after AW briefed the supervisor on the type E
+experiments and put the open questions to him.
+
+> - Docs for running files should be available in Github
+> - Supplementary needs to be filled up to the brim. figure and tables
+>   should be plenty.
+> - He hasn't reviewed Results yet but he will on Monday.
+
+## What each one changes
+
+**1. Run documentation is a deliverable, in the repository.** New, and it
+is the first thing he has asked for that lives outside the manuscript. The
+scripts exist and are committed; what does not exist is a page telling a
+reader how to run them. `axw1008/docs/` holds the walkthrough and the paper
+notes, so this is a README-level addition pointing at `src/scripts/` and
+the sbatch wrappers, not new prose about the science. **It also bears on
+Code availability**, which currently promises a repository.
+
+**2. Supplementary is now the largest single piece of outstanding work.**
+*"Filled up to the brim"* and *"figures and tables should be plenty"*
+confirms the 11 November direction at the scale he named then: IBDex ships
+26 supplementary tables and 6 figures. Nothing exists. Everything cut from
+the main set lands here, and the claims axis adds its own: the full ranked
+gene list, the per-family AUCs, the label-transfer validation and its
+failure mode.
+
+**3. Results is with him until Monday.** The changeset
+`ELAJ_results_2026-11-13.docx` is a wholesale replacement and he has not
+read it. **Nothing in Results should be rewritten before his comments
+arrive**, or the comments will land on a version that no longer exists.
+The Discussion is the right thing to work on in the gap, which is what AW
+has moved to.
