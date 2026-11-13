@@ -24,27 +24,32 @@
 
 \section*{Results}
 
+The results of this study are divided across 3 main categories. The first is 
+about how \elaj performs against foundation models and other baselines. These 
+represent a numerical evaluation of the model, describe the frontier, and 
+outline model performance against benchmarks. The second category of results is 
+understanding what \elaj itself is doing. This covers analysis of the \elaj 
+latent space, ablation studies, and other ways of understanding the model itself.
+The third category of results is the discoveries made and claims validated 
+by \elaj. Here we test claims made by component datasets and present evidence 
+for the new discoveries made from this work.
+
+
 % ---------------------------------------------------------------------
 \subsection*{Batch effects and biology have a measurable trade-off}
 
-Two training-time coefficients, the adversarial weight and the KL term,
-position \elaj{} on a frontier rather than at an optimum. Across six arms
-donor recovery spans 0.3975 to 0.5837 and cross-donor cycle agreement 0.5922
-to 0.7346, varying monotonically together (Fig.~\ref{fig:knobs}a). What is
-being removed is substantial: donor provenance is enriched 54.5-fold over
-chance, 32.7\% of a cell's hundred nearest neighbours against 0.60\% expected
-across 269 identifiers. Every donor contributed one biopsy, so menstrual
-phase is donor-constant and no correction treating the donor as nuisance can
-separate the two.
+In this corpus, each donor is sampled only once which creates a structural 
+confound between batch effects and biological signal that cannot be 
+disentangled. Two training-time coefficients, the adversarial weight and the 
+KL term, \elaj{} optimises both confounding variables together creating a 
+Pareto front we call the \elaj frontier. 
 
-Adversarial pressure is not uniformly priced. Raising the weight from 7 to
-168 reduces donor recovery from 0.5837 to 0.5188 at no measurable cost in
-cycle agreement, 0.7337 against 0.7346. Raising it to 336 reverses both:
-donor recovery returns to 0.5277 and cycle agreement falls to 0.7146. The
-frontier has a knee, and the two arms reported throughout bracket it.
-\elaj$_{B\,hi}$ holds cycle agreement at 0.7346 for donor recovery 0.5188;
-\elaj$_{B\,lo}$ concedes cycle to 0.6033 and buys study mixing 0.6544 against
-0.7613.
+
+Across six arms donor recovery spans 0.3975 to 
+0.5837 and cross-donor cycle agreement 0.5922 to 0.7346, varying monotonically 
+together (Fig.~\ref{fig:knobs}a). [rewrite this sentence...] What is being removed is substantial: donor 
+provenance is enriched 54.5-fold over chance, 32.7\% of a cell's hundred nearest neighbours against 0.60\% expected
+across 269 identifiers. 
 
 No competing representation reaches that frontier. Scored on the identical corpus,
 \elaj$_{B\,hi}$ dominates all nine simultaneously on both axes. Donor
@@ -56,6 +61,15 @@ latent dimensions against scFoundation's 100 million across 3,072
 disease score ($\rho = +0.721$, $p = 0.019$). It does not predict cycle
 agreement ($\rho = +0.176$, $p = 0.627$). The cycle advantage is therefore
 not an artefact of retained identity.
+
+Adversarial pressure is not uniformly priced. Raising the weight from 7 to
+168 reduces donor recovery from 0.5837 to 0.5188 at no measurable cost in
+cycle agreement, 0.7337 against 0.7346. Raising it to 336 reverses both:
+donor recovery returns to 0.5277 and cycle agreement falls to 0.7146. The
+frontier has a knee, and the two arms reported throughout bracket it.
+\elaj$_{B\,hi}$ holds cycle agreement at 0.7346 for donor recovery 0.5188;
+\elaj$_{B\,lo}$ concedes cycle to 0.6033 and buys study mixing 0.6544 against
+0.7613.
 
 % ---------------------------------------------------------------------
 \subsection*{Sixteen dimensions carry cell identity and the menstrual
