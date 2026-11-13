@@ -479,6 +479,55 @@ are macrophage genes and both are plausible. Search before claiming anything.
 blocks it and Europe PMC has no full text. **Its PDF needs fetching by hand**
 if the BCMA line is used.
 
+## The fifteen disease-side genes, lined up
+
+Orthogonalised list, checked against all ten corpus papers and against the
+literature outside the corpus, 13 November. "First" is always **as far as
+these checks go**: absence of a report in these searches is not proof of
+novelty.
+
+| gene | who else says it matters in endometriosis | are we first? |
+|---|---|---|
+| **SERPINB2** | **Lin 2017: upregulated 72.95-fold, p 1.5e-04**, eutopic vs control. Shih: part of the inflamed and senescent stromal subcluster, with MMP3, MMP1, MMP9, S100A6, CXCL8 | **no, confirmed twice** |
+| **MMP27** | **Lin 2017: upregulated 40.93-fold, p 1.7e-04**, eutopic vs control. Cominelli 2014: expressed by CD163+/CD206+ M2 macrophages in cycling endometrium and superficial lesions | **no, and it matches on cell type too** |
+| **LRRC15** | **Lin 2017: upregulated 25.20-fold, p 3.2e-24**, eutopic vs control. Dümpelmann: figure label only | **no** |
+| **INHBA** | **Lin 2017: upregulated 15.33-fold, p 1.2e-15**, eutopic vs control. Fonseca: figure label only | **no** |
+| **IL1B** | **Dümpelmann: FIRST in their integrated-gradients list** of the genes their own classifier relied on. Also one of their enriched ligand-receptor pathways. Marečková names it | **no, and this is the best agreement we have** |
+| DKK1 | HECA: **down** in case, in decidualised stromal cells | different compartment and opposite direction. Not comparable |
+| CCL13 | Peritoneal-fluid single cell: highly expressed in a macrophage cluster, named a critical chemokine for phagocyte migration. **No case-control comparison** | present in the biology, not reported as differential |
+| TREM1 | Lesion single cell: among the top genes of a neutrophil cluster, "indicates impaired inflammatory reaction". **No case-control comparison** | present in the biology, not reported as differential |
+| MMP19 | Marečková: figure label only | no endometriosis finding located |
+| SCARA5 | Marečková: figure label only | no endometriosis finding located |
+| SIGLEC7 | Nothing direct. The surrounding biology is established: inhibitory NK receptors up, NK cytotoxicity down in endometriosis | **no prior report found** |
+| ADAMDEC1 | Nothing in endometriosis. Known as a macrophage and dendritic-cell peptidase and an inflammatory bowel disease marker | **no prior report found** |
+| ALPK2 | Nothing in endometriosis. Reported upregulated in endometrial *cancer* | **no prior report found** |
+| CST11 | Nothing located | **no prior report found** |
+| KCNH1 | Nothing located | **no prior report found** |
+
+**Five replicate with a direction** (SERPINB2, MMP27, LRRC15, INHBA, IL1B).
+Four of those five come from one external cohort of 8 against 5, which is the
+p = 4.0e-07 overlap. The fifth, IL1B, comes from a corpus paper's own model.
+
+**Two are present in endometriosis immune cells but never tested** against
+controls (CCL13, TREM1). Our direction gives them one.
+
+**Five have no prior endometriosis report we could find** (SIGLEC7,
+ADAMDEC1, ALPK2, CST11, KCNH1). SIGLEC7 and ADAMDEC1 are the two worth
+pursuing: both are macrophage or NK genes, both fit the inflammatory profile
+the rest of the list describes, and neither is a wild card.
+
+⚠ **Five of the fifteen were checked only by web search, not by reading a
+paper.** CST11, KCNH1 and ALPK2 returned nothing at all, which is weaker
+evidence than it looks: a negative search result is not a literature review.
+Before any novelty wording goes in the manuscript these need a proper
+database search.
+
+**Sources on disk**: `Atharva Papers/Validation/PMC5449958.{xml,txt}` (Lin
+2017) and `PMC8157653.{xml,txt}` (peritoneal fluid). The PNAS BCMA paper is
+at <https://www.pnas.org/doi/10.1073/pnas.0703451104>, free full text at
+<https://pmc.ncbi.nlm.nih.gov/articles/PMC1941489/>; both block scripted
+download, so it needs saving by hand.
+
 One more worth a sentence and not a claim: TNFRSF17 is a plasma cell gene,
 and Shih reports B cells enriched in cases. We cannot test that claim, since
 our copy of Shih's cohort has no controls. One gene on a ranked list is not a
