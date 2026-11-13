@@ -516,10 +516,34 @@ manuscript has to say what was searched and accept that supplementary tables
 are invisible to all of it.
 
 **Four genes return nothing from any of the four checks**: SIGLEC7,
-ADAMDEC1, ALPK2, KCNH1. SIGLEC7 and ADAMDEC1 are the two worth pursuing;
-both are macrophage or NK genes that fit the profile the five validated genes
-describe. ALPK2 and KCNH1 I would treat as noise unless something else
-supports them.
+ADAMDEC1, ALPK2, KCNH1.
+
+**AW's ruling, 13 November, and it overturns my recommendation.** I proposed
+naming only SIGLEC7 and ADAMDEC1 and treating ALPK2 and KCNH1 as noise. AW:
+
+> "We have checked the entire scRNA database (our corpus), we checked 2 main
+> databases, and we checked simple searches. If nothing has turned up yet, I
+> think we are in the clear. If there is something that hasn't been made
+> publicly available, we are not responsible for that. I would name all of
+> the new ones in our paper regardless of how likely you think they are.
+> Noise or not can be validated by others that read our paper."
+
+He is right on both counts. Filtering by my hunch substitutes a prior for
+evidence, and a reader who has a contrary result cannot check a gene we never
+named. **All four go in the paper.**
+
+**The wording, which the false-negative finding shapes rather than blocks:**
+
+> To our knowledge, and searching the eleven studies pooled here, the Open
+> Targets Platform (MONDO_0005133) and PubMed, SIGLEC7, ADAMDEC1, ALPK2 and
+> KCNH1 have not previously been reported as altered in endometriosis.
+
+That names what was searched, which most papers do not, and it is checkable.
+It does not claim priority, which nothing could establish.
+
+**Ship the full ranked list in Supplementary**, not only the top fifteen, so
+a reader can look up any gene rather than taking our selection on trust. That
+strengthens the novelty wording rather than weakening it.
 
 **No manual lookup needed, both are APIs**, but the human-readable versions
 are:
