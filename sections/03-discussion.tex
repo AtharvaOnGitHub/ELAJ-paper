@@ -46,8 +46,12 @@ measurable: eleven configurations were trained and scored on identical cells,
 where a zero-shot representation from fixed pretrained weights yields a 
 single point.
 
-The \elaj frontier, defined on menstrual phase against donor or study identity,
-is shaped by adversarial weight and information cost. While adversarial weight 
+The \elaj frontier is defined on menstrual phase against donor or study
+identity. Both are measured across donors: a cell's neighbours drawn from
+other donors are asked to carry its label, and same-donor pairs are discarded
+before scoring. Neither axis can therefore be won by placing each person in
+their own territory \citep{squair2021confronting}. The frontier itself is
+shaped by adversarial weight and information cost. While adversarial weight 
 improves the achievable trade-off up to a critical value and gives worse results 
 past it, the information cost slides the model along the trade-off. Integration
 methods that expose one correction strength therefore report a position on
@@ -73,9 +77,8 @@ another, because no two share donors or a cell vocabulary
 \citep{mareckova2024heca}. Confirmation, contradiction, and external
 replication are three functions a disease atlas is best suited to perform.
 
-rASRM staging does not correspond to anything the latent separates. Whether a
-person has endometriosis was recoverable from endometrium inside the uterus.
-Severity, a grouping derived from rASRM staging, was legible only when
+Whether a person has endometriosis was recoverable from endometrium inside the
+uterus. Severity, a grouping derived from rASRM staging, was legible only when
 controls were included. A headcount of cell families did not separate severity
 either. Only the separation of control from disease passed its permutation
 null, indicating that rASRM staging is not recoverable from single-cell
@@ -90,8 +93,8 @@ have. Replacing the dataset-native sentinel with zeros reorganises the latent
 the same visible way. Removing the pooled order statistics,
 which cuts what each group hands forward from 288 numbers to 32, cost the
 menstrual cycle heavily and cell identity almost nothing. A weighted average
-discards the shape of a group's distribution, and we suspect that on this 
-corpus the cycle requires it.
+discards the shape of a group's distribution, and on this corpus that shape is
+what the cycle is carried in.
 
 Epithelial pseudotime and serum progesterone, neither of which the model was
 given, were recovered more strongly than mitochondrial fraction, library size
@@ -99,9 +102,9 @@ or doublet score. The sixteen dimensions are therefore organised by biology
 rather than by assay variation.
 Tissue of origin, the one label supplied through decoder conditioning, is
 largely absent from the latent, which is the conditioning working as designed.
-Cell-family labels also transfer across studies accurately enough to annotate
-the cohorts that didn't have them, which enabled the composition tests 
-above.
+The latent keeps what was withheld and drops what was supplied. Cell-family
+labels transfer across studies accurately enough to annotate the cohorts that
+didn't have them, which enabled the composition tests above.
 
 Notably, the negative results reported here are bounded by donor count rather 
 than by biology, since the width of a permutation null is set by the number 
