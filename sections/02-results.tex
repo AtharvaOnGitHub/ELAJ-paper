@@ -69,37 +69,35 @@ on this corpus.
 
 \elaj{} sees only gene expression, read in forty-four Reactome and GO
 pathway groups, with study, tissue and platform supplied to the decoder as
-covariates. Exactly one biological label reaches it during training:
-menstrual phase, through a single linear classification head. Cell type,
-disease status, surgical stage, severity and grade are withheld entirely
-(Methods, \emph{Composite objective}). Any of those appearing in the
-sixteen-dimensional latent was therefore never taught, and each is tested on
-the frozen model across all 1,577,728 cells, discarding same-donor
-neighbours so that no label can be recovered by grouping a person with
-themselves (Methods, \emph{Cross-donor agreement}).
+covariates. Its primary objective is reconstruction but it is 
+semi-supervised on menstrual phase. Cell type, disease status, surgical stage, 
+severity and grade are withheld entirely (Methods, \emph{Composite objective}). 
+Emergence of any of those is therefore a result of training and each is tested on
+the trained model across all 1,577,728 cells, discarding same-donor
+neighbours so that no label can be recovered trivially (Methods, 
+\emph{Cross-donor agreement}).
 
 Supervision accounts for a minority of the cycle signal. Removing the phase
 head and retraining left cross-donor cycle agreement at 0.4812 against
 0.7346, so 65.5\% of the chance-corrected signal survived the loss of the
-only biological label the model was given (Table~1). What remains is produced
-by reconstruction through pathway groups rather than by the classifier.
+only biological label the model was given (Table~1). What remains can be 
+attributed to reconstruction through pathway groups instead of the classifier.
 
-The cycle's cellular structure was never supplied at all. Displacement from
+The cycle's cellular structure was not supplied. Displacement from
 proliferative to secretory phase, scaled by each compartment's own spread,
 reached 1.0677 in stromal cells and 0.9824 in epithelial cells, against
 0.3918 in endothelial and 0.3409 in immune cells. The phase head is a single
 linear map over the whole latent and received no cell-type information, so
-that threefold ordering cannot have come from the objective. It is also the
+that threefold ordering is an emergent property. It is also the
 correct ordering, since the endometrial cycle acts principally on the
 stromal and epithelial compartments.
 
-Labels withheld from training entirely were nonetheless recoverable on the
-frozen model. Cell family reached 0.9807 across 630,689 annotated cells,
-merged severity 0.2655 and surgical stage 0.3320, each at $P = 0.005$
-against its own permutation null. Surgical grade did not, at 0.0263 and
-$P = 0.408$. That these labels are legible at all is what makes the disease
-analyses below interpretable, and the single failure is what makes the
-successes credible.
+Labels withheld from training entirely were recoverable on the frozen model.
+Cell family reached 0.9807 across 630,689 annotated cells and surgical
+stage 0.3320, both at $P = 0.005$ against their own permutation nulls, and
+merged severity 0.1286 at $P = 0.025$. Surgical grade did not, at 0.0263 and $P = 0.408$. That 
+these labels are legible at all is what makes the disease analyses below 
+interpretable.
 
 Two controls bound the alternative explanations. Under a best-of-sixteen
 linear criterion the strongest technical correlations, mitochondrial fraction
