@@ -41,16 +41,17 @@ pretrained on over 50 million profiles \citep{hao2024scfoundation}. Four
 pretrained models conferred no advantage on this corpus over \elaj\
 \citep{cui2024scgpt,theodoris2023geneformer,heimberg2025scimilarity,kedzierska2025zeroshot}.
 scGPT's own authors note that its pretraining does not itself mitigate 
-batch effects \citep{cui2024scgpt}. The architectural bet of replacing 
-scale with inductive bias allowed \elaj to iterate for the best solution 
-while keeping training cost low.
+batch effects \citep{cui2024scgpt}. The small size allowed \elaj to iterate 
+for the best solution while keeping training cost low.
 
 The \elaj frontier, defined on menstrual phase against donor or study identity,
 is shaped by adversarial weight and information cost. While adversarial weight 
-shifts the achievable trade-off until a critical value, giving worse results past 
-it, the information cost slides the model along the trade-off. This shows 
+improves the achievable trade-off up to a critical value and gives worse results 
+past it, the information cost slides the model along the trade-off. This shows 
 that a single correction strength does not optimise the trade-off as 
 assumed by simpler methods \citep{korsunsky2019harmony,lopez2018scvi,xu2021scanvi,hie2019scanorama}.
+Consequently, none of the nine competing representations reached
+\elaj's cross-donor cycle agreement at a lower donor recovery.
 
 Cell composition does not differ between control and eutopic endometrium,
 confirming at 194 donors a claim made in 60
@@ -74,47 +75,49 @@ A headcount of cell families did not separate severity either. Severity was
 only separable between control and disease cells indicating that rASRM staging 
 does not align with biological signals.
 
-Replacing the pathway grouping with random gene groups of identical sizes
-degraded every biological axis, and disease status most of all. The inductive
-bias is load-bearing rather than decorative. Removing the menstrual-phase head
-left most of the cross-donor cycle agreement standing, which places that
-signal in the architecture rather than in the one label the model was given.
-Without that head the model also began overfitting from its first epoch, so
-the supervision regularises as well as teaches.
+The main architectural bet made by \elaj is the replacement of scale with
+inductive bias. Ablation of pathway groups showed the biological axis
+degrading, while menstrual-phase head supervision proved to be a regulariser
+over the whole latent rather than a route by which one label re-enters it.
+Random groups of the same shape, parameter count and gene space gave the best
+held-out reconstruction in the project and the weakest biology, because the
+decoder's reliance on the latent over the covariates it is handed fell by two
+thirds. It had found a cheaper route and reconstructed provenance instead of
+cells. The phase head, by contrast, costs nothing in training fit and buys
+both donor-blindness and study mixing at the selected checkpoint.
+
+Two components are nearly invisible in the metrics and plain in the
+embedding. Without the elastic cell similarity head, large single-study
+territories appear that \elaj\textsubscript{B\,hi} does not have, and
+replacing the dataset-native sentinel with zeros reorganises the latent the
+same visible way, each at a cost under 1\% on every biological axis. Absence
+of measurement is not a measured absence. The pooled order statistics are the
+component the metrics do capture, and cutting what each group hands forward
+from 288 numbers to 32 cost menstrual phase heavily while leaving cell family
+untouched. What a weighted average discards is the shape of a group's
+distribution, and on this corpus that shape is a cycle mechanism.
 
 The latent holds quantities nobody supplied it. Epithelial pseudotime and
 serum progesterone are recovered more strongly than mitochondrial fraction,
 library size or doublet score, so biology outranks technical variation across
 the sixteen dimensions. Tissue of origin is the exception that confirms the
 design: it is largely absent, because the decoder was handed it and the
-encoder had no reason to keep it. Transferring cell-family labels through the
-same space recovered them across studies accurately enough to carry the
-composition tests above. Its one failure mode is instructive, since cell types
-with no counterpart in the reference are absorbed silently, which bounds what
-any latent space can be asked to annotate.
+encoder had no reason to keep it. Cell-family labels transfer through the same
+space across studies at the accuracy the composition tests required, which is
+what allowed the six cohorts that deposited no annotation at all to enter
+them.
 
-The negatives reported here are bounded by donor count rather than by biology,
-because a permutation null's width is set by how many people contribute.
-Surgical stage and severity are therefore claims that more donors could still
-settle. Whether this architecture scales into a pretrained model is the
-question these results raise and do not answer, since inductive bias and
-corpus size are independent levers. Transfer beyond endometriosis rests on two
-conditions rather than on the disease, scarce donors and severe batch
-structure, which hold wherever diagnosis requires surgery. Other claims are
-now limited by annotation rather than by scale. A less differentiated
-epithelium has been reported in lesions from deconvoluted bulk and from
-fourteen donors \citep{garciaalonso2021endometrium,tan2022singlecell}, and the
-fifty-eight ectopic donors pooled here could test it directly once epithelial
-subtypes are resolved. Because the model retrains in hours, each new cohort
-can extend this reference instead of waiting on anyone to repeat a pretraining
-run.
-
-\elaj\ establishes a sixteen-dimensional reference for pooled endometrial
-single-cell data. No competing representation reached its cross-donor cycle
-agreement at a lower donor recovery, and none of the nine was better on both
-axes at once. It prices donor removal against biology, recovers cell
-identity and the cycle's compartment structure unsupervised, locates the
-disease signal inside immune cells, and names genes the endometriosis
-literature has not reported. Endometriosis
-research has been held back by cohorts that cannot be read together. This is a
-way to read them together.
+Several directions follow. Whether this architecture scales into a pretrained
+model is the question these results raise and do not answer, since inductive
+bias and corpus size are independent levers. Transfer beyond endometriosis
+rests on two conditions rather than on the disease, scarce donors and severe
+batch structure, which hold wherever diagnosis requires surgery. A less
+differentiated epithelium has been reported in lesions from deconvoluted bulk
+and from fourteen donors
+\citep{garciaalonso2021endometrium,tan2022singlecell}, and the fifty-eight
+ectopic donors pooled here could test it directly once epithelial subtypes are
+resolved. Because \elaj\ retrains in hours, each new cohort can extend this
+reference rather than wait on a pretraining run to be repeated. We envision an
+endometriosis atlas that grows with its field, where a pattern reported in one
+cohort is looked for in the others rather than argued about, and where the
+cost of asking is an afternoon.
