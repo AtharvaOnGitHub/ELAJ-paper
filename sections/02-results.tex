@@ -56,7 +56,7 @@ pressure is therefore cheap until it saturates, and the two reported arms
 bracket the point at which it does.
 
 No competing representation reached that frontier. Scored on the identical
-corpus, \elaj$_{B\,hi}$ was better than all nine on both axes at once, with
+corpus, \elaj\textsubscript{B\,hi} was better than all nine on both axes at once, with
 donor recovery 0.5188 against 0.5421 to 0.7892 and cycle agreement 0.7346
 against 0.4372 to 0.7303 (Table~1). Four of the nine were pretrained
 foundation models, the largest carrying 100 million parameters and 50 million
@@ -94,8 +94,8 @@ stromal and epithelial compartments.
 
 Labels withheld from training entirely were recoverable on the frozen model.
 Cell family reached 0.9807 across 630,689 annotated cells and surgical
-stage 0.3320, both at $P = 0.005$ against their own permutation nulls, and
-merged severity 0.1286 at $P = 0.025$. Surgical grade did not, at 0.0263 and $P = 0.408$. That 
+stage 0.3320, both at \textit{P}~=~0.005 against their own permutation nulls, and
+merged severity 0.1286 at \textit{P}~=~0.025. Surgical grade did not, at 0.0263 and \textit{P}~=~0.408. That 
 these labels are legible at all is what makes the disease analyses below 
 interpretable.
 
@@ -119,21 +119,21 @@ grades its patients mild or severe and \texttt{marecko\_2024} records rASRM
 stage (Methods, \emph{Severity}). Neither was given to the model.
 
 Disease status is legible and severity is not. Cross-donor agreement
-separating control from eutopic endometrium reached 0.3364 at $P = 0.005$.
+separating control from eutopic endometrium reached 0.3364 at \textit{P}~=~0.005.
 Restricted to patients, mild against severe reached 0.0744 and failed its
-permutation null at $P = 0.129$ over 57 donors; surgical grade failed at
-0.0263 and $P = 0.408$ over 60, and was negative in all six frontier arms.
+permutation null at \textit{P}~=~0.129 over 57 donors; surgical grade failed at
+0.0263 and \textit{P}~=~0.408 over 60, and was negative in all six frontier arms.
 The only contrasts that cleared their nulls were those
 containing controls: merged severity at 0.1286 and rASRM stage at 0.3320,
 the latter with 36 of its 58 donors at stage 0. Nor is the failure peculiar
 to \elaj{}. Scored on the same held-out donors, severity among patients was
-negative in all ten representations, between $-$0.0090 and $-$0.1592, and
-not one cleared its permutation null ($P \geq 0.627$). Restoring the
+negative in all ten representations, between --0.0090 and --0.1592, and
+not one cleared its permutation null (\textit{P} of 0.627 or more). Restoring the
 controls turns every one of the ten positive.
 
 Cell composition does not track severity either. Across fifty-one patients
 the share of each family was unchanged between low and high severity, at
-$P = 0.2092$ for immune cells, 0.1624 endothelial, 0.9696 stromal and 0.9130
+\textit{P}~=~0.2092 for immune cells, 0.1624 endothelial, 0.9696 stromal and 0.9130
 epithelial (Fig.~X). The two readouts are independent, one a geometry in the
 latent and the other a count over transferred labels, and both fail on the
 same contrast. The latent separates people who have endometriosis from
@@ -152,7 +152,7 @@ from tens of donors against the pooled 194.
 
 Cell composition does not distinguish case from control. Across those 194
 donors the share of every family was unchanged between control and eutopic
-endometrium, at $P = 0.6186$ for immune cells, 0.7360 stromal, 0.9016
+endometrium, at \textit{P}~=~0.6186 for immune cells, 0.7360 stromal, 0.9016
 epithelial and 0.2358 endothelial, with study fitted as a covariate.
 \texttt{duempelmann\_2026} reports the same from 60 donors, where one cell
 type of 57 shifted. Endometriosis is not a change in which cells are
@@ -162,8 +162,8 @@ It is a change in what immune cells are doing. No single direction in the
 latent separates cases from controls: fitted on 70\% of donors and scored on
 the remainder, the global contrast reached an AUC of 0.5360 against a
 shuffled-label 0.4820. Inside the immune compartment the identical procedure
-reached 0.7084 against 0.4806, at $P = 0.015$ over 94 donors. Pooling the
-four families destroys it, back to 0.6048 at $P = 0.155$, and epithelial
+reached 0.7084 against 0.4806, at \textit{P}~=~0.015 over 94 donors. Pooling the
+four families destroys it, back to 0.6048 at \textit{P}~=~0.155, and epithelial
 cells carry nothing at all at 0.4663 (Fig.~X).
 
 Decoding that direction through the decoder names the genes it moves, and
@@ -174,9 +174,9 @@ this corpus, which sequenced eight cases against five controls and published
 66 upregulated genes \citep{zhao2017transcriptome}: SERPINB2 at 72.95-fold,
 MMP27 at 40.93, LRRC15 at 25.20 and INHBA at 15.33. Drawing fifteen genes
 from 15,496, that overlap carries a hypergeometric
-$P = 3.95 \times 10^{-7}$, and none of the fifteen at the control end of the
+\textit{P}~=~3.95~\texttimes~10\textsuperscript{--7}, and none of the fifteen at the control end of the
 same ranking appears in their list. MMP27 agrees on cell type as well as
-direction, having been localised to CD163$^{+}$CD206$^{+}$ macrophages in
+direction, having been localised to CD163\textsuperscript{+}CD206\textsuperscript{+} macrophages in
 endometrium and in superficial lesions \citep{cominelli2014mmp27}. IL1B is
 separately the highest-ranked gene in \texttt{duempelmann\_2026}'s own
 supervised classifier \citep{duempelmann2026endometrium}, so two unrelated
@@ -187,7 +187,7 @@ pooled studies, nor by the Open Targets Platform, nor by PubMed.
 % ---------------------------------------------------------------------
 \subsection*{Ablation studies}
 
-Five single-key changes were made against \elaj$_{B\,hi}$, each retrained
+Five single-key changes were made against \elaj\textsubscript{B\,hi}, each retrained
 from scratch and scored under one protocol (Table~1). They are ordered here
 by how far the change moves the model away from a conventional CVAE.
 
@@ -205,7 +205,7 @@ validation split, the head-free arm's cycle agreement climbed from 0.4977 to
 0.7488, while its held-out reconstruction was lowest at the first epoch and
 rose at every epoch after, so checkpoint selection returned that arm before
 the structure had arrived. Training loss stayed within 0.0009 of
-\elaj$_{B\,hi}$ throughout, so the head costs nothing in fit. At the selected
+\elaj\textsubscript{B\,hi} throughout, so the head costs nothing in fit. At the selected
 checkpoints the head-free arm recovered donors 0.1203 less well and separated
 studies 0.1021 less, gaps that close to 0.0327 and 0.0010 by the last epoch
 both arms ran. The head acts as a regulariser on the whole latent rather
@@ -215,7 +215,7 @@ Two components are nearly invisible in the metrics and plain in the latent.
 Disabling the elastic cell similarity head moved every biological axis by
 under 1\% except disease status, which rose 8.1\%, while donor recovery
 worsened 6.4\% and study separation 9.5\%; the embedding shows why, with
-large single-study territories appearing that \elaj$_{B\,hi}$ does not have
+large single-study territories appearing that \elaj\textsubscript{B\,hi} does not have
 (Fig.~X). Replacing the DNS sentinel with zeros for genes a study never
 assayed worsened study separation by 2.7\% and moved everything else by
 under 1\%, and there too the reorganisation is visible rather than
@@ -228,7 +228,7 @@ weighted average discards is the shape of a group's distribution, and on
 this corpus that shape is a cycle mechanism rather than a general one.
 Across all six configurations cross-donor agreement on cell family,
 menstrual phase and disease status cleared the permutation floor at
-$p = 0.005$; merged severity cleared its null in none of them, $p = 0.149$
+\textit{p}~=~0.005; merged severity cleared its null in none of them, \textit{p}~=~0.149
 to 0.468, and endometriosis grade was negative in all six.
 
 % ---------------------------------------------------------------------

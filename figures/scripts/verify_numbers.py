@@ -1214,7 +1214,8 @@ unaccounted, ambiguous, ok = [], [], 0
 # either side.
 # `\times 10^{-7}` is notation. The mantissa is the measurement and is
 # checked; the base and the exponent are not numbers the prose is claiming.
-tex = re.sub(r"\\times\s*10\^\{-?\d+\}", " ", tex)
+tex = re.sub(r"(\\times|\\texttimes)[~\s]*10(\^\{-?\d+\}"
+             r"|\\textsuperscript\{-{0,2}\d+\})", " ", tex)
 for mobj in re.finditer(r"(?<![\d.\w])(\d+\.\d+|\d+)(?![\d\w])", tex):
     raw = mobj.group(1)
     if "." not in raw:
