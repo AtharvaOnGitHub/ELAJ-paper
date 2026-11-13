@@ -25,79 +25,60 @@
 \section*{Results}
 
 % ---------------------------------------------------------------------
-\subsection*{Removing the donor costs cycle signal, and two knobs trace
-the trade-off}
+\subsection*{Batch effects and biology have a measurable trade-off}
 
-Donor identity dominates the representation this corpus invites. Across all
-1,577,728 cells, 32.7\% of a cell's hundred nearest neighbours originate from
-the same donor, against a chance rate of 0.60\% computed over 269 donor
-identifiers. Provenance is enriched 54.5-fold, and no biological covariate
-measured here approaches that concentration. Each donor contributed a single
-biopsy, so menstrual phase is constant within a donor and a per-donor offset
-is geometrically indistinguishable from a batch effect. Suppression of
-provenance therefore removes cycle-dependent variation alongside it, and the
-quantity worth reporting is the exchange rate rather than either term alone.
+Two training-time coefficients, the adversarial weight and the KL term,
+position \elaj{} on a frontier rather than at an optimum. Across six arms
+donor recovery spans 0.3975 to 0.5837 and cross-donor cycle agreement 0.5922
+to 0.7346, varying monotonically together (Fig.~\ref{fig:knobs}a). What is
+being removed is substantial: donor provenance is enriched 54.5-fold over
+chance, 32.7\% of a cell's hundred nearest neighbours against 0.60\% expected
+across 269 identifiers. Every donor contributed one biopsy, so menstrual
+phase is donor-constant and no correction treating the donor as nuisance can
+separate the two.
 
-Two training-time coefficients govern that suppression: the weight on the
-domain-adversarial branch and the KL coefficient on the latent
-(Methods, \emph{Composite objective}). Six arms span them. Donor recovery
-ranges from 0.3975 to 0.5837 and cross-donor cycle agreement from 0.5922 to
-0.7346, moving together monotonically (Fig.~\ref{fig:knobs}a). Adversarial
-pressure is not uniformly priced. Raising the weight from 7 to 168 reduces
-donor recovery from 0.5837 to 0.5188 while cycle agreement remains
-indistinguishable, 0.7337 against 0.7346. Raising it to 336 recovers nothing:
+Adversarial pressure is not uniformly priced. Raising the weight from 7 to
+168 reduces donor recovery from 0.5837 to 0.5188 at no measurable cost in
+cycle agreement, 0.7337 against 0.7346. Raising it to 336 reverses both:
 donor recovery returns to 0.5277 and cycle agreement falls to 0.7146. The
-adversary saturates, and beyond saturation the KL coefficient is the only
-remaining lever.
+frontier has a knee, and the two arms reported throughout bracket it.
+\elaj$_{B\,hi}$ holds cycle agreement at 0.7346 for donor recovery 0.5188;
+\elaj$_{B\,lo}$ concedes cycle to 0.6033 and buys study mixing 0.6544 against
+0.7613.
 
-Two arms are reported throughout. \elaj$_{B\,hi}$ retains cycle agreement at
-0.7346 with donor recovery 0.5188; \elaj$_{B\,lo}$ suppresses study structure
-substantially harder, 0.6544 against 0.7613, and concedes cycle agreement to
-0.6033. Scored against nine competing representations on the identical
-corpus, \elaj$_{B\,hi}$ is not merely competitive. Every one of the nine is
-simultaneously worse on both axes, with higher donor recovery, 0.5421 to
-0.7892, and lower cycle agreement, 0.4372 to 0.7303
-(Fig.~\ref{fig:knobs}b). Four pretrained foundation models are among them.
-\elaj{} carries 1,883,986 parameters across sixteen latent dimensions, against
-scFoundation's 100 million across 3,072 (Fig.~\ref{fig:knobs}c).
-
-Donor recovery is not a neutral nuisance axis. Across the ten representations
-it predicts the disease score, Spearman $\rho = +0.721$ at $p = 0.019$, and
-does not predict cycle agreement, $\rho = +0.176$ at $p = 0.627$
-(Fig.~\ref{fig:knobs}d). Both labels are constant within a donor, so the
-asymmetry is not a property of the annotation. A representation retaining
-individual identity scores better on disease specifically, which makes the
-disease axis a partial readout of memorisation rather than a clean
-performance axis.
+No competing representation reaches that frontier. Scored on the identical corpus,
+\elaj$_{B\,hi}$ dominates all nine simultaneously on both axes. Donor
+recovery is 0.5188 against their 0.5421 to 0.7892; cycle agreement is 0.7346
+against their 0.4372 to 0.7303 (Fig.~\ref{fig:knobs}b). Four are pretrained
+foundation models, and \elaj{} carries 1,883,986 parameters across sixteen
+latent dimensions against scFoundation's 100 million across 3,072
+(Fig.~\ref{fig:knobs}c). Across these ten, donor recovery predicts the
+disease score ($\rho = +0.721$, $p = 0.019$). It does not predict cycle
+agreement ($\rho = +0.176$, $p = 0.627$). The cycle advantage is therefore
+not an artefact of retained identity.
 
 % ---------------------------------------------------------------------
 \subsection*{Sixteen dimensions carry cell identity and the menstrual
 cycle}
 
-Representation content was quantified on all 1,577,728 cells with parameters
-frozen, so none of the labels below participated in checkpoint selection
-(Methods, \emph{Whole-corpus embedding}). Agreement is cross-donor
-throughout: same-donor neighbour pairs are discarded before scoring, and each
-value is reported against its own permutation null rather than against an
-arbitrary threshold.
-
-Cell family agreement reaches 0.9807 across 630,689 annotated cells from 118
-donors ($p = 0.005$), and the four compartments occupy contiguous,
-non-overlapping territory (Fig.~\ref{fig:model}d). Cross-donor menstrual phase
-agreement reaches 0.6796 across 723,599 cells from 142 donors ($p = 0.005$).
-The asymmetry between those two is instructive. Phase was supplied to a single
-linear classification head during training; cell family was supplied to
-nothing, and is recovered from reconstruction pressure and pathway grouping
+Both labels are recovered cross-donor on all 1,577,728 cells with parameters
+frozen, discarding same-donor neighbour pairs before scoring
+(Methods, \emph{Whole-corpus embedding}). Cell family agreement reaches
+0.9807 across 630,689 annotated cells from 118 donors ($p = 0.005$), and the
+four compartments occupy contiguous, non-overlapping territory
+(Fig.~\ref{fig:model}d). Cross-donor menstrual phase agreement reaches 0.6796
+across 723,599 cells from 142 donors ($p = 0.005$). Phase was supplied to a
+single linear classification head during training; cell family was supplied
+to nothing, and emerges from reconstruction pressure and pathway grouping
 alone.
 
-Technical variation bounds the alternative explanation rather than competing
-with it. Under a best-of-sixteen linear criterion, mitochondrial fraction,
-total counts and doublet score reach 0.3396, 0.2514 and 0.1366, against 0.4725
-for serum progesterone and 0.5801 for epithelial pseudotime
-(Supplementary Table~S1). The criterion takes the strongest correlation
-available across sixteen dimensions, so these controls are upper bounds and do
-not sit near zero by construction. Biological covariates the model never
-received nonetheless exceed every technical one.
+Technical variation does not account for either. Under a best-of-sixteen
+linear criterion, mitochondrial fraction, total counts and doublet score
+reach 0.3396, 0.2514 and 0.1366. Serum progesterone reaches 0.4725 and
+epithelial pseudotime 0.5801 (Supplementary Table~S1). That criterion
+takes the strongest correlation available across sixteen dimensions, making
+the technical values upper bounds. Biological covariates the model never
+received still exceed every one of them.
 
 % ---------------------------------------------------------------------
 % R3 to R6 pending. See RESULTS_STRUCTURE.md.
