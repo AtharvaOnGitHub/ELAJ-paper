@@ -407,28 +407,77 @@ the same gene comes out as important for endometriosis.** Theirs is a
 supervised classifier told the labels; ours is an unsupervised representation
 that never saw them.
 
-**The four unnamed genes, searched outside the corpus, 13 November.** Three
-are already reported in endometriosis by studies NOT in our corpus, which
-makes them external validation rather than novelty -- a better outcome.
+**ORTHOGONALISED, 13 November.** The cell-identity component was projected
+out of the direction: cosines dropped from +0.211 epithelial, +0.002 stromal,
+-0.037 endothelial to residuals of 0.016 or less. Step-size check 0.9984.
 
-| gene | outside the corpus | direction |
-|---|---|---|
-| **MMP27** | **upregulated in eutopic endometrium of endometriosis against healthy controls**, and expressed by CD163+/CD206+ M2 macrophages in cycling endometrium and superficial lesions | **matches ours exactly: same direction, same tissue, same cell type** |
-| **TNFRSF17 (BCMA)** | **BCMA mRNA overexpressed in endometriosis against control endometrium** (Hever et al., PNAS 2007, the paper that established plasma cells in endometriosis) | matches ours |
-| **CCL13 (MCP-4)** | named among the critical chemokines driving the mononuclear phagocyte system in endometriosis peritoneal fluid; MCP-4 altered across lesion types | matches ours in kind |
-| SIGLEC7 | **no direct report.** The surrounding biology is established -- inhibitory NK receptors increased and NK cytotoxicity reduced in endometriosis -- but SIGLEC7 itself is not reported as differentially expressed | consistent, unconfirmed |
+The disease side became more coherent, not less, which is the answer to
+whether it was identity drift:
 
-**MMP27 is the strongest line in the whole claims axis.** An unsupervised
-16-number representation, which was never given disease labels, puts MMP27 on
-the disease side of its immune direction. The literature has MMP27 up in the
-eutopic endometrium of cases, in macrophages. Direction, tissue and cell type
-all agree, and no paper in our corpus mentions the gene at all.
+    TREM1, IL1B, CCL13, SIGLEC7, ADAMDEC1, SERPINB2,
+    MMP19, MMP27, LRRC15, INHBA, SCARA5, CST11, DKK1, KCNH1, ALPK2
 
-⚠ **These came from web searches and I have not read the primary papers.**
-Before any of this reaches the manuscript each one needs checking against the
-source, for the same reason the Hrovatin claim did: a summary of a paper is
-not the paper. Sources to verify: Hever et al. PNAS 2007 for BCMA; the MMP27
-M2-macrophage work; the peritoneal-fluid single-cell paper for CCL13.
+**IL1B arrived and it is a direct hit on the primary source.** Dümpelmann
+ranked which genes their own neural network relied on to predict
+endometriosis: *"The key genes in the unified PCA, ranked by integrated
+gradients importance scores, include IL1B, CCL4, CCL3, HLA-DRA, HLA-DPA1,
+CD74, A2M, and ACKR1."* **IL1B is first in that list.** Verified in the PDF
+text on disk, not from a summary.
+
+**EXTERNAL VALIDATION, verified against primary text saved locally in
+`Atharva Papers/Validation/`.** Lin et al., *Biomedical Reports* 2017
+(PMC5449958) sequenced 8 eutopic endometria from endometriosis against 5
+controls and published 66 upregulated and 6 downregulated genes. **It is not
+in our corpus.**
+
+| our disease side | they report | fold | p |
+|---|---|---:|---:|
+| **SERPINB2** | upregulated | 72.95 | 1.51e-04 |
+| **MMP27** | upregulated | 40.93 | 1.69e-04 |
+| **LRRC15** | upregulated | 25.20 | 3.17e-24 |
+| **INHBA** | upregulated | 15.33 | 1.19e-15 |
+
+**Four of our top fifteen are in their 66-gene list, all in the same
+direction, out of 15,496 genes. Hypergeometric p = 4.0e-07.**
+
+**Not one of our fifteen control-side genes appears anywhere in their table.**
+That asymmetry is the strongest evidence that the disease side is real and
+the control side is drift.
+
+**Orthogonalisation improved the overlap**, which is independent evidence
+that the projection removed noise rather than signal:
+
+| | hits in their up-list | p |
+|---|---:|---:|
+| before | 3 (LRRC15, MMP27, MMP3) | 3.2e-05 |
+| after | 4 (INHBA, LRRC15, MMP27, SERPINB2) | 4.0e-07 |
+
+**TNFRSF17 (BCMA), verified.** Hever et al., *PNAS* 2007: *"Only BCMA was
+strongly up-regulated in endometriosis lesions"*, by TaqMan qPCR, endometrium
+43 +- 13 (n = 16) against endometriosis 290 +- 89 (n = 13), roughly 6.7-fold.
+⚠ That compares **lesions** with control endometrium, not eutopic with
+control. TNFRSF17 dropped out of the top fifteen after orthogonalisation.
+
+⚠ **CCL13 is weaker than I first reported and the correction matters.** The
+peritoneal-fluid single-cell paper (PMC8157653) says only that CCL13 is
+"highly expressed in cluster 3", a macrophage cluster, and names it a
+critical chemokine for mononuclear phagocyte migration. **It makes no
+endometriosis-versus-control comparison for CCL13.** So CCL13 is expressed by
+endometriosis-associated macrophages and is not a reported differential
+finding. My earlier line overstated it.
+
+**SIGLEC7** still has no direct report. The surrounding biology is
+established, inhibitory NK receptors up and NK cytotoxicity down in
+endometriosis, but the gene itself is not reported as differentially
+expressed. Candidate, not discovery.
+
+⚠ **TREM1 and ADAMDEC1 are in no corpus paper and were not searched.** Both
+are macrophage genes and both are plausible. Search before claiming anything.
+
+**Copies on disk**: `Atharva Papers/Validation/PMC5449958.{xml,txt}` and
+`PMC8157653.{xml,txt}`. The PNAS paper could not be downloaded; the publisher
+blocks it and Europe PMC has no full text. **Its PDF needs fetching by hand**
+if the BCMA line is used.
 
 One more worth a sentence and not a claim: TNFRSF17 is a plasma cell gene,
 and Shih reports B cells enriched in cases. We cannot test that claim, since
