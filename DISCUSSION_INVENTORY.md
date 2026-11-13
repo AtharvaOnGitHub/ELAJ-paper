@@ -179,30 +179,33 @@ has made",** because the supervisor has made all three.
 
 # The three structural problems
 
-## 1. The word budget does not close, and this is the real decision
+## 1. The word budget: the target is about 750 words
 
-NMI's guidance is about 1,000 words. The written section is **1,285**. The
-new material in this inventory, chiefly all of type J, the three predicted
-questions, K5, K6 and four new limitations, is **at least another 600**.
+**Corrected 14 November against eight published Discussions.** See
+`DISCUSSION_REGISTER.md`; my first analysis of this was wrong in both
+direction and size.
 
-So roughly 1,900 words of candidates against a 1,000-word guideline. AW has
-already ruled that going over is acceptable for a submission draft, but
-double is a different proposition from 28% over. **Something has to be cut
-or moved**, and the three places it can go are the Supplementary (which the
-supervisor has just asked to be filled to the brim), the Results subsections
-that already own the material, or out.
+Discussion length tracks Results length at **30% across six NMI papers** and
+**44% in IBDex**, whose Results is the nearest in size to ours. Our Results
+is 1,650 words, so the licensed range is **500 to 840 words** and the draft
+is already **1,184**.
 
-My view on what gives, in order: **M11** out; **J8**, **K5**, **K6** and
-**M9** to one Supplementary note each, cited in a clause; **M2** to a single
-clause. That is about 250 words recovered and it leaves the argument intact.
+So the section has to **lose about a third while absorbing all nine type J
+items.** The two problems solve each other: the draft quotes **25 measured
+values** and the eight published Discussions quote **six between them**.
+Stripping the metrics is the register correction and it frees most of the
+room type J needs.
 
-## 2. The subheading collision is still unresolved and it is now blocking
+## 2. The subheading question is settled by evidence, not by his ruling
 
-**NMI forbids subheadings in the Discussion. The supervisor asked for a
-sectioned Discussion.** This inventory is built to his four sections, so if
-the subheadings cannot appear, the four have to be carried by paragraph
-order and topic sentences alone. That is writable, and it is a different
-draft from one with headers. It went to him as open question 1 on the call.
+**Eight of eight have no subheadings**, IBDex and scGPT included. What
+carries his four sections is a topic-sentence ladder: every paragraph opens
+by naming its own subject, and several carry the previous subject forward.
+IBDex's ten opening clauses read as a table of contents on their own.
+
+**So he can have his sectioned Discussion and NMI's format at once**, and
+his own paper is the demonstration. This no longer needs a decision from
+him.
 
 ## 3. Four things left Results for here and must not be lost
 
