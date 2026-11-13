@@ -425,7 +425,7 @@ CD74, A2M, and ACKR1."* **IL1B is first in that list.** Verified in the PDF
 text on disk, not from a summary.
 
 **EXTERNAL VALIDATION, verified against primary text saved locally in
-`Atharva Papers/Validation/`.** Lin et al., *Biomedical Reports* 2017
+`Atharva Papers/Validation/`.** Zhao et al., *Biomedical Reports* 2017
 (PMC5449958) sequenced 8 eutopic endometria from endometriosis against 5
 controls and published 66 upregulated and 6 downregulated genes. **It is not
 in our corpus.**
@@ -481,12 +481,12 @@ if the BCMA line is used.
 
 ## The fifteen disease-side genes, lined up
 
-Checked four ways: all ten corpus papers; Lin et al. *Biomed Rep* 2017
+Checked four ways: all ten corpus papers; Zhao et al. *Biomed Rep* 2017
 (PMC5449958, 8 eutopic endometriosis against 5 controls, not in our corpus);
 **Open Targets Platform**, MONDO_0005133, 3,554 of 3,619 associated genes
 retrieved; and **PubMed** co-mention counts via NCBI esearch.
 
-| gene | Lin 2017 | corpus papers | Open Targets | PubMed | read |
+| gene | Zhao 2017 | corpus papers | Open Targets | PubMed | read |
 |---|---|---|---:|---:|---|
 | **IL1B** | — | **first in Dümpelmann's own classifier importance list**; Marečková | **0.214** | 51 | well established |
 | **SERPINB2** | **up 72.95x** | Shih, inflamed/senescent stromal | 0.007 | 5 | established |

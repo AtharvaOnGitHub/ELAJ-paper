@@ -914,6 +914,11 @@ print(f"\n   knob values from the arm configs: {sorted(KNOBS)}")
 
 CONSTANTS = {
     1577728: "corpus cells, metadata",
+    # R4. The transfer's target set is the corpus minus the annotated pool,
+    # 1,577,728 - 640,606, and 70 is the training share of the donor split
+    # the direction is fitted on (disease_direction_by_family.py).
+    937122: "cells with no source annotation, corpus minus the labelled pool",
+    70: "percent of donors the disease direction is fitted on, the rest held out",
     1161472: "train-split cells, benchmark log",
     416256:  "val+test cells, benchmark log",
     466176:  "cells with CycleDay, metadata",
@@ -986,7 +991,7 @@ _CLAIMS = {
 # audit less useful, not more. Add a column here only when prose needs it.
 _CLAIMS_SKIP = {"auc_lo", "auc_hi", "null_sd", "null_mean", "null_p95",
                 "cosine_stability", "genes", "n_permutations", "k",
-                "majority_baseline", "external_n", "n_top"}
+                "n_top"}
 for _fn, _keys in _CLAIMS.items():
     _f = _CLAIMS_DIR / _fn
     if not _f.exists():
@@ -1001,6 +1006,16 @@ for _fn, _keys in _CLAIMS.items():
             except (TypeError, ValueError):
                 continue
             LEDGER.append((_v, f"{_fn} :: {_tag} {_col}"))
+            # Donor and gene counts are integers, and integers are checked
+            # against CONSTANTS rather than against the ledger.
+            if _v == int(_v) and abs(_v) >= 5:
+                CONSTANTS[int(_v)] = f"{_fn} :: {_tag} {_col}"
+            # A p-value quoted in scientific notation reaches the prose as
+            # its mantissa, so 3.95e-07 has to answer for a written "3.95".
+            if 0 < abs(_v) < 1e-4:
+                _mant = float(f"{abs(_v):e}".split("e")[0])
+                LEDGER.append((round(_mant, 2),
+                               f"{_fn} :: {_tag} {_col}, mantissa"))
 
 # PINNED VALUES. A number the prose rounds cannot be traced by search: at two
 # decimal places several unrelated quantities collide, and whichever the
@@ -1062,6 +1077,9 @@ PINNED = {
     # representations. scgpt's STAGE permutation p is also 0.1592, so the
     # unpinned search cannot tell a severity magnitude from a stage p.
     "0.1592": ("severity_ind_scvi", "cross-donor/severity (patients only)"),
+    # R4's immune composition p ties exactly with harmony's cross-donor
+    # menstrual phase. Coincidence, and the prose names the contrast.
+    "0.6186": ("x8_x9_composition.csv", "control_vs_eutopic/immune p"),
     # R2 quotes three values that collide with unrelated quantities. The
     # stage and grade figures are the WHOLE-CORPUS reads from validation.csv,
     # not the held-out benchmark rows they tie with; 7.7 is the random-groups
@@ -1189,7 +1207,15 @@ unaccounted, ambiguous, ok = [], [], 0
 # lookahead was `(?![\d.])`, which rejected any match followed by a full
 # stop, so "the ratio fell to 2.43." was never checked. Only a following
 # DIGIT should disqualify a match.
-for mobj in re.finditer(r"(?<![\d.])(\d+\.\d+|\d+)(?!\d)", tex):
+# A digit inside a word is part of an identifier, not a measurement. Gene
+# symbols are the reason: MMP27, SERPINB2, IL1B and ADAMDEC1 were each read
+# as a number when R4 first quoted them, and the auditor then demanded a
+# source for "27". The lookarounds now reject a digit touching a letter on
+# either side.
+# `\times 10^{-7}` is notation. The mantissa is the measurement and is
+# checked; the base and the exponent are not numbers the prose is claiming.
+tex = re.sub(r"\\times\s*10\^\{-?\d+\}", " ", tex)
+for mobj in re.finditer(r"(?<![\d.\w])(\d+\.\d+|\d+)(?![\d\w])", tex):
     raw = mobj.group(1)
     if "." not in raw:
         if int(raw) in CONSTANTS:
