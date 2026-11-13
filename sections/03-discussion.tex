@@ -45,28 +45,12 @@ batch effects \citep{cui2024scgpt}. The architectural bet of replacing
 scale with inductive bias allowed \elaj to iterate for the best solution 
 while keeping training cost low.
 
-The frontier \elaj\ traces is the measurement, and its two coefficients move
-along it differently. The adversarial weight shifted the achievable trade-off
-and then stopped improving it past a critical value. The information cost slid
-the model along that same trade-off without shifting it. Two representations
-both reported as corrected can therefore occupy different points on one curve,
-so a single correction strength does not describe the operation
-\citep{korsunsky2019harmony,lopez2018scvi,xu2021scanvi,hie2019scanorama}.
-Held-out reconstruction does not locate that point either, since the arm that
-reconstructed best held the least biology.
-
-Two of the standard batch metrics were perfectly degenerate across all ten
-representations, one from each half of the scorecard
-\citep{luecken2022benchmarking}. The biological half saturated as well: cell
-identity is something every method here recovers and therefore something that
-cannot rank methods. Agreement on disease status is worse than uninformative,
-because it tracked donor recovery across the ten while cycle agreement did
-not. Disease status is constant within a donor, so a representation that
-remembers donors is handed that label free, and a disease score on pooled
-single-cell data is partly a memorisation score. Cross-donor agreement avoids
-this by discarding same-donor pairs before scoring, so no representation can
-win it by giving each person their own territory \citep{squair2021confronting}.
-The framework is sound; it is being read outside the regime it was built for.
+The \elaj frontier, defined on menstrual phase against donor or study identity,
+is shaped by adversarial weight and information cost. While adversarial weight 
+shifts the achievable trade-off until a critical value, giving worse results past 
+it, the information cost slides the model along the trade-off. This shows 
+that a single correction strength does not optimise the trade-off as 
+assumed by simpler methods \citep{korsunsky2019harmony,lopez2018scvi,xu2021scanvi,hie2019scanorama}.
 
 Cell composition does not differ between control and eutopic endometrium,
 confirming at 194 donors a claim made in 60
@@ -80,55 +64,57 @@ list at \textit{P}~=~3.95~\texttimes~10\textsuperscript{--7}
 that index gene-disease associations \citep{cominelli2014mmp27}. Eleven
 studies had converged on overlapping findings with no means of confirming one
 another, because no two share donors or a cell vocabulary
-\citep{mareckova2024heca}. Confirmation, contradiction and external
-replication are three functions no cohort can perform on itself.
+\citep{mareckova2024heca}. Confirmation, contradiction, and external
+replication are three functions a disease atlas is best suited to perform.
 
-Read through the latent, the clinical scale comes apart. Whether a person has
-endometriosis was recoverable from endometrium inside the uterus, and
-recoverable in the representation from which donors are hardest to identify,
-which makes that score the least contaminated available. Severity was legible
-only through the contrast with its absence: among donors who have the disease
-the surgical grades did not separate, and a headcount of cell families did not
-separate them either. Revised American Society for Reproductive Medicine
-staging scores what a surgeon sees at one operation and was built to predict
-fertility outcomes rather than symptoms. It is nonetheless what cohorts
-record, what trials stratify on, and the number a patient is handed to account
-for their pain. Diagnosis still takes 11.1 years and ends in laparoscopy
-\citep{bontempo2025diagnostic}. A scale graded by what affected tissue
-distinguishes is the one worth building.
+The rASRM staging does not hold in biological context. Whether a person has
+endometriosis was recoverable from endometrium inside the uterus. Severity, 
+a grouping derived from rASRM staging, was not legible without control samples.
+A headcount of cell families did not separate severity either. Severity was 
+only separable between control and disease cells indicating that rASRM staging 
+does not align with biological signals.
 
-Several limitations bound these interpretations. One study pair deposits the
-same fifteen people under two sets of identifiers, which a donor-level split
-cannot detect. So 4.3\% of held-out cells carry a same-person neighbour
-scored as cross-donor. Phase and disease are donor-constant, which makes that
-fraction the ceiling on the inflation. Cell families outside the two annotated
-studies are themselves model predictions, which is why the immune result is
-reported on annotated donors alone. Cycle-day continuity rests on the one
-cohort that records it, and 2.87\% of cells came from a follicular-fluid
-aspirate that entered labelled as endometrium, contributing neither
-cell-family nor phase labels. The permutation null reassigns labels across all
-eleven studies at once, so it never sees residual study structure. A
-within-study permutation is the remedy and is not built here. Two published
-claims could not be tested at all. The largest effects reported anywhere in
-this corpus come from a cohort whose controls we do not hold
-\citep{shih2022menstrual}, and metabolic reprogramming
-\citep{sarsenova2024metabolic} needs pathway groups finer than our vocabulary.
+Replacing the pathway grouping with random gene groups of identical sizes
+degraded every biological axis, and disease status most of all. The inductive
+bias is load-bearing rather than decorative. Removing the menstrual-phase head
+left most of the cross-donor cycle agreement standing, which places that
+signal in the architecture rather than in the one label the model was given.
+Without that head the model also began overfitting from its first epoch, so
+the supervision regularises as well as teaches.
 
-Whether this architecture scales into a pretrained model is untested and worth
-testing, since the inductive bias it carries is orthogonal to corpus size.
-Transfer beyond endometriosis depends on two conditions rather than on the
-disease, scarce donors and severe batch structure, which hold wherever
-diagnosis requires surgery. The claims this corpus cannot yet settle, chiefly
-the less differentiated epithelium reported in lesions
-\citep{garciaalonso2021endometrium,tan2022singlecell}, now await annotation
-rather than scale.
+The latent holds quantities nobody supplied it. Epithelial pseudotime and
+serum progesterone are recovered more strongly than mitochondrial fraction,
+library size or doublet score, so biology outranks technical variation across
+the sixteen dimensions. Tissue of origin is the exception that confirms the
+design: it is largely absent, because the decoder was handed it and the
+encoder had no reason to keep it. Transferring cell-family labels through the
+same space recovered them across studies accurately enough to carry the
+composition tests above. Its one failure mode is instructive, since cell types
+with no counterpart in the reference are absorbed silently, which bounds what
+any latent space can be asked to annotate.
+
+The negatives reported here are bounded by donor count rather than by biology,
+because a permutation null's width is set by how many people contribute.
+Surgical stage and severity are therefore claims that more donors could still
+settle. Whether this architecture scales into a pretrained model is the
+question these results raise and do not answer, since inductive bias and
+corpus size are independent levers. Transfer beyond endometriosis rests on two
+conditions rather than on the disease, scarce donors and severe batch
+structure, which hold wherever diagnosis requires surgery. Other claims are
+now limited by annotation rather than by scale. A less differentiated
+epithelium has been reported in lesions from deconvoluted bulk and from
+fourteen donors \citep{garciaalonso2021endometrium,tan2022singlecell}, and the
+fifty-eight ectopic donors pooled here could test it directly once epithelial
+subtypes are resolved. Because the model retrains in hours, each new cohort
+can extend this reference instead of waiting on anyone to repeat a pretraining
+run.
 
 \elaj\ establishes a sixteen-dimensional reference for pooled endometrial
-single-cell data. It prices donor removal against biology, recovers cell
+single-cell data. No competing representation reached its cross-donor cycle
+agreement at a lower donor recovery, and none of the nine was better on both
+axes at once. It prices donor removal against biology, recovers cell
 identity and the cycle's compartment structure unsupervised, locates the
-disease signal inside immune cells, and settles claims no component cohort
-could settle alone. A new cohort can be placed beside the eleven here without
-being corrected into them. The model is small enough that the next one
-published does not wait on anyone repeating a pretraining run. Endometriosis research
-has been held back by cohorts that cannot be read together. This is a way to
-read them together.
+disease signal inside immune cells, and names genes the endometriosis
+literature has not reported. Endometriosis
+research has been held back by cohorts that cannot be read together. This is a
+way to read them together.
