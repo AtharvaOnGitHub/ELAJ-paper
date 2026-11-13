@@ -63,8 +63,26 @@ by the best-of-sixteen estimator, which stops the controls sitting near zero.
 
 # The new Results, seven subsections
 
-Headers state the result, per the supervisor's rule. These are working
-headers, not final wording.
+**Headers state the result**, per the supervisor's 9 November rule:
+*"Results subsection headers should have the main result detailed in them
+(ideally)."* AW, 13 November: *"It is more of a courtesy than a requirement
+but my guide likes it so we're doing it."* Three of the first draft's headers
+failed it and are rewritten. These are working headers, not final wording.
+
+**The other 9 November constraints that bind this section:**
+
+- **"Keep the Results section very tight. Don't waste words."**
+- **"No paragraphs with one/two sentences."** Check every paragraph below.
+- **"Results should have some context since many things aren't explained till
+  Methods. If too much context is required just refer the reader to
+  Methods."** So each subsection opens by naming what is being measured,
+  then points at Methods rather than explaining the estimator.
+- **"Don't leave results or figures to interpretation. Use them and discuss
+  them well."** One precise line of reading per subsection, argument still
+  in the Discussion.
+- **Register is NMI, not lay.** The reader knows what a VAE, a batch effect
+  and a kNN graph are. Do not explain them.
+- **Every figure panel referenced in prose.**
 
 ## [R1] Removing the donor costs cycle signal, and the two knobs trace the trade-off
 **~420 words. Figure 2.**
@@ -135,7 +153,7 @@ C3, C6, C7, E5 together, because they are one claim with four measurements.
 and not how severe a surgeon judged it, and two independent measurements
 agree on that.
 
-## [R5] The atlas settles claims no single cohort could
+## [R5] The disease is not in how many cells there are, but in what immune cells are doing
 **~480 words, the longest subsection, and the one that does not exist yet.
 Needs a new figure.**
 
@@ -162,7 +180,7 @@ Four paragraphs that move, and the story leads to the gene list.
    fails two ways, at 112 and 101 donors against their 13. E7 gets one
    sentence with its dissociation caveat attached.
 
-## [R6] What the architecture needs
+## [R6] Pathway grouping and the phase head are both load-bearing
 **~160 words. Supplementary figure.**
 
 D1 to D5 as one paragraph. The two that carry weight:
@@ -177,8 +195,11 @@ D1 to D5 as one paragraph. The two that carry weight:
 ECS, the sentinel and the statistics path get a clause each. Everything
 else, including D2's overfitting trajectory, goes to Supplementary.
 
-## [R7] What this says about how integration is measured
-**~150 words, dense. No figure.**
+## [R7] MOVED TO THE DISCUSSION
+**AW, 13 November: "I can see R7 being in discussions."** It is
+interpretation wearing a result's clothes, and it fails the supervisor's
+header rule because no declarative version of it is a result. **Buys back
+150 words.** Content preserved here for the Discussion pass:
 
 F1, F2, F4 in one paragraph. The disease axis as the field scores it is
 partly a donor-memorisation readout. Cell family is saturated across every
@@ -201,18 +222,22 @@ benchmark.** It is short on purpose.
 | R4 disease and severity | 320 |
 | R5 the claims axis | 480 |
 | R6 ablations | 160 |
-| R7 measurement | 150 |
-| **total** | **1,910** |
+| ~~R7 measurement~~ | ~~150~~ → Discussion |
+| **total** | **1,760** |
 
-Against a 1,750 budget that is **160 over**, which is close enough to seed
-and cut. The current 2,314 loses 400 words and gains a 480-word subsection.
+**AW, 13 November: the word limit is a guideline, not a blocker**, for
+getting this to his guide and to a reviewer's desk. So 1,760 is comfortable
+rather than tight, and R2 can grow if it needs to.
 
 ---
 
 # What this does to the display items
 
-**This is the detour AW flagged, and it is forced by two things**: A2 now
-needs a figure, and R5 has no figure at all.
+**DEFERRED. AW, 13 November: "Let's leave the figures for after results is
+done."** Recorded below so the decision is not lost, not acted on.
+
+The pressure is real and comes from two places: A2 now needs a figure, and
+R5 has none at all.
 
 **Proposed five, against NMI's cap of six:**
 
@@ -243,6 +268,5 @@ If both go into the main text we are at six, which is the cap exactly.
 3. **Is five display items right, or do we push to six?** Six is the cap and
    leaves nothing for a reviewer-requested addition.
 4. **R2 is 180 words for the result everything else rests on.** Too thin?
-5. **Is R7 a subsection or the Discussion's opening?** It is interpretation
-   wearing a result's clothes, and the honest answer may be that it belongs
-   in the Discussion.
+   With R7 gone there is room for it to grow.
+5. ~~Is R7 a subsection or the Discussion's opening?~~ **Settled: Discussion.**
