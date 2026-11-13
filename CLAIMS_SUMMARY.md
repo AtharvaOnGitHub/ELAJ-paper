@@ -481,52 +481,58 @@ if the BCMA line is used.
 
 ## The fifteen disease-side genes, lined up
 
-Orthogonalised list, checked against all ten corpus papers and against the
-literature outside the corpus, 13 November. "First" is always **as far as
-these checks go**: absence of a report in these searches is not proof of
-novelty.
+Checked four ways: all ten corpus papers; Lin et al. *Biomed Rep* 2017
+(PMC5449958, 8 eutopic endometriosis against 5 controls, not in our corpus);
+**Open Targets Platform**, MONDO_0005133, 3,554 of 3,619 associated genes
+retrieved; and **PubMed** co-mention counts via NCBI esearch.
 
-| gene | who else says it matters in endometriosis | are we first? |
-|---|---|---|
-| **SERPINB2** | **Lin 2017: upregulated 72.95-fold, p 1.5e-04**, eutopic vs control. Shih: part of the inflamed and senescent stromal subcluster, with MMP3, MMP1, MMP9, S100A6, CXCL8 | **no, confirmed twice** |
-| **MMP27** | **Lin 2017: upregulated 40.93-fold, p 1.7e-04**, eutopic vs control. Cominelli 2014: expressed by CD163+/CD206+ M2 macrophages in cycling endometrium and superficial lesions | **no, and it matches on cell type too** |
-| **LRRC15** | **Lin 2017: upregulated 25.20-fold, p 3.2e-24**, eutopic vs control. Dümpelmann: figure label only | **no** |
-| **INHBA** | **Lin 2017: upregulated 15.33-fold, p 1.2e-15**, eutopic vs control. Fonseca: figure label only | **no** |
-| **IL1B** | **Dümpelmann: FIRST in their integrated-gradients list** of the genes their own classifier relied on. Also one of their enriched ligand-receptor pathways. Marečková names it | **no, and this is the best agreement we have** |
-| DKK1 | HECA: **down** in case, in decidualised stromal cells | different compartment and opposite direction. Not comparable |
-| CCL13 | Peritoneal-fluid single cell: highly expressed in a macrophage cluster, named a critical chemokine for phagocyte migration. **No case-control comparison** | present in the biology, not reported as differential |
-| TREM1 | Lesion single cell: among the top genes of a neutrophil cluster, "indicates impaired inflammatory reaction". **No case-control comparison** | present in the biology, not reported as differential |
-| MMP19 | Marečková: figure label only | no endometriosis finding located |
-| SCARA5 | Marečková: figure label only | no endometriosis finding located |
-| SIGLEC7 | Nothing direct. The surrounding biology is established: inhibitory NK receptors up, NK cytotoxicity down in endometriosis | **no prior report found** |
-| ADAMDEC1 | Nothing in endometriosis. Known as a macrophage and dendritic-cell peptidase and an inflammatory bowel disease marker | **no prior report found** |
-| ALPK2 | Nothing in endometriosis. Reported upregulated in endometrial *cancer* | **no prior report found** |
-| CST11 | Nothing located | **no prior report found** |
-| KCNH1 | Nothing located | **no prior report found** |
+| gene | Lin 2017 | corpus papers | Open Targets | PubMed | read |
+|---|---|---|---:|---:|---|
+| **IL1B** | — | **first in Dümpelmann's own classifier importance list**; Marečková | **0.214** | 51 | well established |
+| **SERPINB2** | **up 72.95x** | Shih, inflamed/senescent stromal | 0.007 | 5 | established |
+| **MMP27** | **up 40.93x** | — | **absent** | 1 | **established, and the databases miss it** |
+| **LRRC15** | **up 25.20x** | Dümpelmann, label only | 0.015 | **0** | **established, and PubMed misses it** |
+| **INHBA** | **up 15.33x** | Fonseca, label only | 0.009 | 3 | established |
+| DKK1 | — | HECA: **down** in case, stromal | 0.020 | 7 | established, opposite direction, other compartment |
+| CCL13 | — | — | 0.023 | 1 | thin; present in macrophages, never tested |
+| TREM1 | — | — | absent | 2 | thin; present in neutrophils, never tested |
+| MMP19 | — | Marečková, label only | absent | 1 | thin |
+| CST11 | — | — | 0.007 | 0 | thin |
+| SCARA5 | — | Marečková, label only | 0.002 | 0 | thin |
+| **SIGLEC7** | — | — | **absent** | **0** | **nothing anywhere** |
+| **ADAMDEC1** | — | — | **absent** | **0** | **nothing anywhere** |
+| **ALPK2** | — | — | **absent** | **0** | **nothing anywhere** |
+| **KCNH1** | — | — | **absent** | **0** | **nothing anywhere** |
 
-**Five replicate with a direction** (SERPINB2, MMP27, LRRC15, INHBA, IL1B).
-Four of those five come from one external cohort of 8 against 5, which is the
-p = 4.0e-07 overlap. The fifth, IL1B, comes from a corpus paper's own model.
+**The databases have demonstrable false negatives, and our own verified hits
+prove it.** LRRC15 is reported upregulated 25-fold at p = 3.2e-24 and returns
+**zero** PubMed hits. MMP27 is reported upregulated 41-fold and is **absent
+from Open Targets entirely**. Both appear only in a supplementary table,
+which neither PubMed's index nor Open Targets' text mining reaches.
 
-**Two are present in endometriosis immune cells but never tested** against
-controls (CCL13, TREM1). Our direction gives them one.
+**So "absent from the database" is not evidence of novelty.** It is evidence
+that nobody has written it in an abstract. Any novelty wording in the
+manuscript has to say what was searched and accept that supplementary tables
+are invisible to all of it.
 
-**Five have no prior endometriosis report we could find** (SIGLEC7,
-ADAMDEC1, ALPK2, CST11, KCNH1). SIGLEC7 and ADAMDEC1 are the two worth
-pursuing: both are macrophage or NK genes, both fit the inflammatory profile
-the rest of the list describes, and neither is a wild card.
+**Four genes return nothing from any of the four checks**: SIGLEC7,
+ADAMDEC1, ALPK2, KCNH1. SIGLEC7 and ADAMDEC1 are the two worth pursuing;
+both are macrophage or NK genes that fit the profile the five validated genes
+describe. ALPK2 and KCNH1 I would treat as noise unless something else
+supports them.
 
-⚠ **Five of the fifteen were checked only by web search, not by reading a
-paper.** CST11, KCNH1 and ALPK2 returned nothing at all, which is weaker
-evidence than it looks: a negative search result is not a literature review.
-Before any novelty wording goes in the manuscript these need a proper
-database search.
+**No manual lookup needed, both are APIs**, but the human-readable versions
+are:
 
-**Sources on disk**: `Atharva Papers/Validation/PMC5449958.{xml,txt}` (Lin
-2017) and `PMC8157653.{xml,txt}` (peritoneal fluid). The PNAS BCMA paper is
-at <https://www.pnas.org/doi/10.1073/pnas.0703451104>, free full text at
-<https://pmc.ncbi.nlm.nih.gov/articles/PMC1941489/>; both block scripted
-download, so it needs saving by hand.
+- Open Targets: <https://platform.opentargets.org/disease/MONDO_0005133/associations>
+- PubMed, per gene: `("GENE") AND endometriosis` at <https://pubmed.ncbi.nlm.nih.gov/>
+
+**BCMA verified from the PDF itself**, now at
+`Atharva Papers/Validation/Hever2007_PNAS_BCMA_endometriosis.pdf`:
+*"Only BCMA was strongly up-regulated in endometriosis lesions"*, TaqMan
+qPCR, endometrium 43 +- 13 (n = 16) against endometriosis 290 +- 89 (n = 13).
+⚠ The tissue is **lesions**, not eutopic endometrium, and TNFRSF17 left the
+top fifteen after orthogonalisation.
 
 One more worth a sentence and not a claim: TNFRSF17 is a plasma cell gene,
 and Shih reports B cells enriched in cases. We cannot test that claim, since
