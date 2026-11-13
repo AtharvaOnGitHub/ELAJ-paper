@@ -879,3 +879,27 @@ I write the rest, AW edits the tex and I fix only spelling, grammar and
 tense. The numbers sheet is the part that earns its keep: it caught that
 cell family cannot support an emergence claim, since PCA recovers it better
 than we do.
+
+## R4 assumes a figure that does not exist yet
+
+**AW, 13 November**, writing R4: *"We may need to assume a figure that
+describes a couple of things. Feel free to make that assumption but record
+it in priority and continuity. Nature of that figure can be left open for
+now."*
+
+So R4's prose points at `(Fig.~X)` and the figure is undesigned. Two things
+need showing and neither survives as prose:
+
+1. **Per-family disease AUCs against their permutation nulls.** The finding
+   is a contrast: 0.708 inside immune cells against 0.605 with the families
+   mixed, which is the opposite of what pooling usually does.
+2. **The ranked gene shifts along the immune disease direction**, with the
+   four externally replicating genes marked. The point is the asymmetry
+   between the two ends of the ranking, and a list of fifteen gene names
+   does not carry it.
+
+R3 carries a third `(Fig.~X)`, for composition against severity.
+
+**Figures were deferred deliberately** until Results is drafted, AW's call:
+*"Let's leave the figures for after results is done."* Three placeholders
+are now outstanding and they are the input to that pass.

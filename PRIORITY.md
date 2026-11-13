@@ -216,6 +216,19 @@ outright until the claims axis lands and Figure 2 is decided.
 
 ## Tier 3. Display items
 
+- [ ] **R4 ASSUMES A FIGURE AND ITS NATURE IS OPEN.** AW, 13 November:
+      *"We may need to assume a figure that describes a couple of things.
+      Feel free to make that assumption but record it."* R4's prose carries
+      `(Fig.~X)` placeholders for two things that cannot be read from prose:
+      **the per-family disease AUCs against their nulls**, where the point
+      is that mixing the families destroys a signal immune cells carry
+      alone; and **the ranked gene shifts**, where the point is the
+      asymmetry, four externally replicating genes at one end and none at
+      the other. Whether that is one figure or two, main text or
+      Supplementary, is undecided. R3 also carries one `(Fig.~X)` for the
+      severity composition.
+
+
 - [ ] **Figure 1's legend is stale.** It describes five panels; there are
       now four, and **panel a has never been described at all**.
 - [ ] **The renumbering.** `figure4.py` becomes Figure 3 and the old
