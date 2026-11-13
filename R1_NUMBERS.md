@@ -18,24 +18,45 @@ by simply clustering each person together.
 
 ---
 
-## 1. How much batch effect there is to remove
+## 1. How much donor identity SURVIVES — and this is a bad number, not a good one
 
-| number | what it is |
-|---|---|
-| **32.7%** | share of a cell's hundred nearest neighbours that come from the same donor |
-| **0.60%** | what that share would be by chance, across 269 donor identifiers |
-| **54.5×** | the first over the second |
+**Corrected 13 November. My first version of this block was wrong and AW
+caught it.** I described 32.7% against 0.60% as "the size of the problem",
+implying it measured uncorrected data. It does not. **It is measured on our
+own reported arm's latent**, and `validation.csv` says so in its own note
+column: *"high is BAD -- individual identity"*. There is no before-correction
+measurement anywhere in that file.
 
-**Means:** the uncorrected representation groups cells by person far more
-strongly than by anything biological. This is the size of the problem.
+Both figures below are the same estimator, `knn-agreement` on `patient_id`,
+on different cell sets:
 
-**Will not support:** "the model memorises donors". This is a property of the
-data in the latent, measured on the reported arm, not a failure introduced by
-training. Also note 269 is the identifier count, not the people count (254) —
-the chance rate is computed over identifiers.
+| | cells | donors | chance | excess | raw | enrichment |
+|---|---:|---:|---:|---:|---:|---:|
+| whole corpus | 1,577,728 | 269 | 0.0060 | 0.3229 | 0.3270 | **54.5x** |
+| held-out, the field table's value | 416,256 | 70 | 0.023 | **0.5188** | 0.5299 | **23.0x** |
 
-⚠ Derived, not read from a file. `validation.csv` stores the chance-corrected
-excess 0.3229; raw agreement is 0.3270 and 0.3270 / 0.0060 = 54.5.
+Fewer donors raises the chance rate, which is why the two differ. **Quote one
+or the other, never both without saying which cell set.**
+
+**Means:** after the adversary has done its work, a cell's neighbours are
+still 54.5 times more likely to come from its own donor than chance allows.
+**We did not remove the batch effect. We priced it.**
+
+**How to use it, and this is the only honest framing.** Donor identity
+persists in every representation tested. \elaj$_{B\,hi}$ retains the least of
+the ten, 0.5188 against 0.5421 to 0.7892, and it is still far from
+donor-blind. That combination is the paper's position: the trade-off is real,
+unsolved, and we report the best available point on it rather than claiming
+to have escaped it.
+
+**Will not support:** "the model removes batch effects". It reduces them
+further than anything else tested and leaves a great deal behind.
+
+⚠ **Consider whether this belongs in R1 at all.** It invites "your model
+memorises donors 54 times over chance", which is true. Against dropping it:
+it is the number that makes the frontier matter, and the Discussion needs it
+anyway. My view is that it belongs, stated as a cost, immediately beside the
+comparative 0.5188 that shows nobody does better.
 
 ## 2. Why the two cannot be separated
 
