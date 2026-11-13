@@ -80,17 +80,16 @@ inductive bias. Ablation of pathway groups showed the biological axis
 degrading, while menstrual-phase head supervision proved to be a regulariser
 over the whole latent rather than a route by which one label re-enters it.
 Random groups of the same shape, parameter count and gene space gave the best
-held-out reconstruction in the project and the weakest biology, because the
-decoder's reliance on the latent over the covariates it is handed fell by two
-thirds. It had found a cheaper route and reconstructed provenance instead of
+held-out reconstruction in the project and the weakest biology. The decoder's
+reliance on the latent over the covariates it is handed fell by two thirds. It had found a cheaper route and reconstructed provenance instead of
 cells. The phase head, by contrast, costs nothing in training fit and buys
 both donor-blindness and study mixing at the selected checkpoint.
 
 Two components are nearly invisible in the metrics and plain in the
 embedding. Without the elastic cell similarity head, large single-study
-territories appear that \elaj\textsubscript{B\,hi} does not have, and
-replacing the dataset-native sentinel with zeros reorganises the latent the
-same visible way, each at a cost under 1\% on every biological axis. Absence
+territories appear that \elaj\textsubscript{B\,hi} does not have. Replacing
+the dataset-native sentinel with zeros reorganises the latent the same visible
+way. Each costs under 1\% on every biological axis. Absence
 of measurement is not a measured absence. The pooled order statistics are the
 component the metrics do capture, and cutting what each group hands forward
 from 288 numbers to 32 cost menstrual phase heavily while leaving cell family
@@ -119,5 +118,5 @@ ectopic donors pooled here could test it directly once epithelial subtypes are
 resolved. Because \elaj\ retrains in hours, each new cohort can extend this
 reference rather than wait on a pretraining run to be repeated. We envision an
 endometriosis atlas that grows with its field, where a pattern reported in one
-cohort is looked for in the others rather than argued about, and where the
-cost of asking is an afternoon.
+cohort is looked for in the others rather than argued about, and where asking
+costs an afternoon.
