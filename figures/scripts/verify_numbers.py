@@ -1003,6 +1003,12 @@ _CLAIMS = {
     "x1_validation.csv":            ("test",),
     "x12_direction_quality.csv":    ("arm",),
     "replication_external.csv":     ("end",),
+    # X13. Keyed on the study pair and family, so one row's overlap cannot
+    # answer for another's. The null file is registered too: the prose quotes
+    # the shuffled means beside the observed values, and a null that no file
+    # backs is exactly the kind of number the audit exists to catch.
+    "x13_marker_reproducibility.csv":      ("study_a", "study_b", "family"),
+    "x13_marker_reproducibility_null.csv": ("study_a", "study_b", "family"),
 }
 # Columns the prose will never quote. Registering them manufactures
 # collisions: `auc_lo` for endothelial in the transferred run is 0.4812,
@@ -1011,6 +1017,7 @@ _CLAIMS = {
 # learned three times already: a derivation wider than the prose makes the
 # audit less useful, not more. Add a column here only when prose needs it.
 _CLAIMS_SKIP = {"auc_lo", "auc_hi", "null_sd", "null_mean", "null_p95",
+                "overlap_jaccard", "top_k", "shuffle",
                 "cosine_stability", "genes", "n_permutations", "k",
                 "n_top"}
 for _fn, _keys in _CLAIMS.items():

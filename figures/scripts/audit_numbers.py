@@ -850,7 +850,9 @@ _CDIR = ROOT / "axw1008" / "docs" / "paper"
 _CFILES = ["x8_x9_composition.csv", "x12_by_family_annotated.csv",
            "x12_by_family_transferred.csv", "x14_tissue_within_family.csv",
            "x3b_results.csv", "x1_validation.csv",
-           "x12_direction_quality.csv", "replication_external.csv"]
+           "x12_direction_quality.csv", "replication_external.csv",
+           "x13_marker_reproducibility.csv",
+           "x13_marker_reproducibility_null.csv"]
 # The claims-axis CSVs count as sources here too, not only in the printed
 # table below. Without this the auditor prints a value and then reports the
 # same value as unaccounted, which is exactly the kind of self-contradiction

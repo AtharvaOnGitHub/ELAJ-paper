@@ -404,3 +404,97 @@ own docstring under `axw1008/src/scripts/`.
 | disease side | 15 | upregulated | 66 | 4 | INHBA;LRRC15;MMP27;SERPINB2 | 3.954e-07 | 15.33 | 25.2 | 40.93 | 72.95 |
 | control side | 15 | upregulated | 66 | 0 |  | 1 |  |  |  |  |
 
+**`x13_marker_reproducibility.csv`**
+
+| n_shared_genes | top_k | overlap_n | overlap_jaccard | spearman | study_a | study_b | family | shuffle |
+|---|---|---|---|---|---|---|---|---|
+| 1.303e+04 | 100 | 69 | 0.5267 | 0.7129 | marecko_2024 | duempelmann_2026 | endothelial | 0 |
+| 1.303e+04 | 100 | 69 | 0.5267 | 0.8121 | marecko_2024 | duempelmann_2026 | epithelial | 0 |
+| 1.303e+04 | 100 | 61 | 0.4388 | 0.8053 | marecko_2024 | duempelmann_2026 | immune | 0 |
+| 1.303e+04 | 100 | 76 | 0.6129 | 0.8256 | marecko_2024 | duempelmann_2026 | stromal | 0 |
+
+**`x13_marker_reproducibility_null.csv`**
+
+| n_shared_genes | top_k | overlap_n | overlap_jaccard | spearman | study_a | study_b | family | shuffle |
+|---|---|---|---|---|---|---|---|---|
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.004027 | marecko_2024 | duempelmann_2026 | endothelial | 1 |
+| 1.303e+04 | 100 | 0 | 0 | -0.03163 | marecko_2024 | duempelmann_2026 | epithelial | 1 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.01548 | marecko_2024 | duempelmann_2026 | immune | 1 |
+| 1.303e+04 | 100 | 0 | 0 | -0.03568 | marecko_2024 | duempelmann_2026 | stromal | 1 |
+| 1.303e+04 | 100 | 0 | 0 | 0.0002304 | marecko_2024 | duempelmann_2026 | endothelial | 2 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.01853 | marecko_2024 | duempelmann_2026 | epithelial | 2 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.02841 | marecko_2024 | duempelmann_2026 | immune | 2 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.003792 | marecko_2024 | duempelmann_2026 | stromal | 2 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.003866 | marecko_2024 | duempelmann_2026 | endothelial | 3 |
+| 1.303e+04 | 100 | 0 | 0 | -0.0004135 | marecko_2024 | duempelmann_2026 | epithelial | 3 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.01706 | marecko_2024 | duempelmann_2026 | immune | 3 |
+| 1.303e+04 | 100 | 0 | 0 | 0.0001971 | marecko_2024 | duempelmann_2026 | stromal | 3 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.02345 | marecko_2024 | duempelmann_2026 | endothelial | 4 |
+| 1.303e+04 | 100 | 0 | 0 | 0.04781 | marecko_2024 | duempelmann_2026 | epithelial | 4 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.00323 | marecko_2024 | duempelmann_2026 | immune | 4 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.01533 | marecko_2024 | duempelmann_2026 | stromal | 4 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.02519 | marecko_2024 | duempelmann_2026 | endothelial | 5 |
+| 1.303e+04 | 100 | 0 | 0 | -0.006319 | marecko_2024 | duempelmann_2026 | epithelial | 5 |
+| 1.303e+04 | 100 | 0 | 0 | -0.01185 | marecko_2024 | duempelmann_2026 | immune | 5 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.0002062 | marecko_2024 | duempelmann_2026 | stromal | 5 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.01075 | marecko_2024 | duempelmann_2026 | endothelial | 6 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.04258 | marecko_2024 | duempelmann_2026 | epithelial | 6 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.006748 | marecko_2024 | duempelmann_2026 | immune | 6 |
+| 1.303e+04 | 100 | 0 | 0 | 0.01224 | marecko_2024 | duempelmann_2026 | stromal | 6 |
+| 1.303e+04 | 100 | 0 | 0 | -0.03834 | marecko_2024 | duempelmann_2026 | endothelial | 7 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.02131 | marecko_2024 | duempelmann_2026 | epithelial | 7 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.0003521 | marecko_2024 | duempelmann_2026 | immune | 7 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.002858 | marecko_2024 | duempelmann_2026 | stromal | 7 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.01317 | marecko_2024 | duempelmann_2026 | endothelial | 8 |
+| 1.303e+04 | 100 | 3 | 0.01523 | 0.03671 | marecko_2024 | duempelmann_2026 | epithelial | 8 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.0008499 | marecko_2024 | duempelmann_2026 | immune | 8 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.04594 | marecko_2024 | duempelmann_2026 | stromal | 8 |
+| 1.303e+04 | 100 | 3 | 0.01523 | -0.04328 | marecko_2024 | duempelmann_2026 | endothelial | 9 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.01013 | marecko_2024 | duempelmann_2026 | epithelial | 9 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.01606 | marecko_2024 | duempelmann_2026 | immune | 9 |
+| 1.303e+04 | 100 | 0 | 0 | 0.01095 | marecko_2024 | duempelmann_2026 | stromal | 9 |
+| 1.303e+04 | 100 | 0 | 0 | 0.02627 | marecko_2024 | duempelmann_2026 | endothelial | 10 |
+| 1.303e+04 | 100 | 0 | 0 | -0.0224 | marecko_2024 | duempelmann_2026 | epithelial | 10 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.004862 | marecko_2024 | duempelmann_2026 | immune | 10 |
+| 1.303e+04 | 100 | 0 | 0 | 0.007447 | marecko_2024 | duempelmann_2026 | stromal | 10 |
+| 1.303e+04 | 100 | 0 | 0 | -0.02836 | marecko_2024 | duempelmann_2026 | endothelial | 11 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.01811 | marecko_2024 | duempelmann_2026 | epithelial | 11 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.01445 | marecko_2024 | duempelmann_2026 | immune | 11 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.02839 | marecko_2024 | duempelmann_2026 | stromal | 11 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.01395 | marecko_2024 | duempelmann_2026 | endothelial | 12 |
+| 1.303e+04 | 100 | 0 | 0 | 0.01992 | marecko_2024 | duempelmann_2026 | epithelial | 12 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.0416 | marecko_2024 | duempelmann_2026 | immune | 12 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.01573 | marecko_2024 | duempelmann_2026 | stromal | 12 |
+| 1.303e+04 | 100 | 0 | 0 | 0.06718 | marecko_2024 | duempelmann_2026 | endothelial | 13 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.01619 | marecko_2024 | duempelmann_2026 | epithelial | 13 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.02618 | marecko_2024 | duempelmann_2026 | immune | 13 |
+| 1.303e+04 | 100 | 0 | 0 | 0.02838 | marecko_2024 | duempelmann_2026 | stromal | 13 |
+| 1.303e+04 | 100 | 0 | 0 | -0.008818 | marecko_2024 | duempelmann_2026 | endothelial | 14 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.008245 | marecko_2024 | duempelmann_2026 | epithelial | 14 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.01755 | marecko_2024 | duempelmann_2026 | immune | 14 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.01401 | marecko_2024 | duempelmann_2026 | stromal | 14 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.01025 | marecko_2024 | duempelmann_2026 | endothelial | 15 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.001053 | marecko_2024 | duempelmann_2026 | epithelial | 15 |
+| 1.303e+04 | 100 | 0 | 0 | -0.04763 | marecko_2024 | duempelmann_2026 | immune | 15 |
+| 1.303e+04 | 100 | 0 | 0 | -0.007277 | marecko_2024 | duempelmann_2026 | stromal | 15 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.04546 | marecko_2024 | duempelmann_2026 | endothelial | 16 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.006186 | marecko_2024 | duempelmann_2026 | epithelial | 16 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.0007091 | marecko_2024 | duempelmann_2026 | immune | 16 |
+| 1.303e+04 | 100 | 0 | 0 | -0.00329 | marecko_2024 | duempelmann_2026 | stromal | 16 |
+| 1.303e+04 | 100 | 0 | 0 | 0.03717 | marecko_2024 | duempelmann_2026 | endothelial | 17 |
+| 1.303e+04 | 100 | 1 | 0.005025 | 0.008277 | marecko_2024 | duempelmann_2026 | epithelial | 17 |
+| 1.303e+04 | 100 | 0 | 0 | 0.02358 | marecko_2024 | duempelmann_2026 | immune | 17 |
+| 1.303e+04 | 100 | 0 | 0 | 0.02201 | marecko_2024 | duempelmann_2026 | stromal | 17 |
+| 1.303e+04 | 100 | 0 | 0 | 0.01432 | marecko_2024 | duempelmann_2026 | endothelial | 18 |
+| 1.303e+04 | 100 | 3 | 0.01523 | 0.03704 | marecko_2024 | duempelmann_2026 | epithelial | 18 |
+| 1.303e+04 | 100 | 0 | 0 | 0.007166 | marecko_2024 | duempelmann_2026 | immune | 18 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.007936 | marecko_2024 | duempelmann_2026 | stromal | 18 |
+| 1.303e+04 | 100 | 2 | 0.0101 | 0.00601 | marecko_2024 | duempelmann_2026 | endothelial | 19 |
+| 1.303e+04 | 100 | 0 | 0 | 0.009268 | marecko_2024 | duempelmann_2026 | epithelial | 19 |
+| 1.303e+04 | 100 | 0 | 0 | -0.02933 | marecko_2024 | duempelmann_2026 | immune | 19 |
+| 1.303e+04 | 100 | 0 | 0 | 0.01786 | marecko_2024 | duempelmann_2026 | stromal | 19 |
+| 1.303e+04 | 100 | 0 | 0 | 0.05415 | marecko_2024 | duempelmann_2026 | endothelial | 20 |
+| 1.303e+04 | 100 | 0 | 0 | 0.00947 | marecko_2024 | duempelmann_2026 | epithelial | 20 |
+| 1.303e+04 | 100 | 2 | 0.0101 | -0.008426 | marecko_2024 | duempelmann_2026 | immune | 20 |
+| 1.303e+04 | 100 | 1 | 0.005025 | -0.01759 | marecko_2024 | duempelmann_2026 | stromal | 20 |
+
