@@ -34,7 +34,6 @@ The third category of results is the discoveries made and claims validated
 by \elaj. Here we test claims made by component datasets and present evidence 
 for the new discoveries made from this work.
 
-
 % ---------------------------------------------------------------------
 \subsection*{Batch effects and biology have a measurable trade-off}
 
@@ -146,21 +145,17 @@ Two of the eleven studies brought cell annotations; the remaining 937,122
 cells were assigned a family by nearest-neighbour vote in the latent. That
 transfer recovers held-out annotations across studies at 0.9596 and 0.9640
 balanced accuracy, against majority baselines of 0.8805 and 0.5252
-(Methods, \emph{Label transfer}). Neither the model nor the transfer
+(Methods, \emph{Label transfer}). Those two annotations agree. Across the
+13,034 genes both panels measure, a one-vs-rest signature per family shares
+76 of its top hundred genes in stromal cells, 69 epithelial, 69 endothelial
+and 61 immune, at rank correlations of 0.8256 to 0.7129. Twenty within-study
+label shuffles never share more than three. Restricting to jointly measured
+genes keeps a gene absent from one panel from reading as a non-marker.
+\texttt{marecko\_2024} reports that prior atlases lack reproducible marker
+signatures \citep{mareckova2024heca}; read on one gene space, theirs
+reproduce. Neither the model nor the transfer
 received disease status. What follows tests claims each source study made
 from tens of donors against the pooled 194.
-
-The two annotations also agree with each other. Deriving a one-vs-rest
-signature per family within each study and comparing them across the 13,034
-genes both panels measure, the top hundred genes overlap by 76 in stromal
-cells, 69 in epithelial, 69 in endothelial and 61 in immune, at rank
-correlations of 0.8256 to 0.7129. Across twenty within-study label
-shuffles no comparison shared more than three of its top hundred genes. Restricting to jointly measured genes
-is what makes the two comparable, since a gene one panel never measured would
-otherwise read as a confident non-marker. Prior endometrial atlases are
-reported to lack reproducible marker gene signatures
-\citep{mareckova2024heca}; measured on a common gene space, their per-family
-marker signatures do reproduce.
 
 Cell composition does not distinguish case from control. Across those 194
 donors the share of every family was unchanged between control and eutopic
