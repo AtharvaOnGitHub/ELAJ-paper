@@ -237,3 +237,11 @@ to the brim; Results reviewed Monday. Verbatim in `REVIEW_FEEDBACK.md`.
 
 Repository URL, licence, Zenodo DOI, funding and grant numbers, final author
 list, Reporting Summary, cover letter, bioRxiv preprint.
+
+
+# Atharva's comments
+
+Supplementary Methods could contain:
+- The procedure for creating gene groups explained.
+- Training hyper parameters should move here from Methods and explained further with a table
+- 

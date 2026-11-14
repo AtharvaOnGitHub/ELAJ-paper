@@ -16,7 +16,7 @@
 % recomputed from the shipped vocabulary; do not copy the thesis table.
 % =====================================================================
 
-\section{The gene grouping, and why it is sized the way it is}
+\section{The gene-group sizing}
 \label{note:grouping}
 
 \elaj{} reads a cell as 44 groups of genes rather than as 15{,}496 separate
@@ -26,42 +26,63 @@ $G \approx D/K$; and $d$, the dimension each gene occupies inside its group.
 This note says why those three were set where they were, which is a decision
 taken before training and not adjusted since.
 
-\subsection{Two quantities are being traded, not one}
+\subsection{Optimised variables}
 
-The obvious quantity is parameter count. A model of 1{,}883{,}986 parameters
-trained on 1{,}577{,}728 cells is already generous at roughly one parameter per
-cell, and the corpus cannot grow, so the ceiling is real.
+Parameter count is bound by the size of the corpus. With 1{,}577{,}728 cells 
+a model of 1{,}883{,}986 parameters is just over one parameter per cell. 
+While foundation models have been known to go over two parameters per cell, 
+most are closer to one \citep{hao2024scfoundation,cui2024scgpt,theodoris2023geneformer}. Thus, parameter count is the first variable to 
+optimise.
 
-The quantity that is easy to miss is the dimension of the space the genes
-actually live in. Groups do not share coordinates. Each group carries its own
-identifier, so a gene's representation inside group $i$ is orthogonal by
-construction to every representation inside group $j \neq i$: the gene space is
-block diagonal, and the rank of a block diagonal matrix is the sum of the ranks
-of its blocks. With $K$ groups of $d$ dimensions each, the effective gene-space
-dimension is
+The second quantity to optimise here is the dimension of the space that the 
+genes are interpreted in. The architecture institutes that each group carries 
+its own identifier. An architecture without this rule, $d$ is the maximum 
+possible gene space. Therefore, a gene's representation inside group $i$ is 
+orthogonal to every representation inside group $j \neq i$. The gene space is
+thus block diagonal, and the rank of a block diagonal matrix is the sum of the 
+ranks of its blocks. With $K$ groups of $d$ dimensions each, the effective 
+gene-space dimension is
 \begin{equation}
 d_{\mathrm{eff}} = d \cdot K = \frac{d \cdot D}{G}.
 \label{eq:deff}
 \end{equation}
-This is the quantity comparable to a gene embedding width elsewhere in the
-field. gene2vec and the embedding tables of the pretrained single-cell models
-place a gene in 512 dimensions; Equation~\ref{eq:deff} is what we have to put
-beside that figure, and it is not $d$.
+A gene can be identified along $d_{\mathrm{eff}}$ dimensions making this comparable to 
+gene embedding width in other models. gene2vec and the embedding tables of the 
+pretrained single-cell models place a gene in 512 dimensions; 
+Equation~\ref{eq:deff} is what we have to put beside that figure.
 
 \subsection{The asymmetry that makes the choice}
 
-Setting the two quantities side by side exposes the design tension, and the
-tension is not symmetric.
+The cost of a transformer token inside each group is quadratic in the width of 
+its tokens \citep{vaswani2017attention}. That implies; parameter count grows with $d^2$
+From Equation~\ref{eq:deff}, effective gene space grows with $d^1$. So raising 
+$d$ buys representational capacity linearly and cost parameters quadratically.
 
-Parameter count grows with $d^2$, because the cost of a transformer over a
-group is quadratic in the width of its tokens. Effective gene space grows with
-$d^1$. So raising $d$ buys representational capacity linearly and pays for it
-quadratically.
+On the other hand, shrinking $G$ raises $d_{\mathrm{eff}}$ roughly in proportion
+to $1/G$, through $K = D/G$ in Equation~\ref{eq:deff}, and costs parameters in
+proportion to $1/G$ in the group-encoder term alone.
 
-Group size runs the other way. Shrinking $G$ raises $d_{\mathrm{eff}}$ in
-proportion to $1/G$, through $K = D/G$ in Equation~\ref{eq:deff}, and costs
-parameters in proportion to $1/G$ in the group-encoder term alone. Capacity and
-cost move together rather than against each other.
+The reason is that the three parts of the encoder depend on the grouping
+differently, and only one of them depends on it at all:
+\begin{equation}
+P(D, G, d) \;=\; \underbrace{D \cdot d}_{\text{gene embedding}}
+\;+\; \underbrace{\frac{D}{G} \cdot E(d)}_{\text{group encoders}}
+\;+\; \underbrace{C(d)}_{\text{everything downstream}} .
+\label{eq:params}
+\end{equation}
+Each gene holds one embedding vector of width $d$ wherever it is placed, so the
+first term counts every modelled gene once and \textbf{does not depend on the
+grouping at all}. The groups are encoded by $K = D/G$ independent
+transformers rather than by one shared encoder applied $K$ times, so the second
+term is the only one that sees $G$, and $E(d)$ is quadratic in $d$ because the
+cost of a transformer layer is. Everything after the group encoders reads a
+fixed-width aggregation, so $C(d)$ is independent of $K$ entirely.
+
+Equation~\ref{eq:params} beside Equation~\ref{eq:deff} is the whole argument.
+Halving $G$ doubles $d_{\mathrm{eff}}$ and doubles only the middle term of
+three. Doubling $d$ also doubles $d_{\mathrm{eff}}$, but it doubles the first
+term and quadruples the middle one. Capacity and cost move together in $G$ and
+against each other in $d$.
 
 \textbf{So group size, not token width, is the lever that buys representational
 capacity cheaply}, and that falls straight out of writing the two quantities

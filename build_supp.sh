@@ -17,7 +17,12 @@ command -v latexmk >/dev/null || {
     exit 1
 }
 
-[ "${1:-}" = "clean" ] && latexmk -C supplementary.tex >/dev/null 2>&1 || true
+# latexmk -C alone leaves the .bbl, so a bibliography change can
+# survive a "clean" and citations silently stay unresolved.
+if [ "${1:-}" = "clean" ]; then
+    latexmk -C supplementary.tex >/dev/null 2>&1 || true
+    rm -f supplementary.bbl
+fi
 
 latexmk -pdf -interaction=nonstopmode -halt-on-error supplementary.tex
 
