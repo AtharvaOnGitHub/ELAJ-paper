@@ -33,6 +33,15 @@
 \renewcommand{\thesection}{Supplementary Note \arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 
+% SUBSECTIONS ARE UNNUMBERED BUT STILL LISTED. Across the four NMI
+% supplementaries read for this, numbered subsections appear only where a
+% Note is a reference list of definitions (scGPT's Note 12, metric
+% calculations). Where a Note makes an argument, TIGON and MIDAS both
+% subdivide with unnumbered headings. secnumdepth stops the numbering at
+% the Note; tocdepth keeps the headings in the contents.
+\setcounter{secnumdepth}{1}
+\setcounter{tocdepth}{2}
+
 % The contents line reserves a narrow box for a section number, and
 % "Supplementary Note 1" overflows it by 104 pt. Widen the box rather than
 % shortening the label: the label is what makes a cross-reference from the
@@ -51,6 +60,15 @@
 \vspace{-2em}
 
 \tableofcontents
+
+% EVERY FIGURE AND TABLE BY TITLE, not just the prose headings. Three of the
+% four comparators do this: TIGON lists every item by number and title,
+% Eye2Gene lists every figure with its legend, MIDAS lists both levels. A
+% reader looking for the ablation UMAPs scans for that phrase, not for
+% "Supplementary Note 5". Short captions, \caption[short]{long}, are what
+% these lists print, so every float needs one.
+\listoffigures
+\listoftables
 \newpage
 
 % ── Supplementary Notes ───────────────────────────────────────────────
