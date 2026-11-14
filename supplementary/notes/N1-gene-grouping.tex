@@ -1,0 +1,176 @@
+% =====================================================================
+% SUPPLEMENTARY NOTE 1 — why 44 groups of 250 to 500 genes, at 32
+% dimensions per token.
+%
+% SOURCES, and none of this is reconstructed:
+%   - AW's own sizing memo, "Reasoning behind model params, group size,
+%     and d_token", which is where the two-constraint argument and the
+%     d^2 against d^1 asymmetry come from.
+%   - Thesis/appendices/C-sizing.tex and D-gene-grouping.tex.
+%   - The shipped vocabulary itself, read for every count below:
+%     Outputs/supplementary/data/D5_pathway_groups_and_genes.csv.
+%
+% ⚠ THE THESIS NUMBERS ARE NOT THESE NUMBERS. The thesis build gave 45
+% groups over 15,495 genes from a 29,241-gene union. The shipped build
+% gives 44 groups over 15,496 genes. Every figure in this note was
+% recomputed from the shipped vocabulary; do not copy the thesis table.
+% =====================================================================
+
+\section{The gene grouping, and why it is sized the way it is}
+\label{note:grouping}
+
+\elaj{} reads a cell as 44 groups of genes rather than as 15{,}496 separate
+measurements. Three numbers fix that reading: $D$, how many genes are modelled
+at all; $K$, how many groups they fall into, equivalently the median group size
+$G \approx D/K$; and $d$, the dimension each gene occupies inside its group.
+This note says why those three were set where they were, which is a decision
+taken before training and not adjusted since.
+
+\subsection{Two quantities are being traded, not one}
+
+The obvious quantity is parameter count. A model of 1{,}883{,}986 parameters
+trained on 1{,}577{,}728 cells is already generous at roughly one parameter per
+cell, and the corpus cannot grow, so the ceiling is real.
+
+The quantity that is easy to miss is the dimension of the space the genes
+actually live in. Groups do not share coordinates. Each group carries its own
+identifier, so a gene's representation inside group $i$ is orthogonal by
+construction to every representation inside group $j \neq i$: the gene space is
+block diagonal, and the rank of a block diagonal matrix is the sum of the ranks
+of its blocks. With $K$ groups of $d$ dimensions each, the effective gene-space
+dimension is
+\begin{equation}
+d_{\mathrm{eff}} = d \cdot K = \frac{d \cdot D}{G}.
+\label{eq:deff}
+\end{equation}
+This is the quantity comparable to a gene embedding width elsewhere in the
+field. gene2vec and the embedding tables of the pretrained single-cell models
+place a gene in 512 dimensions; Equation~\ref{eq:deff} is what we have to put
+beside that figure, and it is not $d$.
+
+\subsection{The asymmetry that makes the choice}
+
+Setting the two quantities side by side exposes the design tension, and the
+tension is not symmetric.
+
+Parameter count grows with $d^2$, because the cost of a transformer over a
+group is quadratic in the width of its tokens. Effective gene space grows with
+$d^1$. So raising $d$ buys representational capacity linearly and pays for it
+quadratically.
+
+Group size runs the other way. Shrinking $G$ raises $d_{\mathrm{eff}}$ in
+proportion to $1/G$, through $K = D/G$ in Equation~\ref{eq:deff}, and costs
+parameters in proportion to $1/G$ in the group-encoder term alone. Capacity and
+cost move together rather than against each other.
+
+\textbf{So group size, not token width, is the lever that buys representational
+capacity cheaply}, and that falls straight out of writing the two quantities
+next to each other rather than reasoning about either alone
+(Supplementary Fig.~\ref{sfig:params-vs-G} and
+Supplementary Fig.~\ref{sfig:params-and-deff}).
+
+\subsection{Two constraints, set in advance}
+
+\begin{enumerate}
+\item \textbf{Fewer than four million parameters}, as a bound set by corpus
+size rather than by taste. The corpus is fixed at 1{,}577{,}728 cells and no
+more are available, so a model that could memorise it is not a model this
+corpus can evaluate.
+\item \textbf{An effective gene-space dimension above 512}, because 512 is
+where the field's gene embeddings sit. A grouped representation whose effective
+dimension fell below that would be buying its inductive bias by giving up
+expressiveness, which is a different trade from the one being made.
+\end{enumerate}
+
+\subsection{Why the group size is bounded on both sides}
+
+Both bounds are substantive rather than conventional.
+
+\textbf{Above roughly 900 genes per group}, parameter count falls and
+$d_{\mathrm{eff}}$ falls faster, so the configuration gets cheaper and less
+expressive at the same time. Worse, a larger group is a less meaningful one:
+the more genes a group holds, the more dissimilar genes it has had to admit,
+and a group that mixes unrelated biology is a group whose summary means less.
+The inductive bias the architecture is built on is the claim that a group is a
+coherent object, and that claim weakens monotonically in $G$.
+
+\textbf{Below roughly 500 genes per group}, the grouping becomes sharper but
+$d$ is forced under 32 to stay inside the parameter bound. That is not a free
+trade either. A narrow token with a fine grouping is a stronger bet that the
+annotated pathways are the right decomposition of the biology, and for a
+disease as under-studied as endometriosis that bet can be counterproductive:
+the model is being asked to find a better representation than the annotation
+already encodes, and a very fine grouping leaves it little room to.
+
+The usable band is therefore $G$ between about 500 and 900 with $d$ between 32
+and 64, and the shipped configuration sits at the sharp end of it.
+
+\subsection{What was built}
+
+Groups are cut from Reactome first and from GO biological process on the
+residual, with a minimum group size of 250, a maximum of 500, and genes in
+neither hierarchy dropped. The construction is given in full in
+Supplementary Methods; Table~\ref{stab:vocabulary} gives the outcome.
+
+\begin{table}[t]
+\centering
+\caption[The shipped vocabulary]{\textbf{The shipped vocabulary.} Recomputed
+from the vocabulary \elaj{} was trained on, not from an earlier build. The
+full gene-to-group assignment is Supplementary Data~5.}
+\label{stab:vocabulary}
+\small
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Value \\
+\midrule
+Corpus gene union & 30{,}962 \\
+Claimed by Reactome & 10{,}114 genes, 28 groups \\
+Claimed by GO from the residual & 5{,}382 genes, 16 groups \\
+Dropped, in neither hierarchy & 15{,}466 \\
+\midrule
+Genes modelled ($D$) & \textbf{15{,}496} \\
+Groups ($K$) & \textbf{44} \\
+Token dimension ($d$) & \textbf{32} \\
+\midrule
+Smallest group & 247 genes \\
+Median group & 342 genes \\
+Mean group & 352 genes \\
+Largest group & 493 genes \\
+\midrule
+Effective gene-space dimension ($d \cdot K$) & \textbf{1{,}408} \\
+Model parameters & \textbf{1{,}883{,}986} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Both constraints are met, and neither is met narrowly.} The model
+carries 1{,}883{,}986 parameters against a ceiling of four million, and its
+effective gene space is 1{,}408 dimensions against a floor of 512. The second
+figure is the one worth stating twice: a representation that reads a cell
+through 44 pathway groups is not a smaller gene space than a 512-dimensional
+embedding, it is close to three times larger, and the compression the paper
+reports is in the \emph{cell} representation at sixteen dimensions rather than
+in the gene representation underneath it.
+
+Two features of the table deserve saying plainly rather than leaving to be
+noticed. \textbf{Half the corpus union is dropped}: 15{,}466 of 30{,}962 genes
+appear in neither hierarchy, and they are excluded on the ground that a gene
+with no hierarchical annotation cannot be placed in a group that means
+anything. It is a large exclusion and it is a bet, in the same direction as
+every other choice here: the model can only find structure among genes somebody
+has already annotated. And \textbf{the smallest group holds 247 genes against a
+stated floor of 250}, because the floor is applied during the cut and the final
+merge can leave one group marginally under it. The discrepancy is three genes
+and it is reported rather than rounded away.
+
+\subsection{What the grouping is worth, measured}
+
+The argument above is a design argument, made before training. The ablation in
+the main text is what tests it: replacing the 44 groups with random groups of
+identical sizes, parameter count and gene space degraded every biological axis
+and disease status most of all, while \emph{improving} held-out reconstruction
+to the best figure in the project. The decoder had found a cheaper route and
+reconstructed provenance rather than cells.
+
+That is the grouping doing work rather than decorating the input, and it is the
+reason this note describes a decision rather than a convention.

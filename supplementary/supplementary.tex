@@ -1,0 +1,68 @@
+% =====================================================================
+%  ELAJ — Supplementary Information
+%
+%  Build:  bash build_supp.sh
+%
+%  SEPARATE DOCUMENT, SEPARATE NUMBERING. Nature ships the Supplementary
+%  Information as its own PDF with its own figure, table and reference
+%  numbering, prefixed so a reference from the main text is unambiguous.
+%  Every NMI supplementary read for DISCUSSION_REGISTER.md does this and
+%  carries a cover page the journal generates at proof, which is why
+%  there is no title block here.
+%
+%  THE SECTION ORDER IS TAKEN FROM TIGON AND MIDAS, the two NMI
+%  supplementaries whose structure was read page by page:
+%      contents → Notes → Methods → Tables → Figures → References
+%  MIDAS puts Notes before Tables and Figures; TIGON puts Figures first.
+%  Either is accepted. Notes first is chosen because our Notes carry the
+%  arguments and the tables and figures are what they cite.
+%
+%  WHAT A NOTE IS. A short prose section making ONE argument, with its
+%  own figures and tables where it needs them. Not an appendix of raw
+%  output. See SUPPLEMENTARY_STRUCTURE.md.
+% =====================================================================
+
+\documentclass[11pt, a4paper]{article}
+
+\input{../preamble}
+
+% ── Supplementary numbering ────────────────────────────────────────────
+% Prefixed so "Supplementary Fig. 3" can never be read as "Fig. 3".
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{Supplementary Note \arabic{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+
+% The contents line reserves a narrow box for a section number, and
+% "Supplementary Note 1" overflows it by 104 pt. Widen the box rather than
+% shortening the label: the label is what makes a cross-reference from the
+% main text unambiguous.
+\makeatletter
+\renewcommand*\l@section[2]{\@dottedtocline{1}{0em}{10.5em}{#1}{#2}}
+\renewcommand*\l@subsection[2]{\@dottedtocline{2}{10.5em}{2.5em}{#1}{#2}}
+\makeatother
+
+\title{\vspace{-2em}\textbf{Supplementary Information}\\[0.3em]
+\large ELAJ: a single-cell disease atlas for endometriosis}
+\date{}
+
+\begin{document}
+\maketitle
+\vspace{-2em}
+
+\tableofcontents
+\newpage
+
+% ── Supplementary Notes ───────────────────────────────────────────────
+\input{notes/N1-gene-grouping}
+
+% N2  scIB in detail                     waits on scib_scfoundation
+% N3  Limitations, at length             ready to write
+% N4  The six frontier arms              waits on the UMAP figures
+% N5  The ablations                      waits on the UMAP figures
+% N6  Label transfer and its failure     ready to write
+% N7  The claims axis, protocol by protocol
+% N8  X13 marker reproducibility         waits on the job
+% N9  X15 group embeddings               waits on the job
+
+\end{document}
