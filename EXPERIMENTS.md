@@ -23,7 +23,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X10 | Metabolic pathway activity, case vs control | S3 vs D1 | blocked on X2 | CPU, medium |
 | X11 | Pathway activity, lesion vs eutopic | S1, S4, F2, L1 | blocked on X2 | CPU, medium |
 | X12 | Genes distinguishing control from case | D5 inverse, H3 | **done**, one half usable | medium |
-| X13 | Reproducible marker signatures across studies | M2 | todo | large |
+| X13 | Reproducible marker signatures across studies | M2 | **done, counters M2** | CPU, 20 min |
 | X14 | Tissue effect within a transferred label | F1 | **done**, weak but real | CPU, small |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
 

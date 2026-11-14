@@ -605,6 +605,71 @@ independent axis.
 
 ---
 
+# 10. X13 — are published marker signatures reproducible across studies?
+
+**The claim.** Marečková 2024, the HECA atlas, on everything that came before
+it: prior endometrial atlases "lack reproducible marker gene signatures,
+consensus annotation, and even cycle coverage". The marker half of that is
+testable here and almost nowhere else, because testing it needs several
+independently annotated cohorts measured on one shared gene space, which is
+what the corpus is.
+
+**What a marker signature is, since the test turns on it.** Take one cell
+family in one study. For every gene, ask how much higher it reads in that
+family than in all the other cells of that study, divided by how much the
+gene varies anyway. Rank the genes by that score. The top of the ranking is
+what a biologist would call that family's markers in that study. The question
+is whether two studies, annotating their own cells independently, produce the
+same ranking.
+
+**What we did.** Only two of the eleven studies supplied their own
+cell-family annotations: Marečková (44,544 cells) and Dümpelmann (132,259).
+Together that is 176,803 of the 416,256 held-out cells. For each of them we
+derived a signature per family from that study's cells alone, then compared
+the two studies' signatures, family by family, two ways: how many of the top
+100 genes they share, and the rank correlation across every gene.
+
+**The one trap, and it would have wrecked the result.** A study's platform
+does not measure every gene in the vocabulary, and a gene it never measured
+arrives as a zero. Compared naively, a gene missing from one panel looks like
+a confident non-marker there rather than an unknown, and the damage varies
+with how different the two panels are. Every comparison below runs on the
+**13,034 genes both panels actually measured** and nothing else.
+
+**Verdict: the signatures reproduce, strongly, in all four families.**
+
+| family | top-100 genes shared | rank correlation |
+|---|---:|---:|
+| stromal | 76 | 0.826 |
+| endothelial | 69 | 0.713 |
+| epithelial | 69 | 0.812 |
+| immune | 61 | 0.805 |
+
+Against a null built by shuffling the family labels within each study and
+rerunning the whole comparison twenty times: **0.9 genes shared and a rank
+correlation of 0.004**. So two studies that never saw each other's data, that
+annotated their own cells by their own procedures, agree on roughly
+two thirds of each family's top hundred genes.
+
+**Comment, and the limit is as important as the finding.** This is **one pair
+of studies**, not a matrix. Nine of the eleven cohorts deposited no cell
+annotation at all, which is the same hole that made X1's label transfer
+necessary in the first place, and it is why this cannot be run at the scale
+the rest of the claims axis enjoys.
+
+So the claim to make is narrow and should be written that way: where two
+independently annotated endometrial cohorts are placed on a common gene
+space, their per-family marker signatures do reproduce. That is a counterpoint
+to Marečková's statement rather than a refutation of it, and the honest
+reading is that the irreproducibility the field reports may owe more to
+cohorts being read in different gene spaces than to the markers themselves
+disagreeing. Which is, in one sentence, the argument for an atlas.
+
+**Numbers:** `Outputs/analysis/x13_markers/`. Protocol in `EXPERIMENTS.md`
+under X13; script `axw1008/src/scripts/marker_reproducibility.py`.
+
+---
+
 # What we could not test at all
 
 **Shih's four claims.** Uterine natural killer cells almost absent in cases,
@@ -646,3 +711,4 @@ one asked. Skip, and say why.
 | **The cycle is not flattened by disease**, measured two ways | **disagrees** with Huang |
 | **Epithelium is far rarer in lesions** | **agrees** with Sarsenova, but cannot be separated from dissociation loss |
 | **Tissue structure is mostly absent from the latent**, with a weak residue in stromal and endothelial | the decoder conditioning working; weakly **agrees** with Fonseca |
+| **Per-family marker signatures reproduce** between the two independently annotated cohorts, 61 to 76 of the top 100 genes shared against 0.9 by chance | **counters** Marečková, on one pair of studies |

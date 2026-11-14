@@ -84,8 +84,14 @@ doubles the first term and quadruples the second term in $P$. It also affects th
 rest of the model through $C(d)$. In essence, capacity and cost move together 
 in $G$ and against each other in $d$. \textbf{So group size, not token width, 
 buys representational capacity cheaply.}
-(Supplementary Fig.~\ref{sfig:params-vs-G} and
-Supplementary Fig.~\ref{sfig:params-and-deff}).
+Supplementary Fig.~\ref{sfig:params-vs-G} shows the cost half of that
+alone: parameter count against group size, at three gene counts and four
+token widths, with the four-million ceiling drawn across it. Every curve
+falls as $1/G$ and the spacing between them widens with $d$, which is the
+two terms of Equation~\ref{eq:params} separating.
+Supplementary Fig.~\ref{sfig:params-and-deff}a then puts cost and capacity on
+the same axes, where the two fall together as $G$ rises rather than trading
+against each other.
 
 
 \begin{figure}[t]
@@ -161,11 +167,35 @@ $P < 4 \times 10^{6}$ becomes
 G \;>\; \frac{D \cdot E(d)}{4 \times 10^{6} - D d - C(d)}.
 \label{eq:gmin}
 \end{equation}
-Fitting Equation~\ref{eq:params} to the sweep recovers both terms. The form
-holds to $R^2 = 0.9999$, $E(d)$ comes out independent of $D$ as it should
-since it is a per-group cost, and $C(d)$ is near constant at about
-$1.7 \times 10^{5}$. At $d = 32$, $E = 27{,}579$ and
-Equation~\ref{eq:gmin} gives $G > 128$.
+Fitting Equation~\ref{eq:params} to a sweep of models built and counted at
+each configuration recovers both terms, and two things about the fit matter
+more than its values. The form holds to $R^2 = 0.9999$, and $E(d)$ comes out
+independent of $D$, which is what the architecture predicts of a per-group
+cost. Table~\ref{stab:terms} carries the fitted terms and the band each token
+width permits.
+
+\begin{table}[b]
+\centering
+\caption[Measured terms and feasible bands]{\textbf{The terms of
+Equation~\ref{eq:params}, measured, and the band each token width permits.}
+Fitted from models built and counted at 160 configurations; the shipped
+configuration reproduces at 1{,}883{,}986 parameters. Bounds are
+Equations~\ref{eq:gmax} and~\ref{eq:gmin} at $D = 15{,}496$.}
+\label{stab:terms}
+\small
+\begin{tabular}{@{}rrrr@{}}
+\toprule
+$d$ & $E(d)$ & $C(d)$ & permitted $G$ \\
+\midrule
+16 & 7{,}671 & 172{,}713 & 33 to 484 \\
+\textbf{32} & \textbf{27{,}579} & \textbf{172{,}400} & \textbf{128 to 968} \\
+48 & 59{,}786 & 171{,}072 & 300 to 1{,}453 \\
+64 & 104{,}293 & 164{,}631 & 568 to 1{,}937 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At the shipped token width Equation~\ref{eq:gmin} gives $G > 128$.
 
 \textbf{So at the shipped token width the parameter ceiling is not the
 binding constraint}; the construction's own floor of 250 genes per group is
@@ -179,9 +209,9 @@ endometriosis a very fine grouping leaves it little room to.
 \textbf{What the two inequalities leave.} Equations~\ref{eq:gmax}
 and~\ref{eq:gmin} bound the median group size from both directions at any
 given $d$, and the band they leave is wide. Within that band, referring to 
-Supplementary Fig.~\ref{sfig:params-vs-G} and 
-Supplementary Fig.~\ref{sfig:params-and-deff} we have a rough estimate of 
-what a gene group should look like. During construction,each individual group 
+Supplementary Fig.~\ref{sfig:params-vs-G} and
+Supplementary Fig.~\ref{sfig:params-and-deff}b we have a rough estimate of
+what a gene group should look like. During construction, each individual group 
 is held between 250 and 500 genes so that no group is
 too small to summarise or too large to mean anything, and the median that
 falls out is 342. The shipped configuration sits inside the feasible band
