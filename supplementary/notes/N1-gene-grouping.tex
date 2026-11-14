@@ -87,6 +87,37 @@ buys representational capacity cheaply.}
 (Supplementary Fig.~\ref{sfig:params-vs-G} and
 Supplementary Fig.~\ref{sfig:params-and-deff}).
 
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/S1_params_vs_groupsize.png}
+\caption[Parameters against group size]{\textbf{Parameter count against group
+size, across gene counts and token widths.} Every point is a model built at
+that configuration and counted, not a formula evaluated. The dashed line is
+the four-million ceiling of Constraint~1. Parameter count falls as $1/G$
+because only the group-encoder term of Equation~\ref{eq:params} sees the
+grouping, and it rises steeply in $d$ because that term is quadratic in token
+width.}
+\label{sfig:params-vs-G}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/S2_params_and_deff.png}
+\caption[Cost, capacity, and what each token width permits]{\textbf{The two
+quantities together, and the band they leave.} \textbf{a}, At the shipped
+gene count $D = 15{,}496$, parameter count (solid, left axis) and effective
+gene-space dimension (dashed, right axis) both fall as $G$ rises. Cost and
+capacity move \emph{together} in $G$, which is what makes group size the
+cheap lever; the two dotted lines are the four-million ceiling and the
+512-dimension floor. \textbf{b}, The group sizes each token width actually
+permits once both constraints are applied, from
+Equations~\ref{eq:gmax} and~\ref{eq:gmin}. The shaded strip is the 250 to 500
+bound applied to each individual group during construction. \elaj{} is marked
+at $G = D/K = 352$, where the median group holds 342 genes.}
+\label{sfig:params-and-deff}
+\end{figure}
+
 \subsection{Constraints}
 
 Two constraints were set on the system in advance via estimation
@@ -130,7 +161,16 @@ $P < 4 \times 10^{6}$ becomes
 G \;>\; \frac{D \cdot E(d)}{4 \times 10^{6} - D d - C(d)}.
 \label{eq:gmin}
 \end{equation}
-A second bound sits beside it and is not numerical. A very small group is a
+Fitting Equation~\ref{eq:params} to the sweep recovers both terms. The form
+holds to $R^2 = 0.9999$, $E(d)$ comes out independent of $D$ as it should
+since it is a per-group cost, and $C(d)$ is near constant at about
+$1.7 \times 10^{5}$. At $d = 32$, $E = 27{,}579$ and
+Equation~\ref{eq:gmin} gives $G > 128$.
+
+\textbf{So at the shipped token width the parameter ceiling is not the
+binding constraint}; the construction's own floor of 250 genes per group is
+stricter than anything the budget requires, and the bound that does bite is
+the one above. A second bound sits beside it and is not numerical. A very small group is a
 very strong commitment to the annotation being the right decomposition of the
 biology. The model is being asked to find a better representation than the
 annotation already encodes, and for a disease as under-studied as
@@ -138,9 +178,11 @@ endometriosis a very fine grouping leaves it little room to.
 
 \textbf{What the two inequalities leave.} Equations~\ref{eq:gmax}
 and~\ref{eq:gmin} bound the median group size from both directions at any
-given $d$, and the band they leave is wide rather than tight, which is the
-honest description of it. Within that band the construction does the rest:
-each individual group is held between 250 and 500 genes so that no group is
+given $d$, and the band they leave is wide. Within that band, referring to 
+Supplementary Fig.~\ref{sfig:params-vs-G} and 
+Supplementary Fig.~\ref{sfig:params-and-deff} we have a rough estimate of 
+what a gene group should look like. During construction,each individual group 
+is held between 250 and 500 genes so that no group is
 too small to summarise or too large to mean anything, and the median that
 falls out is 342. The shipped configuration sits inside the feasible band
 rather than at either edge of it.
@@ -183,33 +225,27 @@ Model parameters & \textbf{1{,}883{,}986} \\
 \end{tabular}
 \end{table}
 
-\textbf{Both constraints are met, and neither is met narrowly.} The model
-carries 1{,}883{,}986 parameters against a ceiling of four million, and its
-effective gene space is 1{,}408 dimensions against a floor of 512. The second
-figure is the one worth stating twice: a representation that reads a cell
-through 44 pathway groups is not a smaller gene space than a 512-dimensional
-embedding, it is close to three times larger, and the compression the paper
-reports is in the \emph{cell} representation at sixteen dimensions rather than
-in the gene representation underneath it.
+\textbf{Both constraints are met.} The model carries 1{,}883{,}986 parameters 
+against a ceiling of four million, and its effective gene space is 1{,}408 
+dimensions against a floor of 512. Notably, a representation that reads a cell
+through 44 pathway groups is close to three times larger than a standard 
+512-dimensional embedding. Consequently, the model has more room to understand 
+each gene before it compresses its understanding of a cell in the latent space.
 
-Two features of the table deserve saying plainly rather than leaving to be
-noticed. \textbf{Half the corpus union is dropped}: 15{,}466 of 30{,}962 genes
+\textbf{Half the corpus union is dropped}: 15{,}466 of 30{,}962 genes
 appear in neither hierarchy, and they are excluded on the ground that a gene
 with no hierarchical annotation cannot be placed in a group that means
 anything. It is a large exclusion and it is a bet, in the same direction as
 every other choice here: the model can only find structure among genes somebody
-has already annotated. And \textbf{the smallest group holds 247 genes against a
-stated floor of 250}, because the floor is applied during the cut and the final
-merge can leave one group marginally under it. The discrepancy is three genes
-and it is reported rather than rounded away.
+has already annotated. The smallest group holds 247 genes against a
+stated floor of 250, because the floor is applied during the cut and it prefers
+one group marginally below the limit than one group marginally above. The 
+reason being that attention scales quadratically in group size so 2 smaller 
+groups is a better bargain than one large group.
 
 \textbf{What the grouping is worth, measured.} The argument above is a
 design argument, made before training. The ablation in
 the main text is what tests it: replacing the 44 groups with random groups of
 identical sizes, parameter count and gene space degraded every biological axis
 and disease status most of all, while \emph{improving} held-out reconstruction
-to the best figure in the project. The decoder had found a cheaper route and
-reconstructed provenance rather than cells.
-
-That is the grouping doing work rather than decorating the input, and it is the
-reason this note describes a decision rather than a convention.
+to the best figure in the project. 
