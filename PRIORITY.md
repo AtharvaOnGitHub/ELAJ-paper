@@ -292,6 +292,20 @@ outright until the claims axis lands and Figure 2 is decided.
 
 ## Tier 3b. Citations, and this is a whole-paper pass
 
+- [ ] **CITATIONS IN THE SUPERVISOR'S FILE ARE DEFERRED, AW's ruling
+      14 November.** The 2026-11-14 Discussion changeset was pasted in with
+      its citations rendered as author-year brackets and **he has made no
+      citation changes yet, by choice**: *"We have citations in the right
+      place in our local tex files. We will both add all references in the
+      correct and edit the file to add citations in the correct place.
+      You'll just have to give me pointed changes then."*
+      So the citation work is **one later pass over his whole file**, not
+      per-section, and when it happens the deliverable is **pointed
+      find-and-replace changes naming each location and its number**, not
+      another wholesale paste. Until then his file's Results section carries
+      no citations at all, because pandoc dropped every `\citep` from the
+      2026-11-13 batch, and the Discussion carries author-year brackets.
+      `sections/*.tex` is the authority on where each citation belongs.
 - [ ] **AW, 14 November: the paper is under-cited throughout.** His own
       observation and it matches what the register reading found. Five of the
       eight published Discussions read for `DISCUSSION_REGISTER.md` cite
