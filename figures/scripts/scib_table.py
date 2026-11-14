@@ -91,6 +91,41 @@ def rows() -> pd.DataFrame:
 # Shipping that in a supplementary table would be a fabricated row.
 PLAUSIBLE = (-1.0, 1.0)
 
+# THE ONE RECOVERED VALUE, read from the rerun's log rather than typed.
+# Job 61784251 rescored scFoundation with --stages scib over the same dumped
+# latent. It computed every `cell family` metric, then OOM-died on the second
+# label set (AnnotationRefined), which we do not use, so it never wrote its
+# benchmark.csv. The log is the only artefact, and it is kept beside where
+# that CSV would have been.
+#
+# THE RERUN IS COMPARABLE AND THIS IS CHECKED, not assumed: all seven
+# metrics it shares with the original pass reproduce to the printed
+# precision (ilisi 0.000, clisi 1.000, kbet 0.001, graph_connectivity 0.805,
+# pcr_batch 0.769, nmi 0.345, ari 0.233). A silhouette_batch read off a run
+# whose other seven values had drifted would not be usable.
+RERUN_LOG = BENCH / "scib_scfoundation_rerun" / "scib_scf_61784251.log"
+RERUN_CSV = BENCH / "scib_scfoundation_rerun" / "benchmark.csv"
+
+
+def recovered_silhouette() -> float | None:
+    """scFoundation's silhouette_batch, from the CSV if it exists, else the log."""
+    if RERUN_CSV.exists():                      # prefer a real scoring file
+        b = pd.read_csv(RERUN_CSV)
+        hit = b[(b.method == "scfoundation")
+                & (b.test == "scib-silhouette_batch")
+                & (b.label == "cell family")]
+        if not hit.empty:
+            return float(hit.value.iloc[0])
+    if not RERUN_LOG.exists():
+        return None
+    import re
+    for line in RERUN_LOG.read_text().splitlines():
+        if "scib" in line and "cell family" in line and "silhouette_batch=" in line:
+            m = re.search(r"silhouette_batch=([\d.]+)", line)
+            if m:
+                return float(m.group(1))
+    return None
+
 
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
@@ -108,6 +143,16 @@ def main() -> int:
             print(f"    {r['representation']:14} {r['metric']:26} "
                   f"{r['value']:.4g}   from {r['source']}")
         print()
+        rec = recovered_silhouette()
+        if rec is not None:
+            mask = ((long["representation"] == "scfoundation")
+                    & (long["metric"] == "scib-silhouette_batch")
+                    & (long["label"] == "cell family"))
+            long.loc[mask, "value"] = rec
+            long.loc[mask, "source"] = RERUN_LOG.parent.name
+            bad = bad[~bad.index.isin(long[mask].index)]
+            print(f"RECOVERED scfoundation silhouette_batch = {rec:.4f} "
+                  f"from {RERUN_LOG.parent.name}\n")
         long = long.drop(bad.index)
 
     long.to_csv(OUT / "scib_scorecard_long.csv", index=False)
