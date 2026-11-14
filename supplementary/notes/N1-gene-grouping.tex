@@ -51,80 +51,99 @@ gene embedding width in other models. gene2vec and the embedding tables of the
 pretrained single-cell models place a gene in 512 dimensions; 
 Equation~\ref{eq:deff} is what we have to put beside that figure.
 
-\subsection{The asymmetry that makes the choice}
+\subsection{Independent variables}
 
 The cost of a transformer token inside each group is quadratic in the width of 
-its tokens \citep{vaswani2017attention}. That implies; parameter count grows with $d^2$
+its tokens \citep{vaswani2017attention}. That implies; parameter count grows with $d^2$.
 From Equation~\ref{eq:deff}, effective gene space grows with $d^1$. So raising 
 $d$ buys representational capacity linearly and cost parameters quadratically.
 
-On the other hand, shrinking $G$ raises $d_{\mathrm{eff}}$ roughly in proportion
-to $1/G$, through $K = D/G$ in Equation~\ref{eq:deff}, and costs parameters in
-proportion to $1/G$ in the group-encoder term alone.
-
-The reason is that the three parts of the encoder depend on the grouping
-differently, and only one of them depends on it at all:
+On the other hand, $G$ is inversely proportional to $d_{\mathrm{eff}}$, through 
+$K = D/G$ in Equation~\ref{eq:deff}. The effect of $G$ on number of parameters 
+can be found by:
 \begin{equation}
 P(D, G, d) \;=\; \underbrace{D \cdot d}_{\text{gene embedding}}
-\;+\; \underbrace{\frac{D}{G} \cdot E(d)}_{\text{group encoders}}
+\;+\; \underbrace{\frac{D}{G} \cdot e(d)}_{\text{group encoders}}
 \;+\; \underbrace{C(d)}_{\text{everything downstream}} .
 \label{eq:params}
 \end{equation}
-Each gene holds one embedding vector of width $d$ wherever it is placed, so the
-first term counts every modelled gene once and \textbf{does not depend on the
-grouping at all}. The groups are encoded by $K = D/G$ independent
-transformers rather than by one shared encoder applied $K$ times, so the second
-term is the only one that sees $G$, and $E(d)$ is quadratic in $d$ because the
-cost of a transformer layer is. Everything after the group encoders reads a
-fixed-width aggregation, so $C(d)$ is independent of $K$ entirely.
 
-Equation~\ref{eq:params} beside Equation~\ref{eq:deff} is the whole argument.
-Halving $G$ doubles $d_{\mathrm{eff}}$ and doubles only the middle term of
-three. Doubling $d$ also doubles $d_{\mathrm{eff}}$, but it doubles the first
-term and quadruples the middle one. Capacity and cost move together in $G$ and
-against each other in $d$.
+Each gene out of $D$ holds one embedding vector of width $d$ regardless of the 
+group it is placed in. So the first term does not depend on the grouping at all. 
+The groups are encoded by $K = D/G$ independent transformers rather than one shared
+encoder, so the second term is the only one that sees $G$. Notably, each
+group-level transformer, $E(d)$ in Equation~\ref{eq:params}, is quadratic in $d$ because the cost of a 
+transformer layer is quadratic in token dimension. Everything after the group
+encoders reads a fixed-width aggregation, so $C(d)$ can be safely assumed
+constant in $G$.
 
-\textbf{So group size, not token width, is the lever that buys representational
-capacity cheaply}, and that falls straight out of writing the two quantities
-next to each other rather than reasoning about either alone
+Setting Equation~\ref{eq:params} beside Equation~\ref{eq:deff} reveals the 
+nature of the optimisation problem. Halving $G$ doubles $d_{\mathrm{eff}}$ and 
+doubles only a part of $P$. Doubling $d$ also doubles $d_{\mathrm{eff}}$, but it 
+doubles the first term and quadruples the second term in $P$. It also affects the 
+rest of the model through $C(d)$. In essence, capacity and cost move together 
+in $G$ and against each other in $d$. \textbf{So group size, not token width, 
+buys representational capacity cheaply.}
 (Supplementary Fig.~\ref{sfig:params-vs-G} and
 Supplementary Fig.~\ref{sfig:params-and-deff}).
 
-\textbf{Two constraints were set in advance.}
+\subsection{Constraints}
 
+Two constraints were set on the system in advance via estimation
 \begin{enumerate}
 \item \textbf{Fewer than four million parameters}, as a bound set by corpus
-size rather than by taste. The corpus is fixed at 1{,}577{,}728 cells and no
-more are available, so a model that could memorise it is not a model this
-corpus can evaluate.
+size. The corpus is fixed at 1{,}577{,}728 cells and a larger model is at a 
+much greater risk of overfitting.
 \item \textbf{An effective gene-space dimension above 512}, because 512 is
 where the field's gene embeddings sit. A grouped representation whose effective
-dimension fell below that would be buying its inductive bias by giving up
-expressiveness, which is a different trade from the one being made.
+dimension fell below that would have a coarser understanding of a given gene 
+than the field standard. This would likely not be recoverable through higher 
+parameter count.
 \end{enumerate}
 
-\subsection{Why the group size is bounded on both sides}
+\textbf{Group size bounds.} Group size can be bounded logically on both sides,
+and both bounds fall out of the two constraints rather than out of a search.
+That is deliberate: group sizes are not fixed quantities, so an optimisation
+over them would be as approximate as the reasoning and considerably less
+legible.
 
-Both bounds are substantive rather than conventional.
+\textbf{Above}, the binding constraint is the effective dimension.
+Rearranging Equation~\ref{eq:deff}, requiring $d_{\mathrm{eff}} > 512$ is
+requiring
+\begin{equation}
+G \;<\; \frac{d \cdot D}{512}.
+\label{eq:gmax}
+\end{equation}
+At $D = 15{,}496$ this caps the median group at about 970 genes for $d = 32$
+and about 1{,}940 for $d = 64$, so the floor on effective dimension alone
+rules out the coarse groupings regardless of anything biological. The
+biological reading points the same way and is the stronger of the two: a
+larger group has had to admit more dissimilar genes, and the inductive bias
+the architecture rests on is the claim that a group is a coherent object. That
+claim weakens monotonically in $G$.
 
-\textbf{Above roughly 900 genes per group}, parameter count falls and
-$d_{\mathrm{eff}}$ falls faster, so the configuration gets cheaper and less
-expressive at the same time. Worse, a larger group is a less meaningful one:
-the more genes a group holds, the more dissimilar genes it has had to admit,
-and a group that mixes unrelated biology is a group whose summary means less.
-The inductive bias the architecture is built on is the claim that a group is a
-coherent object, and that claim weakens monotonically in $G$.
+\textbf{Below}, the binding constraint is the parameter budget. The
+group-encoder term in Equation~\ref{eq:params} grows as $1/G$, so shrinking
+the group raises parameter count without bound, and the ceiling
+$P < 4 \times 10^{6}$ becomes
+\begin{equation}
+G \;>\; \frac{D \cdot E(d)}{4 \times 10^{6} - D d - C(d)}.
+\label{eq:gmin}
+\end{equation}
+A second bound sits beside it and is not numerical. A very small group is a
+very strong commitment to the annotation being the right decomposition of the
+biology. The model is being asked to find a better representation than the
+annotation already encodes, and for a disease as under-studied as
+endometriosis a very fine grouping leaves it little room to.
 
-\textbf{Below roughly 500 genes per group}, the grouping becomes sharper but
-$d$ is forced under 32 to stay inside the parameter bound. That is not a free
-trade either. A narrow token with a fine grouping is a stronger bet that the
-annotated pathways are the right decomposition of the biology, and for a
-disease as under-studied as endometriosis that bet can be counterproductive:
-the model is being asked to find a better representation than the annotation
-already encodes, and a very fine grouping leaves it little room to.
-
-The usable band is therefore $G$ between about 500 and 900 with $d$ between 32
-and 64, and the shipped configuration sits at the sharp end of it.
+\textbf{What the two inequalities leave.} Equations~\ref{eq:gmax}
+and~\ref{eq:gmin} bound the median group size from both directions at any
+given $d$, and the band they leave is wide rather than tight, which is the
+honest description of it. Within that band the construction does the rest:
+each individual group is held between 250 and 500 genes so that no group is
+too small to summarise or too large to mean anything, and the median that
+falls out is 342. The shipped configuration sits inside the feasible band
+rather than at either edge of it.
 
 \subsection{What was built}
 
