@@ -66,7 +66,8 @@ def rows() -> pd.DataFrame:
         k = k[k["test"].isin(HALF)]
         for _, r in k.iterrows():
             out.append({"representation": method, "metric": r["test"],
-                        "half": HALF[r["test"]], "value": float(r["value"]),
+                        "half": HALF[r["test"]], "label": r.get("label"),
+                        "value": float(r["value"]), "n_cells": r.get("n_cells"),
                         "source": fname})
     for fname, label in OURS.items():
         p = BENCH / fname / "benchmark.csv"
@@ -76,7 +77,8 @@ def rows() -> pd.DataFrame:
         b = pd.read_csv(p)
         for _, r in b[b["test"].isin(HALF)].iterrows():
             out.append({"representation": label, "metric": r["test"],
-                        "half": HALF[r["test"]], "value": float(r["value"]),
+                        "half": HALF[r["test"]], "label": r.get("label"),
+                        "value": float(r["value"]), "n_cells": r.get("n_cells"),
                         "source": fname})
     return pd.DataFrame(out)
 
@@ -110,10 +112,36 @@ def main() -> int:
 
     long.to_csv(OUT / "scib_scorecard_long.csv", index=False)
 
+    # ONE LABEL SET PER TABLE, and this was a bug worth catching. These files
+    # score every scIB metric against TWO label sets: `cell family` over
+    # 176,803 cells and `AnnotationRefined` over 132,261. The first version of
+    # this script pivoted without `label` and let aggfunc="first" pick
+    # whichever row the file happened to hold first, so two different
+    # measurements landed in one cell and the spreads mixed them. The paper
+    # reports cell family, so that is the scorecard; AnnotationRefined gets
+    # its own file. Three batch metrics exist only for cell family.
+    counts = long.groupby("label")["value"].size().sort_values(ascending=False)
+    print(f"  label sets present: "
+          f"{', '.join(f'{k} ({v} rows)' for k, v in counts.items())}\n")
+
+    PRIMARY = "cell family"
+    for lab, tag in ((PRIMARY, "scib_scorecard"),
+                     ("AnnotationRefined", "scib_scorecard_annotationrefined")):
+        sub = long[long["label"] == lab]
+        if sub.empty:
+            continue
+        w = (sub.pivot_table(index="representation", columns="metric",
+                             values="value", aggfunc="first")
+                .reindex(columns=[m for m in sorted(HALF, key=lambda x: (HALF[x], x))
+                                  if m in set(sub["metric"])]))
+        w.to_csv(OUT / f"{tag}.csv")
+        if lab != PRIMARY:
+            print(f"  {lab}: {w.shape[0]} x {w.shape[1]} -> {tag}.csv")
+
+    long = long[long["label"] == PRIMARY]
     wide = (long.pivot_table(index="representation", columns="metric",
                              values="value", aggfunc="first")
                 .reindex(columns=sorted(HALF, key=lambda m: (HALF[m], m))))
-    wide.to_csv(OUT / "scib_scorecard.csv")
 
     print(f"scIB scorecard: {wide.shape[0]} representations x "
           f"{wide.shape[1]} metrics -> {OUT.relative_to(ROOT)}\n")

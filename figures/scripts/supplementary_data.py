@@ -98,13 +98,36 @@ def d3_composition() -> tuple[str, pd.DataFrame]:
     col = next((c for c in fam.columns if "family" in c.lower()), fam.columns[-1])
     donor = next(c for c in ("patient_id", "donor_id", "donor") if c in meta.columns)
     # THE REAL COLUMN NAMES, checked against the dump rather than guessed.
-    # `severity (study vocabularies)` is deliberately excluded: scorer.py
-    # documents it as readable off study identity alone, so it must not travel
-    # in a shipped file where someone could contrast on it. The merged scale
-    # is the valid one. See NUMBERS.md.
     keys = [k for k in (donor, "study", "tissue", "disease_status", "phase")
             if k in meta.columns]
     frame = meta[keys].copy()
+
+    # SEVERITY TRAVELS, IN ALL THREE FORMS, and the column names say which is
+    # which. AW, 14 November: a per-donor composition table is exactly where a
+    # reader should be able to run the severity contrast themselves. The
+    # confound that makes the study-vocabulary form unquotable as an agreement
+    # score -- agreeing on `stage_0` means agreeing on marecko -- is visible
+    # here rather than hidden, because `study` is a column beside it.
+    #
+    # The maps are IMPORTED from the model package, not copied. A copied
+    # mapping is how two files drift, and this one defines what "mild" means.
+    SEV = "severity (study vocabularies)"
+    if SEV in meta.columns:
+        sys.path.insert(0, str(ROOT / "axw1008" / "src"))
+        from endo_model.evaluation.groupings import GROUPINGS
+        g = GROUPINGS[SEV]
+        raw = meta[SEV]
+        frame["severity_study_vocabulary"] = raw.values
+        frame["severity_merged"] = raw.map(g["severity_merged"]).values
+        frame["severity_cases_only"] = raw.map(g["severity_cases_only"]).values
+        keys = keys + ["severity_study_vocabulary", "severity_merged",
+                       "severity_cases_only"]
+    # the surgical fields the merge is built from, so the derivation is
+    # checkable rather than asserted
+    for extra in ("Endometriosis_stage", "EndometriosisGrade"):
+        if extra in meta.columns:
+            frame[extra] = meta[extra].values
+            keys = keys + [extra]
     frame["cell_family"] = fam[col].values
     # the ground-truth label where a study supplied one, so a reader can see
     # which rows rest on transfer and which do not
