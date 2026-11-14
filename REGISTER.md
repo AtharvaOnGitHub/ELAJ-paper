@@ -202,3 +202,98 @@ ranks them correctly — is the register his supervisor rejected.
 caught something the prose would have got wrong: that cell family and disease
 status cannot support an emergence claim because other methods beat us on
 both, and that the 0.2655 severity figure is readable off study identity.
+
+---
+
+# Adding to a section that is already written
+
+Rules 1 to 11 were learned writing Results from nothing. **12 to 16 were
+learned on 14 November inserting one paragraph into a finished section and
+getting it wrong**, AW: *"completely off the mark... stands out like a sore
+thumb. It uses unnecessary words, its too long, it is in a completely
+different sounding phrasing."*
+
+**The method that fixed it is the rule behind all five: read the paragraphs
+either side and copy their shape before writing a word.** Not the register of
+the paper in general, the shape of the specific neighbours. Everything below
+was derived by reading the subsection back, not from memory.
+
+## 12. A paragraph opens on a short flat finding
+
+Four to nine words, declarative, no procedure in it.
+
+> "Cell composition does not distinguish case from control."
+> "It is a change in what immune cells are doing."
+> "Those two annotations agree."
+
+**What failed:** *"Deriving a one-vs-rest signature per family within each
+study and comparing them across the 13,034 genes both panels measure, the
+top hundred genes overlap by..."* A participial phrase that makes the reader
+hold the procedure in mind before any claim arrives. The section never does
+this.
+
+## 13. Procedure lives in a clause, never in a sentence
+
+| as the section does it | words |
+|---|---:|
+| "fitted on 70\% of donors and scored on the remainder" | 10 |
+| "with study fitted as a covariate" | 6 |
+| "(Methods, \emph{Label transfer})" | 3 |
+
+**What failed:** a 24-word sentence explaining why genes were restricted to
+those both panels measure. It became *"Restricting to jointly measured genes
+keeps a gene absent from one panel from reading as a non-marker"*, and a
+caveat gets the same treatment: **one clause, not a sentence.**
+
+## 14. The number list has a fixed shape, and the unit is named once
+
+> "at \textit{P}~=~0.6186 for immune cells, 0.7360 stromal, 0.9016
+> epithelial and 0.2358 endothelial"
+
+Name the quantity on the first item and drop it thereafter. So "76 of its top
+hundred genes in stromal cells, 69 epithelial, 69 endothelial and 61 immune",
+never "69 in epithelial, 69 in endothelial and 61 in immune".
+
+**Match the neighbourhood's precision too.** That subsection quotes four
+decimals throughout, so 0.8256 and 0.7129, not 0.826 and 0.713. The auditor
+catches this, but it should not have to.
+
+## 15. Put it where the flow carries it, not where the topic says it belongs
+
+I placed the marker result after *"What follows tests claims each source
+study made from tens of donors against the pooled 194"*, then immediately
+wrote about two studies. The sentence promised the pooled corpus and the
+paragraph delivered a pair.
+
+It belongs inside the transfer paragraph, which is about those two
+annotations: **the transfer works, those two annotations agree, neither saw
+disease status, and what follows tests the pooled claims.** A subsection
+header names its argument; it does not say where a given result sits.
+
+## 16. A source study is named by its key, with its own donor count
+
+> "\texttt{duempelmann\_2026} reports the same from 60 donors, where one cell
+> type of 57 shifted."
+> "\texttt{marecko\_2024} reports that prior atlases lack reproducible marker
+> signatures; read on one gene space, theirs reproduce."
+
+The study key in `\texttt{}`, the claim as they made it, the scale they made
+it at, then ours. The citation rides along; the key is what carries it.
+
+## 17. A number the prose quotes must be a value some file holds
+
+Not a statistic computed over a file. I wrote a null as *"0.9 genes and
+0.004"*, which are **means of the null table's rows**, and both auditors
+rejected them because no cell holds either. Restating it as a bound the file
+does hold, *"Twenty within-study label shuffles never share more than
+three"*, is auditable **and** a stronger sentence.
+
+**The auditors are a drafting tool here, not a gate at the end.** Both of
+these were caught by running `./build.sh`, not by rereading.
+
+## 18. Budget by the neighbour, not by the section
+
+The comparable paragraph is four sentences and about seventy-five words.
+The first attempt was five and a hundred and ten. **Count the paragraph you
+are sitting next to before writing**, the same way rule 8 closes a subsection
+when its claim is proved rather than when the numbers run out.
