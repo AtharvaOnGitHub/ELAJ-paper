@@ -971,3 +971,115 @@ describes the corpus, not the model.
 
 **5. I wrote paragraphs that scored well and read badly.** Twice. Both times
 the fix was AW asking what a paragraph was *for*.
+
+## 14 November: the supplementary opened, and four jobs taught something
+
+**The supplementary is now a real document**, not a gap. Its own build, its
+own numbering, its own bibliography. `SUPPLEMENTARY_STRUCTURE.md` has the
+anatomy read off eight published supplementaries and
+`SUPPLEMENTARY_PLAN.md` has the ordering; neither is worth re-deriving.
+
+**The thing I did not know and would not have guessed: it is four files, not
+one.** Supplementary Information (the PDF), Supplementary Data (spreadsheets
+of machine-readable output), **Source Data** (one sheet per plotted figure
+panel), and the Reporting Summary. Two of eight NMI papers ship Source Data
+and we had planned none of it.
+
+**And a Supplementary Note is a mini-paper, not an appendix.** scGPT's
+twelve: four justify a single design choice, one critiques the field's own
+evaluation metric, one is the long version of the limitations, one defines
+every metric. The main text carries a pointer and the supplementary carries
+the argument. That is where our ablation mechanisms, the scIB critique and
+the limitations at length belong.
+
+### Note 1 is written, and the lesson in it is about reusing the thesis
+
+AW's own sizing memo is the spine, not the thesis appendix: parameters grow
+with $d^2$ while effective gene space grows with $d^1$, so group size rather
+than token width is the cheap lever. **The thesis numbers are not our
+numbers**: it had 45 groups over 15,495 genes from a 29,241 union; we have
+44 over 15,496 from 30,962. Every count was recomputed.
+
+**I got the lower bound backwards once and the correction is instructive.** I
+wrote "below roughly 500 genes per group" as a lower bound when our median is
+342. The error was confusing the **per-group construction bound** (250 to
+500, applied to each group during the build) with the **median** that falls
+out of it. AW's framing is right and is now the note's: bound the thing
+logically from the two constraints, because group sizes are not fixed
+quantities and an optimisation over them would be as approximate as the
+reasoning and less legible.
+
+**Do not state exact fitted constants in prose.** AW: the values of E(d) and
+C(d) are irrelevant to the argument and belong in a table. What the prose
+keeps is what the argument turns on: the form holds at R^2 = 0.9999, E(d) is
+independent of D as a per-group cost should be, and the parameter ceiling
+turns out NOT to be binding at our token width.
+
+### Four jobs, and what each cost
+
+**The one that worked first time was the one I could not test locally.** The
+pattern across all of them: there is no torch in the Mac env, so every
+assumption about the model's API only fails on the cluster. Three round
+trips on `count_params_sweep.py` alone: the constructor signature is
+`(vocabulary, config)`, `group_sizes` is a `dict[str, int]`, and
+**`n_studies` is not in the YAML** at all, it is set by hand in
+`benchmark_baselines.py`. Reading the constructor is not enough; read its
+caller. The script now checks every config field **by name** before handing
+over, and anchors on the REAL vocabulary so a failure is unambiguous between
+the bootstrap and the synthetic object.
+
+**The UMAP index pin.** AW asked whether the nine new arms use the same
+400,000 cells as the two existing caches. By construction yes, but NEP 19
+guarantees the PCG64 bit stream and not that `Generator.choice`'s algorithm
+is fixed across numpy releases. Checked empirically: HPC 1.26.4 and local
+2.2.6 both give checksum 315692720845. The index is now committed as a file
+and read back, so this cannot drift. **The nine caches took the RNG path**,
+since the job predates the pin.
+
+**X15 failed on the wall and the number I had wrong was a width.** It spent
+all sixteen hours in ONE stage, `groups/concat`, never reaching the
+per-group stages. That stage is **12,672 wide**, not 1,408: the `cls+pool8`
+readout means each group hands on 1 CLS plus 8 pooled vectors, 44 x 9 x 32.
+`--only-groups` now skips every pipeline stage.
+
+**scIB resolved without a rerun.** The job computed every `cell family`
+metric then OOM-died on a label set we do not use, so it wrote no CSV.
+silhouette_batch = 0.754, and all seven metrics it shares with the original
+reproduce to the printed precision, which is what makes it usable. The value
+is parsed out of the log rather than typed.
+
+**My preflight was the thing that blocked it first, not the environment.** It
+demanded both `scib` and `scib_metrics`; the code prefers `scib_metrics` and
+falls back. A preflight stricter than the code is a preflight that invents
+failures.
+
+### X13 is a result and it is a refutation
+
+Marker signatures reproduce between the two cohorts that annotated their own
+cells: 76, 69, 69 and 61 of the top hundred genes shared across the four
+families, rank correlations 0.8256 to 0.7129, against no more than three
+shared genes across twenty within-study label shuffles.
+
+**Two design choices made it a real test.** It uses each study's OWN
+annotation, never X1's transferred labels, because a signature from a
+transferred label is a reading of a prediction. And every comparison runs on
+the **13,034 genes both panels measure**, because a gene one panel never
+measured arrives as a structural zero and would read as a confident
+non-marker.
+
+**AW's ruling on how to write it: a clear refutation of HECA, no hedge, and
+do not reach for why they might have gone wrong.** My own framing had
+speculated that the irreproducibility the field reports may owe more to
+cohorts being read in different gene spaces; that belongs in
+`CLAIMS_SUMMARY.md`, not in the paper.
+
+**And the register note.** The write-up in `CLAIMS_SUMMARY.md` is plain
+language for AW. The Results and Discussion sentences are in those sections'
+own register and must not borrow from it.
+
+### A mistake worth not repeating
+
+I fixed a script in `axw1008` and committed from `Paper_writing`, so the
+commit message named a change it could not contain and AW pulled a repo that
+still had the bug. **Commit in the repo the change is in.** And I cannot
+push; AW has to, so a "pull and run" instruction is wrong until he has.

@@ -26,10 +26,10 @@ Discussions rather than from our own notes.
 |---|---|
 | Abstract | **stale. Full rewrite.** Must now carry the claims axis |
 | Introduction | **stale. Full rewrite** to the supervisor's spine |
-| Results | **drafted, 1,650 words, shipped 13 Nov.** WITH THE SUPERVISOR UNTIL MONDAY |
-| Discussion | **written, 838 words, 10 paragraphs, shipped 14 Nov** |
+| Results | drafted and shipped 13 Nov, **X13 added since**. WITH THE SUPERVISOR UNTIL MONDAY |
+| Discussion | written and shipped 14 Nov, **X13 added since** |
 | Methods | done, 5,745 words, tweaks only |
-| Supplementary | **in progress.** Data done, scIB done, 9 UMAP caches in, 3 jobs running |
+| Supplementary | **building.** Own document and build; Note 1 done with both figures; Data packaged and sent; scIB scorecard complete |
 | Extended Data | one item, PRISMA. Nine slots open |
 
 **Nothing in Results may be rewritten before his Monday comments arrive**, or
@@ -46,38 +46,83 @@ carried by a topic-sentence ladder. Do not reopen it.
 | job | what it unblocks | wall | state |
 |---|---|---|---|
 | `umap_cache.sh` | every supplementary figure showing a latent | 3 h array | **DONE**, 9 caches at `Outputs/supplementary/umaps_supplementary/` |
-| `probe_stages.sh` to `p1_groups` | **X15**, which pathway groups carry which signal | 16 h GPU | running |
-| `marker_reproducibility.sh` | **X13**, cross-study marker reproducibility | 8 h CPU | running |
-| `scib_scfoundation.sh` | one quarantined cell in the scIB scorecard | 6 h CPU | running |
+| `marker_reproducibility.sh` | **X13** | 8 h CPU | **DONE.** In Results and the Discussion |
+| `scib_scfoundation.sh` | the quarantined scIB cell | 6 h CPU | **DONE in substance**, see below |
+| `count_params_sweep.py` | N1's figures | seconds | **DONE.** Anchored at 1,883,986 |
+| `probe_stages.sh` to `p1_groups` | **X15** | 16 h GPU | **FAILED on the wall. Resubmit with `--only-groups`** |
 
 **On the UMAP caches**: the job ran before the index pin was committed, so it
 took the RNG path. That is fine, because HPC numpy 1.26.4 and local 2.2.6 were
 checked to produce the identical draw (checksum 315692720845). The pin protects
 future runs; it did not make these ones correct.
 
-**X15 is already at its sensible operating point.** `--no-references` removes
-what the flag's own help calls two thirds of the cost. The residue is a
-brute-force cross-donor search, quadratic in cells. The only further safe lever
-is `--permutations`. **Do not cut `--splits`**: the latent row must reproduce
-the benchmark's elaj row, and that only holds on val+test.
+**X15 failed on the wall and the diagnosis matters.** It spent all sixteen
+hours inside ONE stage, `groups/concat`, and never reached the per-group
+stages the question needs. That stage is **12,672 wide**, not the 1,408 I
+assumed: with the `cls+pool8` readout each group hands on 1 CLS plus 8 pooled
+vectors, so 44 x 9 x 32. The cross-donor search is brute force, cells squared
+times width. `--only-groups` was added to skip every pipeline stage; the 44
+individual stages are 288 wide each and take the shorter two-label battery.
 
-**If `scib_scfoundation` dies on memory again**, the next move is subsampling
-the silhouette and reporting the cell count it was computed on, not more
-memory. 360 G was already chosen because 240 G is what failed.
+```
+cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/probe_stages.sh p1_dab168_kl1 --runs-dir outputs/p_series --splits val test --only-groups --out outputs/probes/p1_groups
+```
+
+**Do not cut `--splits` to save time.** The latent row must reproduce the
+benchmark's elaj row and that only holds on val+test; that reproduction is
+the script's own integrity check. The next lever is `--k-cross-donor`.
+
+**scIB is resolved without a rerun.** Job 61784251 computed every `cell
+family` metric, then OOM-died on a second label set we do not use, so it
+never wrote its CSV. **silhouette_batch = 0.754**, and all seven metrics it
+shares with the original pass reproduce to the printed precision, so it is
+comparable. `scib_table.py` parses it out of the log, which is kept where
+that CSV would have been, and prefers the CSV if it ever appears. The
+scorecard has no empty cell.
 
 ---
+
+## What the supplementary is, as of 14 November
+
+**Its own document and its own build**: `supplementary/supplementary.tex`,
+`bash build_supp.sh`. S-prefixed numbering, own reference list, contents page
+listing every figure and table. Section order Notes, Methods, Tables,
+Figures, References, taken from MIDAS. Six pages, zero overfull, zero
+undefined references.
+
+`SUPPLEMENTARY_STRUCTURE.md` is the anatomy, read off eight published
+supplementaries. `SUPPLEMENTARY_PLAN.md` is the ordering. Neither should be
+re-derived.
+
+| | state |
+|---|---|
+| **Note 1**, gene-group sizing | **done**, AW-edited, with Figures S1 and S2 and Table S2 |
+| Notes 2 to 9 | listed as comments in `supplementary.tex` with their blockers |
+| **Supplementary Data D1 to D5** | **built and sent.** `Outputs/supplementary/send/` |
+| **scIB scorecard** | **complete**, no empty cell |
+| Source Data | waits on the figures being final |
+
+**Four formatting rules learned from the comparators, do not re-derive.**
+Numbered subsections only where a Note is a list of definitions; elsewhere
+unnumbered headings or bold run-ins. The contents lists every figure and
+table by title, so every float needs a short `\caption[short]{long}`. The
+supplementary carries its own reference list. And `build_supp.sh clean` must
+remove the `.bbl`, or a bibliography change survives a clean and citations
+stay silently unresolved.
 
 # 2. Ready to go now. No dependencies, no compute.
 
 Ordered by what I would do first.
 
-1. **The frontier and ablation UMAP figures.** The nine caches just landed, so
-   these draw locally in seconds per arm. The newly unblocked item, and it
-   closes the biggest hole in the supplementary. Covers `FIGURES_NEEDED.md`
-   F4 and F5, and feeds Supplementary Notes N4 and N5.
-2. **Note N1, gene-group sizing.** `Thesis/appendices/D-gene-grouping.tex` is
-   2,525 words over eight sections; `C-sizing.tex` is 1,238. Trimming and
-   re-registering numbers, not writing.
+1. **The frontier and ablation UMAP figures.** The nine caches are at
+   `Outputs/supplementary/umaps_supplementary/`, each with nine panels and a
+   `_umap_cache/global_400000.npy`. These draw locally in seconds per arm.
+   Covers `FIGURES_NEEDED.md` F4 and F5, and feeds Notes N4 and N5.
+   ⚠ The caches used the RNG path, not the pin, because the job predates the
+   pin; they are correct because HPC numpy 1.26.4 and local 2.2.6 were
+   checked to draw identically (checksum 315692720845).
+2. ~~**Note N1, gene-group sizing.**~~ **DONE.** Written, edited by AW,
+   two figures drawn from the measured sweep, in `supplementary/`.
 3. **Note N3, the limitations at length.** AW: *"Pour your heart out with all
    the limitations and clawing that you can. Here it makes sense because this
    section is when the reader has gone through the paper and understood the
