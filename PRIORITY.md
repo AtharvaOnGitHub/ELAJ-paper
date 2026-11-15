@@ -134,22 +134,67 @@ not yet. The ones a Note cites are copied into `supplementary/figures/`.
    held-out benchmark counts 70 of 254 people. What survives is narrower:
    `validate_latent.py` keys on the raw `patient_id` (269), so the
    whole-corpus cycle (142 donors) and donor-recovery (269) reads count the
-   fifteen twice. N3 is written that way. **DISCUSSION_INVENTORY M1 and the
-   Discussion sentence "overlapping donor identifiers across one study pair"
-   need AW's ruling on wording.**
-2. **Results points at two Methods subsections that do not exist**:
-   `(Methods, \emph{Label transfer})` and `(Methods, \emph{Severity})`.
-   Neither heading is in `04-methods.tex`. Either write them (N6 has the
-   label-transfer material) or repoint to the Notes.
+   fifteen twice. N3 is written that way. **The Discussion's wording is
+   decision 5 in section 4 below.**
+2. ~~**Results points at two Methods subsections that do not exist.**~~
+   **RESOLVED, AW 15 November: both go to Supplementary Methods.** So
+   `(Methods, \emph{Label transfer})` and `(Methods, \emph{Severity})` in
+   Results become `(Supplementary Methods, ...)`, and that section has to
+   exist before the pointers resolve. See *Supplementary Methods* below.
 3. **Only two scIB metrics are constants** (iLISI, cLISI); kBET is
    near-constant (range 0.04). Where scIB discriminates, no metric tracks
    donor recovery or the cycle (|rho| <= 0.60, none at P < 0.05). ELAJ is
    last of eleven on ARI/NMI and second on graph connectivity; N2 names the
    axes rather than hiding them.
+4. **The seed figure has a source and it is the r-series.** AW, 15 November.
+   `r2_ref_s7.yaml` is "r2_ref again at seed 7, the error bar for the whole
+   wave", and its own header says seed sets model initialisation, batch
+   order and the UMAP fit but **not** `data.splits.seed`, so it bounds
+   initialisation variability and not split variability. Two cautions
+   before it is quoted: the R2 wave is explicitly not comparable to the
+   p-series (corrected corpus, corrected circular encoding,
+   tissue-stratified split), and **only `Outputs/r2_ref_s7/metrics.csv` is
+   on disk locally** -- its partner `r2_ref` is not, so the delta cannot be
+   recomputed here. **N3 currently says run-to-run variation "is not
+   measured anywhere in the paper" and that needs softening** to: no
+   replicate of the *reported* configuration exists, and the r-series pair
+   is what bounds initialisation.
 
 **Also done this pass:** `Supplementary Note~X` in the Discussion now reads
 `Note~3`; `mcinnes2018umap` added to the bib; `\clearpage` after every
 Note so floats stay inside it.
+
+## The register pass on Notes 2 to 8, 15 November
+
+`SUPPLEMENTARY_REGISTER.md` compares the notes against scGPT's twelve,
+TIGON's nine and MIDAS's one, read in full, on tone, coverage and
+usefulness. Five of the eight comparator papers ship no notes at all, so
+the set is small and that is a fact about the field rather than a gap in
+the reading.
+
+**Eight surface fixes applied, commit `95f655a`.** No number, table, figure
+or argument changed, and a numeric-token diff against the previous commit
+confirms it.
+
+| per 100 words | was | now | scGPT | TIGON | N1 (AW-edited) |
+|---|---:|---:|---:|---:|---:|
+| first person | 0.00 | 1.37 | 1.48 | 1.39 | 0.13 |
+| connectives | 0.00 | 0.40 | 0.62 | 0.40 | 0.33 |
+| semicolons | 0.80 | 0.11 | 0.06 | 0.00 | 1.06 |
+| *rather than* | 0.34 | 0.15 | 0.06 | 0.00 | 0.33 |
+| opens *The* | 40% | 24% | 18% | 14% | 36% |
+| internal words | 77 | 3 | 0 | 0 | 0 |
+
+Also: a summary paragraph closes every note, which none had and 13 of 14
+published notes do; procedure precedes result in N5's five ablation
+paragraphs and N7's protocols; N7's subsections are the questions rather
+than the X numbers, which are kept in the ledger's third column.
+
+**It got 8% longer, not 10% shorter** (8,491 to 9,170 words). The summary
+paragraphs and the procedure sentences cost more than the antithesis cuts
+saved. **`arm` was kept** where the main Results already uses it, at much
+lower density; eliminating it would put the notes out of step with the
+main text, and changing both is AW's call.
 
 # 2. Ready to go now. No dependencies, no compute.
 
@@ -186,7 +231,9 @@ Ordered by what I would do first.
 | item | waits on |
 |---|---|
 | Note N9, X15 | the `--only-groups` probe job, outcome unknown |
-| **AW's review of Notes 2 to 8** | his read; nothing in them has been edited by him yet |
+| **AW's review of Notes 2 to 8** | **in progress**, he is editing N2 and N3 directly |
+| The two Results pointers | **Supplementary Methods existing.** Until then they name headings that are nowhere |
+| A seed replicate of the reported model | optional, one GPU run at seed 42, below |
 | **Source Data** | the figures being final. Sheets are named per panel, so it cannot be written before the panels exist |
 | Supplementary Table captions and numbering | the Notes, per the rule above |
 | **References, whole paper** | the deferred citation pass below |
@@ -212,6 +259,23 @@ Ordered by what I would do first.
    number the paper does not carry: whole-corpus surgical stage $+$0.3320 at
    $p=0.005$ over 58 donors, against the held-out 0.1313 at $p=0.303$. Either
    it goes into Results or the row comes out of the panel.
+5. **The M1 wording in the Discussion.** AW asked what the ruling is, so
+   stated precisely. The Discussion's limitations sentence lists
+   *"overlapping donor identifiers across one study pair"* among three
+   constraints. That phrase is **literally true** -- the identifiers do
+   overlap -- but a reader will take it to mean the donor split leaked, and
+   it did not for any reported number. Three options:
+   **(a) leave it.** True as written, and N3 now carries the precise
+   version. Risk: the reader imagines the stronger, wrong version.
+   **(b) sharpen it** to name what actually survives, for instance
+   *"fifteen people deposited under two identifiers, which the whole-corpus
+   reads count twice"*. One phrase, no length change. **My recommendation.**
+   **(c) drop it** from the Discussion's three and let N3 carry it alone,
+   since the headline numbers are all held-out and clean. Risk: looks like
+   an omission if a reviewer finds the identifiers.
+   Separately and not needing a ruling: **`DISCUSSION_INVENTORY.md` M1 is
+   factually stale** -- it describes the pre-October split -- and I will
+   correct that tracking file whichever option is chosen.
 
 ---
 
@@ -332,9 +396,24 @@ Repository URL, licence, Zenodo DOI, funding and grant numbers, final author
 list, Reporting Summary, cover letter, bioRxiv preprint.
 
 
-# Atharva's comments
+# Supplementary Methods, opened 15 November
 
-Supplementary Methods could contain:
-- The procedure for creating gene groups explained.
-- Training hyper parameters should move here from Methods and explained further with a table
-- 
+**AW's ruling: the Methods material Results points at goes here**, not into
+the main Methods. Four known items, two of them already written elsewhere.
+
+| item | state | source |
+|---|---|---|
+| **Label transfer** | **needed**, Results points at it | N6 has the whole procedure; this is a trim, not new writing |
+| **Severity** | **needed**, Results points at it | the three-level merge and the two study vocabularies; `groupings.py` holds the maps, D3 ships all three forms |
+| The gene-group construction, in full | AW's own request | N1 states the outcome; the cut itself (Reactome first, GO on the residual, 250 to 500) is Methods, *Pathway gene grouping* expanded |
+| Training hyperparameters, with a table | AW's own request, moves out of Methods | the six shared configuration files; one generated table like the Notes' |
+
+**Order inside it follows the main Methods**, so a reader can map one onto
+the other. Two comparators do the same and both put Supplementary Methods
+after the Notes: MIDAS has four subsections there, TIGON folds its
+derivations into Note 1 instead.
+
+⚠ **Both Results pointers are wrong until this section exists.** They read
+`(Methods, \emph{Label transfer})` and `(Methods, \emph{Severity})` and
+must become `(Supplementary Methods, ...)`. That is a two-string change in
+`02-results.tex` and it should land in the same commit as the section. 
