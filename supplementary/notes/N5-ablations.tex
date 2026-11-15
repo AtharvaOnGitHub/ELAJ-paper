@@ -20,7 +20,7 @@
 \label{note:ablations}
 
 We made five single-key changes against the reported model, retrained each
-from scratch under the protocol of Supplementary Note~\ref{note:frontier},
+from scratch under the protocol of \ref{note:frontier},
 and scored each on the same held-out cells. The main text gives each its
 result. In this note we give the mechanism behind each, the training record
 that shows it, the predictions we specified before the runs, and the
@@ -108,8 +108,8 @@ provenance, which is why it reconstructs better and encodes less. Thus the
 inductive-bias claim of the paper is demonstrated here rather than
 asserted, and this is also why we do not treat reconstruction loss as a
 model-selection criterion for a representation. Supplementary
-Figs.~\ref{sfig:umap-rand-family} and~\ref{sfig:umap-rand-disease} show the
-latent by family and by disease status. The family regions remain, which is
+Figs.~\ref{sfig:umap-rand} and~\ref{sfig:umap-rand-disease} show the
+latent by family, study, phase and disease status. The family regions remain, which is
 consistent with cell family being saturated across every representation in
 Table~1, and the disease metric records what the picture alone cannot.
 
@@ -141,8 +141,8 @@ encoded little of anything. Overall, what the head does on this record is
 hold the gap between training and held-out loss closed from the first
 epoch, which reaches well beyond the one label it supervises.
 Supplementary Fig.~\ref{sfig:umap-nophase} shows the selected checkpoint's
-latent by phase beside the base's
-(Supplementary Fig.~\ref{sfig:umap-base-phase}).
+latent beside the base's (Supplementary Fig.~\ref{sfig:umap-168-1}); the
+phase panel is the one to compare.
 
 \subsection{Elastic cell similarity: it travels the frontier}
 
@@ -161,8 +161,8 @@ own line. Notably, the band we set beforehand assumed the term was holding
 cell family together, at 0.94 to 0.975, and family improved instead. That
 miss is worth recording, because it corrected what we believed the term was
 for. The embedding shows what the cost axes summarise: Supplementary
-Fig.~\ref{sfig:umap-noecs} against~\ref{sfig:umap-168-1} has single-study
-territories that the base does not.
+Fig.~\ref{sfig:umap-noecs}'s study panel has single-study territories that
+the base's (Supplementary Fig.~\ref{sfig:umap-168-1}) does not.
 
 \subsection{The order statistics: a cycle mechanism}
 
@@ -191,7 +191,7 @@ the scalars this is the smallest change of the five.
 The embedding disagrees. With the phase head, the adversary and the
 per-study normalisation all still running, the latent breaks into
 single-study regions where the base has a continuum
-(Supplementary Fig.~\ref{sfig:umap-nodns} against~\ref{sfig:umap-168-1}),
+(Supplementary Fig.~\ref{sfig:umap-nodns}, against the base's study panel),
 and the decoder's reliance ratio falls from 7.46 to 5.48. A neighbourhood
 metric is insensitive to that kind of reorganisation, which is a limit of
 the metric and not evidence that the component does nothing.
@@ -301,41 +301,57 @@ removal the cost axes cannot detect, and two of the three are visible only
 in the embedding.
 
 \begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_a1_randgroups_family.png}
-\caption[UMAP by family, random grouping]{\textbf{The random-grouping
-latent, by cell family.} Grey cells carry no annotation.}
-\label{sfig:umap-rand-family}\end{figure}
+\includegraphics[width=\textwidth]{figures/umap_panel_a1_randgroups.png}
+\caption[UMAP, random grouping]{\textbf{The random-grouping latent},
+by cell family, study and menstrual phase. Compare the base model at
+Supplementary Fig.~\ref{sfig:umap-168-1}; the cells are identical.}
+\label{sfig:umap-rand}
+\end{figure}
 
 \begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_a1_randgroups_disease.png}
+\includegraphics[width=.62\textwidth]{figures/umap_a1_randgroups_disease.png}
 \caption[UMAP by disease, random grouping]{\textbf{The random-grouping
-latent, by disease status}; compare Supplementary
-Fig.~\ref{sfig:umap-base-disease}.}
-\label{sfig:umap-rand-disease}\end{figure}
+latent by disease status}, the one colouring outside the three-panel set,
+shown because disease is the axis this ablation costs most. Compare
+Supplementary Fig.~\ref{sfig:umap-base-disease}.}
+\label{sfig:umap-rand-disease}
+\end{figure}
 
 \begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_p1_dab168_kl1_disease.png}
-\caption[UMAP by disease, \elaj\,B\textsubscript{hi}]{\textbf{The reported
-latent, by disease status.}}
-\label{sfig:umap-base-disease}\end{figure}
+\includegraphics[width=.62\textwidth]{figures/umap_p1_dab168_kl1_disease.png}
+\caption[UMAP by disease, \elaj\,B\textsubscript{hi}]{\textbf{The
+reported latent by disease status.}}
+\label{sfig:umap-base-disease}
+\end{figure}
 
 \begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_a1_nophase_phase.png}
-\caption[UMAP by phase, no phase head]{\textbf{The head-free latent at
-its selected checkpoint, by menstrual phase}; compare Supplementary
-Fig.~\ref{sfig:umap-base-phase}.}
-\label{sfig:umap-nophase}\end{figure}
-
-\begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_a1_noecs_study.png}
-\caption[UMAP by study, no ECS]{\textbf{The latent without the elastic
-cell similarity term, by study}; compare Supplementary
+\includegraphics[width=\textwidth]{figures/umap_panel_a1_nophase.png}
+\caption[UMAP, head-free]{\textbf{The head-free latent}, by cell family, study
+and menstrual phase. Compare the base model at Supplementary
 Fig.~\ref{sfig:umap-168-1}.}
-\label{sfig:umap-noecs}\end{figure}
+\label{sfig:umap-nophase}
+\end{figure}
 
 \begin{figure}[p]\centering
-\includegraphics[width=.7\textwidth]{figures/umap_a1_nodns_study.png}
-\caption[UMAP by study, no DNS sentinel]{\textbf{The latent without the
-sentinel for unmeasured genes, by study}; compare Supplementary
+\includegraphics[width=\textwidth]{figures/umap_panel_a1_noecs.png}
+\caption[UMAP, no elastic cell similarity]{\textbf{The no elastic cell similarity latent}, by cell family, study
+and menstrual phase. Compare the base model at Supplementary
 Fig.~\ref{sfig:umap-168-1}.}
-\label{sfig:umap-nodns}\end{figure}
+\label{sfig:umap-noecs}
+\end{figure}
+
+\begin{figure}[p]\centering
+\includegraphics[width=\textwidth]{figures/umap_panel_a1_nodns.png}
+\caption[UMAP, no DNS sentinel]{\textbf{The no DNS sentinel latent}, by cell family, study
+and menstrual phase. Compare the base model at Supplementary
+Fig.~\ref{sfig:umap-168-1}.}
+\label{sfig:umap-nodns}
+\end{figure}
+
+\begin{figure}[p]\centering
+\includegraphics[width=\textwidth]{figures/umap_panel_a1_clsonly.png}
+\caption[UMAP, no order statistics]{\textbf{The no order statistics latent}, by cell family, study
+and menstrual phase. Compare the base model at Supplementary
+Fig.~\ref{sfig:umap-168-1}.}
+\label{sfig:umap-clsonly}
+\end{figure}

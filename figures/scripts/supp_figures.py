@@ -263,66 +263,67 @@ def scib():
     rows = [[TEX_DISPLAY[r]] + [num(ann.loc[r, m]) for m in ann_cols] for r in REP_ORDER]
     tex("scib_annotationrefined", tabular("@{}l" + "r" * len(ann_cols) + "@{}",
         ["representation"] + [SCIB_SHORT[m] for m in ann_cols], rows, [2, 7]))
-    rows = []
-    for m in SCIB_ORDER:
-        d = disc.loc[m]
-        verdict = ("constant" if d.degenerate else
-                   "near-constant" if d.spread < 0.05 else "discriminates")
-        rows.append([SCIB_SHORT[m], SCIB_HALF[m], SCIB_WHAT[m], num(d["min"]),
-                     num(d["max"]), num(d.spread), verdict])
-    tex("scib_discrimination", tabular("@{}llp{52mm}rrrl@{}",
-        ["metric", "half", "rewards", "min", "max", "range", "on this corpus"],
-        rows, [5]))
+    # tables/scib_discrimination.tex is DELIBERATELY NOT WRITTEN any more.
+    # AW, 16 November: "Remove table S5." Its four columns now sit beside
+    # the bars in scib_metric_range, and what each metric rewards moved into
+    # the note's own prose, where it primes the reader before the numbers.
 
-    # heatmap
-    fig, ax = fig_ax(120, 62)
-    vals = card.values.astype(float)
-    im = ax.imshow(vals, cmap="Greys", vmin=0, vmax=1, aspect="auto")
-    ax.set_xticks(range(10)); ax.set_xticklabels([SCIB_SHORT[m] for m in SCIB_ORDER],
-                                                   rotation=40, ha="right")
-    ax.set_yticks(range(11)); ax.set_yticklabels([DISPLAY[r] for r in REP_ORDER])
-    for i in range(11):
-        for j in range(10):
-            v = vals[i, j]
-            ax.text(j, i, f"{v:.2f}", ha="center", va="center",
-                    color="white" if v > 0.6 else INK, fontsize=4.6)
-    for j, m in enumerate(SCIB_ORDER):
-        if disc.loc[m].degenerate:
-            ax.add_patch(plt.Rectangle((j - .5, -.5), 1, 11, fill=False,
-                                       ec=AMBER, lw=1.0))
-    ax.axvline(4.5, color=INK, lw=.8)
-    ax.text(2, -1.1, "batch half", ha="center", fontsize=FS_TITLE)
-    ax.text(7, -1.1, "bio half", ha="center", fontsize=FS_TITLE)
-    ax.tick_params(length=0)
-    for s in ax.spines.values():
-        s.set_visible(False)
-    cb = fig.colorbar(im, ax=ax, fraction=.03, pad=.02)
-    cb.ax.tick_params(length=2, labelsize=FS_BODY)
-    cb.outline.set_visible(False)
-    save(fig, "scib_scorecard_heatmap", cite=True)
-
-    # spread per metric
-    fig, ax = fig_ax(88, 55)
+    # THE HEATMAP IS GONE. AW, 16 November: "Fig S4 is just the table in
+    # colours. Keep the table, remove the figure." Table S3 carries all 110
+    # values already, so drawing them a second time in grey added nothing.
+    #
+    # AND TABLE S5 IS GONE WITH IT, folded into the figure below. The table
+    # held min, max, range and a verdict per metric; the figure held the
+    # same ranges as bars. Printing both was the same redundancy one level
+    # up, so the numbers now sit in aligned columns beside the bars, which
+    # is IBDex Fig. 2c's device: the reader sees the shape and reads the
+    # value without looking anything up.
+    fig, ax = plt.subplots(figsize=(150 * MM, 62 * MM))
+    for sp in ("top", "right", "left"):
+        ax.spines[sp].set_visible(False)
     y = np.arange(10)[::-1]
+    XMAX = 1.02
     for i, m in enumerate(SCIB_ORDER):
         d = disc.loc[m]
+        flat = d.degenerate or d.spread < 0.05
         c = AMBER if d.degenerate else ("#B279A2" if d.spread < .05 else INK)
-        ax.plot([d["min"], d["max"]], [y[i], y[i]], color=c, lw=2.2, solid_capstyle="butt")
-        ax.plot([card.loc["ELAJ_B_hi", m]], [y[i]], marker="o", ms=3.2, color=AMBER,
-                mec="white", mew=.4, zorder=3)
-        if d.degenerate:
-            ax.plot([d["min"]], [y[i]], marker="|", ms=7, color=AMBER, mew=1.2)
+        ax.plot([d["min"], d["max"]], [y[i], y[i]], color=c, lw=2.6,
+                solid_capstyle="round", zorder=2)
+        if flat:                       # a range too short to see gets a tick
+            ax.plot([d["min"]], [y[i]], marker="|", ms=8, color=c, mew=1.4, zorder=3)
+        ax.plot([card.loc["ELAJ_B_hi", m]], [y[i]], marker="o", ms=4.2,
+                color="white", mec=c, mew=1.1, zorder=4)
     ax.set_yticks(y); ax.set_yticklabels([SCIB_SHORT[m] for m in SCIB_ORDER])
+    ax.set_xlim(-.02, XMAX); ax.set_xlabel("score across the eleven representations")
     ax.axhline(4.5, color=HAIR, lw=.5, ls=":")
-    ax.set_xlim(-.02, 1.02); ax.set_xlabel("score across eleven representations")
-    ax.text(1.0, 7.3, "batch", ha="right", color=SOFT)
-    ax.text(1.0, 2.0, "bio", ha="right", color=SOFT)
-    ax.legend(handles=[Line2D([], [], color=INK, lw=2.2, label="range over eleven"),
-                       Line2D([], [], color=AMBER, lw=0, marker="o", ms=3.2,
-                              label="ELAJ B$_{hi}$"),
-                       Line2D([], [], color=AMBER, lw=0, marker="|", ms=7, mew=1.2,
-                              label="constant across all eleven")],
-              loc="upper center", bbox_to_anchor=(.5, -.18), ncol=3)
+    # No "batch half" / "bio half" text: it collided with the graph
+    # connectivity bar wherever it was placed, and the dotted divider plus
+    # the caption already say which half is which.
+    # the aligned numeric columns, in axes-fraction space to the right
+    cols = [(1.09, "min"), (1.21, "max"), (1.34, "range"), (1.52, "on this corpus")]
+    for x, head in cols:
+        ax.text(x, 1.045, head, transform=ax.transAxes, fontsize=FS_BODY,
+                fontweight="bold", ha="center" if head != "on this corpus" else "left",
+                color=INK)
+    for i, m in enumerate(SCIB_ORDER):
+        d = disc.loc[m]
+        yy = (y[i] + 0.5) / 10
+        verdict = ("constant" if d.degenerate else
+                   "near-constant" if d.spread < .05 else "separates them")
+        vc = AMBER if d.degenerate else ("#B279A2" if d.spread < .05 else SOFT)
+        for x, val in ((1.09, f"{d['min']:.4f}"), (1.21, f"{d['max']:.4f}"),
+                       (1.34, f"{d['spread']:.4f}")):
+            ax.text(x, yy, val, transform=ax.transAxes, fontsize=FS_BODY,
+                    ha="center", va="center", color=INK)
+        ax.text(1.52, yy, verdict, transform=ax.transAxes, fontsize=FS_BODY,
+                ha="left", va="center", color=vc,
+                fontweight="bold" if vc != SOFT else "normal")
+    ax.legend(handles=[Line2D([], [], color=INK, lw=2.6, label="range over the eleven"),
+                       Line2D([], [], color="white", mec=INK, mew=1.1, lw=0,
+                              marker="o", ms=4.2, label="ELAJ B$_{hi}$"),
+                       Line2D([], [], color=AMBER, lw=0, marker="|", ms=8, mew=1.4,
+                              label="one value for all eleven")],
+              loc="upper center", bbox_to_anchor=(.33, -.17), ncol=3)
     save(fig, "scib_metric_range", cite=True)
 
     # correlation of each scIB metric with donor recovery and with phase
@@ -356,7 +357,9 @@ def scib():
 
     # the two ELAJ arms on the bio half: a prior-strength effect on clustering metrics
     fig, ax = fig_ax(88, 50)
-    bio = [m for m in SCIB_ORDER if SCIB_HALF[m] == "bio" and not disc.loc[m].degenerate]
+    # AW's order, 16 November: ARI, NMI, isolated labels, silhouette bio.
+    bio = [m for m in ("scib-ari", "scib-nmi", "scib-isolated_labels",
+                       "scib-silhouette_bio") if not disc.loc[m].degenerate]
     x = np.arange(len(bio))
     for k, (r, c) in enumerate([("ELAJ_B_hi", AMBER), ("ELAJ_B_lo", "#8C2F39")]):
         ax.bar(x + (k - .5) * .36, card.loc[r, bio], .34, color=c, label=DISPLAY[r])
@@ -367,7 +370,7 @@ def scib():
     ax.set_ylabel("score"); ax.set_ylim(0, 1)
     ax.legend(handles=ax.get_legend_handles_labels()[0] +
               [Line2D([], [], color=INK, lw=.8, label="median of the nine others")],
-              loc="upper left")
+              loc="upper center", bbox_to_anchor=(.5, -.16), ncol=3)
     save(fig, "scib_bio_half_two_arms", cite=True)
 
 
@@ -406,10 +409,13 @@ def field():
 
     r1 = scatter(width, phase, "representation width (dimensions, log)",
                  "cross-donor cycle agreement", "field_width_vs_cycle", logx=True, cite=True)
+    # NOT CITED. AW, 16 November: "Fig 10 and 11 are not needed. The table
+    # makes the point effectively." Both are still drawn to the exploratory
+    # tier, because the correlation table is read off them.
     r2 = scatter(donor, disease, "donor recovery (lower is better)",
-                 "cross-donor disease agreement", "field_donor_vs_disease", cite=True)
+                 "cross-donor disease agreement", "field_donor_vs_disease")
     r3 = scatter(donor, phase, "donor recovery (lower is better)",
-                 "cross-donor cycle agreement", "field_donor_vs_cycle", cite=True)
+                 "cross-donor cycle agreement", "field_donor_vs_cycle")
     r4 = scatter(donor, family, "donor recovery (lower is better)",
                  "cross-donor cell-family agreement", "field_donor_vs_family")
     rows = [["width", "cycle agreement", num(r1[0], 3), num(r1[1], 3)],
@@ -625,10 +631,31 @@ def arms():
             save(fig, f"{fname}_{fname2}", cite=(col == "val_phase_knn_xdonor"))
 
     # reliance ratio and hours
+    # COLOUR ENCODES THE KNOB, NOT THE ARM. AW, 16 November: "Fig S13
+    # colouring is fucked. Colours should mean something here." It did not:
+    # the six frontier models shared one grey while the five ablations each
+    # took an arbitrary hue. Now the frontier models are coloured by their
+    # information cost, which is the variable that separates them, and the
+    # ablations share one counterfactual colour, which is what they are.
+    def arm_colour(a):
+        if a in dict((k, w) for k, _, w in table1.P_SERIES):
+            return KLC[dict((k, w) for k, _, w in table1.P_SERIES)[a]]
+        return ABL_C
+    bar_legend = [Line2D([], [], marker="s", lw=0, ms=5, color=KLC[1],
+                         label="frontier model, $w_{kl}$ 1"),
+                  Line2D([], [], marker="s", lw=0, ms=5, color=KLC[30],
+                         label="frontier model, $w_{kl}$ 30"),
+                  Line2D([], [], marker="s", lw=0, ms=5, color=ABL_C,
+                         label="ablation (counterfactual)")]
     fig, ax = fig_ax(88, 50)
     rel = {a: metrics(a).val_reliance_ratio[metrics(a).val_nb.idxmin()] for a in ALL_ARMS}
-    cols = [AMBER if a == "p1_dab168_kl1" else (A_C.get(a) or "#9AA3AD") for a in ALL_ARMS]
+    cols = [arm_colour(a) for a in ALL_ARMS]
     ax.bar(range(len(ALL_ARMS)), [rel[a] for a in ALL_ARMS], color=cols)
+    ax.axhline(rel["p1_dab168_kl1"], color=INK, lw=.7, ls=":")
+    ax.text(len(ALL_ARMS) - .4, rel["p1_dab168_kl1"], " reported model",
+            fontsize=FS_BODY, color=SOFT, va="center")
+    ax.legend(handles=bar_legend, loc="upper center", bbox_to_anchor=(.5, -.42),
+              ncol=3, fontsize=4.8)
     ax.set_xticks(range(len(ALL_ARMS)))
     ax.set_xticklabels([ARM_LABEL[a] for a in ALL_ARMS], rotation=40, ha="right")
     ax.set_ylabel("decoder reliance, latent / provenance")
@@ -642,6 +669,10 @@ def arms():
     ax.set_xticklabels([ARM_LABEL[a] for a in ALL_ARMS], rotation=40, ha="right")
     ax.set_ylabel("wall-clock hours, one A100")
     ax.axhline(np.mean(list(hrs.values())), color=INK, lw=.6, ls=":")
+    ax.text(len(ALL_ARMS) - .4, np.mean(list(hrs.values())), " mean",
+            fontsize=FS_BODY, color=SOFT, va="bottom", ha="right")
+    ax.legend(handles=bar_legend, loc="upper center", bbox_to_anchor=(.5, -.52),
+              ncol=3, fontsize=4.8)
     save(fig, "training_hours_all_arms", cite=True)
 
     # ── frontier with the ablations drawn as counterfactuals ─────────────
@@ -728,12 +759,69 @@ def umap_panel(arm: str, colouring: str, cite=False):
     save(fig, f"umap_{arm}_{colouring}", cite=cite)
 
 
+def umap_panels():
+    """One figure per model: cell family, study, menstrual phase.
+
+    AW, 16 November: "For each model's UMAPs I want to show the following.
+    So let's make panelled figures by model." Three colourings of ONE
+    embedding is the comparison a reader can actually make -- nothing moves
+    between panels except colour -- and it replaces three separate figures
+    per model with one. The three are chosen because they are the paper's
+    three axes: what a cell is, where it came from, and when in the cycle.
+    """
+    idx = sample_index()
+    m_all = meta().iloc[idx].reset_index(drop=True)
+    studies = list(m_all.study.value_counts().index)        # largest first
+    SPEC = [
+        ("cell family", m_all["cell family"], FAMS, FAMILY_C, 2),
+        ("study", m_all.study, studies, STUDY_C, 3),
+        ("menstrual phase", m_all["menstrual phase"].map(PHASE_COARSE),
+         PHASE_ORDER, PHASE_C, 2),
+    ]
+    rng = np.random.default_rng(1)
+    perm = rng.permutation(len(m_all))
+    for arm in ALL_ARMS:
+        cache = umap_cache(arm)
+        if not cache.exists():
+            print(f"  ! no UMAP cache for {arm}")
+            continue
+        xy = np.load(cache)
+        assert len(xy) == len(m_all), f"{arm}: {len(xy)} points, {len(m_all)} cells"
+        fig, axes = plt.subplots(1, 3, figsize=(180 * MM, 78 * MM))
+        for ax, (title, vals, order, cols, ncol) in zip(axes, SPEC):
+            cmap = dict(zip(order, cols))
+            grey = vals.isna().values
+            ax.scatter(xy[grey, 0], xy[grey, 1], s=.18, c=GREY_PT, lw=0, rasterized=True)
+            colour = vals.map(cmap)
+            keep = (~grey)[perm]
+            ax.scatter(xy[perm][keep, 0], xy[perm][keep, 1], s=.18,
+                       c=colour.values[perm][keep], lw=0, rasterized=True)
+            ax.set_xticks([]); ax.set_yticks([])
+            for sp in ax.spines.values():
+                sp.set_visible(False)
+            ax.set_title(title, fontsize=FS_TITLE, loc="left", pad=3)
+            names = ([STUDY_NAME[o] for o in order] if title == "study" else order)
+            handles = [Line2D([], [], marker="o", lw=0, ms=3.2, color=cmap[o], label=n)
+                       for o, n in zip(order, names) if (vals == o).any()]
+            if grey.any():
+                handles.append(Line2D([], [], marker="o", lw=0, ms=3.2,
+                                      color=GREY_PT, label="unlabelled"))
+            ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(.5, -.02),
+                      ncol=ncol, fontsize=4.6, handletextpad=.25,
+                      columnspacing=.8, borderaxespad=0)
+        fig.suptitle(ARM_LABEL[arm], fontsize=FS_TITLE, fontweight="bold",
+                     x=.012, ha="left", y=.995)
+        fig.subplots_adjust(bottom=.30, top=.90, wspace=.06)
+        save(fig, f"umap_panel_{arm}", cite=True)
+
+
 def umaps(cite_only=False):
-    cited = {("p1_dab168_kl1", "study"), ("a1_noecs", "study"), ("a1_nodns", "study"),
-             ("a1_randgroups", "family"), ("a1_randgroups", "disease"),
-             ("p1_dab168_kl1", "disease"), ("a1_nophase", "phase"), ("p1_dab168_kl1", "phase"),
-             ("p1_dab7_kl1", "study"), ("p1_dab168_kl30", "study"), ("p1_dab336_kl1", "study"),
-             ("p1_dab7_kl30", "study"), ("p1_dab336_kl30", "study")}
+    # THE PANELS REPLACED THESE. umap_panels() ships one figure per model
+    # carrying family, study and phase together, so the single-colouring
+    # versions stay in the exploratory tier only. Disease keeps a cited
+    # pair, because the random-grouping ablation is read against the base
+    # on that colouring and it is not one of the panel's three.
+    cited = {("a1_randgroups", "disease"), ("p1_dab168_kl1", "disease")}
     for arm in ALL_ARMS:
         if not umap_cache(arm).exists():
             print(f"  ! no UMAP cache for {arm}")
@@ -982,24 +1070,65 @@ def claims():
                               label="other top-15 and bottom-15 genes")], loc="upper right")
     save(fig, "x12_gene_ranking", cite=True)
 
-    # per-family AUC figure, both label sources
+    # PER-FAMILY AUC, AS A FOREST PLOT WITH ITS NUMBERS ALIGNED BESIDE IT.
+    # The form is IBDex Fig. 2c, which AW named as the visualisation his
+    # supervisor responded to: the effect and its interval on the left, the
+    # values in columns on the right, and the rows that do not clear their
+    # null greyed and badged rather than silently left to the reader. It
+    # suits this result because the finding is a CONTRAST between five
+    # compartments and their own shuffled-label nulls, not one number.
     for src in ("annotated", "transferred"):
         d = pd.read_csv(CLAIMS / f"x12_by_family_{src}.csv")
         d["name"] = d.family.str.lower().replace({"all families": "all families, pooled"})
-        d = d.sort_values("auc")
-        fig, ax = fig_ax(88, 50)
+        d = d.sort_values("auc").reset_index(drop=True)
+        fig, ax = plt.subplots(figsize=(155 * MM, 52 * MM))
+        for sp in ("top", "right", "left"):
+            ax.spines[sp].set_visible(False)
         y = np.arange(len(d))
-        ax.barh(y, d.auc - .5, left=.5, color=[FAM_C.get(f, "#9AA3AD") for f in d.name], height=.62)
-        ax.errorbar(d.auc, y, xerr=[d.auc - d.auc_lo, d.auc_hi - d.auc], fmt="none",
-                    ecolor=INK, elinewidth=.6, capsize=1.5)
-        ax.plot(d.null, y, "|", color="#8C2D3F", ms=9, mew=1.2, label="shuffled-label AUC")
-        for yi, (_, r) in zip(y, d.iterrows()):
-            ax.text(.995, yi, f"P = {r.p:.3f}, {int(r.n_donors)} donors", va="center", ha="right",
-                    fontsize=4.8, color=SOFT)
-        ax.axvline(.5, color=INK, lw=.6)
+        for yi, r in d.iterrows():
+            sig = r.p < 0.05
+            c = FAM_C.get(r["name"], "#6F7681") if sig else "#B9BEC6"
+            ax.plot([r.auc_lo, r.auc_hi], [yi, yi], color=c, lw=1.6,
+                    solid_capstyle="round", zorder=2)
+            ax.plot(r.auc, yi, "o", ms=6, color=c, mec="white", mew=.8, zorder=3)
+            ax.plot(r.null, yi, "|", ms=10, color="#8C2D3F", mew=1.3, zorder=4)
+        ax.axvline(.5, color=INK, lw=.7)
         ax.set_yticks(y); ax.set_yticklabels(d.name)
-        ax.set_xlim(.3, 1.0); ax.set_xlabel("held-out AUC, control against eutopic")
-        ax.legend(loc="lower right", bbox_to_anchor=(1.0, -.02))
+        ax.set_xlim(.28, .92)
+        ax.set_xlabel("held-out AUC, control against eutopic")
+        cols = [(1.06, "AUC"), (1.21, "95% interval"), (1.40, "shuffled"),
+                (1.52, "$P$"), (1.65, "donors")]
+        for x, head in cols:
+            ax.text(x, 1.06, head, transform=ax.transAxes,
+                    fontsize=FS_BODY, fontweight="bold", ha="center", color=INK)
+        for yi, r in d.iterrows():
+            yy = (yi + 0.5) / len(d)
+            grey = r.p >= 0.05
+            tc = SOFT if grey else INK
+            for x, val in ((1.06, f"{r.auc:.4f}"),
+                           (1.21, f"{r.auc_lo:.3f} to {r.auc_hi:.3f}"),
+                           (1.40, f"{r.null:.4f}"),
+                           (1.65, f"{int(r.n_donors)}")):
+                ax.text(x, yy, val, transform=ax.transAxes, fontsize=FS_BODY,
+                        ha="center", va="center", color=tc)
+            # THE VALUE IS ALWAYS PRINTED. IBDex replaces P with an "ns"
+            # badge, but endothelial sits at exactly 0.050 here and hiding
+            # that behind a badge is the one case where a badge misleads.
+            # The badge marks the row; the number stays readable.
+            ax.text(1.52, yy, f"{r.p:.3f}", transform=ax.transAxes,
+                    fontsize=FS_BODY, ha="center", va="center", color=tc,
+                    fontweight="normal" if grey else "bold")
+            if grey:
+                ax.text(1.567, yy, "ns", transform=ax.transAxes, fontsize=4.2,
+                        ha="left", va="center", color="white", fontweight="bold",
+                        bbox=dict(boxstyle="round,pad=0.18", fc="#C2777C", ec="none"))
+        ax.legend(handles=[Line2D([], [], marker="o", lw=0, ms=6, color="#6F7681",
+                                  label="held-out AUC, with its 95% interval"),
+                           Line2D([], [], marker="|", lw=0, ms=10, mew=1.3,
+                                  color="#8C2D3F", label="shuffled-label AUC"),
+                           Line2D([], [], marker="o", lw=0, ms=6, color="#B9BEC6",
+                                  label="does not clear its null")],
+                  loc="upper center", bbox_to_anchor=(.33, -.22), ncol=3, fontsize=4.8)
         save(fig, f"x12_auc_by_family_{src}", cite=True)
 
     # composition strips, three contrasts, from D3
@@ -1133,21 +1262,46 @@ def corpus():
         ["key", "study", "cells", "donor ids", "ctl / eut / ect / adeno",
          "tissues", "platform"], rows))
 
-    # coverage heatmap
-    fig, ax = fig_ax(88, 52)
-    M = cov[labs].values.astype(float) / cov.cells.values[:, None]
-    ax.imshow(M, cmap="Blues", vmin=0, vmax=1, aspect="auto")
-    for i in range(M.shape[0]):
-        for j in range(M.shape[1]):
-            if M[i, j] > 0:
-                ax.text(j, i, f"{M[i, j] * 100:.0f}%", ha="center", va="center", fontsize=4.4,
-                        color="white" if M[i, j] > .6 else INK)
-    ax.set_xticks(range(len(labs))); ax.set_xticklabels(labs, rotation=40, ha="right")
-    ax.set_yticks(range(len(cov))); ax.set_yticklabels([STUDY_NAME[s] for s in cov.index])
-    ax.tick_params(length=0)
-    for s in ax.spines.values():
-        s.set_visible(False)
-    save(fig, "label_coverage_heatmap", cite=True)
+    # REDESIGNED 16 November. AW: "Figure S7 makes no sense. The information
+    # is worth conveying but the way it has been presented is misleading."
+    # He is right. The old panel drew each label as a SHARE OF ITS OWN
+    # STUDY, so every filled cell read 100% and a cohort of 10,240 cells
+    # looked exactly as well covered as one of 466,176. The quantity a
+    # reader needs is the opposite: how much of the CORPUS carries each
+    # label, and how few studies that comes from. One stacked bar per
+    # label, segmented by study, says both at once.
+    order_by_size = list(cov.index)
+    colour = {sname: STUDY_C[i] for i, sname in enumerate(order_by_size)}
+    fig, ax = plt.subplots(figsize=(135 * MM, 62 * MM))
+    for sp in ("top", "right", "left"):
+        ax.spines[sp].set_visible(False)
+    TOTAL = int(cov.cells.sum())
+    ypos = np.arange(len(labs))[::-1]
+    for yi, lab in zip(ypos, labs):
+        left = 0
+        for sname in order_by_size:
+            v = int(cov.loc[sname, lab])
+            if not v:
+                continue
+            ax.barh(yi, v / 1e6, left=left / 1e6, height=.62,
+                    color=colour[sname], edgecolor="white", lw=.4)
+            left += v
+        n_studies = int((cov[lab] > 0).sum())
+        ax.text(left / 1e6 + .02, yi,
+                f"{left/1e6:.2f} M  ({100*left/TOTAL:.0f}% of cells), "
+                f"{n_studies} stud{'y' if n_studies == 1 else 'ies'}",
+                va="center", fontsize=FS_BODY, color=INK)
+    ax.axvline(TOTAL / 1e6, color=INK, lw=.7, ls=":")
+    ax.text(TOTAL / 1e6, len(labs) - .3, " the whole corpus", fontsize=FS_BODY,
+            color=SOFT, va="top")
+    ax.set_yticks(ypos); ax.set_yticklabels(labs)
+    ax.set_xlim(0, TOTAL / 1e6 * 1.12)
+    ax.set_xlabel("cells carrying the label (millions), coloured by the study that supplied them")
+    ax.legend(handles=[Line2D([], [], marker="s", lw=0, ms=4, color=colour[sname],
+                              label=STUDY_NAME[sname]) for sname in order_by_size
+                       if (cov.loc[sname, labs] > 0).any()],
+              loc="upper center", bbox_to_anchor=(.5, -.20), ncol=4, fontsize=4.8)
+    save(fig, "label_coverage_by_study", cite=True)
 
     fig, ax = fig_ax(88, 50)
     order = cov.index
@@ -1162,9 +1316,20 @@ def corpus():
     fig, ax = fig_ax(88, 40)
     cd = m.loc[m.CycleDay.notna(), ["CycleDay", "patient_id"]].drop_duplicates()
     counts = cd.groupby("CycleDay").patient_id.nunique().reindex(range(5, 31), fill_value=0)
-    ax.bar(counts.index, counts.values, color=["#9AA3AD" if v else "#E45756" for v in counts.values])
-    ax.set_xlabel("cycle day (duempelmann_2026, 60 donors, one day each)")
+    ax.bar(counts.index, counts.values, color="#5BA3A0")
+    # A DAY WITH NO DONOR HAS A ZERO-HEIGHT BAR, so the old caption's "red
+    # marks the four absent days" marked something invisible. The gaps are
+    # the point, so they are drawn rather than coloured.
+    missing = [int(d) for d, v in counts.items() if v == 0]
+    for d in missing:
+        ax.axvspan(d - .45, d + .45, color="#F2D7D5", zorder=0)
+        ax.plot(d, 0.12, marker="x", ms=4, mew=1.2, color="#8C2D3F", zorder=3)
+    ax.set_xlabel("cycle day (duempelmann_2026, 60 donors, one sample each)")
     ax.set_ylabel("donors"); ax.set_xticks(range(5, 31, 5))
+    ax.set_ylim(0, max(counts.values) + .6)
+    ax.legend(handles=[Line2D([], [], marker="x", lw=0, ms=4, mew=1.2,
+                              color="#8C2D3F", label=f"no donor sampled ({len(missing)} days)")],
+              loc="upper right")
     save(fig, "cycle_day_coverage", cite=True)
 
     # null widths against donor count, every cross-donor row of the reported arm
@@ -1200,17 +1365,43 @@ def corpus():
         ["scope", "label", "donors", "null$_{95}$", "observed", "$P$"],
         [[r.scope, r.label, str(int(r.donors)), num(r.null95, 2), num(r.value), num(r.p, 3)]
          for _, r in nw.iterrows()]))
-    fig, ax = fig_ax(88, 55)
-    for sc, mk, c in (("held out", "o", INK), ("whole corpus", "s", AMBER),
-                      ("whole corpus (validation)", "D", "#2F6690")):
-        d = nw[nw.scope == sc]
-        ax.plot(d.donors, d.null95, mk, color=c, ms=3.6, mec="white", mew=.4, label=sc)
-        for _, r in d.iterrows():
-            ax.annotate(r.label, (r.donors, r.null95), xytext=(3, 2), textcoords="offset points",
-                        fontsize=4.2, color=SOFT)
-    ax.set_xscale("log"); ax.set_xlabel("donors carrying the label (log)")
-    ax.set_ylabel("permutation null, 95th percentile (excess scale)")
-    ax.legend(loc="upper right")
+    # ONE LINE PER LABEL, ACROSS ITS SCOPES. AW, 16 November: "Can figure 9
+    # have held-out, whole corpus, and whole corpus validation connected by
+    # a line for each variable? It would perform the job a visualisation is
+    # supposed to do over a table: helping numbers become interpretable at
+    # scale." Every label is measured twice, on few held-out donors and on
+    # many whole-corpus ones, so each line is one label's null narrowing as
+    # donors arrive. The table gives the values; this gives the shape.
+    fig, ax = plt.subplots(figsize=(110 * MM, 66 * MM))
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    SCOPE_C = {"held out": "#8C2D3F", "whole corpus": AMBER,
+               "whole corpus (validation)": "#2F6690"}
+    for lab, g in nw.groupby("label"):
+        g = g.sort_values("donors")
+        if len(g) > 1:
+            ax.plot(g.donors, g.null95, "-", color=HAIR, lw=1.0, zorder=1)
+        for _, r in g.iterrows():
+            ax.plot(r.donors, r.null95, "o", ms=5, color=SCOPE_C[r.scope],
+                    mec="white", mew=.6, zorder=3)
+        # LABEL THE HELD-OUT END. The whole-corpus points pile into a band
+        # under 0.12 and their labels overlapped; the held-out ends are
+        # spread from 0.06 to 0.42, which is the spread the figure is about.
+        first = g.iloc[0]
+        ax.annotate(lab, (first.donors, first.null95), xytext=(-7, 0),
+                    textcoords="offset points", fontsize=FS_BODY, color=INK,
+                    va="center", ha="right")
+    ax.set_xscale("log")
+    ax.set_xlim(7, 260)
+    ax.set_xticks([10, 20, 40, 70, 120, 200])
+    ax.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.minorticks_off()
+    ax.set_xlabel("donors carrying the label (log scale)")
+    ax.set_ylabel("permutation null, 95th percentile")
+    ax.legend(handles=[Line2D([], [], marker="o", lw=0, ms=5, color=c, label=k)
+                       for k, c in SCOPE_C.items()] +
+                      [Line2D([], [], color=HAIR, lw=1.0, label="the same label, both scopes")],
+              loc="upper right", fontsize=4.8)
     save(fig, "null_width_vs_donors", cite=True)
 
     # the seven-sample overlap table, parsed from the donor-overlap audit
@@ -1254,7 +1445,8 @@ def corpus():
 
 # ═════════════════════════════════════════════════════════════════════════
 GROUPS = {"scib": scib, "field": field, "arms": arms, "transfer": transfer,
-          "claims": claims, "x13": x13, "corpus": corpus, "umaps": umaps}
+          "claims": claims, "x13": x13, "corpus": corpus, "umaps": umaps,
+          "umap_panels": umap_panels}
 
 
 def main() -> int:

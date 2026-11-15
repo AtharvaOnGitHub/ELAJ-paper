@@ -95,6 +95,39 @@ identifier counts as a *different* donor, which flatters us on the cost axis.
    measurement.** On relative terms it would put phase near 0.722, disease
    near 0.320 and donor recovery near 0.526.
 
+## The whole corpus, measured 16 November
+
+AW asked for the size of the effect on a whole-corpus number, remembering
+"around 5%". Measured, on a 60,000-cell random query against the full
+reference set (a KD-tree over all 736,312 phase-labelled cells in sixteen
+dimensions does not finish; the leaked SHARE is a ratio and a random query
+sample estimates it without bias):
+
+| whole-corpus measurement | exposed cells | leaked relations | by identifier | resolved | delta |
+|---|---:|---:|---:|---:|---:|
+| **cross-donor menstrual phase** | 110,336 of 736,312 (**14.98%**) | **1.54%** | 0.6832 | 0.6761 | **−0.0071** |
+| cross-donor cell family | **0** | — | — | — | **0** |
+| cross-donor severity | **0** | — | — | — | **0** |
+
+**Only one whole-corpus number is exposed at all**, and the other two were
+checked rather than assumed. Both García-Alonso deposits are control
+endometrium carrying a phase label and nothing else, so family, severity,
+stage and grade have exactly zero dual-identifier cells.
+
+**This reproduction is trustworthy where the held-out one was not.** By
+identifier it gives 0.6832 against the reported 0.6796, a gap of 0.0036,
+so the implementation is tracking the real estimator closely. The held-out
+reproduction was 0.6980 against a reported 0.7346 and should be read only
+for its delta.
+
+**The honest summary of size.** Three different quantities can be called
+"the leak" and they differ by an order of magnitude: 15% of the
+phase-labelled cells belong to a duplicated person; 1.54% of the
+cross-donor relations join a person to themselves; and the reported figure
+is high by 1.0% of its own value. AW's recollection of "around 5%" sits
+between the first two. The number that belongs in the paper is the third,
+because it is what a reader would have to change.
+
 ## The consequence that needs a decision
 
 **The dominance claim must be re-checked, and the correction has to be

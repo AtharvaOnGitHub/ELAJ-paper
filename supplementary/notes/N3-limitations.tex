@@ -24,19 +24,16 @@
 % REGISTER PASS, 15 November, per SUPPLEMENTARY_REGISTER.md.
 % =====================================================================
 
-\section{Limitations, at length}
+\section{Limitations}
 \label{note:limitations}
 
-The Discussion gives the limitations of this work one paragraph. In this
-note we give each of them the length it needs: what it is, how large it is,
-which results it touches, and the bound on how much it can change them. We
+In this note we discuss limitations of this paper at length. We
 group them as limits of the data, limits of the estimators and limits of
-the claims axis. Where a limitation has a fix that we did not build, we
-name the fix.
+the claims axis.
 
 \subsection{Limits of the data}
 
-\paragraph{Fifteen people carry two identifiers.} One study was deposited
+\paragraph{Data leakage.} One study was deposited
 twice, under the keys \texttt{garcia\_alonso\_2021\_a} and
 \texttt{garcia\_alonso\_2021\_b}, with the same fifteen donors under two
 sets of donor identifiers and fifteen shared sample identifiers. The corpus
@@ -47,27 +44,49 @@ follow, and they differ in whether they touch a reported number.
 First, the donor-level split. We reconciled identifiers before splitting
 for every model reported here. The loader resolves the thirty identifiers
 to fifteen people and assigns each person once, so the held-out set holds
-70 of 254 people and no person falls on both sides of the wall. An earlier
-split, under which seven of the fifteen shared samples fell on different
-sides (Table~\ref{stab:split-overlap}) and 17{,}873 held-out cells belonged
-to a person also present in training, is what led us to reconcile them. No
-model trained under that split appears in this paper.
+70 of 254 people and no person falls on both sides of the wall.
 
-Second, the whole-corpus reads. Our validation pass over all 1{,}577{,}728
-cells keys on the deposited identifier, so in the whole-corpus cycle
-agreement over 142 donors and in the donor-recovery figure over 269 the
-fifteen people appear twice, and a neighbour that is the same person under
-the other identifier counts as a cross-donor neighbour. Both deposits are
-control endometrium carrying a phase label and no family, severity or stage
-label. The whole-corpus cell-family, severity and stage figures are
-therefore untouched, and the cycle and donor figures are the two that can
-be inflated. The bound is the pair's size, 110{,}336 cells or 7.0\% of the
-corpus, and the headline cycle figure, 0.7346, is the held-out one computed
-on the reconciled identity.
+Second, the whole-corpus reads, and this is where the duplication does
+reach a reported number. Our validation pass over all 1{,}577{,}728 cells
+keys on the deposited identifier rather than on the person, so the fifteen
+appear twice and a neighbour that is the same person under the other
+identifier is counted as coming from a different donor. The cross-donor
+estimator was built to discard exactly those neighbours, and here it
+cannot see them.
 
-Third, the donor chance rate for donor recovery is computed over 269
-identities, which makes it fractionally lower than over 254 and the
-enrichment fractionally higher.
+The exposure is narrower than it first looks. Both deposits are control
+endometrium carrying a phase label and no family, severity, stage or grade,
+so of the five whole-corpus cross-donor figures only the cycle is touched
+at all. We checked the other four directly and the exposure is zero, not
+small.
+
+We then measured the one that is exposed. Of the 736{,}312 phase-labelled
+cells, 110{,}336 belong to the fifteen, which is 15\%, and that sounds
+larger than its consequence. What matters is not how many cells are
+involved but how many neighbour relations are wrongly admitted, and that is
+1.54\% of the cross-donor relations the measurement runs on. Rescoring
+with the identifiers resolved moves the whole-corpus cycle excess from
+0.6832 to 0.6761 in our own reproduction of the estimator, which reproduces
+the reported 0.6796 to within 0.004. The reported figure is therefore high
+by something near one part in a hundred, in a quantity the paper reports to
+four decimal places and reads to two.
+
+That is the whole of it, and the headline cycle number is not this one
+anyway: 0.7346 is the held-out figure, computed on the reconciled identity
+where no person is counted twice.
+
+Third, the chance rate that donor recovery is scored against. Both reads
+compute it over identifiers rather than people, which is 70 identifiers on
+the held-out split where the reported 0.5188 sits, and 269 across the whole
+corpus. Splitting one person into two barely moves that rate, from 0.0224
+to 0.0228 on the held-out split, so the chance rate is not where the error
+is. What moves is the agreement itself: a cell's neighbour that is the same
+person under the other identifier is counted as a neighbour from a
+different donor, which makes donors look harder to recover than they are.
+Resolving the identifiers takes held-out donor recovery from 0.4745 to
+0.4810 in our own reproduction of the estimator. The figure in Table~1 is
+therefore flattering by roughly that much, on an axis where lower is
+better.
 
 \begin{table}[t]
 \centering
@@ -81,18 +100,36 @@ splitting.}
 \input{tables/split_overlap}
 \end{table}
 
-\paragraph{Label coverage is thin and uneven.} Table~\ref{stab:coverage}
-and Supplementary Fig.~\ref{sfig:coverage} give, per study, how many cells
-carry each label the paper reads. Cell family comes from two studies,
-640{,}606 cells and 118 donors. Menstrual phase comes from three studies
-deposited under four keys, 736{,}312 cells. Cycle day, serum progesterone
-and epithelial pseudotime come from one study, rASRM stage from one and
-surgical grade from another. Six of the eleven studies, 782{,}016 cells and
-115 donors, carry no biological annotation at all, which is why the claims
-axis rests on transferred labels (Supplementary Note~\ref{note:transfer}).
-In addition, no cohort records cycle day, stage, grade and hormonal
-treatment together, so no within-cohort test of how those variables relate
-is possible, and every result that combines them combines cohorts.
+\paragraph{Label coverage.} No label in this corpus reaches half its
+cells, and most come from a single cohort
+(Table~\ref{stab:coverage}, Supplementary Fig.~\ref{sfig:coverage}). That
+sets a ceiling on what the atlas can be asked, in three distinct ways.
+
+It decides which questions are answerable at all. Six of the eleven
+studies, 782{,}016 cells and 115 donors, arrived with no biological
+annotation, so every composition claim in the paper runs on labels the
+model itself assigned, with the failure mode that carries
+(\ref{note:transfer}). Where a label is thin the
+question simply cannot be put: rASRM stage reaches 11\% of cells from one
+cohort, which is why surgical stage is read on 58 donors while disease
+status is read on 207.
+
+It decides how large an effect has to be before we could see it. A label
+carried by few donors is scored against a wide permutation null, so the
+paper's negatives on severity and grade are statements about power as much
+as about biology, which the next limitation takes up.
+
+And it forces every multi-variable question to span cohorts. No cohort
+records cycle day, stage, grade and hormonal treatment together, so a
+within-cohort test of how any two of them relate does not exist here. Any
+such result would be a comparison between cohorts wearing the clothes of a
+comparison between variables.
+
+The remedy is not more cells. A single new cohort of a few hundred donors
+that recorded phase, stage, treatment and a cell annotation together would
+answer more of these questions than another million cells of the kind
+already deposited, because what binds this corpus is the number of people
+carrying each label rather than the number of cells carrying each gene.
 
 \begin{table}[p]
 \centering
@@ -107,25 +144,38 @@ of the eight labels.}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=.7\textwidth]{figures/label_coverage_heatmap.png}
-\caption[Label coverage, drawn]{\textbf{Share of each study's cells
-carrying each label.} Blank is none.}
+\includegraphics[width=\textwidth]{figures/label_coverage_by_study.png}
+\caption[Label coverage, drawn]{\textbf{Cells carrying each label, and the
+studies that supplied them.} Each bar is one label, segmented by study and
+measured against the whole corpus (dotted). No label reaches half the
+corpus, and five of the eight come from a single cohort.}
 \label{sfig:coverage}
 \end{figure}
 
 \paragraph{The cycle day is one cohort.} Our continuous cycle trajectory
-rests on \texttt{duempelmann\_2026} alone: 466{,}176 cells from 60 donors,
-one day each, days 5 to 30, with 22 of 26 days present and days 20, 24, 25
-and 28 absent (Supplementary Fig.~\ref{sfig:cycleday}). No other study
-records the day. The closed trajectory is therefore replicated nowhere in
-this corpus, and the phase-level results, which draw on three studies, are
-the replicated form of the cycle claim.
+rests on \texttt{duempelmann\_2026} alone: 466{,}176 cells from 60 donors
+contributing one sample each. We have samples from days 5 to 30, with 22 
+of 26 days present and days 20, 24, 25 and 28 absent 
+(Supplementary Fig.~\ref{sfig:cycleday}). Cycle day is also the weaker of
+the two annotations on its own terms. It is read against a donor's own
+cycle, and people have shorter and longer cycles, so the same numbered day
+is not the same point in the cycle from one person to the next.
+Endometriosis is itself associated with altered cycle length, which makes
+the day less reliable in exactly the donors the paper is about. We
+therefore lead on menstrual phase rather than on day. No conversion is
+involved: every cohort that supplies a phase supplies its own, from its own
+staging column, so phase is three cohorts' independent judgements rather
+than our arithmetic on one cohort's days. What that leaves is a different
+and smaller exposure, which is that those three cohorts staged their
+samples to their own definitions, and we have assumed those definitions
+agree.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/cycle_day_coverage.png}
 \caption[Donors per cycle day]{\textbf{Donors per cycle day in the one
-cohort that records it.} Red marks the four absent days.}
+cohort that records it.} Sixty donors, one sample each, across days 5 to
+30. Shaded columns are the four days on which no donor was sampled.}
 \label{sfig:cycleday}
 \end{figure}
 
@@ -141,10 +191,10 @@ follicular fluid from an ovarian endometriosis patient. Specifically,
 2.87\% of the disease axis carries different semantics from the other 97\%,
 its cycles are hormonally stimulated, and it is a fluid aspirate where
 every other study is a tissue section. It contributes no cell-family and no
-phase labels, so the cycle and cell-type results do not touch it. It is
+phase labels, so the cycle and cell-type results are untouched. It is
 also the one study whose transferred composition we know to be wrong,
 because granulosa cells have no endometrial counterpart
-(Supplementary Note~\ref{note:transfer}).
+(\ref{note:transfer}).
 
 \paragraph{Hormonal treatment is inconsistent across cohorts.} Most of
 \texttt{tan\_2022}'s thirty-one participants were on hormonal treatment at
@@ -155,7 +205,7 @@ it, and any contrast that spans both cohorts inherits the inconsistency.
 \paragraph{Lesion epithelium is confounded with dissociation.} Epithelial
 cells are 6.6 times rarer in lesion tissue than in eutopic endometrium,
 0.147 against 0.022 of a donor's cells, $P < 0.0001$ over 151 donors
-(Supplementary Note~\ref{note:claims}). The study that reports the same
+(\ref{note:claims}). The study that reports the same
 direction attributes it to cell loss during dissociation of fibrous lesion
 tissue \citep{sarsenova2024metabolic}. Nothing in this corpus separates
 protocol from biology on that contrast, and we report the result with its
@@ -176,23 +226,30 @@ donors at once and rescoring the fixed neighbour graph. Reassigning across
 all eleven studies breaks the link between a label and the study that
 carries it, so the null never sees whatever study structure remains in the
 latent. If study were fully removed the concern would be void. It is not
-fully removed, and the bound on how much it can matter is the reported
-model's own held-out study separation, 0.7613. The correct fix is a
-permutation stratified within study, which keeps all 254 people and the
-label-to-cohort link together. We did not build it.
+fully removed, and the bound on how much it can matter is unkown. The 
+correct fix is a permutation stratified within study, which keeps all 
+254 people and the label-to-cohort link together. We found that the size 
+of this corpus to be a limiting factor to building it. The advantage 
+gained by collation of data would be lost by stratification. Therefore, 
+we did not build it.
 
-\paragraph{The null's width is set by donor count.}
-Table~\ref{stab:nullwidths} and Supplementary Fig.~\ref{sfig:nullwidths}
-give the 95th percentile of the permutation null for every cross-donor
-label we scored, with the donor count behind each. On the held-out split,
-rASRM stage is carried by 16 donors and its null reaches 0.42, and severity
-among patients by 18 donors and 0.33. On the whole corpus the same labels
-are carried by 57 to 118 donors and their nulls fall to 0.03 to 0.12. A
-value that fails its null at 16 donors is undetectable at that donor count
-rather than absent, and that is how the paper reads it. Specifically, this
-bounds four negatives: grade, held-out stage, held-out severity among
-patients, and the whole-corpus severity among patients, where 0.0744 over
-57 donors sits under a null of 0.12.
+\paragraph{A negative result here is a statement about donor count.}
+Our permutation null reassigns labels to donors, so its width is set by how
+many donors carry the label and by nothing else. At 16 donors that width
+reaches 0.42 on the excess scale, which is wider than any value the paper
+reports on any axis. A label carried by 16 donors could therefore fail its
+null while separating the latent perfectly, and nothing in the measurement
+would distinguish the two. The same label read over 118 donors is scored
+against a null of 0.09.
+
+This is why every negative in the paper is quoted with its null beside it
+rather than with a $P$ alone, and why the four that matter are phrased as
+undetectable at this donor count rather than as absent: grade, held-out
+stage, and severity among patients on both reads.
+Table~\ref{stab:nullwidths} gives the widths and
+Supplementary Fig.~\ref{sfig:nullwidths} shows each label narrowing as
+donors arrive, which is the clearest statement of what a larger corpus
+would buy.
 
 \begin{table}[t]
 \centering
@@ -217,14 +274,12 @@ drawn.} The null narrows as the number of donors carrying a label rises.}
 Across the ten representations in Table~1, cross-donor disease agreement
 tracks donor recovery at Spearman $\rho = +0.721$, $P = 0.019$, while
 cross-donor cycle agreement does not, at $+0.176$ and $P = 0.627$
-(Table~\ref{stab:fieldcorr}, Supplementary Figs.~\ref{sfig:donor-disease}
-and~\ref{sfig:donor-cycle}). Disease status is constant within a donor and
+(Table~\ref{stab:fieldcorr}). Disease status is constant within a donor and
 the pooled contrast spans studies whose base rates differ, so a
 representation that remembers donors is handed part of the label. This is a
-caveat on every disease number in the paper including our own, which is the
-lowest of the ten at 0.3364 and comes from the representation donors are
-hardest to recover from. Notably, the cycle axis does not have this
-property, and that is what makes the frontier's biological axis credible.
+caveat on every disease number in the paper including our own. Notably, 
+the cycle axis does not have this property, and that is what makes the 
+frontier's biological axis credible.
 
 \begin{table}[t]
 \centering
@@ -235,23 +290,6 @@ agreement follows donor recovery; the cycle does not.}
 \small
 \input{tables/field_correlations}
 \end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.6\textwidth]{figures/field_donor_vs_disease.png}
-\caption[Donor recovery against disease agreement]{\textbf{Donor recovery
-against cross-donor disease agreement, ten representations.}}
-\label{sfig:donor-disease}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.6\textwidth]{figures/field_donor_vs_cycle.png}
-\caption[Donor recovery against cycle agreement]{\textbf{Donor recovery
-against cross-donor cycle agreement, ten representations.} The control for
-Supplementary Fig.~\ref{sfig:donor-disease}.}
-\label{sfig:donor-cycle}
-\end{figure}
 
 \paragraph{Representation width is not matched.} \elaj{} has sixteen
 dimensions, and we ran the comparisons at their published widths, 16 for
@@ -283,13 +321,6 @@ before training, are the only calibration of how far an outcome can land
 from expectation, and they are not a seed study. A second seed of
 \elaj\,B\textsubscript{hi} is the experiment that would bound it.
 
-\paragraph{The technical controls are best-of-sixteen.} For serum
-progesterone and epithelial pseudotime we report the largest $|r|$ over the
-sixteen latent dimensions, and the negative controls scored under the
-identical procedure reach 0.3396 for mitochondrial fraction and 0.3366 for
-genes detected. The margin over the controls, 0.4725 and 0.5801 against
-0.34, is real and it is not large. That is why we quote the controls in the
-same sentence.
 
 \subsection{Limits of the claims axis}
 
@@ -297,7 +328,7 @@ same sentence.
 the immune disease direction at 118 donors with the studies' own labels,
 held-out AUC 0.7084 at $P = 0.015$ over 94 donors, rather than at 207 with
 transferred labels, where the same procedure gives 0.5960 at $P = 0.072$
-over 162 donors (Supplementary Note~\ref{note:claims}). Immune stays the
+over 162 donors (\ref{note:claims}). Immune stays the
 strongest compartment and keeps its sign at the larger count, but the
 signal does not strengthen with scale. Two explanations are not separable
 here: transferred labels add noise, or the nine added studies are
@@ -314,38 +345,35 @@ we can test and it agrees, at rank 285 of 15{,}496 towards disease
 
 \paragraph{The vocabulary is coarser than some claims.} Our forty-four
 pathway groups are cut from Reactome and GO with 250 to 500 genes each
-(Supplementary Note~\ref{note:grouping}). Respiratory electron transport
+(\ref{note:grouping}). Respiratory electron transport
 and ATP synthesis is a group of its own. However, glycolysis, HIF-1
 signalling, glutathione metabolism and AMPK signalling fall inside merged
 metabolism groups, and steroid signalling, iron handling and senescence
 have no group of their own. A claim made at the resolution of one of those
 pathways \citep{sarsenova2024metabolic,li2025iron} cannot be tested on a
-group that merges it with others without answering a coarser question than
-the one asked, and we tested none of them.
+group that merges it with others. This limitation follows from how the
+groups were cut (Methods, \emph{Pathway gene grouping}) and from the group
+size the two sizing constraints leave, which
+\ref{note:grouping} derives: a median of 342 genes is
+what makes the parameter budget and the effective gene space meet, and at
+that size a group spans more than one named pathway.
 
-\paragraph{The axis stops at four families.} Every composition test we run
-uses stromal, epithelial, endothelial and immune. The published findings
-that converge on vessel-support cells, a 1.6-fold rise in secretory mural
-cells, a lesion-specific perivascular population and the largest metabolic
-reprogramming in perivascular cells
-\citep{duempelmann2026endometrium,tan2022singlecell,sarsenova2024metabolic},
-and the less differentiated epithelium reported in lesions
-\citep{garciaalonso2021endometrium,tan2022singlecell}, all sit below that
-resolution. The corpus holds the donors to test them, 58 with ectopic
-tissue. To do so we would have to transfer labels at a finer vocabulary
-first, which carries the absorption failure described in
-Supplementary Note~\ref{note:transfer} into cell types that are rarer and
-closer together.
 
-\subsection{Which of these bite hardest}
+\subsection{Impact of limitations}
 
-Overall, three limitations bound a number the paper quotes and the rest
-bound what the paper can be asked. The unstratified null and the donor
-count behind each permutation bound every negative result, which is why we
-report the null's width beside each one. Label coverage bounds the claims
-axis, which is why the disease direction is reported at 118 donors and not
-207. The remaining items are limits on scope: a corpus of four cell
-families, forty-four merged pathway groups, one cohort with a cycle day and
-one cohort we could not test at all. None of them is a defect we could have
-designed away at this corpus size, and each of them names an experiment a
-larger corpus would make possible.
+Overall, two of these limitations move a number the paper quotes and the
+rest bound what the paper can be asked. The duplicated identifiers raise
+the whole-corpus cycle figure by about one part in a hundred and flatter
+held-out donor recovery by a similar amount, which is why both are stated
+with the size of the effect rather than as a risk. The donor count behind
+each permutation bounds every negative result, which is why we report the
+null's width beside each one rather than a $P$ alone.
+
+The remaining items are limits on scope rather than on accuracy:
+forty-four pathway groups that merge the pathways some claims name, one
+cohort carrying a cycle day, one cohort whose controls were never
+deposited, and a label coverage that decides which questions can be put at
+all. None of them is a defect we could have designed away at this corpus
+size. Each of them names an experiment that a cohort annotated for more
+than one variable at a time would make possible, which is a cheaper thing
+to ask the field for than more cells.

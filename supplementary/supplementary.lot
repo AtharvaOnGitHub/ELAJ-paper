@@ -3,38 +3,37 @@
 \contentsline {table}{\numberline {S2}{\ignorespaces The shipped vocabulary}}{8}{table.caption.5}%
 \contentsline {table}{\numberline {S3}{\ignorespaces scIB scorecard, cell family}}{11}{table.caption.7}%
 \contentsline {table}{\numberline {S4}{\ignorespaces scIB scorecard, refined annotation}}{11}{table.caption.8}%
-\contentsline {table}{\numberline {S5}{\ignorespaces What each scIB metric discriminates here}}{12}{table.caption.10}%
-\contentsline {table}{\numberline {S6}{\ignorespaces scIB metrics against the paper's axes}}{12}{table.caption.12}%
-\contentsline {table}{\numberline {S7}{\ignorespaces The earlier split, sample by sample}}{16}{table.caption.16}%
-\contentsline {table}{\numberline {S8}{\ignorespaces Label coverage by study}}{23}{table.caption.17}%
-\contentsline {table}{\numberline {S9}{\ignorespaces Null widths against donor count}}{23}{table.caption.20}%
-\contentsline {table}{\numberline {S10}{\ignorespaces Correlations across the ten representations}}{23}{table.caption.22}%
-\contentsline {table}{\numberline {S11}{\ignorespaces Every arm, biological axes}}{25}{table.caption.27}%
-\contentsline {table}{\numberline {S12}{\ignorespaces Every arm, cost axes and training}}{25}{table.caption.28}%
-\contentsline {table}{\numberline {S13}{\ignorespaces Every arm, cross-donor values with $P$}}{25}{table.caption.29}%
-\contentsline {table}{\numberline {S14}{\ignorespaces Registered predictions, frontier arms}}{28}{table.caption.33}%
-\contentsline {table}{\numberline {S15}{\ignorespaces Ablations, biological axes}}{34}{table.caption.42}%
-\contentsline {table}{\numberline {S16}{\ignorespaces Ablations, stage, grade and cost axes}}{34}{table.caption.43}%
-\contentsline {table}{\numberline {S17}{\ignorespaces Ablations, training record}}{34}{table.caption.44}%
-\contentsline {table}{\numberline {S18}{\ignorespaces Registered predictions, ablations}}{39}{table.caption.49}%
-\contentsline {table}{\numberline {S19}{\ignorespaces Components deliberately not ablated}}{39}{table.caption.50}%
-\contentsline {table}{\numberline {S20}{\ignorespaces The transfer's neighbourhoods}}{43}{table.caption.58}%
-\contentsline {table}{\numberline {S21}{\ignorespaces Transfer validation}}{44}{table.caption.59}%
-\contentsline {table}{\numberline {S22}{\ignorespaces A distance rule does not work}}{44}{table.caption.60}%
-\contentsline {table}{\numberline {S23}{\ignorespaces A vote rule does not work either}}{45}{table.caption.61}%
-\contentsline {table}{\numberline {S24}{\ignorespaces Transferred composition by study}}{46}{table.caption.64}%
-\contentsline {table}{\numberline {S25}{\ignorespaces The claims ledger}}{48}{table.caption.67}%
-\contentsline {table}{\numberline {S26}{\ignorespaces X3, cycle agreement by disease}}{49}{table.caption.68}%
-\contentsline {table}{\numberline {S27}{\ignorespaces X3, the difference and its null}}{49}{table.caption.69}%
-\contentsline {table}{\numberline {S28}{\ignorespaces X3b, the interaction test}}{50}{table.caption.70}%
-\contentsline {table}{\numberline {S29}{\ignorespaces X8, composition by disease status}}{50}{table.caption.71}%
-\contentsline {table}{\numberline {S30}{\ignorespaces X8, composition by severity}}{51}{table.caption.73}%
-\contentsline {table}{\numberline {S31}{\ignorespaces X9, composition by tissue}}{52}{table.caption.75}%
-\contentsline {table}{\numberline {S32}{\ignorespaces X12, the global direction}}{53}{table.caption.77}%
-\contentsline {table}{\numberline {S33}{\ignorespaces X12, direction within each family, own labels}}{54}{table.caption.78}%
-\contentsline {table}{\numberline {S34}{\ignorespaces X12, direction within each family, transferred labels}}{54}{table.caption.79}%
-\contentsline {table}{\numberline {S35}{\ignorespaces X12, the disease end of the ranking}}{55}{table.caption.82}%
-\contentsline {table}{\numberline {S36}{\ignorespaces X12, the control end of the ranking}}{55}{table.caption.83}%
-\contentsline {table}{\numberline {S37}{\ignorespaces X12, external replication}}{55}{table.caption.84}%
-\contentsline {table}{\numberline {S38}{\ignorespaces X14, tissue within a family}}{55}{table.caption.86}%
-\contentsline {table}{\numberline {S39}{\ignorespaces Marker reproducibility by family}}{58}{table.caption.89}%
+\contentsline {table}{\numberline {S5}{\ignorespaces scIB metrics against the paper's axes}}{13}{table.caption.10}%
+\contentsline {table}{\numberline {S6}{\ignorespaces The earlier split, sample by sample}}{17}{table.caption.14}%
+\contentsline {table}{\numberline {S7}{\ignorespaces Label coverage by study}}{22}{table.caption.15}%
+\contentsline {table}{\numberline {S8}{\ignorespaces Null widths against donor count}}{22}{table.caption.18}%
+\contentsline {table}{\numberline {S9}{\ignorespaces Correlations across the ten representations}}{22}{table.caption.20}%
+\contentsline {table}{\numberline {S10}{\ignorespaces Every arm, biological axes}}{24}{table.caption.23}%
+\contentsline {table}{\numberline {S11}{\ignorespaces Every arm, cost axes and training}}{24}{table.caption.24}%
+\contentsline {table}{\numberline {S12}{\ignorespaces Every arm, cross-donor values with $P$}}{24}{table.caption.25}%
+\contentsline {table}{\numberline {S13}{\ignorespaces Registered predictions, frontier arms}}{27}{table.caption.29}%
+\contentsline {table}{\numberline {S14}{\ignorespaces Ablations, biological axes}}{31}{table.caption.37}%
+\contentsline {table}{\numberline {S15}{\ignorespaces Ablations, stage, grade and cost axes}}{31}{table.caption.38}%
+\contentsline {table}{\numberline {S16}{\ignorespaces Ablations, training record}}{31}{table.caption.39}%
+\contentsline {table}{\numberline {S17}{\ignorespaces Registered predictions, ablations}}{36}{table.caption.44}%
+\contentsline {table}{\numberline {S18}{\ignorespaces Components deliberately not ablated}}{36}{table.caption.45}%
+\contentsline {table}{\numberline {S19}{\ignorespaces The transfer's neighbourhoods}}{39}{table.caption.54}%
+\contentsline {table}{\numberline {S20}{\ignorespaces Transfer validation}}{40}{table.caption.55}%
+\contentsline {table}{\numberline {S21}{\ignorespaces A distance rule does not work}}{40}{table.caption.56}%
+\contentsline {table}{\numberline {S22}{\ignorespaces A vote rule does not work either}}{41}{table.caption.57}%
+\contentsline {table}{\numberline {S23}{\ignorespaces Transferred composition by study}}{42}{table.caption.60}%
+\contentsline {table}{\numberline {S24}{\ignorespaces The claims ledger}}{44}{table.caption.63}%
+\contentsline {table}{\numberline {S25}{\ignorespaces X3, cycle agreement by disease}}{45}{table.caption.64}%
+\contentsline {table}{\numberline {S26}{\ignorespaces X3, the difference and its null}}{45}{table.caption.65}%
+\contentsline {table}{\numberline {S27}{\ignorespaces X3b, the interaction test}}{46}{table.caption.66}%
+\contentsline {table}{\numberline {S28}{\ignorespaces X8, composition by disease status}}{46}{table.caption.67}%
+\contentsline {table}{\numberline {S29}{\ignorespaces X8, composition by severity}}{47}{table.caption.69}%
+\contentsline {table}{\numberline {S30}{\ignorespaces X9, composition by tissue}}{48}{table.caption.71}%
+\contentsline {table}{\numberline {S31}{\ignorespaces X12, the global direction}}{49}{table.caption.73}%
+\contentsline {table}{\numberline {S32}{\ignorespaces X12, direction within each family, own labels}}{50}{table.caption.74}%
+\contentsline {table}{\numberline {S33}{\ignorespaces X12, direction within each family, transferred labels}}{50}{table.caption.75}%
+\contentsline {table}{\numberline {S34}{\ignorespaces X12, the disease end of the ranking}}{50}{table.caption.78}%
+\contentsline {table}{\numberline {S35}{\ignorespaces X12, the control end of the ranking}}{51}{table.caption.79}%
+\contentsline {table}{\numberline {S36}{\ignorespaces X12, external replication}}{51}{table.caption.80}%
+\contentsline {table}{\numberline {S37}{\ignorespaces X14, tissue within a family}}{51}{table.caption.82}%
+\contentsline {table}{\numberline {S38}{\ignorespaces Marker reproducibility by family}}{54}{table.caption.85}%
