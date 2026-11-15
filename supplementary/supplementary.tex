@@ -72,16 +72,24 @@
 \newpage
 
 % ── Supplementary Notes ───────────────────────────────────────────────
-\input{notes/N1-gene-grouping}
+% \clearpage after every Note so its floats land inside it rather than
+% drifting into the next Note, which the first build did (S36 to S41 of
+% Note 7 shipped after Note 8 had begun).
+\input{notes/N1-gene-grouping}\clearpage
+\input{notes/N2-scib}\clearpage
+\input{notes/N3-limitations}\clearpage
+\input{notes/N4-frontier-arms}\clearpage
+\input{notes/N5-ablations}\clearpage
+\input{notes/N6-label-transfer}\clearpage
+\input{notes/N7-claims-axis}\clearpage
+\input{notes/N8-marker-reproducibility}\clearpage
 
-% N2  scIB in detail                     waits on scib_scfoundation
-% N3  Limitations, at length             ready to write
-% N4  The six frontier arms              waits on the UMAP figures
-% N5  The ablations                      waits on the UMAP figures
-% N6  Label transfer and its failure     ready to write
-% N7  The claims axis, protocol by protocol
-% N8  X13 marker reproducibility         waits on the job
-% N9  X15 group embeddings               waits on the job
+% N9  X15 group embeddings               waits on the probe_stages job
+%
+% TABLES AND FIGURES ARE GENERATED, NOT TYPED. figures/scripts/supp_figures.py
+% writes every tables/*.tex fragment and every cited figures/*.png from the
+% benchmark files, the claims CSVs and the dumps; the notes \input the
+% fragments so a number in a Note's table has a file behind it.
 
 % ── References ───────────────────────────────────────────────────────
 % The supplementary carries its OWN reference list, numbered separately

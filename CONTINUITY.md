@@ -1083,3 +1083,33 @@ I fixed a script in `axw1008` and committed from `Paper_writing`, so the
 commit message named a change it could not contain and AW pulled a repo that
 still had the bug. **Commit in the repo the change is in.** And I cannot
 push; AW has to, so a "pull and run" instruction is wrong until he has.
+
+## 15 November: Notes 2 to 8 drafted, and three things the paper did not know
+
+**Register for a Supplementary Note, read off scGPT, TIGON and MIDAS and
+N1.** It opens on what the note is for in one or two sentences, argues in
+subsections, puts every number in a generated table the prose reads from,
+and closes on what the result does not show. It is not an appendix of
+output and it is not the Discussion: it carries the numbers the Discussion
+is forbidden and the mechanism the Results has no room for.
+
+**Every table is generated.** `figures/scripts/supp_figures.py` writes the
+fragments and the cited figures from the same files the auditors read. The
+one shift it caught: `x3b_results.csv`'s interaction row has eight fields
+under nine headers, so `P` sits under `null_sd`. Documented in the script.
+
+**M1 is wrong as written, and N3 says the true version.** The donor-alias
+fix predates every reported arm; the surviving issue is that the
+whole-corpus validation keys on the raw identifier. Flagged to AW, not yet
+ruled on. The lesson is the standing one: check the code's date against
+the run's date before carrying a limitation forward.
+
+**Two dangling pointers in Results**: `(Methods, \emph{Label transfer})`
+and `(Methods, \emph{Severity})` name subsections that do not exist.
+
+**D5's `group_idx` is a gene's position inside its group, not the group.**
+I drew a histogram on it and got 493 bins of 44. Group sizes come from
+`groupby("group")`: 44 groups, 247 to 493, median 342, matching N1.
+
+**Exploratory figures live outside git** at
+`Outputs/supplementary/figures_explore/`. Single panels only, per AW.

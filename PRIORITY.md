@@ -97,7 +97,8 @@ re-derived.
 | | state |
 |---|---|
 | **Note 1**, gene-group sizing | **done**, AW-edited, with Figures S1 and S2 and Table S2 |
-| Notes 2 to 9 | listed as comments in `supplementary.tex` with their blockers |
+| **Notes 2 to 8** | **drafted 15 Nov, unreviewed by AW.** scIB, limitations, frontier arms, ablations, label transfer, claims axis, marker reproducibility. ~45 pages with 44 figures and 24 tables, every table generated |
+| Note 9, X15 | waits on the `--only-groups` probe job |
 | **Supplementary Data D1 to D5** | **built and sent.** `Outputs/supplementary/send/` |
 | **scIB scorecard** | **complete**, no empty cell |
 | Source Data | waits on the figures being final |
@@ -109,6 +110,46 @@ table by title, so every float needs a short `\caption[short]{long}`. The
 supplementary carries its own reference list. And `build_supp.sh clean` must
 remove the `.bbl`, or a bibliography change survives a clean and citations
 stay silently unresolved.
+
+## Notes 2 to 8, and the figure exercise, 15 November
+
+**One generator makes everything:** `figures/scripts/supp_figures.py`.
+Every `supplementary/tables/*.tex` fragment and every cited
+`supplementary/figures/*.png` comes out of it, reading benchmark files
+through `table1.collect()`, the claims CSVs, the metrics files and the
+dumps. The notes `\input` the fragments, so a number in a Note's table has
+a file behind it. Rerun after any re-score; `--only <group>` for a subset,
+`--no-umaps` to skip the 44 UMAP panels.
+
+**The exploratory tier is outside git**:
+`Outputs/supplementary/figures_explore/`, ~90 single-panel figures, 11 MB.
+AW's instruction was single panels, no multi-panel grouping yet, legends
+not yet. The ones a Note cites are copied into `supplementary/figures/`.
+
+**Three things the exercise established that the paper did not know:**
+
+1. **The split leak is not what M1 says.** Commit `7ed19bd` (5 Oct)
+   resolves the 30 García-Alonso identifiers to 15 people BEFORE splitting,
+   and every reported arm trained after it (p-series from 19 Oct). The
+   held-out benchmark counts 70 of 254 people. What survives is narrower:
+   `validate_latent.py` keys on the raw `patient_id` (269), so the
+   whole-corpus cycle (142 donors) and donor-recovery (269) reads count the
+   fifteen twice. N3 is written that way. **DISCUSSION_INVENTORY M1 and the
+   Discussion sentence "overlapping donor identifiers across one study pair"
+   need AW's ruling on wording.**
+2. **Results points at two Methods subsections that do not exist**:
+   `(Methods, \emph{Label transfer})` and `(Methods, \emph{Severity})`.
+   Neither heading is in `04-methods.tex`. Either write them (N6 has the
+   label-transfer material) or repoint to the Notes.
+3. **Only two scIB metrics are constants** (iLISI, cLISI); kBET is
+   near-constant (range 0.04). Where scIB discriminates, no metric tracks
+   donor recovery or the cycle (|rho| <= 0.60, none at P < 0.05). ELAJ is
+   last of eleven on ARI/NMI and second on graph connectivity; N2 names the
+   axes rather than hiding them.
+
+**Also done this pass:** `Supplementary Note~X` in the Discussion now reads
+`Note~3`; `mcinnes2018umap` added to the bib; `\clearpage` after every
+Note so floats stay inside it.
 
 # 2. Ready to go now. No dependencies, no compute.
 
@@ -144,9 +185,8 @@ Ordered by what I would do first.
 
 | item | waits on |
 |---|---|
-| Note N2, scIB in detail | the scorecard is **built**; one cell waits on `scib_scfoundation` |
-| Note on X13 | the X13 job |
-| Note on X15 | the X15 job |
+| Note N9, X15 | the `--only-groups` probe job, outcome unknown |
+| **AW's review of Notes 2 to 8** | his read; nothing in them has been edited by him yet |
 | **Source Data** | the figures being final. Sheets are named per panel, so it cannot be written before the panels exist |
 | Supplementary Table captions and numbering | the Notes, per the rule above |
 | **References, whole paper** | the deferred citation pass below |
@@ -248,6 +288,14 @@ removed. **Size the layout to fit the type, never the type to fit the layout.**
 ---
 
 # The handover workflow
+
+- [ ] **REMINDER FOR AW, 14 November: the guide's Word doc does not yet carry
+      the X13 additions to Results and the Discussion.** Both sections were
+      shipped as wholesale docx replacements BEFORE X13 landed. The Results
+      paragraph (label transfer, "Those two annotations agree.") and the
+      Discussion refutation sentence beside the Huang contradiction are only
+      in the `.tex`. Supplementary Data on OneDrive IS current (AW, 14 Nov).
+
 
 1. change the `.tex`
 2. build the Word file

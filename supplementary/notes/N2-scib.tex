@@ -1,0 +1,216 @@
+% =====================================================================
+% SUPPLEMENTARY NOTE 2 — the scIB scorecard on this corpus.
+%
+% SOURCES. Every number is read from Outputs/supplementary/scib/, which
+% figures/scripts/scib_table.py builds from the auditors' own manifest by
+% exact key (method, gene policy, fit split). The tables below are
+% generated fragments in ../tables/; nothing is typed.
+%
+% THE FAIRNESS CONSTRAINT, settled 11 November: Hrovatin's authors wrote
+% scIB. The claim is that its axes do not discriminate ON THIS CORPUS,
+% never that the framework is wrong. Every paragraph here is written to
+% that line.
+% =====================================================================
+
+\section{The scIB scorecard on this corpus}
+\label{note:scib}
+
+The main text measures batch removal and biological conservation with two
+instruments built for this corpus, donor recovery and cross-donor agreement
+(Methods, \emph{Cross-donor agreement}). The field's standard instrument is
+the scIB battery \citep{luecken2022benchmarking}, ten metrics in two halves,
+and the atlas-building review recommends it for choosing an integration
+\citep{hrovatin2025atlases}. Every representation in Table~1 was therefore
+scored on all ten. This note reports the full scorecard, says which of the
+ten discriminate between representations here, and explains why the ones
+that do are ranking on something other than the quantity the paper is
+about. The claim throughout is about this corpus. scIB was built to rank
+integrations of multi-dataset atlases where the batch is the dataset and the
+biology to conserve is cell type; on such atlases it does what it was built
+for, and nothing below says otherwise.
+
+\subsection{What was scored}
+
+Ten metrics were computed with the scib-metrics implementation on the
+176{,}803 held-out cells that carry a cell-family label, which come from the
+two studies that annotated their own cells. The batch variable is study and
+the label has four levels. Seven of the ten were also computed against the
+sixty-level \texttt{AnnotationRefined} vocabulary over 132{,}261 cells; that
+vocabulary comes from one study, so the three metrics that compare studies
+within a label have no second study to compare and are not defined on it.
+Eleven representations were scored: the two reported \elaj{} arms, five
+integration and dimension-reduction methods and four pretrained foundation
+models, each on the cells and gene policy recorded in the auditors'
+manifest. One cell of the table has a different provenance and it is
+declared: scFoundation's silhouette-batch score comes from a re-scoring pass
+over the same dumped latent, because the first pass was killed inside that
+metric; the re-scoring reproduced all seven metrics it shares with the first
+pass to the printed precision, which is what makes the one new value usable.
+Table~\ref{stab:scib-family} is the scorecard on cell family and
+Table~\ref{stab:scib-refined} the one on the finer vocabulary.
+Supplementary Fig.~\ref{sfig:scib-heatmap} draws the first.
+
+\begin{table}[p]
+\centering
+\caption[scIB scorecard, cell family]{\textbf{The scIB scorecard on cell
+family.} Eleven representations, ten metrics, 176{,}803 held-out cells
+from the two studies that annotated their cells; batch is study. The five
+columns on the left are scIB's batch-correction half and the five on the
+right its biological-conservation half. Every metric is scaled so that one
+is best.}
+\label{stab:scib-family}
+\footnotesize\setlength{\tabcolsep}{3pt}
+\resizebox{\textwidth}{!}{\input{tables/scib_cellfamily}}
+\end{table}
+
+\begin{table}[p]
+\centering
+\caption[scIB scorecard, refined annotation]{\textbf{The scIB scorecard on
+the sixty-level annotation.} The seven metrics that are defined when the
+label comes from a single study, over 132{,}261 held-out cells carrying
+\texttt{duempelmann\_2026}'s \texttt{AnnotationRefined}. PCR batch is one
+for every representation because there is one study, so the variance
+explained by study is zero before and after.}
+\label{stab:scib-refined}
+\small
+\input{tables/scib_annotationrefined}
+\end{table}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=.95\textwidth]{figures/scib_scorecard_heatmap.png}
+\caption[The scorecard as a heatmap]{\textbf{Table~\ref{stab:scib-family}
+drawn.} Darker is better on every metric. The two outlined columns, iLISI
+and cLISI, take one value for all eleven representations.}
+\label{sfig:scib-heatmap}
+\end{figure}
+
+\subsection{Two of the ten are constants here, and a third nearly}
+
+iLISI is 0.0000 for all eleven representations and cLISI is 1.0000 for all
+eleven. kBET spans 0.0000 to 0.0400. Representations that differ by 0.27 in
+donor recovery, by 0.30 in cross-donor cycle agreement and by 0.19 in study
+separation receive identical scores from two of the ten metrics, so neither
+can rank them, whatever the reason (Table~\ref{stab:scib-disc},
+Supplementary Fig.~\ref{sfig:scib-range}). The reason is structural rather
+than numerical. Both LISI scores are medians, over cells, of the effective
+number of categories in a cell's neighbourhood. The labelled cells come from
+two studies at a three-to-one imbalance, 132{,}259 against 44{,}544, and in
+every representation the typical labelled neighbourhood draws on one study
+and one family. The first puts iLISI at its floor; the second puts cLISI at
+its ceiling, and it is the same fact the main text reports as cell family
+being saturated across the field, 0.9023 to 0.9896 cross-donor. kBET asks a
+stricter form of the iLISI question, whether the local study mix matches the
+global one, and 0.04 is the most any representation achieves.
+
+\begin{table}[t]
+\centering
+\caption[What each scIB metric discriminates here]{\textbf{Range of each
+metric across the eleven representations.} A metric whose range is below
+the rounding the paper reports cannot rank representations on this corpus.
+The description of what each metric rewards is a one-clause reading of its
+definition in \citet{luecken2022benchmarking}.}
+\label{stab:scib-disc}
+\footnotesize
+\input{tables/scib_discrimination}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.7\textwidth]{figures/scib_metric_range.png}
+\caption[Range of each scIB metric]{\textbf{The range each metric spans
+across eleven representations}, with \elaj\,B\textsubscript{hi}'s own score
+marked. Two metrics have no range at all; kBET's is 0.04.}
+\label{sfig:scib-range}
+\end{figure}
+
+\subsection{Where it discriminates, it ranks on something else}
+
+Across the eleven representations no scIB metric tracks either axis the
+paper reports (Table~\ref{stab:scib-corr}, Supplementary
+Fig.~\ref{sfig:scib-corr}). The largest association in either direction is
+graph connectivity against donor recovery at Spearman $\rho = -0.600$,
+$P = 0.051$; every other coefficient has $|\rho| \leq 0.34$. The reason is
+where the batch half looks. Each of its five metrics is defined against the
+declared batch, which is study. The confound in this corpus sits one level
+below: 254 donors nested inside eleven studies, each donor biopsied once, so
+that menstrual phase, disease status and severity are constant within a
+donor. A metric that asks whether studies mix is silent on whether donors
+do, and donors are the level at which the biology is collinear with the
+batch. Donor recovery is the quantity that sees this, and the cross-donor
+estimator discards the same-donor part before it scores anything. A
+representation can score well on every batch metric here while placing each
+person in their own territory, and the one that does so most, by donor
+recovery, is not the one scIB ranks last.
+
+\begin{table}[t]
+\centering
+\caption[scIB metrics against the paper's axes]{\textbf{Each scIB metric
+against donor recovery and against cross-donor cycle agreement.} Spearman
+rank correlations across the eleven representations; the two constant
+metrics have no rank order to correlate.}
+\label{stab:scib-corr}
+\small
+\input{tables/scib_correlations}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.7\textwidth]{figures/scib_vs_donor_and_cycle.png}
+\caption[scIB metrics against donor recovery and cycle]{\textbf{Table~\ref{stab:scib-corr}
+drawn.} No metric in either half reaches $|\rho| = 0.65$ with either axis.}
+\label{sfig:scib-corr}
+\end{figure}
+
+\subsection{The biological half rewards clustering, and clustering is not what this latent does}
+
+ARI and NMI run Leiden clustering over a sweep of resolutions and report the
+best agreement between clusters and the label. On them \elaj\,B\textsubscript{hi}
+is last of eleven, at 0.0498 and 0.0724, and SCimilarity, which is
+pretrained with supervision on cell type, is first at 0.9010 and 0.8555.
+The same latent scores 0.9854 on graph connectivity, second of eleven and
+0.0001 below scVI, 0.9820 on cross-donor cell family and 0.9864 on
+$k$NN cell family. Those are two pictures of one representation. Each family
+occupies a connected region and a cell's neighbours are its own family, but
+the region does not break into discrete clusters at any resolution the
+sweep visits, because inside each family the latent is organised along the
+menstrual cycle (Supplementary Note~\ref{note:frontier},
+Fig.~\ref{sfig:umap-base-phase}). A clustering metric is built to reward a
+latent that falls into pieces coinciding with the label; a latent that is
+continuous within the label scores low on it by construction, and the
+cycle it is continuous along is the biology the paper is about.
+
+The two \elaj{} arms make the mechanism visible
+(Supplementary Fig.~\ref{sfig:scib-two-arms}). \elaj\,B\textsubscript{lo},
+trained with the thirty-fold stronger prior, scores 0.1708 and 0.3364 on
+ARI and NMI against B\textsubscript{hi}'s 0.0498 and 0.0724, while scoring
+lower on cross-donor cell family, 0.9565 against 0.9820, and on the cycle,
+0.6033 against 0.7346. Across the one coefficient that separates the two
+arms, the clustering metrics and the neighbourhood metrics move in opposite
+directions. On the remaining two biological metrics, isolated labels and
+the biological silhouette, both arms sit inside the field's range, 0.5145
+to 0.7483 and 0.5363 to 0.8060.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.7\textwidth]{figures/scib_bio_half_two_arms.png}
+\caption[The bio half on the two reported arms]{\textbf{The biological
+half of the scorecard on the two reported arms}, against the median of the
+nine other representations. The stronger prior raises the two clustering
+metrics and lowers the neighbourhood ones.}
+\label{sfig:scib-two-arms}
+\end{figure}
+
+\subsection{What this means for the paper}
+
+Naming the axes: on scIB's clustering metrics \elaj{} is last of eleven; on
+its connectivity metric it is second; on the paper's own instruments it is
+first on the cycle and lowest on donor recovery. None of these is wrong.
+They measure different things, and the one sentence the Discussion spends
+on scIB, that its biological half is saturated on this corpus, rests on
+Table~\ref{stab:scib-disc}: two constants, one near-constant, and a
+biological half whose target label every method recovers. On an atlas built
+from many datasets with cell type as the quantity to conserve, the same
+battery discriminates as it was designed to. The corpus here is the case it
+was not designed for, which is what made a corpus-specific instrument a
+necessity rather than a preference.
