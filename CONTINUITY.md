@@ -1113,3 +1113,84 @@ I drew a histogram on it and got 493 bins of 44. Group sizes come from
 
 **Exploratory figures live outside git** at
 `Outputs/supplementary/figures_explore/`. Single panels only, per AW.
+
+## 16 November: AW's review of Notes 2 and 3, and three things I got wrong
+
+**THE LEAK IS REAL AND I HAD DENIED IT.** AW: *"There is in fact a leak. I
+remember measuring it to around 5% error overall. I think some cells leaked
+instead of a donor."* He was right and my 15 November write-up was wrong.
+`audit/SPLIT_LEAK.md` is the measurement.
+
+What is clean: no `patient_id` in two splits, no alias pair straddling the
+wall, no duplicate cells. What leaks: **the cross-donor estimator discards
+same-donor neighbours BY IDENTIFIER, and fifteen people hold two.** So
+same-person relations inside one split are scored as cross-donor. Re-splitting
+cannot fix it; the fix is resolving aliases **in the scorer**.
+
+| | held out | whole corpus |
+|---|---|---|
+| phase | 2.83% of relations, $-$0.0121 | 1.54%, $-$0.0071 (about 1% of its value) |
+| disease | 2.00%, $-$0.0173 | not measured |
+| donor recovery | $+$0.0065 (worse) | not measured |
+| family, severity, stage, grade | **zero exposure** | **zero exposure** |
+
+Zero is structural: both García-Alonso deposits are control endometrium
+carrying a phase label and nothing else. **Every correction moves against
+us.** THE OPEN DECISION: re-score all eleven, or report with the bound
+stated. It must be all eleven or none, because a corrected \elaj{} against
+nine uncorrected competitors is worse than reporting none of it.
+
+**The lesson, and it is the Wikipedia failure again.** I read commit
+`7ed19bd`'s message, saw the splitter was fixed, and concluded the problem
+was gone. The fix was real and in the wrong place for the thing that
+mattered. **Check where a fix applies, not only that it exists.**
+
+### Two bugs a render caught that no build error would
+
+`\thesection` is `Supplementary Note \arabic{section}`, so `\ref{}` already
+expands to the whole phrase. Writing "Supplementary Note~\ref{...}" printed
+it twice, **16 times**, and LaTeX never complained. And a figure caption said
+"red marks the four absent days" where absent days are zero-height bars, so
+it marked something invisible. **Render pages and read them; zero overfull
+and zero undefined is not proof the document says what it means.**
+
+### What AW's review taught about supplementary prose
+
+`SUPPLEMENTARY_REGISTER.md` has the tone/coverage/usefulness comparison
+against scGPT, TIGON and MIDAS; the eight surface fixes are applied. His
+review added four rules that file did not have:
+
+1. **Prime before you measure.** A metric section needs a paragraph saying
+   what each metric asks before any number appears.
+2. **Build a surprising result up as the process.** Not "two columns are
+   constant, here is why", but: they were constant, we suspected the
+   implementation, we checked the definitions, the cause was the corpus.
+3. **A figure that is a table in colours is one of them too many.** The
+   scIB heatmap went; Table S5's columns moved into the range figure.
+4. **Do not restate a table in prose.** His words on label coverage and null
+   width: make the point, don't read the numbers out. Same rule as Results.
+
+**Colour must encode a variable.** AW: *"Fig S13 colouring is fucked.
+Colours should mean something here."* Six frontier arms shared one grey while
+five ablations took arbitrary hues.
+
+### IBDex's visual vocabulary, extracted from its figure pages
+
+Worth reusing and already used once: **forest plot with aligned numeric
+columns** (Fig 2c: effect and CI left, AUC/CI/P/n right, non-significant
+rows greyed and badged) -- now the per-family AUC figure; **raincloud**
+(density plus jitter plus median marker); **dumbbell across many categories**
+(Fig 3e); **scatter with labelled extremes and a boxed stats inset**;
+**hexbin rank-rank with a log colourbar**. The common thread: the numbers sit
+beside the picture, and colour always means something.
+
+### Three measurement facts worth not rediscovering
+
+- **A KD-tree in 16 dimensions does not finish** on 736k points. Use
+  `NearestNeighbors(algorithm="brute")`, and for a RATIO query a random
+  subsample against the full reference set is unbiased and fast.
+- **The donor chance rate is per scope**: 70 identifiers held out
+  (chance 0.023), 269 whole corpus (0.0060). Not 269 for the Table 1 figure.
+- **Dümpelmann supplies its own phase column.** No cycle-day-to-phase
+  conversion happens anywhere in this project.
+

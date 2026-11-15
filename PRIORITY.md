@@ -49,28 +49,44 @@ carried by a topic-sentence ladder. Do not reopen it.
 | `marker_reproducibility.sh` | **X13** | 8 h CPU | **DONE.** In Results and the Discussion |
 | `scib_scfoundation.sh` | the quarantined scIB cell | 6 h CPU | **DONE in substance**, see below |
 | `count_params_sweep.py` | N1's figures | seconds | **DONE.** Anchored at 1,883,986 |
-| `probe_stages.sh` to `p1_groups` | **X15** | 16 h GPU | **FAILED on the wall. Resubmit with `--only-groups`** |
+| `probe_stages.sh` to `p1_groups` | **X15** | 2 d GPU | **KICKED OFF 16 Nov**, after two fixes below |
+| `train.sh a1_seed42` | the seed band for Notes 3 and 5 | ~10 h GPU | **KICKED OFF 16 Nov**. Needs a scoring pass when it lands |
 
 **On the UMAP caches**: the job ran before the index pin was committed, so it
 took the RNG path. That is fine, because HPC numpy 1.26.4 and local 2.2.6 were
 checked to produce the identical draw (checksum 315692720845). The pin protects
 future runs; it did not make these ones correct.
 
-**X15 failed on the wall and the diagnosis matters.** It spent all sixteen
-hours inside ONE stage, `groups/concat`, and never reached the per-group
-stages the question needs. That stage is **12,672 wide**, not the 1,408 I
-assumed: with the `cls+pool8` readout each group hands on 1 CLS plus 8 pooled
-vectors, so 44 x 9 x 32. The cross-donor search is brute force, cells squared
-times width. `--only-groups` was added to skip every pipeline stage; the 44
-individual stages are 288 wide each and take the shorter two-label battery.
+**X15 timed out twice and the second diagnosis is the one that matters.**
+The first run spent sixteen hours inside `groups/concat` (12,672 wide, not
+the 1,408 I assumed), which `--only-groups` now skips. The second ran
+sixteen hours and scored 38 of 44 groups of the FIRST of three reference
+families, with not one row about the model. Two causes, both fixed in
+`axw1008` `a99d052`:
+
+1. **A bug.** `group_battery` emptied `cross_donor_labels` and `scib_labels`
+   but left `settings.stages` at its default, and `mixing` and `disease` are
+   dispatched from `stages` and read `corpus.study_id` and `disease_status`
+   directly. Every per-group stage ran the eleven-study purity sweep and the
+   three-way disease contrast: **25 rows where the function intends 2.**
+   Measured: the two kNN labels took 5.5 of each stage's 24 minutes.
+   Now `stages=("knn",)`, with a regression test.
+2. **`--no-references` was not passed.** The flag's own help says the two
+   per-group PCA reference families are two thirds of the cost and say what
+   the baseline table already says. They run first and ate the wall.
+
+Also: `--only-groups` now keeps the `latent` row, the script's own integrity
+check against the benchmark's elaj row, 16 wide against the group stages'
+288. Wall 16 h to 2 days: 44 stages at 288 wide is roughly 36 hours.
 
 ```
-cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/probe_stages.sh p1_dab168_kl1 --runs-dir outputs/p_series --splits val test --only-groups --out outputs/probes/p1_groups
+cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/probe_stages.sh p1_dab168_kl1 --runs-dir outputs/p_series --splits val test --only-groups --no-references --out outputs/probes/p1_groups
 ```
 
-**Do not cut `--splits` to save time.** The latent row must reproduce the
-benchmark's elaj row and that only holds on val+test; that reproduction is
-the script's own integrity check. The next lever is `--k-cross-donor`.
+**Do not cut `--splits` to save time**, and **move the old `p1_groups`
+directory first** if the 38 `counts_raw` rows are wanted: the new run writes
+to the same path, and only their `knn-agreement` rows are comparable to what
+the fixed battery produces.
 
 **scIB is resolved without a rerun.** Job 61784251 computed every `cell
 family` metric, then OOM-died on a second label set we do not use, so it
@@ -97,7 +113,7 @@ re-derived.
 | | state |
 |---|---|
 | **Note 1**, gene-group sizing | **done**, AW-edited, with Figures S1 and S2 and Table S2 |
-| **Notes 2 to 8** | **drafted 15 Nov, unreviewed by AW.** scIB, limitations, frontier arms, ablations, label transfer, claims axis, marker reproducibility. ~45 pages with 44 figures and 24 tables, every table generated |
+| **Notes 2 to 8** | drafted 15 Nov, register pass applied, **N2 and N3 reviewed by AW and his comments applied 16 Nov**. N4 to N8 await his read |
 | Note 9, X15 | waits on the `--only-groups` probe job |
 | **Supplementary Data D1 to D5** | **built and sent.** `Outputs/supplementary/send/` |
 | **scIB scorecard** | **complete**, no empty cell |
@@ -207,6 +223,40 @@ saved. **`arm` was kept** where the main Results already uses it, at much
 lower density; eliminating it would put the notes out of step with the
 main text, and changing both is AW's call.
 
+## AW's review of Notes 2 and 3, applied 16 November (`2f517e5`)
+
+**N2.** A primer on what the ten metrics ask, before any number. The
+constant-metric subsection rebuilt as the process: columns constant, we
+suspected the implementation, we checked the definitions, the cause was the
+corpus. cLISI separated from cross-donor cell family, which he found
+confusing and which are genuinely different tests. The batch-metric
+paragraph reordered to mechanism, then the failure the design permits, then
+this corpus, then cross-donor. Fig S5's legend is his wording.
+
+**N3.** The whole-corpus paragraph carries the measurement. Donor chance
+rate corrected: **70 identifiers held out, not 269**, and the chance rate is
+not where the error is -- the agreement is. Label coverage and null width
+make their point rather than restating their tables. His cycle-day query
+resolved: **duempelmann supplies its own phase column, so no day-to-phase
+conversion happens anywhere**; the paragraph keeps the real point, that
+cycle length varies and endometriosis alters it. His two `[reference]`
+placeholders filled. He had already cut the four-families paragraph; its
+echo in the closing summary went too.
+
+**Figures.** scIB heatmap removed and Table S5's columns folded into the
+range figure (⚠ his two bullets on this conflict; the reading taken is in
+the commit message and needs his confirmation). Label coverage redrawn
+against the corpus rather than against each study. Null widths connect each
+label across its scopes. S10 and S11 dropped. Bar colour encodes the knob.
+Per-family AUC is now an IBDex Fig. 2c forest plot with aligned numbers.
+**UMAP panels: one figure per model, cell family / study / menstrual
+phase**, replacing seven single-colouring figures.
+
+**Two bugs a render caught and no build error would.** `\thesection`
+already expands to the whole phrase, so "Supplementary Note~\ref{}" printed
+it twice, 16 times. And a caption said red marked the absent cycle days,
+which are zero-height bars.
+
 # 2. Ready to go now. No dependencies, no compute.
 
 Ordered by what I would do first.
@@ -242,7 +292,7 @@ Ordered by what I would do first.
 | item | waits on |
 |---|---|
 | Note N9, X15 | the `--only-groups` probe job, outcome unknown |
-| **AW's review of Notes 2 to 8** | **in progress**, he is editing N2 and N3 directly |
+| **AW's review of Notes 4 to 8** | his read. N2 and N3 are done |
 | The two Results pointers | **Supplementary Methods existing.** Until then they name headings that are nowhere |
 | A seed replicate of the reported model | **`a1_seed42` is written and committed** (`axw1008` `ab7586a`), awaiting the GPU run |
 | **Source Data** | the figures being final. Sheets are named per panel, so it cannot be written before the panels exist |
@@ -282,15 +332,19 @@ Ordered by what I would do first.
    donor recovery $+$0.0065 (worse). Cell family, severity, stage and grade
    have **zero** exposure, because both deposits carry a phase label and
    nothing else.
-   **The decision, and it is not a wording one.** (a) re-score all eleven
-   representations with aliases resolved in the scorer, which needs no
-   retraining because the latents are dumped; (b) report as is and state
-   the bound in Note 3; (c) drop the four dual-identifier people, losing
-   12.3% of the held-out split. **The correction must be applied to all
-   eleven or to none** -- a corrected \elaj{} against nine uncorrected
-   competitors would be worse than reporting none of it, and on scaled
-   numbers our phase lands near Scanorama's. AW's review of the Notes is
-   expected to carry his own comment on this; nothing has been edited.
+   **Measured on both scopes, 16 November.** Held out: 2.83% of relations
+   on phase ($-$0.0121), 2.00% on disease ($-$0.0173), donor recovery
+   $+$0.0065 worse. Whole corpus: 1.54% on phase, $-$0.0071, which is about
+   **1% of the reported figure's own value**. Family, severity, stage and
+   grade have **zero** exposure on both scopes, structurally, because both
+   deposits are control endometrium carrying a phase label and nothing else.
+   Every correction moves against us. **Note 3 now states this as a measured
+   bound rather than a worry**, which is option (b) taken provisionally.
+   **STILL OPEN: (a) re-score all eleven with aliases resolved in the scorer**
+   -- no retraining, the latents are dumped -- **or stay with (b).** It must
+   be all eleven or none: a corrected \elaj{} against nine uncorrected
+   competitors is worse than reporting none of it, and on scaled numbers our
+   phase lands near Scanorama's.
 
 ---
 
