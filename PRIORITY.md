@@ -146,7 +146,18 @@ not yet. The ones a Note cites are copied into `supplementary/figures/`.
    donor recovery or the cycle (|rho| <= 0.60, none at P < 0.05). ELAJ is
    last of eleven on ARI/NMI and second on graph connectivity; N2 names the
    axes rather than hiding them.
-4. **The seed figure has a source and it is the r-series.** AW, 15 November.
+4. **The seed figure: `a1_seed42` is built and ready to submit.** AW,
+   15 November: *"We are checking the variance of the model. I don't want
+   to combine it with effects of varying data."* So the arm moves `seed`
+   24 to 42 and nothing else; `seed` sets model initialisation, batch order
+   and the UMAP fit but **not** `data.splits.seed`, so the donor split and
+   the scored cells are the base's. Overrides are byte-identical to
+   `p1_dab168_kl1` and a new test asserts it. Bands are registered in the
+   config before the run, as for every other arm. **Two runs give a range,
+   never a standard deviation**, and Note 5's deltas get read against it:
+   an ablation whose effect is smaller than the seed difference on the same
+   axis must say so. The old r-series reasoning is kept below because it is
+   why this arm is needed rather than reused.
    `r2_ref_s7.yaml` is "r2_ref again at seed 7, the error bar for the whole
    wave", and its own header says seed sets model initialisation, batch
    order and the UMAP fit but **not** `data.splits.seed`, so it bounds
@@ -233,7 +244,7 @@ Ordered by what I would do first.
 | Note N9, X15 | the `--only-groups` probe job, outcome unknown |
 | **AW's review of Notes 2 to 8** | **in progress**, he is editing N2 and N3 directly |
 | The two Results pointers | **Supplementary Methods existing.** Until then they name headings that are nowhere |
-| A seed replicate of the reported model | optional, one GPU run at seed 42, below |
+| A seed replicate of the reported model | **`a1_seed42` is written and committed** (`axw1008` `ab7586a`), awaiting the GPU run |
 | **Source Data** | the figures being final. Sheets are named per panel, so it cannot be written before the panels exist |
 | Supplementary Table captions and numbering | the Notes, per the rule above |
 | **References, whole paper** | the deferred citation pass below |
@@ -259,23 +270,27 @@ Ordered by what I would do first.
    number the paper does not carry: whole-corpus surgical stage $+$0.3320 at
    $p=0.005$ over 58 donors, against the held-out 0.1313 at $p=0.303$. Either
    it goes into Results or the row comes out of the panel.
-5. **The M1 wording in the Discussion.** AW asked what the ruling is, so
-   stated precisely. The Discussion's limitations sentence lists
-   *"overlapping donor identifiers across one study pair"* among three
-   constraints. That phrase is **literally true** -- the identifiers do
-   overlap -- but a reader will take it to mean the donor split leaked, and
-   it did not for any reported number. Three options:
-   **(a) leave it.** True as written, and N3 now carries the precise
-   version. Risk: the reader imagines the stronger, wrong version.
-   **(b) sharpen it** to name what actually survives, for instance
-   *"fifteen people deposited under two identifiers, which the whole-corpus
-   reads count twice"*. One phrase, no length change. **My recommendation.**
-   **(c) drop it** from the Discussion's three and let N3 carry it alone,
-   since the headline numbers are all held-out and clean. Risk: looks like
-   an omission if a reviewer finds the identifiers.
-   Separately and not needing a ruling: **`DISCUSSION_INVENTORY.md` M1 is
-   factually stale** -- it describes the pre-October split -- and I will
-   correct that tracking file whichever option is chosen.
+5. **THE LEAK IS REAL AND MEASURED. `audit/SPLIT_LEAK.md`, 15 November.**
+   AW was right and my earlier account was wrong. The donor split is clean
+   (no `patient_id` in two splits, no alias pair straddling the wall, no
+   duplicate cells), but **the cross-donor estimator discards same-donor
+   neighbours by IDENTIFIER**, and fifteen people hold two. So same-person
+   relations inside the held-out split are scored as cross-donor. That is
+   the cell-level leak AW remembered.
+   **Size: 2.83% of cross-donor relations on phase, 2.00% on disease.**
+   Every correction moves against us: phase $-$0.0121, disease $-$0.0173,
+   donor recovery $+$0.0065 (worse). Cell family, severity, stage and grade
+   have **zero** exposure, because both deposits carry a phase label and
+   nothing else.
+   **The decision, and it is not a wording one.** (a) re-score all eleven
+   representations with aliases resolved in the scorer, which needs no
+   retraining because the latents are dumped; (b) report as is and state
+   the bound in Note 3; (c) drop the four dual-identifier people, losing
+   12.3% of the held-out split. **The correction must be applied to all
+   eleven or to none** -- a corrected \elaj{} against nine uncorrected
+   competitors would be worse than reporting none of it, and on scaled
+   numbers our phase lands near Scanorama's. AW's review of the Notes is
+   expected to carry his own comment on this; nothing has been edited.
 
 ---
 
