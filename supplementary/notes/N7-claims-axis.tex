@@ -8,33 +8,34 @@
 % calculation; it is the existing results laid out so each test can be
 % read against the claim it answers.
 %
-% REGISTER. These are the sections' own numbers at full length. The
-% Results subsection "Immune genes identify endometriosis" carries the
-% pooled headline for each; this is where the per-protocol detail lives.
+% REGISTER PASS, 15 November, per SUPPLEMENTARY_REGISTER.md. Subsections
+% are now the QUESTIONS rather than the X numbers, which mean nothing
+% outside EXPERIMENTS.md. The X numbers are kept in the ledger's third
+% column so the protocols can still be traced.
 % =====================================================================
 
 \section{The claims axis, protocol by protocol}
 \label{note:claims}
 
-Eleven studies were pooled to build this atlas, and ten of them made
-claims about endometriosis from their own cohorts. None of the ten could
-test another's, because no two share donors or a cell vocabulary. The
-claims axis asks which of those claims the pooled corpus can settle, and
-settles the ones it can. This note gives the ledger of claims, then each
-test as a protocol with its full table, in the order the tests depend on
-one another. The label transfer every composition test rests on is
-Supplementary Note~\ref{note:transfer}; the marker-signature test is
+Eleven studies were pooled to build this atlas, and ten of them made claims
+about endometriosis from their own cohorts. None of the ten could test
+another's, because no two share donors or a cell vocabulary. Our claims
+axis asks which of those claims the pooled corpus can settle, and settles
+the ones it can. In this note we give the ledger of claims, then each test
+as a protocol with its full table, in the order the tests depend on one
+another. The label transfer every composition test rests on is
+Supplementary Note~\ref{note:transfer}, and the marker-signature test is
 Supplementary Note~\ref{note:markers}.
 
 \subsection{The ledger}
 
 Table~\ref{stab:ledger} lists every claim that bears on the disease, with
-the cohort it was made from, the test applied here and the outcome. Claims
-were taken from the papers themselves rather than from any review of them.
-Three kinds of claim are outside the axis and are listed so that the
-boundary is visible: claims about cell types finer than the four families,
-which would need a finer transferred vocabulary; claims at the resolution
-of a single pathway, which the forty-four groups merge
+the cohort it was made from, the test we applied and the outcome. We took
+the claims from the papers themselves and not from any review of them.
+Three kinds of claim fall outside the axis and we list them so the boundary
+is visible: claims about cell types finer than the four families, which
+would need a finer transferred vocabulary; claims at the resolution of a
+single pathway, which our forty-four groups merge
 (Supplementary Note~\ref{note:limitations}); and claims from the one cohort
 whose controls are not in the corpus.
 
@@ -66,25 +67,28 @@ perivascular and mural cell findings in three cohorts & \texttt{duempelmann\_202
 \end{tabular}
 \end{table}
 
-\subsection{X3: the cycle in the latent, by disease status}
+\subsection{Does disease flatten the menstrual cycle? The latent}
 
 The claim is that in controls the proportions of immune cells vary across
 the menstrual cycle and in endometriosis that variation disappears
-\citep{huang2023immune}, made from thirteen donors. The first test asks the
-latent: cross-donor cycle agreement was computed separately over control
-donors and over eutopic donors, with a permutation null for the difference
-built by reassigning disease status across donors. The held-out restriction
-was dropped for this test because the phase head is one linear map from
-latent position to phase and cannot store which donor had which phase, and
-because training donors scored no higher than held-out ones, 0.6422 against
-0.6545; keeping the restriction would have cost two thirds of the donors
-for nothing. Over 112 donors the control excess is 0.6825 and the eutopic
-0.7474, a difference of $-0.0650$ against a null spanning $-0.1802$ to
-$+0.1949$, $P = 0.505$ (Tables~\ref{stab:x3} and~\ref{stab:x3d}). The
-claim predicts a positive difference; the measured one is small and
-negative, and the null is narrow enough that a difference of the size
-claimed would have been seen. Phase labels come from three studies, so this
-is a three-cohort result rather than a corpus-wide one.
+\citep{huang2023immune}, made from thirteen donors. To ask it of the
+latent, we computed cross-donor cycle agreement separately over control
+donors and over eutopic donors, and built a permutation null for the
+difference by reassigning disease status across donors.
+
+We dropped the held-out restriction for this test. The phase head is one
+linear map from latent position to phase and cannot store which donor had
+which phase, and training donors scored no higher than held-out ones,
+0.6422 against 0.6545. Keeping the restriction would have cost two thirds
+of the donors for nothing.
+
+Over 112 donors the control excess is 0.6825 and the eutopic 0.7474, a
+difference of $-0.0650$ against a null spanning $-0.1802$ to $+0.1949$,
+$P = 0.505$ (Tables~\ref{stab:x3} and~\ref{stab:x3d}). The claim predicts a
+positive difference. The measured one is small and negative, and the null
+is narrow enough that a difference of the size claimed would have been
+seen. Phase labels come from three studies, so this is a three-cohort
+result and not a corpus-wide one.
 
 \begin{table}[t]
 \centering
@@ -104,19 +108,21 @@ the two groups and its permutation null.}}
 \input{tables/x3_difference}
 \end{table}
 
-\subsection{X3b: the same claim, as the source made it}
+\subsection{Does disease flatten the menstrual cycle? The proportions}
 
-The claim is about proportions, not latent geometry, so the second test
-uses no model output. For each of 101 donors carrying a family label, a
-phase and a disease status, the immune share of cells was fitted as
+The claim is about proportions and not about latent geometry, so our second
+test uses no model output. For each of 101 donors carrying a family label,
+a phase and a disease status, we fitted the immune share of cells as
 $\mathrm{logit}(\text{share}) \sim \text{study} + \text{phase} +
 \text{disease} + \text{phase} \times \text{disease}$. The interaction term
-is the claim written as arithmetic. The null permutes disease status across
+is the claim written as arithmetic. Our null permutes disease status across
 donors within study, keeping each donor's phase and composition together,
-5{,}000 times. The interaction $F$ is 0.263 against a null whose 95th
-percentile is 3.061, $P = 0.762$ (Table~\ref{stab:x3b}). The two tests use
-different instruments, one the representation and one a headcount, and
-agree; the second cannot be attributed to anything the model does.
+5{,}000 times.
+
+The interaction $F$ is 0.263 against a null whose 95th percentile is 3.061,
+$P = 0.762$ (Table~\ref{stab:x3b}). Thus the two tests use different
+instruments, one the representation and one a headcount, and they agree.
+The second cannot be attributed to anything the model does.
 
 \begin{table}[t]
 \centering
@@ -127,21 +133,23 @@ on immune composition}, 101 donors, study as a covariate.}
 \input{tables/x3b_interaction}
 \end{table}
 
-\subsection{X8: composition, control against eutopic}
+\subsection{Does composition differ between patients and controls?}
 
 The claim is that, stratified by phase, cell composition barely differs
 between patients and controls, with one exception among 57 cell types
 \citep{duempelmann2026endometrium}, made from 60 donors. For each of 194
-donors with endometrium in the corpus, the share of each family was
-computed over the transferred and annotated labels together, and disease
-status was tested after study with a permutation null of 5{,}000
-reassignments within study. No family moves: $P = 0.6186$ for immune cells,
-0.7360 stromal, 0.9016 epithelial and 0.2358 endothelial
-(Table~\ref{stab:x8}, Supplementary Fig.~\ref{sfig:comp-ce}). The raw means
-differ, 0.101 against 0.230 for the immune share, and the difference does
-not survive study being accounted for, which is the pooling doing what it
-is for. The four shares sum to one and the families were named in advance,
-so these are not four independent attempts.
+donors with endometrium in the corpus, we computed the share of each family
+over the transferred and annotated labels together, then tested disease
+status after study with a permutation null of 5{,}000 reassignments within
+study.
+
+No family moves: $P = 0.6186$ for immune cells, 0.7360 stromal, 0.9016
+epithelial and 0.2358 endothelial (Table~\ref{stab:x8},
+Supplementary Fig.~\ref{sfig:comp-ce}). The raw means differ, 0.101 against
+0.230 for the immune share, and that difference does not survive study
+being accounted for, which is the pooling doing what it is for. One caution
+about the shape of the test: the four shares sum to one and we named the
+families in advance, so these are not four independent attempts.
 
 \begin{table}[t]
 \centering
@@ -160,19 +168,22 @@ of each family, control against eutopic endometrium.} Bars are medians.}
 \label{sfig:comp-ce}
 \end{figure}
 
-\subsection{X8, extended: composition against severity}
+\subsection{Does composition track severity?}
 
-Among patients only, donors were split into lower severity, graded mild or
+To ask whether the same headcount recovers the surgeon's grade, we
+restricted to patients, split them into lower severity, graded mild or
 rASRM stage I to II, and higher, graded severe or stage III to IV, 51
-donors, and the same test run. Nothing tracks severity: $P = 0.2092$ for
-immune cells, 0.1624 endothelial, 0.9696 stromal and 0.9130 epithelial
-(Table~\ref{stab:x8sev}, Supplementary Fig.~\ref{sfig:comp-sev}). Beside
-the latent result, where merged severity clears its null at 118 donors and
-mild against severe among patients does not at 57, this is a second and
-independent readout failing on the same contrast, one from the
+donors, and ran the same test.
+
+Nothing tracks severity: $P = 0.2092$ for immune cells, 0.1624
+endothelial, 0.9696 stromal and 0.9130 epithelial
+(Table~\ref{stab:x8sev}, Supplementary Fig.~\ref{sfig:comp-sev}). Set this
+beside the latent result, where merged severity clears its null at 118
+donors and mild against severe among patients does not at 57. Two
+independent readouts now fail on the same contrast, one from the
 representation and one from a headcount with no model in it. Both are
-negatives at about 55 donors, so the pairing is the argument rather than
-either number alone.
+negatives at about 55 donors, so the pairing is the argument and neither
+number is decisive alone.
 
 \begin{table}[t]
 \centering
@@ -192,22 +203,25 @@ grade; the test used the 51 with the required covariates.}
 \label{sfig:comp-sev}
 \end{figure}
 
-\subsection{X9: composition, eutopic against lesion}
+\subsection{Does composition differ between lesion and endometrium?}
 
 The claim is that perivascular, endothelial and immune cells form a larger
 share of lesions and stromal cells a smaller one
-\citep{sarsenova2024metabolic}, from four paired samples. Over 151 donors,
-one family moves: the epithelial share falls from 0.147 in eutopic
-endometrium to 0.022 in lesion tissue, 6.6-fold, $F = 20.9$,
-$P < 0.0001$; immune, endothelial and stromal do not clear
+\citep{sarsenova2024metabolic}, from four paired samples. We ran the same
+per-donor composition test over 151 donors, contrasting eutopic
+endometrium with lesion tissue.
+
+One family moves. The epithelial share falls from 0.147 in eutopic
+endometrium to 0.022 in lesion tissue, 6.6-fold, $F = 20.9$, $P < 0.0001$,
+and immune, endothelial and stromal do not clear
 (Table~\ref{stab:x9}, Supplementary Fig.~\ref{sfig:comp-ee}). The direction
-agrees with the claim. The source names the confound: epithelial cells are
-lost when fibrous lesion tissue is dissociated, and nothing in the corpus
-separates that from biology. The label-absorption error of
+agrees with the claim. However, the source names the confound: epithelial
+cells are lost when fibrous lesion tissue is dissociated, and nothing in
+the corpus separates that from biology. The label-absorption error of
 Supplementary Note~\ref{note:transfer} would push the epithelial share in
-lesions up rather than down, so it does not manufacture this result.
-Perivascular cells are not one of the four families and the claim's central
-compartment is out of reach.
+lesions up and not down, so it does not manufacture this result.
+Perivascular cells are not one of our four families, so the claim's central
+compartment stays out of reach.
 
 \begin{table}[t]
 \centering
@@ -226,20 +240,22 @@ of each family, eutopic endometrium against lesion tissue.}}
 \label{sfig:comp-ee}
 \end{figure}
 
-\subsection{X12, step A: where in the latent the disease lives}
+\subsection{Where in the latent does the disease live?}
 
 The claim is that macrophages and decidualised stromal cells are the
 compartments most likely dysregulated in endometriosis, derived by
 integrating an atlas with the largest endometriosis GWAS
-\citep{mareckova2024heca}. The test looks for a direction in the latent
-that separates control donors from eutopic donors, fitted on 70\% of donors
-and scored by AUC on the remaining 30\%, repeated over 400 donor-level
-splits, with a shuffled-label null; study is centred out and donors rather
-than cells are the units. Globally no such direction exists: 0.5360
-against a shuffled 0.4820 over 207 donor records, with 28\% of shuffles
-above it (Table~\ref{stab:x12g}). That does not contradict the cross-donor
-disease figure, which is local; a cell's neighbours from other donors can
-share its label without any single axis separating the donors.
+\citep{mareckova2024heca}. To test it we looked for a direction in the
+latent separating control donors from eutopic donors, fitting on 70\% of
+donors and scoring by AUC on the remaining 30\%, repeated over 400
+donor-level splits with a shuffled-label null. We centred study out and
+used donors rather than cells as the units.
+
+Globally no such direction exists: 0.5360 against a shuffled 0.4820 over
+207 donor records, with 28\% of shuffles above it
+(Table~\ref{stab:x12g}). That does not contradict our cross-donor disease
+figure, which is local. A cell's neighbours from other donors can share its
+label without any single axis separating the donors.
 
 Inside each family, over the 118 donors with the studies' own labels, the
 direction appears and it is immune: AUC 0.7084 against 0.4806,
@@ -247,13 +263,13 @@ $P = 0.015$ over 94 donors; endothelial 0.6818 at $P = 0.050$; stromal
 0.5920 at 0.175; epithelial 0.4663 at 0.590; and the four families pooled
 0.6048 at 0.155 (Table~\ref{stab:x12a},
 Supplementary Fig.~\ref{sfig:x12-auc-a}). Mixing the families destroys a
-signal that is present inside one of them. Four families were tested, so a
-Bonferroni correction puts immune at about 0.06 and endothelial at 0.20;
-immune is the only compartment worth calling and it is real rather than
+signal that is present inside one of them. We tested four families, so a
+Bonferroni correction puts immune at about 0.06 and endothelial at 0.20,
+and immune is the only compartment worth calling real rather than
 emphatic. On the transferred labels over 207 donor records the pattern
 holds and weakens, immune 0.5960 at $P = 0.072$ over 162
-(Table~\ref{stab:x12t}, Supplementary Fig.~\ref{sfig:x12-auc-t}); the
-reason the paper reports 118 rather than 207 is given in
+(Table~\ref{stab:x12t}, Supplementary Fig.~\ref{sfig:x12-auc-t}). Our
+reason for reporting 118 rather than 207 is given in
 Supplementary Note~\ref{note:limitations}.
 
 \begin{table}[t]
@@ -301,46 +317,49 @@ over 207 donor records with transferred labels.}}
 \label{sfig:x12-auc-t}
 \end{figure}
 
-\subsection{X12, step B: the genes the immune direction moves}
+\subsection{Which genes does the immune direction move?}
 
-The immune direction was pushed through the decoder: 4{,}000 immune cells
-were moved along it and the change in every one of the 15{,}496 decoded
-genes recorded, after the component of the direction lying along the
-family axes was removed. The ranking is stable in the step size, with a rank
-correlation of 0.9973 between two step lengths. Table~\ref{stab:x12top}
-gives the fifteen genes that move most towards disease and
-Table~\ref{stab:x12bot} the fifteen that move most towards control;
-Supplementary Fig.~\ref{sfig:x12-rank} draws the whole ranking. The
-disease end is macrophage and inflammatory transcripts, TREM1, IL1B, CCL13,
-SIGLEC7, the matrix proteases MMP19 and MMP27, LRRC15 and INHBA, with CCL3
-at rank 52 and ITGAX at 47 just outside the table.
+To name the genes behind that direction, we pushed it through the decoder.
+We moved 4{,}000 immune cells along it and recorded the change in every one
+of the 15{,}496 decoded genes, after removing the component of the
+direction lying along the family axes. The ranking is stable in the step
+size, with a rank correlation of 0.9973 between two step lengths.
+
+Table~\ref{stab:x12top} gives the fifteen genes that move most towards
+disease and Table~\ref{stab:x12bot} the fifteen that move most towards
+control. Supplementary Fig.~\ref{sfig:x12-rank} draws the whole ranking.
+The disease end is macrophage and inflammatory transcripts, TREM1, IL1B,
+CCL13, SIGLEC7, the matrix proteases MMP19 and MMP27, LRRC15 and INHBA,
+with CCL3 at rank 52 and ITGAX at 47 just outside the table.
 
 Three external readings bear on it. An independent cohort outside the
 corpus, eight patients against five controls, published 66 genes
 upregulated in the eutopic endometrium of patients
-\citep{zhao2017transcriptome}; four of the fifteen disease-end genes are on
-that list, SERPINB2 at 72.95-fold, MMP27 at 40.93, LRRC15 at 25.20 and INHBA
-at 15.33, a hypergeometric $P$ of $3.95 \times 10^{-7}$ for fifteen draws
-from 15{,}496, and none of the fifteen control-end genes is
-(Table~\ref{stab:x12rep}). IL1B, tenth here, is the highest-ranked gene in
-\texttt{duempelmann\_2026}'s own supervised classifier of disease, so two
-models with different objectives select it, and CCL3 and ITGAX appear in
-that cohort's ligand-receptor findings as well
+\citep{zhao2017transcriptome}. Four of our fifteen disease-end genes are on
+that list, SERPINB2 at 72.95-fold, MMP27 at 40.93, LRRC15 at 25.20 and
+INHBA at 15.33, a hypergeometric $P$ of $3.95 \times 10^{-7}$ for fifteen
+draws from 15{,}496, and none of our fifteen control-end genes is
+(Table~\ref{stab:x12rep}). In addition, IL1B, tenth here, is the
+highest-ranked gene in \texttt{duempelmann\_2026}'s own supervised
+classifier of disease, so two models with different objectives select it,
+and CCL3 and ITGAX appear in that cohort's ligand-receptor findings as well
 \citep{duempelmann2026endometrium}. Of the four gene-level predictions of
 the prior atlas, only IGF1 rising in macrophages is a claim about this
-compartment, and it agrees, at rank 285 of 15{,}496 towards disease; GREB1,
-DKK1 and IGF2 are predictions about decidualised stromal cells, and there is
-no stromal direction to test them on. The control end is led by genes of
+compartment, and it agrees, at rank 285 of 15{,}496 towards disease. GREB1,
+DKK1 and IGF2 are predictions about decidualised stromal cells, and there
+is no stromal direction to test them on.
+
+Two cautions attach to the ranking. The control end is led by genes of
 epithelial identity and secretory function, VTCN1, SOX17, IHH and UGT2B17,
-with WNT7A, LGR5, MSLN and TFF3 inside the last 220 of the ranking; that end
-is not read as disease biology and replicates nothing. Four of the fifteen
-disease-end genes, SIGLEC7, ADAMDEC1, ALPK2 and KCNH1, have no prior
-endometriosis report in the eleven pooled studies, the Open Targets
+with WNT7A, LGR5, MSLN and TFF3 inside the last 220. We do not read that
+end as disease biology and it replicates nothing. Separately, four of the
+fifteen disease-end genes, SIGLEC7, ADAMDEC1, ALPK2 and KCNH1, have no
+prior endometriosis report in the eleven pooled studies, the Open Targets
 Platform or PubMed. Two of the genes that do replicate, LRRC15 and MMP27,
-are absent from one or both of those indices despite being reported at
-25- and 41-fold in the external cohort's supplementary tables, so absence
-from an index is not evidence of novelty and the four are reported as
-unindexed rather than as new.
+are absent from one or both of those indices despite being reported at 25-
+and 41-fold in the external cohort's supplementary tables. Thus absence
+from an index is not evidence of novelty, and we report the four as
+unindexed.
 
 \begin{table}[p]
 \centering
@@ -379,23 +398,26 @@ marked at the disease end; the control end replicates nothing.}
 \label{sfig:x12-rank}
 \end{figure}
 
-\subsection{X14: tissue inside one family}
+\subsection{Does tissue separate cells within one family?}
 
 The claim is that the same cell type is transcriptionally different
 depending on the tissue it sits in \citep{fonseca2023endometriosis}.
 Tissue is a decoder covariate, which conditions the test rather than
-invalidating it: conditioning the decoder on tissue removes the latent's
+invalidating it. Conditioning the decoder on tissue removes the latent's
 obligation to encode it, so tissue structure that survives in the latent is
 structure the model had every reason to discard. Within each transferred
-family, (donor, tissue) units were scored for endometrium against lesion
-tissue after study, 262 donors, with donor-level splits and a shuffled null.
-Most tissue structure is gone; what remains sits in stromal and endothelial
+family we scored (donor, tissue) units for endometrium against lesion
+tissue after study, 262 donors, with donor-level splits and a shuffled
+null.
+
+Most tissue structure is gone. What remains sits in stromal and endothelial
 cells, AUC 0.6226 at $P = 0.077$ and 0.6175 at 0.095, with immune and
 epithelial at chance (Table~\ref{stab:x14},
 Supplementary Fig.~\ref{sfig:x14}). Tissue is near-perfectly confounded
 with disease status here, since ovary and peritoneum are almost all ectopic
-donors, so this is the latent-level companion to X9 rather than an
-independent axis, and neither family clears 0.05.
+donors. This is therefore the latent-level companion to the lesion
+composition test above and not an independent axis, and neither family
+clears 0.05.
 
 \begin{table}[t]
 \centering
@@ -413,3 +435,20 @@ tissue within each transferred family}, 262 donors.}
 drawn.}}
 \label{sfig:x14}
 \end{figure}
+
+\subsection{What the axis settled}
+
+Overall, of the twelve claims in the ledger we could test eight. Two were
+supported at three times the donor count that produced them: composition
+not differing between patients and controls, and the immune half of the
+dysregulated-compartment prediction. Two were not supported, the cycle
+being flattened by disease, tested two ways, and the marker-signature
+complaint of Supplementary Note~\ref{note:markers}. One was supported in
+direction and is confounded in this corpus, the epithelial depletion in
+lesions. Three were not recoverable at this donor count rather than
+refuted: the severity dose, the stromal half of the compartment prediction
+and the tissue effect within a family. The remaining four need either a
+finer cell vocabulary, a finer pathway vocabulary, or controls the
+deposited cohort does not contain. Every one of those eight tests was
+impossible in any single cohort of the corpus, and performing them is the
+function this atlas exists for.

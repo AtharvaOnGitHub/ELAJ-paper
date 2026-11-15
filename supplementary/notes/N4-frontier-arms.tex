@@ -2,74 +2,80 @@
 % SUPPLEMENTARY NOTE 4 — the six frontier arms.
 %
 % SOURCES. Benchmark values through table1.collect() (the auditors'
-% manifest); per-epoch values from each arm's metrics.csv; registered
-% prediction bands from axw1008/docs/paper/RETRAIN_EXPECTATIONS.md, which
-% was written before any arm started. UMAP coordinates from the pinned
-% 400,000-cell index, identical for every arm.
+% manifest); per-epoch values from each arm's metrics.csv; prediction
+% bands from axw1008/docs/paper/RETRAIN_EXPECTATIONS.md, which was written
+% before any arm started. UMAP coordinates from the pinned 400,000-cell
+% index, identical for every arm.
+%
+% REGISTER PASS, 15 November, per SUPPLEMENTARY_REGISTER.md.
 % =====================================================================
 
 \section{The six frontier arms}
 \label{note:frontier}
 
 The frontier in the main text is traced by six models that differ in two
-coefficients and nothing else. This note gives every arm on every axis,
-the training record of each, the predictions registered before any of them
-ran, and the latent of each coloured by study. The purpose is to let a
-reader check the two claims the main text makes about the coefficients:
-that the adversarial weight moves the achievable trade-off and then
-saturates, and that the information cost slides a model along it.
+coefficients and nothing else. In this note we give every model on every
+axis, the training record of each, the predictions we specified before any
+of them ran, and the latent of each coloured by study. Our purpose is to
+let a reader check the two claims the main text makes about the
+coefficients: that the adversarial weight moves the achievable trade-off
+and then saturates, and that the information cost slides a model along it.
 
 \subsection{The design}
 
-The two coefficients are $\lambda_{\mathrm{dab}}$, which scales the
+Our two coefficients are $\lambda_{\mathrm{dab}}$, which scales the
 reversed gradient from the adversarial study-removal head on its way into
 the encoder, and $w_{\mathrm{kl}}$, the weight on the Kullback--Leibler
-term that prices the latent (Methods, \emph{Composite objective}). The arms
-form a three-by-two grid, $\lambda_{\mathrm{dab}} \in \{7, 168, 336\}$
-against $w_{\mathrm{kl}} \in \{1, 30\}$. Everything else is shared and
+term that prices the latent (Methods, \emph{Composite objective}). We
+arranged them as a three-by-two grid,
+$\lambda_{\mathrm{dab}} \in \{7, 168, 336\}$ against
+$w_{\mathrm{kl}} \in \{1, 30\}$. Everything else is shared and
 byte-identical across the six configuration files, which a test in the
 repository enforces: the same vocabulary, the same donor-level split, seed
 24, a twenty-epoch horizon with early stopping at a patience of five, and
-checkpoint selection by the lowest held-out reconstruction loss. No arm was
-adjusted after its run started. Each took between 9.1 and 11.2 hours on
-one A100 (Table~\ref{stab:arms-cost}, Supplementary Fig.~\ref{sfig:hours}),
-which is the fact behind the main text's claim that a model of this size can
-be retrained often enough to measure a trade-off rather than report a point.
+checkpoint selection by the lowest held-out reconstruction loss. We
+adjusted no model after its run started. Each took between 9.1 and 11.2
+hours on one A100 (Table~\ref{stab:arms-cost},
+Supplementary Fig.~\ref{sfig:hours}), which is the fact behind the main
+text's claim that a model of this size can be retrained often enough to
+measure a trade-off rather than report a point.
 
 \subsection{Every arm on every axis}
 
 Table~\ref{stab:arms-bio} gives the biological axes and
-Table~\ref{stab:arms-cost} the cost axes and the training record;
+Table~\ref{stab:arms-cost} the cost axes and the training record.
 Table~\ref{stab:arms-p} gives each cross-donor value with its permutation
-$P$. Reading down the $w_{\mathrm{kl}} = 1$ column, raising the adversarial
+$P$.
+
+Reading down the $w_{\mathrm{kl}} = 1$ column, raising the adversarial
 weight from 7 to 168 moves donor recovery from 0.5837 to 0.5188 and study
-separation from 0.8636 to 0.7613 while cross-donor cycle agreement moves
+separation from 0.8636 to 0.7613, while cross-donor cycle agreement moves
 from 0.7337 to 0.7346 and cell family from 0.9829 to 0.9820. Raising it
 again to 336 moves donor recovery to 0.5277, study separation to 0.8200 and
 the cycle to 0.7146, worse on all three. The $w_{\mathrm{kl}} = 30$ column
-repeats the shape: donor recovery 0.5389, 0.3975, 0.4154; study separation
+repeats that shape: donor recovery 0.5389, 0.3975, 0.4154; study separation
 0.8587, 0.6544, 0.7190; cycle 0.6791, 0.6033, 0.5922. In both columns the
-middle weight is the best on the cost axes and 336 gives back part of what
+middle weight is the best on the cost axes, and 336 gives back part of what
 168 bought. That is the saturation the main text describes, and it is why
-168 is the weight of both reported arms.
+168 is the weight of both reported models.
 
 Reading across a row, the stronger prior lowers every axis at once. At
 $\lambda_{\mathrm{dab}} = 168$ it takes donor recovery from 0.5188 to
-0.3975 and study separation from 0.7613 to 0.6544, and it takes the cycle
-from 0.7346 to 0.6033, cell family from 0.9820 to 0.9565, the sixty-way
-cell type from 0.4964 to 0.4442 and disease from 0.3364 to 0.3045. The same
-direction holds at 7 and at 336. A coefficient that moves the cost axes and
-the biological axes together, in the same direction, is sliding the model
-along a trade-off rather than improving it; a coefficient that moves the
-cost axes while the biology holds, and then stops, is moving the trade-off
-itself. The two coefficients behave differently and the grid is what shows
-it.
+0.3975 and study separation from 0.7613 to 0.6544. At the same time it
+takes the cycle from 0.7346 to 0.6033, cell family from 0.9820 to 0.9565,
+the sixty-way cell type from 0.4964 to 0.4442 and disease from 0.3364 to
+0.3045. The same direction holds at 7 and at 336. Thus a coefficient that
+moves the cost axes and the biological axes together, in the same
+direction, is sliding the model along a trade-off, and a coefficient that
+moves the cost axes while the biology holds, and then stops, is moving the
+trade-off itself. Overall, the two coefficients behave differently, and the
+grid is what shows it.
 
 \begin{table}[p]
 \centering
-\caption[Every arm, biological axes]{\textbf{The six frontier arms and the
-five ablations on the biological axes.} Cross-donor excess agreement for
-the cycle, cell family, merged severity, rASRM stage and grade; $k$NN
+\caption[Every arm, biological axes]{\textbf{The six frontier models and
+the five ablations on the biological axes.} Cross-donor excess agreement
+for the cycle, cell family, merged severity, rASRM stage and grade; $k$NN
 agreement for the sixty-way cell type and for cell-cycle phase; pooled
 control-against-eutopic agreement for disease. All on the 416{,}256-cell
 held-out split.}
@@ -95,8 +101,8 @@ best is the selected epoch; hours is wall-clock on one A100.}
 \caption[Every arm, cross-donor values with $P$]{\textbf{Every cross-donor
 value with its permutation $P$}, 200 permutations of the donor-to-label
 map, so the floor is 0.005. The cycle and cell family clear their nulls in
-every arm; severity among patients and grade clear them in none, and grade
-is negative in all eleven.}
+every model. Severity among patients and grade clear them in none, and
+grade is negative in all eleven.}
 \label{stab:arms-p}
 \footnotesize\setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{\input{tables/arms_pvalues}}
@@ -105,7 +111,7 @@ is negative in all eleven.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/training_hours_all_arms.png}
-\caption[Training hours per arm]{\textbf{Wall-clock hours per arm on one
+\caption[Training hours per arm]{\textbf{Wall-clock hours per model on one
 A100.} The dotted line is the mean. The longest run is the random-grouping
 ablation, which trained for eighteen epochs.}
 \label{sfig:hours}
@@ -114,25 +120,27 @@ ablation, which trained for eighteen epochs.}
 \subsection{What the training curves show}
 
 Supplementary Fig.~\ref{sfig:loss-p} gives held-out and training
-reconstruction loss per epoch for the six arms and
+reconstruction loss per epoch for the six models, and
 Supplementary Fig.~\ref{sfig:traj-p} the per-epoch validation cycle
-agreement. The three $w_{\mathrm{kl}} = 1$ arms select epoch 4 and the
-three $w_{\mathrm{kl}} = 30$ arms epoch 3 or 5, so no arm's selected
-checkpoint is its first or its last; every arm converged inside the
-horizon. The stronger prior converges one epoch earlier and pays for it in
+agreement. The three $w_{\mathrm{kl}} = 1$ models select epoch 4 and the
+three $w_{\mathrm{kl}} = 30$ models epoch 3 or 5, so no selected checkpoint
+is a first or a last epoch and every run converged inside the horizon.
+Notably, the stronger prior converges one epoch earlier and pays for it in
 reconstruction, 0.4046 against 0.4024 at $\lambda_{\mathrm{dab}} = 168$.
-The validation cycle agreement rises over the first two to four epochs and
-then plateaus in every arm, and the selected checkpoints sit on the
-plateau. The per-epoch readout is $k = 30$ on 19{,}972 validation cells and
-is not the benchmark's cross-donor agreement, which is $k = 100$ on the full
-held-out split; it is a trajectory, not a value to quote.
+In every run the validation cycle agreement rises over the first two to
+four epochs and then plateaus, and the selected checkpoints sit on the
+plateau.
+
+One caution about that readout. It is $k = 30$ on 19{,}972 validation cells
+and is not the benchmark's cross-donor agreement, which is $k = 100$ on the
+full held-out split. We use it as a trajectory and not as a value to quote.
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/training_loss_pseries.png}
 \caption[Reconstruction loss per epoch, frontier arms]{\textbf{Held-out
 (solid) and training (dotted) reconstruction loss per epoch for the six
-arms}, with the selected checkpoint marked. Blue is
+models}, with the selected checkpoint marked. Blue is
 $w_{\mathrm{kl}} = 1$, red is 30.}
 \label{sfig:loss-p}
 \end{figure}
@@ -148,28 +156,29 @@ cells. Open circles mark the selected checkpoint.}
 
 \subsection{What was predicted before the runs}
 
-Five of the six arms had a band registered for cell family, cycle and
-donor recovery before training began, written from the arms that preceded
-them; the sixth, $\lambda_{\mathrm{dab}} = 336$ at $w_{\mathrm{kl}} = 1$,
+For five of the six models we specified a band for cell family, cycle and
+donor recovery before training began, written from the models that preceded
+them. The sixth, $\lambda_{\mathrm{dab}} = 336$ at $w_{\mathrm{kl}} = 1$,
 was added after the first five had landed and had no band.
-Table~\ref{stab:arms-pred} sets each band beside the outcome. Eight of
-fifteen landed. Of the seven misses, five are biological axes landing
-above their band: the cycle at $w_{\mathrm{kl}} = 30$ in all three arms,
-0.6791, 0.6033 and 0.5922 against bands topping out at 0.62, 0.60 and 0.55,
-the cycle of the reported arm at 0.7346 against 0.58 to 0.65, and cell
-family at 0.9841 against 0.955 to 0.970. The other two are donor recovery
-landing above its band at $w_{\mathrm{kl}} = 30$, 0.5389 against 0.42 to
-0.50 and 0.4154 against a ceiling of 0.40. The predictions underestimated
-how much cycle structure survives the strong prior and overestimated how
-much donor identity it removes at the weak and the strong adversary. The
-registered bands are kept because an arm read against a band written
-afterwards would be no test at all.
+Table~\ref{stab:arms-pred} sets each band beside the outcome.
+
+Eight of fifteen landed. Of the seven misses, five are biological axes
+landing above their band: the cycle at $w_{\mathrm{kl}} = 30$ in all three
+models, 0.6791, 0.6033 and 0.5922 against bands topping out at 0.62, 0.60
+and 0.55, the cycle of the reported model at 0.7346 against 0.58 to 0.65,
+and cell family at 0.9841 against 0.955 to 0.970. The other two are donor
+recovery landing above its band at $w_{\mathrm{kl}} = 30$, 0.5389 against
+0.42 to 0.50 and 0.4154 against a ceiling of 0.40. In summary, we
+underestimated how much cycle structure survives the strong prior and
+overestimated how much donor identity it removes at the weak and the strong
+adversary. We keep the bands as written, because an outcome read against a
+band written afterwards would be no test at all.
 
 \begin{table}[t]
 \centering
-\caption[Registered predictions, frontier arms]{\textbf{The bands
-registered before training against the outcomes.} Bands in benchmark
-terms; donor recovery is lower-is-better.}
+\caption[Registered predictions, frontier arms]{\textbf{The bands we
+specified before training against the outcomes.} Bands in benchmark terms;
+donor recovery is lower-is-better.}
 \label{stab:arms-pred}
 \small
 \input{tables/arms_predictions}
@@ -178,21 +187,28 @@ terms; donor recovery is lower-is-better.}
 \subsection{The latent of each arm, by study}
 
 Supplementary Figs.~\ref{sfig:umap-7-1} to~\ref{sfig:umap-336-30} give a
-two-dimensional UMAP \citep{mcinnes2018umap} of each arm's latent over the
-same 400{,}000 cells, coloured by study with the eleven-hue palette of
-Fig.~1. The index of those cells is pinned to a file so that every arm is
-drawn on identical cells. At $\lambda_{\mathrm{dab}} = 7$ the largest study
-occupies a territory of its own and several smaller studies sit in lobes
-with little mixing; at 168 and $w_{\mathrm{kl}} = 1$, the reported
-B\textsubscript{hi}, the studies interleave through the central mass and
-the largest still dominates one side; at 168 and $w_{\mathrm{kl}} = 30$,
-B\textsubscript{lo}, the embedding is a single connected body with studies
-interleaved throughout. The order of the pictures is the order of the
-study-separation column, 0.8636, 0.7613 and 0.6544, and the pictures add
-what the column cannot, which is where in the latent the remaining
-separation lives. Supplementary Fig.~\ref{sfig:umap-base-phase} colours the
-reported arm by menstrual phase, which is the structure the stronger prior
-trades away.
+two-dimensional UMAP \citep{mcinnes2018umap} of each latent over the same
+400{,}000 cells, coloured by study with the eleven-hue palette of Fig.~1.
+We pinned the index of those cells to a file so that every model is drawn
+on identical cells.
+
+At $\lambda_{\mathrm{dab}} = 7$ the largest study occupies a territory of
+its own and several smaller studies sit in lobes with little mixing. At 168
+and $w_{\mathrm{kl}} = 1$, the reported B\textsubscript{hi}, the studies
+interleave through the central mass and the largest still dominates one
+side. At 168 and $w_{\mathrm{kl}} = 30$, B\textsubscript{lo}, the embedding
+is a single connected body with studies interleaved throughout. That order
+is the order of the study-separation column, 0.8636, 0.7613 and 0.6544, and
+the pictures add what the column cannot, which is where in the latent the
+remaining separation lives. Supplementary
+Fig.~\ref{sfig:umap-base-phase} colours the reported model by menstrual
+phase, the structure the stronger prior trades away.
+
+Overall, the six models and their embeddings make one point in two forms.
+Pushing the adversary harder buys donor-blindness until it saturates, and
+pricing the latent higher buys the same donor-blindness by giving up
+biology, so a single correction strength is a position on a trade-off
+rather than a description of one.
 
 \begin{figure}[p]\centering
 \includegraphics[width=.7\textwidth]{figures/umap_p1_dab7_kl1_study.png}

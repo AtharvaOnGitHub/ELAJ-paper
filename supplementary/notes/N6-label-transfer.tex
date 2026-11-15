@@ -9,6 +9,8 @@
 % li_2025 figures therefore come from the FINAL transfer over all 640,606
 % annotated cells and differ in the third decimal from the validation run
 % in EXPERIMENTS.md, which trained on a 60,000-cell-per-study sample.
+%
+% REGISTER PASS, 15 November, per SUPPLEMENTARY_REGISTER.md.
 % =====================================================================
 
 \section{Label transfer, and the failure it cannot report}
@@ -17,21 +19,21 @@
 Two of the eleven studies brought cell annotations, 640{,}606 cells from
 118 donors. The other nine, 937{,}122 cells from 136 donors, brought none,
 and almost every published composition claim concerns a cell type in a
-cohort that did not label it. The claims axis therefore begins by giving
+cohort that did not label it. Our claims axis therefore begins by giving
 every unlabelled cell a family, and this note is the record of how, how
-well, and where it fails. The failure is the useful half: it bounds which
-questions the transferred labels can be asked.
+well, and where it fails. The failure is the useful half, because it bounds
+which questions the transferred labels can be asked.
 
 \subsection{The method}
 
-Every unlabelled cell took the family carried by the majority of its 25
+We gave every unlabelled cell the family carried by the majority of its 25
 nearest annotated cells in the sixteen-dimensional latent of the reported
-arm. The vocabulary is the four-level cell family, stromal, epithelial,
+model. The vocabulary is the four-level cell family, stromal, epithelial,
 endothelial and immune, the only one the two annotated studies share.
 Because the sources are two studies and the targets are the other nine,
-every transfer is across studies and across donors by construction; the 418
+every transfer is across studies and across donors by construction. The 418
 cells of \texttt{duempelmann\_2026} that lacked a family label are the one
-within-study exception. Three quantities were kept per cell: the winning
+within-study exception. For each cell we kept three quantities: the winning
 family's share of the 25 votes, the mean distance to those neighbours, and
 how many donors and studies the neighbourhood drew on
 (Table~\ref{stab:transfer-nbhd}). Nothing here reads disease status.
@@ -48,17 +50,17 @@ distances behind Supplementary Fig.~\ref{sfig:transfer-dist}.}
 
 \subsection{Validation across the study barrier}
 
-The two annotated studies are each other's only test, so each was used to
+The two annotated studies are each other's only test, so we used each to
 predict the other (Table~\ref{stab:transfer-val}). Accuracy is 0.9862 and
 0.9845. The number that matters is balanced accuracy against the majority
-baseline, because the two studies have very different compositions:
+baseline, because the two studies have very different compositions.
 \texttt{duempelmann\_2026} is 88\% stromal and \texttt{marecko\_2024} 53\%,
 so a transfer that merely inherited the source's prior would score 0.8805
 on the first and collapse to 0.5252 on the second. Balanced accuracy is
 0.9596 and 0.9640 in the two directions, so it does not inherit the prior.
-Within-study tests holding out a third of each study's donors give 0.970
-and 0.996 balanced; crossing the study barrier costs almost nothing at four
-levels.
+In addition, within-study tests holding out a third of each study's donors
+give 0.970 and 0.996 balanced. Thus crossing the study barrier costs almost
+nothing at four levels.
 
 \begin{table}[t]
 \centering
@@ -73,29 +75,30 @@ transfer. Balanced accuracy weights the four families equally.}
 
 \subsection{The failure: a type absent from the reference is absorbed}
 
-\texttt{li\_2025} is follicular fluid and brought its own cell-type
-column, which makes it the only out-of-tissue test available. Its 30{,}207
+\texttt{li\_2025} is follicular fluid and brought its own cell-type column,
+which makes it the only out-of-tissue test available to us. Its 30{,}207
 immune cells, neutrophils, monocytes and macrophages, T and NK cells,
-dendritic cells and B cells, were called immune at 0.9969; immune identity
-transfers across tissue. Its 15{,}056 granulosa cells have no counterpart
-in an endometrial vocabulary, so no correct answer exists for them, and
-0.9874 of them were called stromal. A family the reference does not contain
-is not flagged; it is absorbed into whichever family it most resembles.
+dendritic cells and B cells, were called immune at 0.9969, so immune
+identity transfers across tissue. However, its 15{,}056 granulosa cells
+have no counterpart in an endometrial vocabulary, so no correct answer
+exists for them, and 0.9874 of them were called stromal. A family the
+reference does not contain is not flagged. It is absorbed into whichever
+family it most resembles.
 
-Two rejection rules were tried and neither catches it
+We tried two rejection rules and neither catches it
 (Tables~\ref{stab:transfer-rej} and~\ref{stab:transfer-vote},
 Supplementary Figs.~\ref{sfig:transfer-dist} and~\ref{sfig:transfer-vote}).
-Distance is worse than useless: granulosa cells sit closer to the reference,
-at a mean distance of 1.514 to their 25th neighbour, than
+Distance is worse than useless. Granulosa cells sit closer to the
+reference, at a mean distance of 1.514 to their 25th neighbour, than
 \texttt{li\_2025}'s correctly called immune cells do at 1.712, so at every
 distance cut the share of correct immune calls discarded is at least as
 large as the share of granulosa cells rejected. Vote fraction does better
-and still fails: the strictest rule, rejecting any cell whose 25 neighbours
+and still fails. The strictest rule, rejecting any cell whose 25 neighbours
 are not unanimous, rejects 11.9\% of granulosa cells while losing 0.4\% of
-the immune calls and 5.7\% of all other transferred cells, and leaves the
-remaining 88\% of granulosa cells confidently stromal. The transfer cannot
-tell when it is wrong, and no quantity it produces can be thresholded into
-telling.
+the immune calls and 5.7\% of all other transferred cells, and it leaves
+the remaining 88\% of granulosa cells confidently stromal. Overall, the
+transfer cannot tell when it is wrong, and no quantity it produces can be
+thresholded into telling.
 
 \begin{table}[t]
 \centering
@@ -140,24 +143,30 @@ family's vote share}, same three groups, log density.}
 Asking what family a cell belongs to is sound wherever the cell's type
 exists in an endometrial reference. Counting families in a tissue that may
 contain types the reference lacks is not, because the unknowns are added
-silently to whichever family absorbs them. The tissues that condition is
-ovary, peritoneum, myometrium and follicular fluid, which is where the
-ectopic and adenomyosis donors are, and it is why the lesion composition
-test in Supplementary Note~\ref{note:claims} carries a warning that the
-endometrium tests do not. The absorption error there runs against the one
-result it could affect: mesothelial cells line the peritoneum, have no
+silently to whichever family absorbs them. That condition holds in ovary,
+peritoneum, myometrium and follicular fluid, which is where the ectopic and
+adenomyosis donors are, and it is why the lesion composition test in
+Supplementary Note~\ref{note:claims} carries a warning that the endometrium
+tests do not. Notably, the absorption error there runs against the one
+result it could affect. Mesothelial cells line the peritoneum, have no
 endometrial counterpart and would be pushed into the epithelial or stromal
 family, which would raise the epithelial share in lesions, and that share
 is lower.
 
 Table~\ref{stab:transfer-comp} and Supplementary Fig.~\ref{sfig:transfer-comp}
-give the transferred composition of each study. Two rows are informative
-about the deposits rather than the model. \texttt{garcia\_alonso\_2021\_b}
-comes out 99.9\% epithelial, which identifies it as an epithelium-sorted
-sample rather than whole tissue, and \texttt{li\_2025}'s 66.8\% immune and
-33.1\% stromal is the granulosa absorption as the validation predicted it.
+give the transferred composition of each study. Two rows tell us about the
+deposits and not about the model. \texttt{garcia\_alonso\_2021\_b} comes
+out 99.9\% epithelial, which identifies it as an epithelium-sorted sample
+and not whole tissue, and \texttt{li\_2025}'s 66.8\% immune and 33.1\%
+stromal is the granulosa absorption our validation predicted.
 \texttt{shih\_2022} at 78.2\% immune is plausible, since menstrual effluent
 is blood-rich.
+
+In summary, the transfer is accurate enough to annotate the nine cohorts
+that arrived without labels, and it is silent about the one error that
+matters. We therefore use it to ask what a cell is, and we restrict every
+composition claim that depends on it to tissues whose cell types the
+reference contains.
 
 \begin{table}[t]
 \centering
