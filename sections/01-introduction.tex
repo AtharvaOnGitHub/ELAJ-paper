@@ -25,9 +25,7 @@ uterus grows outside it. It affects roughly 190 million people worldwide
 \citep{who2025endometriosis}. Despite the prevalence, it has no validated 
 non-invasive test and a confirmed diagnosis requires laparoscopic surgery 
 \citep{who2025endometriosis,bontempo2025diagnostic}, making large studies 
-difficult. 
-
-Scale is necessary for answering deeper questions about 
+difficult. Scale is necessary for answering deeper questions about 
 the disease and collation of data is necessary for achieving that scale.
 
 %[para about single cell being a good idea]
@@ -54,11 +52,11 @@ return one representation per corpus. Although they are a promising
 direction for multi-disease and multi-organ representations, their 
 zero-shot behaviour is uneven \citep{kedzierska2025zeroshot}. 
 Re-training or fine-tuning these models requires huge amounts of 
-compute and doesn't provide any disease-specific guarantee. 
+compute and does not provide any disease-specific guarantee. 
 Additionally, endometriosis, being influenced by the menstrual 
 cycle \citep{who2025endometriosis,garciaalonso2021endometrium}, is subject 
-to the most drastic short term cyclicity in the human body that no model 
-has been trained for.
+to the most drastic short term cyclicity in the human body 
+\citep{salamonsen2021endometrial} that no model has been trained for.
 
 
 %[para about disease atlases being a good idea]
@@ -96,15 +94,16 @@ subject due to single-biopsy donors is not among them.
 %[conclusion para]
 We therefore built \elaj, a single-cell disease atlas of endometriosis 
 that replaces foundation model-level scale with intelligently adapted 
-inductive biases. \elaj\ is a transformer-based conditional variational 
-autoencoder (CVAE) that groups a cell's genes into 44 biological
-pathway groups and compresses it into a sixteen-dimensional interpretable 
-latent space. Through \elaj\ we define a Pareto front on donor-blindness 
+inductive biases. \elaj\ is a 1{,}883{,}986 parameter transformer-based 
+conditional variational autoencoder (CVAE) that groups a cell's genes 
+into 44 biological pathway groups and compresses it into a 
+sixteen-dimensional interpretable latent space.
+Through \elaj\ we define a Pareto front on donor-blindness 
 against retained cycle signal that we call the \elaj\ frontier. The 
 model-family described in this paper dominates on the frontier and 
-defines the parameters that control the position of a model on it.
-
+defines the parameters that control the position of a model on it. 
 Through this disease atlas we evaluate the claims made by smaller 
 datasets at a much larger scale, discover new genes associated with 
 endometriosis, critically examine disease staging in endometriosis, 
-and define an effective way of evaluating disease atlases.
+and define an effective way of evaluating disease atlases. We evaluate 
+our model through intensive ablation studies to define its limits.
