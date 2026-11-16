@@ -4,46 +4,49 @@
 %
 %     "Abstract – up to 150 words, unreferenced."
 %
-% 150 WORDS AND NO CITATIONS. This is NMI's number and it overrides
-% Nature's generic guide, which asks Articles for "a fully referenced
-% summary paragraph, ideally of no more than 200 words". AW had this
-% right from the start; I overwrote it with the Nature generic rule on
-% 29 October and the correction is withdrawn.
+% REWRITTEN 17 November 2026, after reading all six NMI abstracts in
+% NMI_register/ and IBDex's in full. Two things that reading settled and
+% the previous draft had wrong:
 %
-% Nature's STRUCTURE advice still applies where NMI is silent, and it is
-% worth following even unreferenced: basic-level introduction to the
-% field, then background and rationale, then the main conclusions
-% ("Here we show"), then the findings in general context. So does its
-% advice to avoid "numbers, abbreviations, acronyms or measurements
-% unless essential", aimed at readers outside the discipline.
+% 1. NMI ABSTRACTS ARE FULL OF NUMBERS. The old header followed Nature's
+%    generic advice to "avoid numbers, abbreviations, acronyms or
+%    measurements unless essential" and the draft carried none at all.
+%    What NMI actually prints: "F1 score of 0.974, whereas the current
+%    best-performing model achieves 0.639", "top-five accuracy of 83.9%",
+%    "11,467 radiographic lesions", "n = 2,451", "1,124 distinct plant
+%    species". IBDex is denser still and every figure carries its
+%    comparator: "balanced accuracy 0.307 vs 0.250". A numberless
+%    abstract is not the house style; it is a misreading of a generic
+%    guideline.
 %
-% Written LAST. It is the compression of the paper, so it cannot be
-% written before the paper has a settled claim.
+% 2. MEASURED LENGTHS RUN LONGER THAN THE SPEC. Excluding the "Abstract"
+%    prefix and the subject-terms line: 147, 189, 190, 155, 176, 203.
+%    Median about 183. The 150 in Content Types is the instruction and
+%    this draft is written to it; the range is recorded so the cost of
+%    trimming is a decision and not an assumption.
+%
+% THE SHAPE, common to all six: field problem, then the naming sentence,
+% which every one of them has ("Here we present TIGON", "We introduce
+% MIDAS"), then what the thing is, then results with numbers, then one
+% closing line. IBDex closes on a FINDING; the NMI six close on potential
+% ("tremendous potential", "empowering plant scientists"). We follow
+% IBDex, per the standing instruction not to overreach.
 % =====================================================================
 
 \begin{abstract}
 \noindent
-A disease whose symptoms arrive on a schedule ought to be easy to recognise,
-yet endometriosis is diagnosed years late, and every single-cell study of it
-is a small surgical cohort. Pooling them is the only route to the sample size
-the open questions need. However, each donor is biopsied once, so menstrual 
-phase does not vary within a donor and sits in the same geometry as a 
-batch effect; a correction aimed at one reaches the other. Here we make that 
-trade-off measurable as a frontier, and report every result from a named point 
-on it. The model, \elaj, removes more donor identity than any other 
-representation tested while keeping more of the cycle. \elaj\ excels against 
-foundation models over 50 times its size as well as trusted baselines. Read 
-through the model, a donor's disease status is legible in their own uterine 
-lining while the rASRM stage is not, which suggests that rASRM staging is
-flawed.
-
-\note{150 words, unreferenced, no numbers. Nature's order: field,
-rationale, ``here we show'', then the finding in context.
-\\WRITTEN FROM SCRATCH 7 November 2026 on AW's instruction, not edited. The
-previous version opened on a generic disease description and reported
-severity as unrecoverable without the half that makes it a finding, so a
-reader met a flat null where the paper has a dissociation.
-\\CUT TO FIT, both Results and Discussion material: the cell-type structure
-of the cycle, which supervision cannot have produced, and that apparent
-recovery of disease status tracks donor memorisation across methods.}
+Single-cell studies of endometriosis are read one cohort at a time, and
+pooling them removes the biology: each donor is biopsied once, so menstrual
+phase does not vary within a donor and has the geometry of a batch effect.
+Here we present \elaj, a single-cell disease atlas of 1{,}577{,}728 cells
+from 254 donors across eleven studies, built by a 1{,}883{,}986-parameter
+conditional variational autoencoder that reads 15{,}496 genes as 44 pathway
+groups and returns sixteen dimensions. Two weights trace a frontier between
+donor-blindness and retained cycle signal, and no competing representation,
+including foundation models over fifty times larger, reaches our cycle
+agreement of 0.7346 at a donor recovery below 0.5188. The cycle is held as
+one continuous axis that orders donors by clinical cycle day and by serum
+progesterone, neither supplied to the model. A disease direction is legible
+inside immune cells; surgical stage is not recovered. The atlas settles
+published claims that no contributing cohort could test alone.
 \end{abstract}

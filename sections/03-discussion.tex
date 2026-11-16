@@ -133,7 +133,13 @@ epithelial subtypes are resolved. Because \elaj\ retrains in hours, each
 new cohort can extend this reference rather than wait on a pretraining run 
 to be repeated. Whether the same inductive bias scales into a pretrained 
 model is the question these results cannot answer, since bias and corpus 
-size are independent levers.
+size are independent levers. How the grouping is built is a third lever. Ours was cut
+computationally from Reactome and GO with no biologist choosing which genes
+belong together, so a curated partition carries more prior knowledge and
+could be tested against it directly. Learning the assignment instead trades
+that knowledge for flexibility, and assignment has a combinatorial number of
+settings, so we would expect it to cost data and stability both. On a corpus
+limited by donors, a fixed partition is the conservative choice.
 
 \elaj\ establishes a sixteen-dimensional reference for pooled endometrial
 single-cell data. It prices donor removal against biology, recovers cell
