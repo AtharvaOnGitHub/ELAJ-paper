@@ -1332,3 +1332,85 @@ a caption not counting. Four UMAP panels and three tables were orphans. The
 only two generated fragments no note inputs are `tables/corpus.tex` and
 `tables/field_severity.tex`, held deliberately for the Supplementary Tables
 section, and that is written down in the script.
+
+## 17 November: the Abstract, the Introduction, and reciting instead of reading
+
+**THE FAILURE MODE THIS SESSION NAMED, and it is new.** AW on my first
+abstract: *"The results are weak... This is the place to brag! You are just
+stating the most recent results from memory."* He was right. I had given the
+abstract's space to the cycle-axis result I had finished two days earlier and
+**omitted E3 entirely**, which `RESULTS_INVENTORY.md` records in its own
+words as *"the only result scoring 9+ on both and it has no figure and no
+subsection."*
+
+**The inventory exists so the ranking does not have to be re-felt.** Six
+results score 10 on importance: A1, A2, B1, C3, E2, E3. Read that file before
+compressing the paper anywhere. Recency is not weight.
+
+### How a DISEASE ATLAS positions itself, read off three of them
+
+AW: *"batch effects are everywhere. We cannot lead with batch effects being
+the reason to build a disease atlas. That is like saying we are constructing
+a building so concrete columns are used."*
+
+**Not one atlas abstract mentions batch correction or integration method.**
+It is plumbing. What they lead on:
+
+| | opens on |
+|---|---|
+| **HECA**, our own tissue | the biology *"remains poorly understood"*, then *"Previous endometrial single-cell atlases profiled FEW DONORS and lacked consensus"* |
+| **HLCA** | scale: 49 datasets, 2.4M cells, 486 individuals |
+| **scIBD** | one sentence of what it enables |
+
+Then **biological findings named concretely** (TGF-beta coordination; SPP1+
+macrophages), then the resource. **Donor count is the axis HECA itself names
+as the weakness of what came before it, and it spans 63 against our 254.**
+
+### NMI abstracts are full of numbers, and our header said otherwise
+
+The old abstract carried none, following Nature's generic *"avoid numbers,
+abbreviations, acronyms or measurements unless essential."* What NMI prints:
+*"F1 score of 0.974, whereas the current best-performing model achieves
+0.639"*, *"top-five accuracy of 83.9%"*, *"n = 2,451"*. IBDex is denser and
+every figure carries its comparator. **Naming genes is in register**: IBDex
+names DMBT1, DUOXA2, OLFM4, NOS2, CXCL1 in its own abstract.
+
+**Measured lengths**, excluding the prefix and subject terms: 147, 189, 190,
+155, 176, 203, median 183, against a 150 spec. The spec is the instruction;
+the gap is a decision, not an assumption.
+
+### X15's rankings died on an objection worth remembering
+
+AW: *"This would've been completely different if the same groups were
+rearranged by pathways but slightly differently. In theory, a group could be
+optimised for cell's family/phase signal."* **A per-group score is a property
+of our CUT of Reactome and GO, not of biology.** The experiment that settles
+it is one job: the same probe against `a1_randgroups`, whose checkpoint is on
+disk. Until then no sentence rests on which group came top.
+
+### X16 is the result that survived, and its design is the point
+
+**The cycle is one continuous axis.** Fitted on the phase labels of
+`marecko_2024` and `garcia_alonso_2021` ALONE, it orders `duempelmann_2026`'s
+60 donors by clinical cycle day at 0.7565 and by serum progesterone at
+0.8435. **Fitting off-cohort is what makes it mean anything**: phase was
+supervised, the day behind it and the hormone behind that never were. It
+resolves inside one phase label (periovulatory, 0.6421, $P$ = 0.0041) and the
+nine centroids close a loop in biological order ($P$ = 0.0018), the secretory
+half over 220 degrees and the proliferative over 44. **Stromal runs its own
+clock**: 0.5598 against the pooled axis where the other three sit at 0.81 to
+0.91. That is decidualisation.
+
+### Three bugs, and two of them were caught by machinery rather than by me
+
+1. **Orienting a projection and reusing that sign on ONE of two axes mirrors
+   the plane**, which reverses the direction of rotation. It took the
+   circular resultant from 0.802 to 0.263 before I noticed.
+2. **The auditor caught an arc computed from the raw max and min of angles
+   that straddle zero.** 24 degrees was wrong; it is 44. **That number was in
+   a message to AW before the file forced it to be re-derived.** This is the
+   whole argument for `a number the prose quotes must be a value some file
+   holds`: x16 now writes `x16_cycle_axis.csv` and both auditors read it.
+3. **`\elaj` eats the space after it**, so an edit of AW's read ELAJrecords,
+   ELAJfrontier and ELAJendometriosis. Fourth occurrence. Only a render shows
+   it.
