@@ -49,8 +49,8 @@ carried by a topic-sentence ladder. Do not reopen it.
 | `marker_reproducibility.sh` | **X13** | 8 h CPU | **DONE.** In Results and the Discussion |
 | `scib_scfoundation.sh` | the quarantined scIB cell | 6 h CPU | **DONE in substance**, see below |
 | `count_params_sweep.py` | N1's figures | seconds | **DONE.** Anchored at 1,883,986 |
-| `probe_stages.sh` to `p1_groups` | **X15** | 2 d GPU | **KICKED OFF 16 Nov**, after two fixes below |
-| `train.sh a1_seed42` | the seed band for Notes 3 and 5 | ~10 h GPU | **KICKED OFF 16 Nov**. Needs a scoring pass when it lands |
+| `probe_stages.sh` to `p1_groups` | **X15**, now Note 7 | 2 d GPU | **DONE 16 Nov**, job 61861150, exit 0, 13:26:46 of the 2-day wall. All 44 groups scored and the integrity row is exact |
+| `train.sh a1_seed42` | the seed band for Notes 3 and 5 | ~10 h GPU | **TRAINED 16 Nov**, job 61860514, exit 0, 8:44:23. **NOT YET SCORED**, see below |
 
 **On the UMAP caches**: the job ran before the index pin was committed, so it
 took the RNG path. That is fine, because HPC numpy 1.26.4 and local 2.2.6 were
@@ -95,6 +95,91 @@ shares with the original pass reproduce to the printed precision, so it is
 comparable. `scib_table.py` parses it out of the log, which is kept where
 that CSV would have been, and prefers the CSV if it ever appears. The
 scorecard has no empty cell.
+
+---
+
+# 1a. Both jobs landed, 16 November
+
+## The probe: done, clean, and its integrity check is exact
+
+`Outputs/probes/p1_groups`, job 61861150. All 44 groups scored on cell
+family and menstrual phase, at width 288 each. **The `latent` row matches
+the benchmark's \elaj{} B\textsubscript{hi} row to the last digit on all
+six axes** (cycle 0.7346, family 0.9820, donor 0.5188, $k$NN family 0.9864,
+disease 0.3364, study mixing 0.7613), which is the whole reason that row is
+computed: it proves the probe is scoring the same cells with the same
+estimator as Table 1.
+
+**What it found.**
+
+| | |
+|---|---|
+| cell family across the 44 groups | 0.3305 to 0.9695, median 0.7748 |
+| menstrual phase across the 44 groups | 0.3051 to 0.7341, median 0.5690 |
+| groups beating the 16-dim latent | **0 of 44 on either label**, though each group is 288 numbers wide |
+| best group on both | `reactome_complement_cascade_plus_9_more` |
+| worst group on both | `reactome_sensory_perception`, which is the sanity check |
+
+**The headline is the third row.** The latent is sixteen numbers and every
+group is 288, so the comparison favours the groups, and the latent still
+wins on both labels. The latent is therefore not a copy of its best group;
+the compression across 44 of them adds something.
+
+⚠ **One caution to write into the note rather than discover later.** Family
+and phase excess correlate across the groups at $\rho = +0.665$,
+$P < 0.0001$. The ordering is not label-specific, so part of what this
+measures is how much transcriptional signal a group carries at all rather
+than anything pathway-specific. Say so.
+
+⚠ **`counts_raw`, `counts_log` and every `delta` column are empty**, because
+`--no-references` was passed and the two per-group PCA reference families
+are what fill them. That was the deliberate trade that let the job finish
+inside the wall. So the note can say what the groups carry and **cannot**
+say what tokenisation costs against raw counts. Filling them is roughly two
+thirds of the job's cost again, and is AW's call.
+
+## The seed arm: trained, verified, and still needs its benchmark row
+
+`Outputs/a_series/a1_seed42`, job 61860514. Eight epochs, early stopping,
+best epoch 2 against the base's epoch 4 of 10.
+
+**It is a clean pure-seed replicate, checked two ways.** All 46 keys in the
+YAML `overrides` block are identical to `p1_dab168_kl1`'s, and seed is 24
+against 42. `run_config.json` appears to differ on
+`model.tokens.dns_embedding`, `None` against `True`, and that is a
+**recording artefact, not a model difference**: the key is in neither
+YAML, `ModelConfig` defaults it to `True`, and `a1_noecs` records `True`
+for the same reason. Both runs ran with the sentinel on.
+
+**The training curves nearly superimpose.** `train_nb` is within 0.0008 of
+the base at every shared epoch (0.4129/0.4137, 0.3868/0.3871, 0.3824/0.3824,
+0.3801/0.3800, 0.3786/0.3785, 0.3777/0.3778, 0.3771/0.3770, 0.3767/0.3768).
+
+**But there is no benchmark row for it anywhere**, verified by search. What
+`metrics.csv` holds is the per-epoch validation readout at $k = 30$ on
+19{,}972 cells, which is a trajectory and not quotable. Notes 3 and 5 need
+the $k = 100$ cross-donor battery on the full 416{,}256-cell held-out
+split, and that is two jobs, both measured from the identical pair that
+produced `full_a1_clsonly`:
+
+```
+cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/benchmark_baselines.sh a1_seed42 --runs-dir outputs/a_series --methods none --dump-latent outputs/benchmarks/latents_elaj/a1_seed42 --dump-only --out outputs/benchmarks/_emb_ho_a1_seed42
+```
+
+GPU, measured 20:40 on the same step for `a1_clsonly`, 2 h wall. **Then**,
+once it has written the latent:
+
+```
+cd /rds/homes/a/axw1008/axw1008 && sbatch data_collation/scripts/benchmark_cpu.sh a1_seed42 --runs-dir outputs/a_series --methods none --external-latent /rds/homes/a/axw1008/axw1008/src/outputs/benchmarks/latents_elaj/a1_seed42/elaj__native__train --out outputs/benchmarks/full_a1_seed42
+```
+
+CPU on bbdefault, measured 50:51, outside the bbgpu cap. ⚠ **The result has
+to land locally at `Outputs/benchmarks/full/full_a1_seed42/benchmark.csv`**,
+which is where `table1.collect()` reads the a-series from.
+
+⚠ **`a1_seed42` is deliberately NOT in `table1.A_SERIES`.** It is an error
+bar, not an arm, and adding it would put a twelfth row in Table 1. If AW
+wants it in the table that is his call and a separate change.
 
 ---
 
