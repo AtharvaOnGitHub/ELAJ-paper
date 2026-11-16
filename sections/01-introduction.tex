@@ -4,66 +4,103 @@
 % is scaffolding and comes out before submission; the Introduction is
 % simply the text before the first Results subheading.
 %
-% Paragraph map and word allocation: INTRODUCTION_STRUCTURE.md.
+% REWRITTEN 17 November 2026 against INTRODUCTION_STRUCTURE.md, which was
+% itself rewritten the same day. Two inputs govern it and the previous
+% draft predated both: the one-line story settled 11 November, and the
+% guide's five pointers from the 11 November group feedback (why scRNA,
+% why endometriosis, why disease atlas, what other studies have shown,
+% what foundation models can say at a single-disease level).
+%
+% SHAPE taken from IBDex's own Introduction, read in full: six
+% paragraphs, every one closing on a short declarative that lands the
+% point, one naming sentence, the questions as a tricolon mapping onto
+% Results in order, and the contribution stated by contrast.
 % =====================================================================
 
 \section*{Introduction}
 
-Endometriosis is a disease in which tissue resembling the inner lining of the 
-uterus grows outside it. Its symptoms include debilitating abdominal pain, 
-disruption or dysregulation of menstrual cycle, heavy periods, infertility, 
-and a whole host of related complications reaching the lungs, heart, and brain. 
-To study this disease, it is critical to take into account the menstrual cycle
-and its effects on the human body.
+Endometriosis is a disease in which tissue resembling the lining of the
+uterus grows outside it, and it affects roughly one in ten people of
+reproductive age \citep{who2025endometriosis}. It has no validated
+non-invasive test, so a confirmed diagnosis requires laparoscopic surgery.
+Across 444 surgically confirmed patients the mean interval from first
+symptom to diagnosis was 11.1 years \citep{bontempo2025diagnostic}, and
+every single-cell cohort in existence is drawn from the patients who
+reached that surgery. The symptoms that would shorten it are cyclical:
+pain, bleeding and their disruption all track the menstrual cycle. In this disease the cycle is not a nuisance variable to be removed
+before the biology is read. It is the axis the biology moves along.
 
-While some clinical trials are still ongoing, to our knowledge endometriosis has no
-non-invasive tests. A definitive diagnosis currently requires laparoscopic surgery
-to confirm lesions formed by this disease. Across 444 patients with surgically 
-confirmed endometriosis the mean interval from first symptom to
-diagnosis was 11.1 years \citep{bontempo2025diagnostic}. Every confirmed
-sample of diseased tissue therefore comes from a surgery making every cohort 
-small, expensive, and assembled locally. The largest published single-cell study 
-of endometriosis has sampled tens of donors compared to the millions affected. 
-This problem calls for consolidation of data and innovation in analysis.
-
-Every donor in this corpus was biopsied once, so each contributes
-cells from a single point in the menstrual cycle, and menstrual phase is
-constant within a donor. A quantity that is constant within a donor and
-varies between donors is, geometrically, a per-donor offset and in the same form 
-as batch effects. It is thus easy for a naive model to conflate batch effects 
-with biological signal. Left unattended, a worse model removes menstrual cycle 
-information as it tries to remove study signal.
-
-The questions that make a pooled corpus worth assembling are the ones no
-single cohort can reach. What the field has established is consistent:
-lesions are not simply displaced endometrium but carry transcriptional
-programmes of their own \citep{fonseca2023endometriosis,tan2022singlecell};
-the unaffected endometrium of an affected person is already altered, so the
-disease is not confined to the lesion
-\citep{duempelmann2026endometrium,shih2022menstrual}; immune involvement
+Single-cell transcriptomics is the resolution at which that biology is
+legible, because endometriosis is a change in what particular cells do
+rather than in which organ is affected, and the field has used it to
+establish a consistent picture. Lesions are not simply displaced
+endometrium but carry transcriptional programmes of their own
+\citep{fonseca2023endometriosis,tan2022singlecell}. The unaffected
+endometrium of an affected person is already altered, so the disease is not
+confined to the lesion
+\citep{duempelmann2026endometrium,shih2022menstrual}. Immune involvement
 recurs across every study that looks for it
-\citep{huang2023immune,chen2022adenomyosis}; and reference atlases now
+\citep{huang2023immune,chen2022adenomyosis}, and reference atlases now
 describe the cell types of healthy endometrium across the cycle
-\citep{mareckova2024heca}. Each of those results rests on one cohort, with
-its own tissue sites, its own gene panel and its own protocol, which is what
-leaves the next questions out of reach: how cycle phase and disease interact,
-and whether a signature found in one cohort holds in another. Both are
-questions about variation between donors, and both therefore require a
-representation of pooled data in which donor identity has been removed and
-cycle phase has not.
+\citep{mareckova2024heca}. Each of those results rests on a single cohort,
+because surgical diagnosis makes every cohort small, expensive and
+assembled one hospital at a time; the largest of them holds 60 donors. The consequence runs through the whole literature. Independent
+cohorts keep arriving at the same findings, and not one of them can confirm
+another, because no two share a donor or a cell vocabulary.
 
-This paper proposes that the trade-off can be measured, and that a model 
-should report where on it the result was taken. \elaj\ is a conditional 
-variational autoencoder that reads a cell in 44 pathway groups and returns 
-sixteen numbers, with two weights that move it along and across that 
-trade-off: an adversarial weight on a study discriminator, and a price on the 
-information the latent may carry. Varying the two traces a frontier between 
-donor-blindness and retained cycle signal, and every number reported here comes 
-from a named point on it. A pretrained single-cell foundation model is not an 
-alternative, because the confound is a property of this corpus rather than 
-of any model, and a representation learned elsewhere arrives with no reason 
-to have separated the two; zero-shot, these models are in any case unreliable \citep{kedzierska2025zeroshot}. What follows is that frontier, what the sixteen 
-numbers hold once the model is fixed, what the cycle looks like through 
-them, what they say about surgical staging, and which parts of the 
-architecture the result depends on. The first question is where the frontier 
-lies, and what the field looks like against it.
+Pooling is the only route to the donor count those questions need, and it is
+how other fields answered the same problem, through the Human Cell Atlas
+\citep{regev2017hca}, organ-scale references built from many studies
+\citep{sikkema2023hlca} and disease-focused meta-atlases assembled from
+published work \citep{nie2023scibd}. What the field's own review of atlas
+building reports is that no recipe exists for doing this: there is ``no
+one-size-fits-all protocol for atlas building'', only context-specific
+considerations and workflows \citep{hrovatin2025atlases}. A worked context
+is therefore what is missing, and endometriosis supplies an unusually
+complete one, because every deposited single-cell study of the disease we
+could obtain is in the corpus assembled here. This corpus is not a sample
+of the field. It is the field.
+
+Pooling this corpus is hard for a reason that is specific and geometric.
+Every donor is biopsied once, so each contributes cells from a single point
+in the cycle and menstrual phase is constant within a donor. A quantity
+constant within a donor and varying between donors has the same form as a
+batch effect, and a correction working on form alone cannot separate them:
+removing the batch removes the cycle, and a stronger correction removes
+more of it. The field's guidance anticipates the
+general case and recommends coarsening the batch covariate, to dataset
+rather than to sample, wherever batches correspond to biological variables
+of interest \citep{hrovatin2025atlases}. Its examples are all at dataset
+level, and a phenotype constant within a subject because the subject was
+sampled once is not among them. That remedy also carries an unmeasured
+cost, because subject-level variation then survives into the representation
+untouched.
+Donor recovery is not a nuisance we removed. It is the cost we report.
+
+A pretrained foundation model is not the alternative it appears to be.
+Models pretrained across tens of millions of cells
+\citep{cui2024scgpt,theodoris2023geneformer,hao2024scfoundation,heimberg2025scimilarity}
+return one representation per corpus, learned where this confound was
+absent and fixed before the question is put; their zero-shot behaviour is
+also uneven \citep{kedzierska2025zeroshot}. A trade-off cannot be
+measured from one fixed point. It needs a curve, and a curve needs
+retraining. At 1{,}883{,}986 parameters a model of this kind trains in about
+ten hours on one GPU, which is what allowed eleven of them to be trained and
+scored here; a model of a hundred million parameters offers one point and no
+curve. Inductive bias in place of pretraining scale
+is therefore not an economy. It is what makes the measurement possible.
+
+We therefore built \elaj, a single-cell disease atlas of endometriosis:
+1{,}577{,}728 cells from 254 donors across eleven studies, read by a
+conditional variational autoencoder that groups 15{,}496 genes into 44
+pathway sets and returns sixteen numbers for each cell. Two weights move it
+along and across the trade-off: an adversarial weight on a study
+discriminator, and a price on the information the latent may carry. Varying
+them traces a frontier between donor-blindness and retained cycle signal,
+and every number reported here comes from a named point on it. Using that
+atlas we asked where the frontier lies and where the field sits against it,
+what sixteen numbers retain of the biology once the model is fixed, and
+which published claims about endometriosis the pooled corpus can settle. The
+contribution is not a new architecture. It is a worked case of building a
+disease atlas where the disease's own biology is confounded with the batch,
+with the cost of every correction measured rather than assumed.
