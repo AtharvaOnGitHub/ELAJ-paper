@@ -74,6 +74,19 @@ estimator each comes from or a reviewer will read it as an inconsistency.
 | **D3** | **Random gene groups cost disease 0.3364 → 0.2698 and family 0.9820 → 0.9606.** Pathway grouping is load-bearing, not decoration | 7 | **9** | **Yes**, same bar chart. This is the single clearest evidence that the inductive bias is doing work |
 | **D4** | Removing ECS worsens study mixing by +0.0727 and donor recovery by +0.0332 | 6 | 6 | Same bar chart |
 | **D5** | Removing the DNS sentinel costs almost nothing on biology but worsens mixing +0.0205 and disease +0.0251 | 5 | 5 | Same bar chart |
+| **D6** | **The sixteen-dimensional latent beats all 44 pathway groups on both labels, 0 of 44 either way**, while every group is 288 numbers wide and therefore eighteen times the latent. Family 0.9864 against a best group of 0.9695; phase 0.8725 against 0.7341 | 8 | 8 | **Yes, in Supplementary.** 44 groups ranked with the latent drawn as a line through them. The point is that the line sits above every bar, and no table makes that visible at a glance |
+| **D7** | **The 44 groups are nothing like equal**: cell family 0.3305 to 0.9695, median 0.7748; phase 0.3051 to 0.7341, median 0.5690. Best on both is the complement cascade, worst on both is sensory perception | 7 | 6 | Same figure as D6 |
+
+⚠ **D6 is the positive half of D3 and the two belong together.** D3 scrambles
+the grouping and shows biology falls; D6 keeps it and shows the combination
+beats every part of itself. One says the structure is load-bearing, the other
+says what the load is.
+
+⚠ **D7's ordering is not label-specific.** Family and phase excess correlate
+across the 44 at Spearman +0.665, P < 0.0001, with 16 of 44 below both
+medians. Part of what it measures is how much signal a group carries at all.
+State it once; it does not weaken D6, which is a comparison against the
+latent rather than between groups.
 
 ---
 
@@ -127,6 +140,12 @@ benchmark.
 
 Six results score 10 on importance: **A1, A2, B1, C3, E2, E3**. Three of
 those six are from the claims axis or depend on it.
+
+**D6 joins A2 as evidence for the one-line story's first half.** A2 is the
+external comparison, 1.88M parameters against 100M. D6 is the internal one:
+the architecture's own structure beats every piece of itself. Both say that
+inductive bias is doing the work that scale does elsewhere, and only one of
+them was in this inventory before 16 November.
 
 Three results score 9 on significance: **A1, B1, E3**, plus B4 and C1.
 

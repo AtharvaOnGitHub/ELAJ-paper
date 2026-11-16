@@ -670,6 +670,84 @@ under X13; script `axw1008/src/scripts/marker_reproducibility.py`.
 
 ---
 
+# 11. X15 — is the pathway grouping doing anything, and does the latent beat it?
+
+**Not a published claim.** Every other section here tests something a corpus
+paper asserted. This one tests our own architecture, and it is in this file
+because AW asked for it and because it is the clearest evidence we have that
+the model's one structural idea earns its place.
+
+**The idea being tested.** Most single-cell models read a cell as a long list
+of gene levels, 15,496 of them, each independent of the rest. Ours does not.
+It first sorts the genes into 44 groups by the biological pathway they belong
+to, reads each group separately, and only then combines them into the final
+sixteen numbers. That sorting is the "inductive bias" the paper's one-line
+story is built on: a piece of biology we told the model in advance, instead of
+scale we could not afford.
+
+**Two questions follow, and nobody had asked them.** Does each group actually
+carry anything? And is the final sixteen-number summary better than the best
+group on its own, or is it just copying whichever group happened to be most
+informative?
+
+**What we did.** Each of the 44 groups produces 288 numbers before the model
+combines them. We scored those 288 numbers exactly as the paper scores
+everything else: take a cell, find its nearest neighbours, ask what fraction
+carry the same label, correct for chance. Cell family on 176,803 held-out
+cells, menstrual phase on 224,211. Then we did the same for the final sixteen
+numbers, in the same run, through the same code.
+
+**The same run re-scores the whole model and reproduces Table 1 exactly** on
+all six axes, to the last decimal. That is the check that the per-group
+numbers are measured on the same cells with the same instrument as the paper's
+headline table, rather than being a separate thing that happens to look
+similar.
+
+**Verdict 1: the sixteen numbers beat all 44 groups, on both labels.**
+
+| | cell family | menstrual phase |
+|---|---:|---:|
+| the model's final 16 numbers | **0.9864** | **0.8725** |
+| the best single group, 288 numbers | 0.9695 | 0.7341 |
+| **groups that beat the 16 numbers** | **0 of 44** | **0 of 44** |
+
+Every group is eighteen times wider than the latent. The comparison is stacked
+in the groups' favour and the latent wins anyway, on both labels, against all
+44. So the compression across groups is adding something: the final
+representation is not a repackaging of its best group.
+
+**Verdict 2: the groups are nothing like equal.**
+
+| | worst group | median | best group |
+|---|---:|---:|---:|
+| cell family | 0.3305 | 0.7748 | 0.9695 |
+| menstrual phase | 0.3051 | 0.5690 | 0.7341 |
+
+The best group on both is the complement cascade, which is immune. The worst
+on both is sensory perception, a group of genes for a job the endometrium does
+not do. That the probe puts it last is a sanity check worth stating: a probe
+that scored all 44 groups the same would be telling us nothing at all.
+
+**Comment, and it is a real limit rather than a hedge.** The two labels do not
+pick out different groups. Across the 44, how well a group carries cell family
+and how well it carries the cycle correlate at +0.665, and 16 of the 44 are
+below the median on both. So some of what this measures is simply how much
+signal a group carries at all, not which biology it carries. That matters if
+anyone later wants to say "pathway X is where the cycle lives": they would have
+to beat that correlation first, and nothing here does.
+
+**One thing the run deliberately did not measure.** To fit inside its two-day
+limit it skipped the comparison against the raw gene counts of each group. So
+we can say what each group carries, and we cannot yet say how much of that
+survives, or is lost, in turning counts into tokens. That is a separate job and
+roughly two thirds of this one's cost again.
+
+**Numbers:** `Outputs/probes/p1_groups/stages.csv`. Protocol in
+`EXPERIMENTS.md` under X15; script
+`axw1008/src/scripts/probe_stages.py`.
+
+---
+
 # What we could not test at all
 
 **Shih's four claims.** Uterine natural killer cells almost absent in cases,
@@ -712,3 +790,4 @@ one asked. Skip, and say why.
 | **Epithelium is far rarer in lesions** | **agrees** with Sarsenova, but cannot be separated from dissociation loss |
 | **Tissue structure is mostly absent from the latent**, with a weak residue in stromal and endothelial | the decoder conditioning working; weakly **agrees** with Fonseca |
 | **Per-family marker signatures reproduce** between the two independently annotated cohorts, 61 to 76 of the top 100 genes shared against 0.9 by chance | **counters** Marečková, on one pair of studies |
+| **The model's sixteen numbers beat all 44 of its own pathway groups** on cell family and on the cycle, 0 of 44 either way, though each group is eighteen times wider | our own architecture, not a published claim: the grouping earns its place |

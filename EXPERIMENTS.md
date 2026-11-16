@@ -589,4 +589,64 @@ the framing matters more than the number.
 
 ## X15 — Group embedding analysis
 
-AW's own addition, for Supplementary. Unscoped. Blocked on X2 at minimum.
+`axw1008/src/scripts/probe_stages.py`, run as `probe_stages.sh
+p1_dab168_kl1 --runs-dir outputs/p_series --splits val test --only-groups
+--no-references`. Job 61861150, 16 November 2026, 13:26:46 on one A100,
+exit 0. Output `Outputs/probes/p1_groups/stages.csv`.
+
+**Why.** AW's own addition. The model's one structural commitment is that a
+cell is read as 44 pathway groups rather than as 15,496 independent genes.
+D3 already shows that scrambling that grouping costs biology. X15 asks the
+other half: what does each group carry on its own, and does the
+sixteen-number latent hold more than the best of them?
+
+**What was measured.** Each group hands forward 288 numbers, one learned
+summary token plus eight pooled order statistics over 32 dimensions. Those
+288 numbers were scored with the benchmark's own $k$NN estimator on the
+benchmark's own held-out cells: cell family over 176,803 cells, 4 labels,
+chance 0.673; menstrual phase over 224,211 cells, 7 labels, chance 0.370.
+Every value below is excess over chance, as everywhere else in the paper.
+
+**The integrity row is exact.** The same run scores the full
+sixteen-dimensional latent through the same code path, and all six axes
+match Table 1's ELAJ B_hi row to the last digit: cycle 0.7346, cross-donor
+family 0.9820, donor recovery 0.5188, kNN family 0.9864, disease 0.3364,
+study mixing 0.7613. The per-group numbers are therefore on the same cells
+and the same estimator as the paper's headline table.
+
+**Result 1. The latent beats every group, on both labels.**
+
+| | cell family | menstrual phase |
+|---|---:|---:|
+| the 16-dimensional latent | **0.9864** | **0.8725** |
+| best single group, 288 numbers | 0.9695 | 0.7341 |
+| **groups beating the latent** | **0 of 44** | **0 of 44** |
+
+Each group is eighteen times wider than the latent, so the comparison runs
+against us and the latent wins anyway. Whatever the latent is, it is not a
+copy of its best-informed group.
+
+**Result 2. The groups are not interchangeable.**
+
+| | min | median | max |
+|---|---:|---:|---:|
+| cell family | 0.3305 | 0.7748 | 0.9695 |
+| menstrual phase | 0.3051 | 0.5690 | 0.7341 |
+
+Best on both is `reactome_complement_cascade_plus_9_more`. Worst on both is
+`reactome_sensory_perception`, which names a function the endometrium does
+not perform, and reads accordingly. A probe that scored every group alike
+would be measuring nothing; this one does not.
+
+⚠ **The ordering is not label-specific.** Family and phase excess correlate
+across the 44 groups at Spearman $+0.665$, $P < 0.0001$, and 16 of the 44
+sit below both medians. So part of what this reads is how much
+transcriptional signal a group carries at all, rather than anything
+specific to either label. Any claim that a particular pathway carries the
+cycle has to clear that correlation first.
+
+⚠ **No counts baseline exists.** `--no-references` skipped the two per-group
+PCA reference families, which are two thirds of the job's cost and what
+fill `counts_raw`, `counts_log` and every `delta` column. X15 therefore says
+what each group carries and says nothing about what the tokenisation costs
+against raw counts. Running them is a separate decision.

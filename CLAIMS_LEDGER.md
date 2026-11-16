@@ -106,6 +106,48 @@ compares follicular fluid to endometrium while calling both endometrium.
 
 ---
 
+## Not a published claim: what the 44 pathway groups carry (X15)
+
+X15 tests our own architecture rather than any paper's claim, so it has no
+row above. It belongs in this file because it is the measurement that says
+which pathway-resolution claims the groups can be asked at all.
+
+**The headline.** The sixteen-dimensional latent beats all 44 groups on
+cell family (0.9864 against a best group of 0.9695) and on menstrual phase
+(0.8725 against 0.7341), **0 of 44 either way**, while every group is 288
+numbers wide. The groups themselves span 0.3305 to 0.9695 on family and
+0.3051 to 0.7341 on phase, so they are nothing like equal. Full result in
+`EXPERIMENTS.md` under X15.
+
+**What it settles for the pathway-resolution claims.** S1, S3 and S4 and
+L1 are all claims at the resolution of one named pathway, and all four were
+pencilled in for X11, which would read them off a pathway group. X15 gives
+the first measurement of what those groups actually hold:
+
+| group a metabolic claim would be read from | family | rank of 44 | phase | rank of 44 |
+|---|---:|---:|---:|---:|
+| `reactome_metabolism_3_pathways` | 0.8000 | 16 | 0.5360 | 29 |
+| `reactome_metabolism_of_proteins_6_pathways` | 0.7825 | 20 | 0.6359 | 10 |
+| `reactome_phospholipid_metabolism_plus_16_more` | 0.7737 | 23 | 0.5997 | 16 |
+| `reactome_metabolism_7_pathways` | 0.7570 | 26 | 0.4660 | 38 |
+| `reactome_metabolism_7_pathways_1` | 0.7070 | 30 | 0.5470 | 27 |
+| `reactome_respiratory_electron_transport_…_plus_9_more` | 0.6889 | 34 | 0.5581 | 26 |
+| `reactome_metabolism_of_rna_6_pathways` | 0.5391 | **43** | 0.5624 | 25 |
+
+Six of the seven sit at or below the family median of 0.7748, and the merged
+metabolism groups are the weaker half of the set rather than the stronger.
+**So the limitation N3 already states on these claims is now measured rather
+than asserted**: it is not only that glycolysis, HIF-1 signalling,
+glutathione metabolism and AMPK signalling are merged into shared groups, it
+is that those shared groups are among the ones the model encodes least well.
+
+⚠ **This does not say the metabolic claims are false and it does not test
+them.** X15 measures cell family and menstrual phase, not metabolic
+activity. What it bounds is the instrument: a pathway test run through one
+of these groups is run through a group that carries less than the median.
+
+---
+
 ## Dropped from this pass
 
 Not claims about endometriosis. Kept here so every paper stays accounted for.
