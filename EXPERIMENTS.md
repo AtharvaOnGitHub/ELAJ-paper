@@ -775,6 +775,11 @@ them; three balanced axes of cell identity are visible from almost any
 pathway, which is why 17 of 44 groups reach 80% of the latent on family and
 2 of 44 do on phase.
 
+**Result 4. NOT CARRIED INTO THE PAPER.** AW, 17 November: *"the different
+parts of the architecture thing is not very interesting. I'd skip it."* It
+is kept below as a measurement because it was made and because it inherits
+X15's partition problem anyway, but no prose rests on it.
+
 **Result 4. The disease direction rides on the identity machinery, not on
 the cycle machinery.** For each group, take the root-mean-square response of
 its genes along X12's immune disease direction, and correlate that with what

@@ -89,7 +89,29 @@ reached 1.0677 in stromal cells and 0.9824 in epithelial cells, against
 linear map over the whole latent and received no cell-type information, so
 that threefold ordering is an emergent property. It is also the
 correct ordering, since the endometrial cycle acts principally on the
-stromal and epithelial compartments.
+stromal and epithelial compartments. Fitting each compartment its own cycle
+direction separated them further: the epithelial, endothelial and immune
+directions agreed with one another and with the pooled direction, at
+cosines of 0.6922 to 0.9095, while the stromal direction agreed with none of
+them, at 0.2825 to 0.4692. Stromal cells, the compartment that decidualises,
+run on a cycle of their own.
+
+The cycle is held as one continuous axis rather than as nine categories.
+A single linear discriminant fitted to the phase labels of
+\texttt{marecko\_2024} and \texttt{garcia\_alonso\_2021} alone accounted for
+0.6319 of all phase separation in the latent, more than twice the next
+direction. Projected onto it, the 60 donors
+of \texttt{duempelmann\_2026}, a cohort absent from that fit, ordered by the
+cycle day recorded at sampling at a rank correlation of 0.7565 and by serum
+progesterone at 0.8435 (Fig.~X). Neither quantity was supplied to the model.
+Within the eighteen donors sharing the periovulatory label the axis still
+ordered their cycle days, at 0.6421 and \textit{P}~=~0.0041, so its resolution
+is finer than the label the model was supervised on. Across the first two
+cycle axes the nine phase centroids advanced round a closed loop in
+biological order, \textit{P}~=~0.0018 against a permutation null, with the
+secretory half occupying 220 degrees of arc and the proliferative half 44.
+The endometrium changes more per day after ovulation than before it, and
+the latent is shaped accordingly.
 
 Labels withheld from training entirely were recoverable on the frozen model.
 Cell family reached 0.9807 across 630,689 annotated cells and surgical

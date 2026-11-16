@@ -498,3 +498,27 @@ own docstring under `axw1008/src/scripts/`.
 | 1.303e+04 | 100 | 2 | 0.0101 | -0.008426 | marecko_2024 | duempelmann_2026 | immune | 20 |
 | 1.303e+04 | 100 | 1 | 0.005025 | -0.01759 | marecko_2024 | duempelmann_2026 | stromal | 20 |
 
+**`x16_cycle_axis.csv`**
+
+| quantity | value | p | n |
+|---|---|---|---|
+| cycle axis vs cycle day, donor medians | 0.7565 | 2.734e-12 | 60 |
+| cycle axis vs serum progesterone, donor medians | 0.8435 | 2.705e-17 | 60 |
+| phase separation on cycle axis 1 | 0.6319 |  | 7.363e+05 |
+| phase separation on cycle axis 2 | 0.2185 |  | 7.363e+05 |
+| phase centroids advance in biological order, resultant | 0.8023 | 0.00175 | 9 |
+| cycle axis vs cycle day within the periovulatory label | 0.6421 | 0.004065 | 18 |
+| cycle axis vs cycle day within the proliferative label | 0.2247 | 0.2503 | 28 |
+| secretory arc span, degrees | 220 |  | 5 |
+| proliferative arc span, degrees | 44 |  | 4 |
+| stromal cycle axis vs the pooled cycle axis, abs cosine | 0.5598 |  | 0 |
+| epithelial cycle axis vs the pooled cycle axis, abs cosine | 0.9095 |  | 0 |
+| endothelial cycle axis vs the pooled cycle axis, abs cosine | 0.8113 |  | 0 |
+| immune cycle axis vs the pooled cycle axis, abs cosine | 0.8951 |  | 0 |
+| stromal vs epithelial cycle axis, abs cosine | 0.4692 |  | 0 |
+| stromal vs endothelial cycle axis, abs cosine | 0.4269 |  | 0 |
+| stromal vs immune cycle axis, abs cosine | 0.2825 |  | 0 |
+| epithelial vs endothelial cycle axis, abs cosine | 0.8054 |  | 0 |
+| epithelial vs immune cycle axis, abs cosine | 0.7962 |  | 0 |
+| endothelial vs immune cycle axis, abs cosine | 0.6922 |  | 0 |
+

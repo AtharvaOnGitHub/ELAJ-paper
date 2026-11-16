@@ -1009,6 +1009,10 @@ _CLAIMS = {
     # backs is exactly the kind of number the audit exists to catch.
     "x13_marker_reproducibility.csv":      ("study_a", "study_b", "family"),
     "x13_marker_reproducibility_null.csv": ("study_a", "study_b", "family"),
+    # X16. Keyed on the quantity's own name, because every row is a
+    # different measurement rather than one measurement per group, so a
+    # row's name IS its key and no two can vouch for each other.
+    "x16_cycle_axis.csv":                  ("quantity",),
 }
 # Columns the prose will never quote. Registering them manufactures
 # collisions: `auc_lo` for endothelial in the transferred run is 0.4812,

@@ -1972,6 +1972,49 @@ def x16():
         sp.set_visible(False)
     save(fig, "x16_family_cycle_axes", cite=True)
 
+    # ── THE NUMBERS GO TO A FILE BOTH AUDITORS READ. ────────────────────
+    # A number the prose quotes must be a value some file holds. X16 is
+    # computed here rather than on the cluster, so without this the
+    # auditors see 0.757 and 0.844 in Results and have nothing to check
+    # them against, which is exactly the hole audit_numbers.py exists to
+    # close. Same destination as the X13 and X14 outputs.
+    # does the axis resolve cycle day INSIDE one phase label?
+    within = []
+    for ph, sub in pd.DataFrame({"proj": pr, "day": m.CycleDay.values[te],
+                                 "ph": m["menstrual phase"].values[te],
+                                 "pid": m.patient_id.values[te]}).groupby("ph"):
+        dsub = sub.groupby("pid").median(numeric_only=True)
+        if len(dsub) >= 8 and dsub.day.nunique() > 3:
+            rr, pp = spearmanr(dsub.proj, dsub.day)
+            within.append((f"cycle axis vs cycle day within the {ph} label",
+                           abs(rr), pp, len(dsub)))
+    out = pd.DataFrame([
+        ("cycle axis vs cycle day, donor medians", r_day, p_day, len(dn)),
+        ("cycle axis vs serum progesterone, donor medians", r_pg, p_pg, len(dn)),
+        ("phase separation on cycle axis 1", ev[0], np.nan, int(has.sum())),
+        ("phase separation on cycle axis 2", ev[1], np.nan, int(has.sum())),
+        ("phase centroids advance in biological order, resultant", obs, pcirc, len(cen)),
+    ] + within, columns=["quantity", "value", "p", "n"])
+    _sec = ["periovulatory", "secretory_early", "secretory_early_mid",
+            "secretory_mid", "secretory_late"]
+    _pro = ["menstrual", "proliferative_early", "proliferative", "proliferative_late"]
+    out.loc[len(out)] = ("secretory arc span, degrees",
+                         round(float(ang[_sec[-1]] - ang[_sec[0]])), np.nan, len(_sec))
+    _pa = np.array([ang[k] for k in _pro])
+    _pa = np.where(_pa > 180, _pa - 360, _pa)
+    out.loc[len(out)] = ("proliferative arc span, degrees",
+                         round(float(_pa.max() - _pa.min())), np.nan, len(_pro))
+    for f, v in zip(ks, [abs(float(axd[k] @ W[:, 0])) for k in ks]):
+        out.loc[len(out)] = (f"{f} cycle axis vs the pooled cycle axis, abs cosine",
+                             v, np.nan, 0)
+    for i, x in enumerate(ks):
+        for y in ks[i + 1:]:
+            out.loc[len(out)] = (f"{x} vs {y} cycle axis, abs cosine",
+                                 abs(float(axd[x] @ axd[y])), np.nan, 0)
+    dest = CLAIMS / "x16_cycle_axis.csv"
+    out.to_csv(dest, index=False)
+    print(f"  csv  {dest.name}  ({len(out)} rows)")
+
     print("       X16, quoted in the note:")
     print(f"         cycle axis vs cycle day, 60 donors:  rho={r_day:+.3f} P={p_day:.1e}")
     print(f"         cycle axis vs serum progesterone:    rho={r_pg:+.3f} P={p_pg:.1e}")
