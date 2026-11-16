@@ -1,37 +1,33 @@
 \babel@toc {british}{}\relax 
 \contentsline {figure}{\numberline {S1}{\ignorespaces Parameters against group size}}{5}{figure.caption.2}%
 \contentsline {figure}{\numberline {S2}{\ignorespaces Cost, capacity, and what each token width permits}}{6}{figure.caption.3}%
-\contentsline {figure}{\numberline {S3}{\ignorespaces Range of each scIB metric}}{11}{figure.caption.9}%
-\contentsline {figure}{\numberline {S4}{\ignorespaces scIB metrics against donor recovery and cycle}}{12}{figure.caption.11}%
-\contentsline {figure}{\numberline {S5}{\ignorespaces The bio half on the two reported arms}}{13}{figure.caption.12}%
-\contentsline {figure}{\numberline {S6}{\ignorespaces Label coverage, drawn}}{16}{figure.caption.16}%
-\contentsline {figure}{\numberline {S7}{\ignorespaces Donors per cycle day}}{17}{figure.caption.17}%
+\contentsline {figure}{\numberline {S3}{\ignorespaces Range of each scIB metric}}{12}{figure.caption.9}%
+\contentsline {figure}{\numberline {S4}{\ignorespaces scIB metrics against donor recovery and cycle}}{13}{figure.caption.11}%
+\contentsline {figure}{\numberline {S5}{\ignorespaces The bio half on the two reported arms}}{14}{figure.caption.12}%
+\contentsline {figure}{\numberline {S6}{\ignorespaces Label coverage, drawn}}{17}{figure.caption.16}%
+\contentsline {figure}{\numberline {S7}{\ignorespaces Donors per cycle day}}{18}{figure.caption.17}%
 \contentsline {figure}{\numberline {S8}{\ignorespaces Null width falls with donors}}{19}{figure.caption.18}%
-\contentsline {figure}{\numberline {S9}{\ignorespaces Width against cycle agreement}}{19}{figure.caption.20}%
-\contentsline {figure}{\numberline {S10}{\ignorespaces Distance to the reference, by group}}{20}{figure.caption.22}%
+\contentsline {figure}{\numberline {S9}{\ignorespaces Width against cycle agreement}}{20}{figure.caption.20}%
+\contentsline {figure}{\numberline {S10}{\ignorespaces Distance to the reference, by group}}{21}{figure.caption.22}%
 \contentsline {figure}{\numberline {S11}{\ignorespaces Training hours per arm}}{26}{figure.caption.27}%
 \contentsline {figure}{\numberline {S12}{\ignorespaces Reconstruction loss per epoch, frontier arms}}{27}{figure.caption.28}%
 \contentsline {figure}{\numberline {S13}{\ignorespaces Validation cycle agreement per epoch, frontier arms}}{28}{figure.caption.29}%
-\contentsline {figure}{\numberline {S14}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 7$, $w_{\mathrm {kl}} = 1$}}{29}{figure.caption.30}%
-\contentsline {figure}{\numberline {S15}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 7$, $w_{\mathrm {kl}} = 30$}}{30}{figure.caption.31}%
-\contentsline {figure}{\numberline {S16}{\ignorespaces UMAP, {\fontfamily {comfortaa}\fontsize {9.636pt}{13.6pt}\selectfont \textls [150]{ELAJ}}\xspace \,B\textsubscript {lo} ($\lambda _{\mathrm {dab}} = 168$, $w_{\mathrm {kl}} = 30$)}}{31}{figure.caption.32}%
-\contentsline {figure}{\numberline {S17}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 336$, $w_{\mathrm {kl}} = 1$}}{32}{figure.caption.33}%
-\contentsline {figure}{\numberline {S18}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 336$, $w_{\mathrm {kl}} = 30$}}{33}{figure.caption.34}%
-\contentsline {figure}{\numberline {S19}{\ignorespaces The ablations on the frontier}}{34}{figure.caption.38}%
-\contentsline {figure}{\numberline {S20}{\ignorespaces Reconstruction loss per epoch, ablations}}{37}{figure.caption.39}%
-\contentsline {figure}{\numberline {S21}{\ignorespaces Validation cycle agreement per epoch, ablations}}{38}{figure.caption.40}%
-\contentsline {figure}{\numberline {S22}{\ignorespaces Decoder reliance on the latent, all arms}}{39}{figure.caption.41}%
-\contentsline {figure}{\numberline {S23}{\ignorespaces UMAP, random grouping}}{40}{figure.caption.42}%
-\contentsline {figure}{\numberline {S24}{\ignorespaces UMAP, head-free}}{41}{figure.caption.43}%
-\contentsline {figure}{\numberline {S25}{\ignorespaces UMAP, no elastic cell similarity}}{42}{figure.caption.44}%
-\contentsline {figure}{\numberline {S26}{\ignorespaces UMAP, no DNS sentinel}}{43}{figure.caption.45}%
-\contentsline {figure}{\numberline {S27}{\ignorespaces UMAP, no order statistics}}{44}{figure.caption.46}%
-\contentsline {figure}{\numberline {S28}{\ignorespaces Composition, control against eutopic}}{49}{figure.caption.53}%
-\contentsline {figure}{\numberline {S29}{\ignorespaces Composition by severity}}{50}{figure.caption.55}%
-\contentsline {figure}{\numberline {S30}{\ignorespaces Composition, eutopic against lesion}}{51}{figure.caption.57}%
-\contentsline {figure}{\numberline {S31}{\ignorespaces Disease AUC by family, own labels}}{54}{figure.caption.61}%
-\contentsline {figure}{\numberline {S32}{\ignorespaces Disease AUC by family, transferred labels}}{54}{figure.caption.62}%
-\contentsline {figure}{\numberline {S33}{\ignorespaces The gene ranking along the immune direction}}{55}{figure.caption.66}%
-\contentsline {figure}{\numberline {S34}{\ignorespaces Tissue within a family, drawn}}{55}{figure.caption.68}%
-\contentsline {figure}{\numberline {S35}{\ignorespaces Top-hundred overlap against the null}}{56}{figure.caption.70}%
-\contentsline {figure}{\numberline {S36}{\ignorespaces Rank correlation against the null}}{56}{figure.caption.71}%
+\contentsline {figure}{\numberline {S14}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 7$, $w_{\mathrm {kl}} = 1$}}{28}{figure.caption.30}%
+\contentsline {figure}{\numberline {S15}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 7$, $w_{\mathrm {kl}} = 30$}}{29}{figure.caption.31}%
+\contentsline {figure}{\numberline {S16}{\ignorespaces UMAP, {\fontfamily {comfortaa}\fontsize {9.636pt}{13.6pt}\selectfont \textls [150]{ELAJ}}\xspace \,B\textsubscript {lo} ($\lambda _{\mathrm {dab}} = 168$, $w_{\mathrm {kl}} = 30$)}}{29}{figure.caption.32}%
+\contentsline {figure}{\numberline {S17}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 336$, $w_{\mathrm {kl}} = 1$}}{30}{figure.caption.33}%
+\contentsline {figure}{\numberline {S18}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 336$, $w_{\mathrm {kl}} = 30$}}{30}{figure.caption.34}%
+\contentsline {figure}{\numberline {S19}{\ignorespaces The ablations on the frontier}}{31}{figure.caption.38}%
+\contentsline {figure}{\numberline {S20}{\ignorespaces Reconstruction loss per epoch, ablations}}{35}{figure.caption.39}%
+\contentsline {figure}{\numberline {S21}{\ignorespaces Validation cycle agreement per epoch, ablations}}{35}{figure.caption.40}%
+\contentsline {figure}{\numberline {S22}{\ignorespaces Decoder reliance on the latent, all arms}}{36}{figure.caption.41}%
+\contentsline {figure}{\numberline {S23}{\ignorespaces UMAP, random grouping}}{36}{figure.caption.42}%
+\contentsline {figure}{\numberline {S24}{\ignorespaces UMAP, head-free}}{37}{figure.caption.43}%
+\contentsline {figure}{\numberline {S25}{\ignorespaces UMAP, no elastic cell similarity}}{37}{figure.caption.44}%
+\contentsline {figure}{\numberline {S26}{\ignorespaces UMAP, no DNS sentinel}}{38}{figure.caption.45}%
+\contentsline {figure}{\numberline {S27}{\ignorespaces UMAP, no order statistics}}{38}{figure.caption.46}%
+\contentsline {figure}{\numberline {S28}{\ignorespaces Composition, eutopic against lesion}}{43}{figure.caption.53}%
+\contentsline {figure}{\numberline {S29}{\ignorespaces Disease AUC by family, own labels}}{46}{figure.caption.57}%
+\contentsline {figure}{\numberline {S30}{\ignorespaces Disease AUC by family, transferred labels}}{47}{figure.caption.58}%
+\contentsline {figure}{\numberline {S31}{\ignorespaces The gene ranking along the immune direction}}{48}{figure.caption.61}%
+\contentsline {figure}{\numberline {S32}{\ignorespaces Marker agreement against the label-shuffled null}}{49}{figure.caption.64}%

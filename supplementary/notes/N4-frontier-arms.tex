@@ -123,9 +123,17 @@ grade is negative in all eleven.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/training_hours_all_arms.png}
-\caption[Training hours per arm]{\textbf{Wall-clock hours per model on one
-A100.} The dotted line is the mean. The longest run is the random-grouping
-ablation, which trained for eighteen epochs.}
+\caption[Training hours per arm]{\textbf{Every model in this paper trains
+in about ten hours, which is what makes a trade-off measurable rather than
+a point.} Wall-clock hours on one NVIDIA A100 for each of the six frontier
+models and the five ablations, summed over training and validation epochs.
+Bar colour encodes the information cost $w_{\mathrm{kl}}$ for the frontier
+models and marks the ablations as counterfactuals of the base. The dotted
+rule is the mean. The six frontier models span 9.1 to 11.2 hours; the
+longest run of all is the random-grouping ablation, which went eighteen
+epochs before early stopping. Eleven models at this cost is around five
+A100-days in total, where a single pretrained model of 100 million
+parameters yields one fixed point and no curve.}
 \label{sfig:hours}
 \end{figure}
 
@@ -150,19 +158,37 @@ full held-out split. We use it as a trajectory and not as a value to quote.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/training_loss_pseries.png}
-\caption[Reconstruction loss per epoch, frontier arms]{\textbf{Held-out
-(solid) and training (dotted) reconstruction loss per epoch for the six
-models}, with the selected checkpoint marked. Blue is
-$w_{\mathrm{kl}} = 1$, red is 30.}
+\caption[Reconstruction loss per epoch, frontier arms]{\textbf{No selected
+checkpoint is a first or a last epoch, and the stronger prior converges
+earlier and fits worse.} Held-out (solid) and training (dotted)
+negative-binomial reconstruction loss per cell, per epoch, for the six
+frontier models, each line named at its right-hand end. Colour encodes the
+information cost, blue $w_{\mathrm{kl}} = 1$ and red
+$w_{\mathrm{kl}} = 30$, so three models share each colour and the name on
+the line is what tells them apart. Filled circles mark the checkpoint
+selected by lowest held-out loss. The three $w_{\mathrm{kl}} = 1$ models
+select epoch 4 and the three $w_{\mathrm{kl}} = 30$ models epoch 3 or 5,
+so every run converged inside the twenty-epoch horizon with none stopping
+at an endpoint. At $\lambda_{\mathrm{dab}} = 168$ the stronger prior pays
+0.4046 against 0.4024 in held-out loss.}
 \label{sfig:loss-p}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/trajectory_cycle_pseries.png}
-\caption[Validation cycle agreement per epoch, frontier arms]{\textbf{Validation
-cross-donor cycle agreement per epoch}, $k = 30$ on 19{,}972 validation
-cells. Open circles mark the selected checkpoint.}
+\caption[Validation cycle agreement per epoch, frontier arms]{\textbf{Cycle
+structure arrives in the first two to four epochs and then plateaus, and
+every selected checkpoint sits on that plateau.} Per-epoch validation
+cross-donor cycle agreement for the six frontier models, each line named
+at its right-hand end, with colour encoding the information cost as in
+Supplementary Fig.~\ref{sfig:loss-p}. Open rings mark the checkpoint
+selected by lowest held-out reconstruction loss, which is chosen without
+reference to this quantity. One caution about the scale: this readout is
+$k = 30$ on 19{,}972 validation cells and is not the benchmark's
+cross-donor agreement, which is $k = 100$ on the full 416{,}256-cell
+held-out split, so it is read as a trajectory and never quoted as a
+value.}
 \label{sfig:traj-p}
 \end{figure}
 
@@ -181,10 +207,14 @@ against.
 
 The study panels put the frontier in a form the column cannot. At
 $\lambda_{\mathrm{dab}} = 7$ the largest study holds a territory of its own
-and several smaller studies sit in lobes that touch nothing. At the middle
-weight the studies interleave through a central mass while the largest
-still dominates one side. Under the stronger information cost the embedding
-is a single connected body with studies interleaved throughout. That is the
+and several smaller studies sit in lobes that touch nothing
+(Supplementary Figs.~\ref{sfig:umap-7-1} and~\ref{sfig:umap-7-30}). At the
+middle weight the studies interleave through a central mass while the
+largest still dominates one side (main-text Fig.~4b). Under the stronger
+information cost the embedding is a single connected body with studies
+interleaved throughout (Supplementary Fig.~\ref{sfig:umap-168-30}), and
+doubling the adversary again does not continue that progression
+(Supplementary Figs.~\ref{sfig:umap-336-1} and~\ref{sfig:umap-336-30}). That is the
 order of the study-separation column read as geography: what the scalar
 gives as three numbers, the pictures give as the location of the separation
 that is left, which is the thing a reader would want to know before
@@ -201,42 +231,72 @@ rather than a description of one.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_p1_dab7_kl1.png}
-\caption[UMAP, $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 1$]{\textbf{The $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 1$ latent}, coloured by cell
-family, by study, by menstrual phase and by disease status. Nothing moves between the four
-panels except the colouring. The same 400{,}000 cells appear in every panel of this
-series and in main-text Fig.~4, so all six models are directly
-comparable.}
+\caption[UMAP, $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 1$]{\textbf{The $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 1$ latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study with the eleven-hue palette of Fig.~1,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. This is the weakest adversary of the grid. The largest study holds a
+territory of its own and several smaller studies sit in lobes that touch
+nothing, which is the 0.8636 study separation of
+Table~\ref{stab:arms-cost} seen as geography.}
 \label{sfig:umap-7-1}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_p1_dab7_kl30.png}
-\caption[UMAP, $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 30$]{\textbf{The $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 30$ latent}, coloured by cell
-family, by study, by menstrual phase and by disease status. Nothing moves between the four
-panels except the colouring.}
+\caption[UMAP, $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 30$]{\textbf{The $\lambda_{\mathrm{dab}} = 7$, $w_{\mathrm{kl}} = 30$ latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. This is the weakest adversary under the strong prior. Study territories
+persist, at 0.8587 separation, while the phase panel has already lost
+contiguity and the cycle has fallen to 0.6791.}
 \label{sfig:umap-7-30}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_p1_dab168_kl30.png}
-\caption[UMAP, \elaj\,B\textsubscript{lo} ($\lambda_{\mathrm{dab}} = 168$, $w_{\mathrm{kl}} = 30$)]{\textbf{The \elaj\,B\textsubscript{lo} ($\lambda_{\mathrm{dab}} = 168$, $w_{\mathrm{kl}} = 30$) latent}, coloured by cell
-family, by study, by menstrual phase and by disease status. Nothing moves between the four
-panels except the colouring.}
+\caption[UMAP, \elaj\,B\textsubscript{lo} ($\lambda_{\mathrm{dab}} = 168$, $w_{\mathrm{kl}} = 30$)]{\textbf{The \elaj\,B\textsubscript{lo} ($\lambda_{\mathrm{dab}} = 168$, $w_{\mathrm{kl}} = 30$) latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. This is one of the two reported models. The embedding is a single
+connected body with studies interleaved throughout, the best study
+separation of the six at 0.6544 and the best donor recovery at 0.3975, and
+the phase panel is the price: 0.6033 against B\textsubscript{hi}'s 0.7346.}
 \label{sfig:umap-168-30}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_p1_dab336_kl1.png}
-\caption[UMAP, $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 1$]{\textbf{The $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 1$ latent}, coloured by cell
-family, by study, by menstrual phase and by disease status. Nothing moves between the four
-panels except the colouring.}
+\caption[UMAP, $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 1$]{\textbf{The $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 1$ latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. This is twice the adversarial weight of the reported model, and study
+separation is worse than at 168, 0.8200 against 0.7613. That is the
+saturation this note describes rather than a further gain.}
 \label{sfig:umap-336-1}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_p1_dab336_kl30.png}
-\caption[UMAP, $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 30$]{\textbf{The $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 30$ latent}, coloured by cell
-family, by study, by menstrual phase and by disease status. Nothing moves between the four
-panels except the colouring.}
+\caption[UMAP, $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 30$]{\textbf{The $\lambda_{\mathrm{dab}} = 336$, $w_{\mathrm{kl}} = 30$ latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. This is the strongest correction of the grid on both coefficients. It is
+worse than the middle weight on donor recovery, study separation and the
+cycle at once.}
 \label{sfig:umap-336-30}
 \end{figure}

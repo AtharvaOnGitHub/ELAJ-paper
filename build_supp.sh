@@ -27,6 +27,16 @@ fi
 latexmk -pdf -interaction=nonstopmode -halt-on-error supplementary.tex
 
 echo
-grep -c "Overfull" supplementary.log 2>/dev/null | \
-    xargs -I{} echo "  overfull boxes: {}"
+# `grep -c` exits 1 when the count is zero, which under `set -euo pipefail`
+# killed this script silently after the first line. A clean build is the
+# common case, so both counts need `|| true`.
+echo "  overfull boxes: $(grep -c "Overfull" supplementary.log || true)"
+echo "  undefined references: $(grep -c "undefined" supplementary.log || true)"
+
+# A FIGURE PLACED SMALL ENOUGH TO TAKE ITS TYPE UNDER 5 pt IS A FAILURE
+# LATEX CANNOT SEE. Nothing is wrong with the document, so no warning is
+# issued; the figure is simply unreadable. AW found four of them by eye on
+# 17 November. This is the check that finds the fifth.
+PY=/Users/atharvawaghmare/miniconda3/envs/elaj/bin/python
+[ -x "$PY" ] && "$PY" ../figures/scripts/check_figure_scale.py || true
 echo "  $(pwd)/supplementary.pdf"

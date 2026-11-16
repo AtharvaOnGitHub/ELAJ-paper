@@ -44,7 +44,11 @@ follow, and they differ in whether they touch a reported number.
 First, the donor-level split. We reconciled identifiers before splitting
 for every model reported here. The loader resolves the thirty identifiers
 to fifteen people and assigns each person once, so the held-out set holds
-70 of 254 people and no person falls on both sides of the wall.
+70 of 254 people and no person falls on both sides of the wall. An earlier
+split, which predates every model reported here, did not reconcile them and
+placed seven of the fifteen shared samples on opposite sides
+(Table~\ref{stab:split-overlap}); finding that is what led us to reconcile
+identifiers before splitting.
 
 Second, the whole-corpus reads. Our validation pass over all 1{,}577{,}728 
 cells keys on the deposited identifier rather than on the person, so the fifteen
@@ -133,10 +137,18 @@ of the eight labels.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/label_coverage_by_study.png}
-\caption[Label coverage, drawn]{\textbf{Cells carrying each label, and the
-studies that supplied them.} Each bar is one label, segmented by study and
-measured against the whole corpus (dotted). No label reaches half the
-corpus, and five of the eight come from a single cohort.}
+\caption[Label coverage, drawn]{\textbf{No label in this corpus reaches
+half of it, and five of the eight come from one cohort.} Each bar is one
+label, segmented by the studies that supplied it and measured against all
+1{,}577{,}728 cells (dotted rule). Menstrual phase is the widest at
+736{,}312 cells from three studies; cell family reaches 640{,}606 from two.
+Cycle day, serum progesterone, pseudotime and grade are
+\texttt{duempelmann\_2026} alone, and rASRM stage and cell-cycle phase are
+\texttt{marecko\_2024} alone. Six of the eleven studies, 782{,}016 cells
+from 115 donors, carry none of the eight. Coverage of this shape decides
+which questions can be asked rather than how precisely they are answered:
+a label held by one cohort cannot be replicated across cohorts, however
+many cells carry it.}
 \label{sfig:coverage}
 \end{figure}
 
@@ -161,9 +173,15 @@ agree.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/cycle_day_coverage.png}
-\caption[Donors per cycle day]{\textbf{Donors per cycle day in the one
-cohort that records it.} Sixty donors, one sample each, across days 5 to
-30. Shaded columns are the four days on which no donor was sampled.}
+\caption[Donors per cycle day]{\textbf{The continuous cycle axis rests on
+sixty donors from one cohort, sampled once each.} Donors per cycle day in
+\texttt{duempelmann\_2026}, the only study in the corpus that records one,
+spanning days 5 to 30. Shaded columns with a cross are the four days on
+which no donor was sampled. Because each donor contributes a single
+sample, a cycle day is a between-donor contrast and not a trajectory
+followed within anyone, and cycle length varies between people and is
+altered by endometriosis, so the same numbered day is not the same
+physiological point in every donor.}
 \label{sfig:cycleday}
 \end{figure}
 
@@ -243,11 +261,17 @@ along, and cells are not.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.7\textwidth]{figures/null_width_vs_donors.png}
-\caption[Null width falls with donors]{\textbf{The permutation null's 95th
-percentile against the number of donors carrying the label}, every
-cross-donor label of the reported model. Each label is joined across the
-scopes it is measured on, held out and whole corpus, so a line is one
-label's null narrowing as donors arrive.}
+\caption[Null width falls with donors]{\textbf{What a negative result can
+mean is set by donor count alone.} The permutation null's 95th percentile
+against the number of donors carrying each cross-donor label of
+\elaj\,B\textsubscript{hi}. Each label is joined across the scopes it is
+measured on, held out and whole corpus, so one line is one label's null
+narrowing as donors arrive. The null reassigns labels to donors and
+nothing else, so cells do not enter: at 16 donors the 95th percentile
+reaches 0.42 on the excess scale, wider than any value this paper reports
+on any axis, and the same label read over 118 donors is scored against
+0.09. A label on the left of this figure could separate the latent
+perfectly and still fail its null.}
 \label{sfig:nullwidths}
 \end{figure}
 
@@ -287,9 +311,19 @@ same protocol, would settle it directly. We did not run them.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/field_width_vs_cycle.png}
-\caption[Width against cycle agreement]{\textbf{Representation width
-against cross-donor cycle agreement, ten representations}, width on a log
-axis.}
+\caption[Width against cycle agreement]{\textbf{Wider representations
+recover the cycle less well, so unmatched width does not explain
+\elaj{}'s result.} Cross-donor cycle agreement against representation
+width for the ten representations of Table~1, width on a log axis, with
+the Spearman rank correlation inset. The association is negative,
+$\rho = -0.650$ at $P = 0.042$ over $n = 10$, which runs opposite to the
+direction a width advantage would take: a sixteen-component principal
+component decomposition reaches 0.6457 where scGPT at 512 dimensions
+reaches 0.4869 and scFoundation at 3{,}072 reaches 0.6447. The bound this
+places is one-sided. It rules width out as the explanation of our figure;
+it does not establish what width would do if it were matched, which would
+need a sixteen-component companion of each wide embedding scored under the
+same protocol.}
 \label{sfig:width}
 \end{figure}
 
@@ -335,11 +369,17 @@ accuracy weights the four families equally.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=.65\textwidth]{figures/transfer_distance_by_group.png}
-\caption[Distance to the reference, by group]{\textbf{Distribution of the
-mean distance to the 25 nearest annotated cells}, for granulosa cells, for
-\texttt{li\_2025}'s immune cells and for every other transferred cell. The
-cells for which no correct answer exists are not the distant ones, which is
-why a distance threshold cannot find them.}
+\caption[Distance to the reference, by group]{\textbf{The cells the
+transfer cannot answer for are not the distant ones, so no distance
+threshold finds them.} Distribution of the mean distance to the 25 nearest
+annotated cells, for \texttt{li\_2025}'s 15{,}056 granulosa cells, which
+have no counterpart in an endometrial vocabulary, for its 30{,}207 immune
+cells, which do, and for all 937{,}122 other transferred cells. Granulosa
+cells sit closer to the reference on average, at 1.514, than the correctly
+called immune cells at 1.712, with everything else at 1.528. A rejection
+rule cutting at any distance therefore discards more correct calls than
+errors, which is why the transfer is reported as accurate about what a
+cell is and silent about whether the question was answerable.}
 \label{sfig:transfer-dist}
 \end{figure}
 

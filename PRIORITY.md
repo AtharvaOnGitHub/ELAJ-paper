@@ -290,6 +290,63 @@ identifies it as an epithelium-sorted deposit rather than whole tissue.
 
 ---
 
+## The figure pass, AW's second review, 17 November
+
+**His rule, and it governed the prose pass too:** *"Prose is for
+observations, tables are for numbers, figures are for intuition."*
+
+| his comment | what was done |
+|---|---|
+| UMAP panels 1x4, not 2x2, "all UMAPs are squished" | 1x4 at 180 x 70 mm, and every axes set to `aspect="equal", adjustable="datalim"` so the embedding is never stretched to fit the box. Panel letters **a**-**d** added |
+| loss curves illegible, three lines share a colour | every line now carries its model's name at its own right-hand end, de-collided by `label_lines()`. Colours unchanged, as he asked. Applied to the trajectories too |
+| S9 jumbled top left | the Spearman inset moved to a boxed bottom-left corner, and point labels de-collided in display space by `label_points()` |
+| S3 words too small, whitespace | the fault was the aspect: a 150 mm axes with numeric columns to fraction 1.52 made a 250 mm figure that `\textwidth` scaled to 0.64. Axes now 95 mm |
+| S5 not referenced | ⚠ **IT IS**, at N2's "The two \elaj{} models make that mechanism visible". **Not removed; see the question below** |
+| S19 crowded, keep only \elaj{} B\textsubscript{hi} | the nine comparison methods and five other frontier arms are gone. One base point, five arrows |
+| S31, S32 unreadable | same aspect fault as S3; axes 88 mm and placed at `\textwidth` instead of 0.65 |
+| S33 messy | the fifteen labels are gone, because Tables S26 and S27 already name those genes. What stays is the shape of the ranking, which only a figure can give |
+| S29, what point | removed with the whole severity subsection |
+| S34 hard to interpret | removed. Table S26 makes the point |
+| S35/S36 illegible | merged into one two-panel figure at 165 mm, in ink rather than grey |
+| Table S28, barely any numbers | removed. Two rows under six headings, four of them dashes. Its four values are in the sentence and the legend, and the script prints them |
+| figures with no reference | audited with captions excluded; four UMAP panels and three tables were orphans, all now cited. Eight orphan PNGs deleted from `supplementary/figures/` |
+| legends severely lacking | `REGISTER.md` has a new section read off IBDex and scGPT. **Every figure legend rewritten**, 100 to 200 words, panel by letter, each number against its comparator |
+
+**A NEW CHECK, and it catches a fault LaTeX cannot see.**
+`figures/scripts/check_figure_scale.py` runs from `build_supp.sh` and fails
+on any figure whose smallest type would land under NMI's 5 pt floor **where
+it is placed**. Every one of AW's four "illegible" complaints was this. It
+also found nineteen font literals between 4.2 and 5.0 pt in
+`supp_figures.py` that are under the floor even at 1:1; there is now a named
+`FS_LEG = 5.2`.
+
+**Claims note.** AW: *"The claims axis note is about the claims not
+discussed in the main prose."* The severity subsection is gone, and so is
+*Does composition differ between patients and controls?*, since Results
+gives all four of its $P$ values. **Both dropped contrasts are still
+computed and printed** by the generator, so the ledger's outcome column has
+a derivation. ⚠ **Two more subsections may fall under the same rule; see the
+question below.**
+
+**State:** 51 pages, zero overfull, zero undefined, figure-scale check
+green, both main-text auditors green. 30 tables to 26, 36 figures to 32.
+
+### ⚠ Two questions for AW, both blocking nothing
+
+1. **Fig S5.** It is referenced, at N2's *"The two \elaj{} models make that
+   mechanism visible"*. It is also the only place the two arms are shown
+   against the nine others' median, which the prose does not give. **Left
+   in, legend rewritten. Remove it and the sentence, or keep?**
+2. **How far does "claims not discussed in the main prose" reach?** Taken
+   literally it also removes *Where in the latent does the disease live?*,
+   *Which genes does the immune direction move?* and *Do marker signatures
+   reproduce across cohorts?*, since Results gives each in full. **They were
+   kept**, because the same message asked to fix S31, S32, S33 and S35/S36,
+   which are those subsections' figures, and because Note 8 was folded into
+   this note one message earlier.
+
+---
+
 # 2. Ready to go now. No dependencies, no compute.
 
 Ordered by what I would do first.

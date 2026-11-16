@@ -297,3 +297,77 @@ The comparable paragraph is four sentences and about seventy-five words.
 The first attempt was five and a hundred and ten. **Count the paragraph you
 are sitting next to before writing**, the same way rule 8 closes a subsection
 when its claim is proved rather than when the numbers run out.
+
+---
+
+# Figure legends. Read off IBDex and scGPT, 17 November
+
+AW: *"Figure legends are severely lacking. Please check if register.md has
+anything on it otherwise, refer to other NMI papers and IBDex to understand
+how to write legends."* It had nothing. This is that reading.
+
+Several of ours were one clause long. **"Table S29 drawn."** is not a legend.
+
+## The two registers, measured
+
+| | scGPT, Nat. Methods | IBDex |
+|---|---|---|
+| title | the **content**: "Model schematic", "Cell type-annotation results" | the **finding**: "The frozen representation suppresses cohort identity while retaining biological signal" |
+| length | 90 to 160 words | 150 to 260 words |
+| panels | lettered, one to three sentences each | lettered, one to three sentences each |
+| numbers | $n$ and the statistical convention only | **every value the panel shows, with its comparator** |
+| interpretation | almost none | **one reading per panel** |
+| abbreviations | **every one expanded**, in a run at the end | expanded inline |
+
+**Follow IBDex.** It is the reference that decides what goes to NMI, and
+its register is the one CONTINUITY already records for our Figure 3:
+*the interpretation is from figures the reader sees.* Take scGPT's
+abbreviation discipline on top, because that costs nothing and NMI requires
+it.
+
+## The shape, in order
+
+1. **A bold title that states the finding**, not the ingredients. "The
+   frozen atlas transfers without refitting across three unseen IBD
+   cohorts" beats "Transfer results". If the figure genuinely has no single
+   finding, a content title is honest; most figures have one.
+2. **A sentence of setup** where the reader cannot otherwise parse the
+   axes: what the units are, how many there are, what the split was.
+3. **Each panel in turn, by letter**, with the numbers that panel shows.
+4. **Each number against its comparator.** IBDex never writes a bare
+   figure: *"balanced accuracy 0.31 against chance 0.25"*, *"seven-level
+   site reached 0.31 against 0.14"*. Ours must carry the null, the chance
+   rate or the base rate the same way.
+5. **One line of reading per panel**, bounded by what is drawn. IBDex:
+   *"indicating that the separation arises from the estimand rather than
+   the input data"*, *"although anatomy strongly re-ranks individual
+   genes"*.
+6. **$n$ wherever a group is named.** Every cohort, arm and subgroup.
+7. **Named exemplars where a ranking is drawn**: *"led by DMBT1, DUOXA2,
+   OLFM4, NOS2 and CXCL1"*.
+8. **The one methodological condition that protects the reading**, if there
+   is one: *"Post-training probes were fitted after freezing and did not
+   influence model selection"*. One clause, not a paragraph. This is the
+   single exception to the no-pre-emption rule, because a legend is read
+   away from the Methods.
+9. **Every abbreviation expanded**, scGPT's discipline.
+
+## What a legend must never do
+
+- **Point at a table instead of saying something.** "Table S29 drawn" tells
+  the reader nothing a glance does not.
+- **Repeat the prose sentence that cites it.** The prose makes the
+  argument; the legend makes the figure readable on its own. A reader who
+  opens the supplementary at that page must be able to read the figure
+  without finding the paragraph.
+- **Name our own arm as the hero**, or annotate the good news. That rule
+  (CONTINUITY, figures settled 4-5 November) is unchanged: the panel shows
+  data, the legend defines the axes and gives the reading, the reader draws
+  the conclusion.
+- **Hedge.** Same register as everything else.
+
+## The short caption is a different object
+
+`\caption[short]{long}` prints the short form in the contents list. That one
+is a **title, three to seven words**, and it is the only place a content
+label is right.

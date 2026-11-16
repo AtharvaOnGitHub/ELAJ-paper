@@ -30,7 +30,9 @@ We made five single-key changes against the reported model, retrained each
 from scratch under the protocol of \ref{note:frontier},
 and scored each on the same held-out cells. The main text gives each its
 result. In this note we give the mechanism behind each, the training record
-that shows it and the latent it produced. One rule governed all five and a
+that shows it and the latent it produced. Tables~\ref{stab:abl-bio}
+and~\ref{stab:abl-cost} carry all five on every axis, with the change
+against the base beside each value. One rule governed all five and a
 test in the repository enforces it: each configuration differs from the
 base on exactly one declared key. A configuration that needs two keys is
 one whose question is confounded, and we retired one such configuration
@@ -71,10 +73,21 @@ at the selected checkpoint.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/frontier_with_ablations.png}
-\caption[The ablations on the frontier]{\textbf{The five ablations on the
-frontier's axes.} The six frontier models are joined by information cost;
-an arrow runs from the base to each ablation; the nine comparison methods
-are grey.}
+\caption[The ablations on the frontier]{\textbf{Two of the five ablations
+move the model along the trade-off and three move it off the line.} Each
+arrow runs from \elaj\,B\textsubscript{hi} to one single-key
+counterfactual of it, on the two axes the frontier is drawn on: donor
+recovery, where lower is better, against cross-donor cycle agreement.
+Nothing else is plotted, so the length and direction of an arrow is the
+whole figure. Removing the elastic cell similarity term moves up and to
+the right, improving the cycle to 0.7397 and worsening donor recovery to
+0.5520, which is the signature of sliding along a trade-off. Removing the
+phase head, the pathway grouping or the order statistics moves down: the
+cycle falls to 0.4812, 0.6780 and 0.6384 without the cost axes paying for
+it. Removing the sentinel for unmeasured genes barely moves at all on
+these two axes, which is a limit of neighbourhood metrics rather than
+evidence that the component does nothing, and
+Supplementary Fig.~\ref{sfig:umap-nodns} shows what the scalars miss.}
 \label{sfig:frontier-abl}
 \end{figure}
 
@@ -171,7 +184,10 @@ family moved by 0.0022 and reconstruction improved, 0.3979 against 0.4024.
 Keeping the summary token alone is keeping a weighted average, and what a
 weighted average discards is the shape of a group's distribution. On this
 corpus that shape carries the cycle and almost none of the cell identity,
-and it costs the model nothing in fit to throw away.
+and it costs the model nothing in fit to throw away. The embedding agrees
+with the scalars for once: in
+Supplementary Fig.~\ref{sfig:umap-clsonly} the phase panel is the one that
+differs from the base and the family panel is not.
 
 \subsection{The DNS sentinel}
 
@@ -200,28 +216,60 @@ Absence of measurement stays distinct from a measured absence.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/training_loss_ablations.png}
-\caption[Reconstruction loss per epoch, ablations]{\textbf{Held-out
-(solid) and training (dotted) reconstruction loss per epoch for the base
-and the five ablations}, with each selected checkpoint marked.}
+\caption[Reconstruction loss per epoch, ablations]{\textbf{The model that
+fits the counts best is the one that has lost its inductive bias, which is
+why reconstruction loss is not a model-selection criterion for a
+representation.} Held-out (solid) and training (dotted) negative-binomial
+reconstruction loss per cell, per epoch, for \elaj\,B\textsubscript{hi}
+and its five single-key ablations, each line named at its right-hand end.
+Filled circles mark the checkpoint selected by lowest held-out loss.
+Random gene grouping reaches 0.3911 against the base's 0.4024, the best
+held-out reconstruction of any model in this paper, and runs eighteen
+epochs with the smallest and most stable train-to-held-out gap of the six:
+a reader shown that curve alone would call it the best-regularised model
+here, and every one of its biological axes is worse. The head-free run is
+the opposite shape, lowest at epoch 0 and rising at every epoch after,
+while its training loss stays within 0.0009 of the base's over the shared
+epochs, so the phase head costs nothing in fit and holds the gap closed
+from the first epoch.}
 \label{sfig:loss-a}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.75\textwidth]{figures/trajectory_cycle_ablations.png}
-\caption[Validation cycle agreement per epoch, ablations]{\textbf{Validation
-cross-donor cycle agreement per epoch}, $k = 30$ on 19{,}972 validation
-cells. The head-free run's selected checkpoint is its first epoch; its
-value four epochs later is 0.7488.}
+\caption[Validation cycle agreement per epoch, ablations]{\textbf{Checkpoint
+selection returned the head-free model before its cycle structure had
+arrived.} Per-epoch validation cross-donor cycle agreement for
+\elaj\,B\textsubscript{hi} and its five ablations, each line named at its
+right-hand end. Open rings mark the checkpoint selected by lowest held-out
+reconstruction loss, which is chosen without reference to this quantity.
+Removing the phase head is the one run whose selected checkpoint is its
+first epoch, at 0.4977, and the same run reaches 0.7488 four epochs later,
+so the 0.4812 reported for it in Table~\ref{stab:abl-bio} is a floor on
+what the architecture retains without supervision and not a ceiling. As in
+Supplementary Fig.~\ref{sfig:traj-p}, this readout is $k = 30$ on 19{,}972
+validation cells rather than the benchmark's $k = 100$ on the full
+held-out split, and is read as a trajectory only.}
 \label{sfig:traj-a}
 \end{figure}
 
 \begin{figure}[t]
 \centering
 \includegraphics[width=.65\textwidth]{figures/reliance_ratio_all_arms.png}
-\caption[Decoder reliance on the latent, all arms]{\textbf{The decoder's
-reliance on the latent relative to the provenance covariates, every model,
-at its selected checkpoint.}}
+\caption[Decoder reliance on the latent, all arms]{\textbf{Taking the
+pathway structure away lets the decoder reach the counts through
+provenance instead of through the latent.} The decoder's dependence on the
+sixteen-dimensional latent relative to its dependence on the study,
+platform and tissue covariates it is handed, in nats per gene, for every
+model at its selected checkpoint. \elaj\,B\textsubscript{hi} sits at
+7.46. Random gene grouping, which holds group sizes, each gene's position,
+parameter count and attention cost exactly as in the base and changes only
+which genes share a group, falls to 2.43, and removing the sentinel for
+unmeasured genes falls to 5.48. Both are the ablations whose latents break
+into single-study regions. A model that reconstructs better while relying
+on the latent less has found a cheaper route to the counts, which is the
+inductive-bias claim of this paper demonstrated rather than asserted.}
 \label{sfig:reliance}
 \end{figure}
 
@@ -241,36 +289,80 @@ in the embedding.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_randgroups.png}
-\caption[UMAP, random grouping]{\textbf{The random-grouping latent},
-by cell family, study, menstrual phase and disease status. Compare the base
-model at main-text Fig.~4; the cells are identical.}
+\caption[UMAP, random grouping]{\textbf{The random-grouping latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. Every gene was reassigned to a random group, holding group sizes, each
+gene's position, parameter count and effective gene space exactly as in
+the base. The family regions survive, which is consistent with cell family
+being saturated across every representation in Table~1, and the cycle and
+disease panels are where the loss sits: 0.6780 against 0.7346 and 0.2698
+against 0.3364.}
 \label{sfig:umap-rand}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_nophase.png}
-\caption[UMAP, head-free]{\textbf{The head-free latent}, by cell family, study,
-menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
+\caption[UMAP, head-free]{\textbf{The head-free latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. The supervised menstrual-phase head was given weight zero. Its phase
+panel is the one to compare: cross-donor cycle agreement is 0.4812 against
+the base's 0.7346, so 65.5\% of the chance-corrected signal survives the
+head's removal and the head accounts for 34.5\%. Cell family moves by
+0.0026, so this is not a broken model reporting a broken number.}
 \label{sfig:umap-nophase}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_noecs.png}
-\caption[UMAP, no elastic cell similarity]{\textbf{The no elastic cell similarity latent}, by cell family, study,
-menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
+\caption[UMAP, no elastic cell similarity]{\textbf{The no elastic cell similarity latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. The largest weight in the objective was disabled. Its study panel carries
+single-study territories the base does not, which is the 0.8340 study
+separation against the base's 0.7613, and every biological axis rose at
+the same time.}
 \label{sfig:umap-noecs}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_nodns.png}
-\caption[UMAP, no DNS sentinel]{\textbf{The no DNS sentinel latent}, by cell family, study,
-menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
+\caption[UMAP, no DNS sentinel]{\textbf{The no DNS sentinel latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. The sentinel marking genes a study never assayed was replaced by a zero.
+Every scalar moved by less than 0.011 except study separation and disease,
+and the study panel disagrees with the scalars: the latent breaks into
+single-study regions where the base has a continuum. A neighbourhood
+metric is insensitive to a reorganisation of that kind.}
 \label{sfig:umap-nodns}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_clsonly.png}
-\caption[UMAP, no order statistics]{\textbf{The no order statistics latent}, by cell family, study,
-menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
+\caption[UMAP, no order statistics]{\textbf{The no order statistics latent}, the same 400{,}000 cells
+under four colourings: \textbf{a} cell family, \textbf{b} study,
+\textbf{c} harmonised menstrual phase and \textbf{d} disease status.
+Nothing moves between the four panels except the colour, and the same cells
+appear in every figure of this series and in main-text Fig.~4, which is
+\elaj\,B\textsubscript{hi} and the model to read the others against.
+Cells lacking a label are grey. Each group's readout was cut from a summary token plus eight pooled order
+statistics, 288 numbers, to the summary token alone, 32 numbers, with
+parameter count unchanged. The cycle fell by 0.0962 and cell family moved
+by 0.0022, so what a weighted average discards carries the cycle and
+almost none of the cell identity.}
 \label{sfig:umap-clsonly}
 \end{figure}

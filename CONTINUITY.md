@@ -1267,3 +1267,68 @@ At 30 the same move takes the cycle 0.6791 to 0.6033 and family 0.9841 to
 to re-read it. **Prose that generalises across a grid has to be checked
 against every cell of the grid, not against the column the argument lives
 in.**
+
+## 17 November, second pass: figures, and a fault LaTeX cannot see
+
+**THE FAULT WORTH REMEMBERING: a figure's type size is set by where it is
+PLACED, not by where it is authored.** AW found four illegible figures by
+eye. Every one was the same thing: a figure authored 260 mm wide, placed at
+`\textwidth` (161 mm here), is scaled to 0.62, and every 5.5 pt label in it
+renders at 3.4 pt. **LaTeX reports nothing**, because nothing is wrong with
+the document. Zero overfull and zero undefined does not mean readable.
+
+`figures/scripts/check_figure_scale.py` now runs from `build_supp.sh` and
+fails on any figure whose smallest type would land under NMI's 5 pt floor
+where it is placed. It reads each PNG's own DPI, so the two N1 figures
+drawn at 600 dpi are measured correctly. **The fix is always to make the
+FIGURE narrower, never to shrink its type** — the old rule, size the layout
+to fit the type, in a new place.
+
+It also found what AW had not: **nineteen font literals between 4.2 and 5.0
+pt** in `supp_figures.py`, authored by eye, which are under the floor even
+at 1:1. There is now a named `FS_LEG = 5.2` and no bare literal.
+
+### AW's one-line rule for figures, to sit beside the prose one
+
+> Prose is for observations, tables are for numbers, figures are for
+> intuition.
+
+Applied: a figure that redraws a table's numbers is deleted (the x14 bar
+chart), two figures saying one thing on two scales become one two-panel
+figure (x13), and a figure whose fifteen labels fan out of one corner loses
+the labels, because the gene names are already in the table and what only
+the figure can say is the SHAPE of the ranking.
+
+### Figure legends have a register now, and it is in REGISTER.md
+
+AW: *"Figure legends are severely lacking."* They were: several were one
+clause, and one read in full **"Table S29 drawn."** `REGISTER.md` now
+carries the reading of IBDex's and scGPT's legends. The short version:
+**IBDex's title states the finding, scGPT's states the content; follow
+IBDex and take scGPT's abbreviation discipline.** Each panel by letter,
+every number against its comparator (*"0.31 against chance 0.25"*), $n$
+wherever a group is named, one line of reading per panel, and the one
+methodological condition that protects the reading. 150 to 260 words. The
+legend must stand alone: a reader who opens the page must not need the
+paragraph that cites it.
+
+### Three mistakes inside this pass
+
+1. **A Python loop that inserted captions by searching backwards from each
+   label destroyed four of five figure blocks in two files**, because every
+   insertion shifted the offsets the next search used. Caught by the build
+   (undefined references), repaired by rebuilding all ten blocks from a
+   table of (file, label, name, reading). **Never patch a file at offsets
+   computed before the previous edit.**
+2. **I wrote "ELAJ B_hi ranks last of eleven on ARI and NMI".** Last on ARI
+   at 0.0498, SECOND to last on NMI at 0.0724, behind Geneformer's 0.0651.
+   The note's own prose had the same error and it is now corrected in both.
+3. **I generalised across a grid from one column.** See the N4 entry above.
+
+### What is referenced is now checked
+
+Every cited figure and table is `\ref`'d from prose, with references inside
+a caption not counting. Four UMAP panels and three tables were orphans. The
+only two generated fragments no note inputs are `tables/corpus.tex` and
+`tables/field_severity.tex`, held deliberately for the Supplementary Tables
+section, and that is written down in the script.

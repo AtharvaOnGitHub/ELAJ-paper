@@ -66,7 +66,11 @@ ARM = "p1_dab168_kl1"
 MM = 1 / 25.4
 DPI = 200
 
-FS_TITLE, FS_BODY = 6.5, 5.5
+# NMI'S 5 pt FLOOR IS ON THE PLACED FIGURE, NOT THE AUTHORED ONE.
+# FS_LEG was being written as 4.2 to 4.8 by eye, which renders below the
+# floor even at 1:1, and check_figure_scale.py now fails the build if a
+# figure is placed small enough to take FS_LEG under 5 pt as well.
+FS_TITLE, FS_BODY, FS_LEG = 6.5, 5.5, 5.2
 plt.rcParams.update({"font.family": "Arial", "font.size": FS_BODY,
                      "text.color": INK, "axes.labelcolor": INK,
                      "xtick.color": SOFT, "ytick.color": SOFT,
@@ -110,6 +114,74 @@ WRITTEN: list[Path] = []
 
 
 # ── helpers ──────────────────────────────────────────────────────────────
+def label_lines(ax, items, dx=2.0, fontsize=FS_LEG, pad=None):
+    """Write each line's name at its own right-hand end, pushed apart.
+
+    AW, 17 November: "None of the loss curves are legible because the lines
+    have no labels. 3 lines of the same colour identify different models.
+    Please add model call outs to the lines. Leave the colours as they
+    are." Colour encodes the knob and has to stay ambiguous between the
+    three arms that share it, so the arm's name has to be ON the line.
+
+    `items` is (x_end, y_end, text, colour). Labels are placed at the y of
+    their own line and then separated downwards in y-order by at least
+    `pad` data units, which is the minimum that keeps 5 pt type from
+    overlapping at this axes height.
+    """
+    if not items:
+        return
+    lo, hi = ax.get_ylim()
+    if pad is None:
+        pad = (hi - lo) * 0.072
+    order = sorted(range(len(items)), key=lambda i: -items[i][1])
+    ys = {}
+    prev = None
+    for i in order:
+        y = items[i][1]
+        if prev is not None and prev - y < pad:
+            y = prev - pad
+        ys[i] = y
+        prev = y
+    for i, (x, y0, text, c) in enumerate(items):
+        ax.annotate(text, xy=(x, y0), xytext=(x + dx, ys[i]),
+                    textcoords="data", fontsize=fontsize, color=c,
+                    va="center", ha="left",
+                    arrowprops=dict(arrowstyle="-", color=c, lw=.4,
+                                    shrinkA=1, shrinkB=0, alpha=.7))
+    ax.set_xlim(ax.get_xlim()[0], ax.get_xlim()[1] + dx * 4.2)
+
+
+def label_points(ax, items, fontsize=FS_LEG, gap=5.0):
+    """Annotate scatter points, pushing colliding labels apart vertically.
+
+    Works in DISPLAY points, so it is correct on a log axis where a fixed
+    data offset is not. Points whose labels would overlap are separated
+    downwards in y-order; a point in the right-hand third of the axes gets
+    its label on the left so it cannot run off the edge.
+    """
+    if not items:
+        return
+    fig = ax.figure
+    fig.canvas.draw()
+    xs = [ax.transData.transform((x, y))[0] for x, y, _, _ in items]
+    ys = [ax.transData.transform((x, y))[1] for x, y, _, _ in items]
+    x0, x1 = ax.transAxes.transform((0, 0))[0], ax.transAxes.transform((1, 0))[0]
+    order = sorted(range(len(items)), key=lambda i: -ys[i])
+    placed, prev = {}, None
+    for i in order:
+        yy = ys[i]
+        if prev is not None and prev - yy < gap:
+            yy = prev - gap
+        placed[i] = yy
+        prev = yy
+    for i, (x, y, text, c) in enumerate(items):
+        right = xs[i] > x0 + (x1 - x0) * 0.66
+        dy = placed[i] - ys[i]
+        ax.annotate(text, (x, y), xytext=(-4 if right else 4, dy + 0.5),
+                    textcoords="offset points", fontsize=fontsize, color=c,
+                    ha="right" if right else "left", va="center")
+
+
 def fig_ax(w=88, h=60):
     fig, ax = plt.subplots(figsize=(w * MM, h * MM))
     for s in ("top", "right"):
@@ -278,7 +350,13 @@ def scib():
     # up, so the numbers now sit in aligned columns beside the bars, which
     # is IBDex Fig. 2c's device: the reader sees the shape and reads the
     # value without looking anything up.
-    fig, ax = plt.subplots(figsize=(150 * MM, 62 * MM))
+    # SIZED SO THE TYPE SURVIVES. AW, 17 November: "Fig S3's words are too
+    # small. There is also a lot of whitespace in the figure." Both are one
+    # fault. The numeric columns run out to axes fraction 1.52, so a 150 mm
+    # axes made a 250 mm figure, which \textwidth then scaled to 0.64 and
+    # took every label to 3.5 pt. A 95 mm axes puts the whole figure near
+    # 160 mm, so it is placed at roughly 1:1 and FS_BODY stays FS_BODY.
+    fig, ax = plt.subplots(figsize=(95 * MM, 70 * MM))
     for sp in ("top", "right", "left"):
         ax.spines[sp].set_visible(False)
     y = np.arange(10)[::-1]
@@ -392,17 +470,30 @@ def field():
 
     def scatter(xs, ys, xl, yl, fname, logx=False, cite=False):
         fig, ax = fig_ax(88, 62)
+        pts = []
         for m in meth:
             ours = m == "p1_dab168_kl1"
             ax.plot(xs[m], ys[m], "o", ms=4.5 if ours else 3.4,
                     color=AMBER if ours else INK, mec="white", mew=.4, zorder=3)
-            ax.annotate(name(m), (xs[m], ys[m]), xytext=(3, 2), textcoords="offset points",
-                        fontsize=4.8, color=AMBER if ours else SOFT)
-        rho, p = spearmanr([xs[m] for m in meth], [ys[m] for m in meth])
-        ax.text(.02, .97, f"Spearman $\\rho$ = {rho:+.3f}, $P$ = {p:.3f}, n = {len(meth)}",
-                transform=ax.transAxes, va="top", fontsize=FS_BODY, color=SOFT)
+            pts.append((xs[m], ys[m], name(m), AMBER if ours else SOFT))
         if logx:
             ax.set_xscale("log")
+        ax.margins(.12)
+        # LABELS BEFORE THE STATS BOX, and de-collided: four of the ten
+        # representations are sixteen dimensions wide, so their labels
+        # stack on one x.
+        label_points(ax, pts)
+        rho, p = spearmanr([xs[m] for m in meth], [ys[m] for m in meth])
+        # THE STATS GO IN A BOX, IN THE EMPTIEST CORNER. AW, 17 November:
+        # "S9 is very jumbled at the top left." Four of the ten points sit
+        # at width 16, so their labels stack in exactly the corner the
+        # statistics were written into. IBDex's device is a boxed inset;
+        # here it goes bottom-left, which every one of these scatters
+        # leaves empty, and the box keeps it off any point it does meet.
+        ax.text(.02, .03, f"Spearman $\\rho$ = {rho:+.3f}\n$P$ = {p:.3f}, n = {len(meth)}",
+                transform=ax.transAxes, va="bottom", ha="left", fontsize=FS_BODY,
+                color=INK, linespacing=1.5,
+                bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
         ax.set_xlabel(xl); ax.set_ylabel(yl)
         save(fig, fname, cite=cite)
         return rho, p
@@ -457,7 +548,14 @@ def field():
                        plt.Rectangle((0, 0), 1, 1, color=GREY_PT,
                                      label="each row's own permutation null (95th pct.)")],
               loc="lower right")
-    save(fig, "field_severity_vs_null", cite=True)
+    # NOT CITED. AW, 17 November: "A lot of figures don't seem to have
+    # references. Why are we keeping the figure?" No note inputs this one,
+    # because Results carries the severity result in full, so it stays in
+    # the exploratory tier. The FRAGMENT is still written: it and
+    # tables/corpus.tex are the two held for the Supplementary Tables
+    # section, which does not exist yet. Those two are the only tables/
+    # files no note inputs, and that is deliberate.
+    save(fig, "field_severity_vs_null")
     tex("field_severity", tabular("@{}lrrrrrr@{}",
         ["representation", "severity", "null$_{95}$", "$P$",
          "patients only", "null$_{95}$", "$P$"], rows))
@@ -555,23 +653,29 @@ def arms():
     for series, arms_, cmap, fname in (("p", P_ARMS, None, "training_loss_pseries"),
                                         ("a", ["p1_dab168_kl1"] + A_ARMS, A_C,
                                          "training_loss_ablations")):
-        fig, ax = fig_ax(88, 60)
+        fig, ax = fig_ax(104, 62)
+        tips = []
         for arm in arms_:
             m = metrics(arm)
             c = (A_C.get(arm, AMBER) if series == "a" else
                  KLC[dict((k, w) for k, _, w in table1.P_SERIES)[arm]])
-            ls = "-" if series == "a" or arm.endswith("kl1") else "-"
-            ax.plot(m.epoch, m.val_nb, color=c, lw=1.1, ls=ls, label=ARM_LABEL[arm])
+            ax.plot(m.epoch, m.val_nb, color=c, lw=1.1, label=ARM_LABEL[arm])
             ax.plot(m.epoch, m.train_nb, color=c, lw=.7, ls=":", alpha=.9)
             b = m.val_nb.idxmin()
             ax.plot(m.epoch[b], m.val_nb[b], "o", color=c, ms=3.2, mec="white", mew=.4)
+            # the call-out goes on the HELD-OUT line, which is the one the
+            # argument is about; the dotted training line below it shares
+            # the colour and needs no second name.
+            tips.append((float(m.epoch.iloc[-1]), float(m.val_nb.iloc[-1]),
+                         ARM_LABEL[arm], c))
         ax.set_xlabel("epoch"); ax.set_ylabel("negative-binomial loss per cell")
-        h, l = ax.get_legend_handles_labels()
-        h += [Line2D([], [], color=INK, lw=1.1, label="held-out (solid)"),
-              Line2D([], [], color=INK, lw=.7, ls=":", label="training (dotted)"),
-              Line2D([], [], color=INK, marker="o", lw=0, ms=3.2, label="selected checkpoint")]
-        ax.legend(handles=h, loc="upper center", bbox_to_anchor=(.5, -.22), ncol=3,
-                  fontsize=4.8)
+        label_lines(ax, tips, dx=0.25)
+        ax.legend(handles=[
+            Line2D([], [], color=INK, lw=1.1, label="held-out (solid)"),
+            Line2D([], [], color=INK, lw=.7, ls=":", label="training (dotted)"),
+            Line2D([], [], color=INK, marker="o", lw=0, ms=3.2,
+                   label="selected checkpoint")],
+            loc="upper center", bbox_to_anchor=(.5, -.16), ncol=3, fontsize=FS_LEG)
         save(fig, fname, cite=True)
 
     # ── per-epoch validation trajectories ────────────────────────────────
@@ -585,7 +689,8 @@ def arms():
                                 "trajectory_study")):
         for series, arms_, fname2 in (("p", P_ARMS, "pseries"),
                                       ("a", ["p1_dab168_kl1"] + A_ARMS, "ablations")):
-            fig, ax = fig_ax(88, 58)
+            fig, ax = fig_ax(104, 60)
+            tips = []
             for arm in arms_:
                 m = metrics(arm)
                 c = (A_C.get(arm, AMBER) if series == "a" else
@@ -595,12 +700,14 @@ def arms():
                         mec="white", mew=.3, label=ARM_LABEL[arm])
                 b = m.val_nb.idxmin()
                 ax.plot(m.epoch[b], m[col][b], marker=mk, ms=5.5, color=c, mfc="none", mew=.9)
+                tips.append((float(m.epoch.iloc[-1]), float(m[col].iloc[-1]),
+                             ARM_LABEL[arm], c))
             ax.set_xlabel("epoch"); ax.set_ylabel(ylabel)
-            h, l = ax.get_legend_handles_labels()
-            h.append(Line2D([], [], marker="o", mfc="none", color=INK, lw=0, ms=5.5,
-                            label="selected checkpoint (min val$_{nb}$)"))
-            ax.legend(handles=h, fontsize=4.8, ncol=3, loc="upper center",
-                      bbox_to_anchor=(.5, -.22))
+            label_lines(ax, tips, dx=0.25)
+            ax.legend(handles=[Line2D([], [], marker="o", mfc="none", color=INK,
+                                      lw=0, ms=5.5,
+                                      label="selected checkpoint (min val$_{nb}$)")],
+                      fontsize=FS_LEG, loc="upper center", bbox_to_anchor=(.5, -.16))
             save(fig, f"{fname}_{fname2}", cite=(col == "val_phase_knn_xdonor"))
 
     # reliance ratio and hours
@@ -628,7 +735,7 @@ def arms():
     ax.text(len(ALL_ARMS) - .4, rel["p1_dab168_kl1"], " reported model",
             fontsize=FS_BODY, color=SOFT, va="center")
     ax.legend(handles=bar_legend, loc="upper center", bbox_to_anchor=(.5, -.42),
-              ncol=3, fontsize=4.8)
+              ncol=3, fontsize=FS_LEG)
     ax.set_xticks(range(len(ALL_ARMS)))
     ax.set_xticklabels([ARM_LABEL[a] for a in ALL_ARMS], rotation=40, ha="right")
     ax.set_ylabel("decoder reliance, latent / provenance")
@@ -645,34 +752,41 @@ def arms():
     ax.text(len(ALL_ARMS) - .4, np.mean(list(hrs.values())), " mean",
             fontsize=FS_BODY, color=SOFT, va="bottom", ha="right")
     ax.legend(handles=bar_legend, loc="upper center", bbox_to_anchor=(.5, -.52),
-              ncol=3, fontsize=4.8)
+              ncol=3, fontsize=FS_LEG)
     save(fig, "training_hours_all_arms", cite=True)
 
-    # ── frontier with the ablations drawn as counterfactuals ─────────────
-    fig, ax = fig_ax(88, 66)
-    for m, (run, pol, fit, nm) in table1.MANIFEST.items():
-        ax.plot(float(D[m][("knn-agreement", "patient_id")]),
-                float(D[m][("cross-donor", "menstrual phase")]), "o", color=GREY_PT,
-                ms=3.6, mec=SOFT, mew=.4)
-        ax.annotate(nm, (float(D[m][("knn-agreement", "patient_id")]),
-                         float(D[m][("cross-donor", "menstrual phase")])),
-                    xytext=(3, -1), textcoords="offset points", fontsize=4.4, color=SOFT)
-    for w in (1, 30):
-        pts = [(float(D[k][("knn-agreement", "patient_id")]),
-                float(D[k][("cross-donor", "menstrual phase")])) for k, _, ww in table1.P_SERIES if ww == w]
-        pts.sort()
-        ax.plot(*zip(*pts), color=KLC[w], lw=.9, marker="o", ms=3.6, mec="white", mew=.4,
-                label=f"frontier arms, $w_{{kl}}$ {w}")
-    bx, by = float(D["p1_dab168_kl1"][("knn-agreement", "patient_id")]), \
-        float(D["p1_dab168_kl1"][("cross-donor", "menstrual phase")])
+    # ── the ablations as counterfactuals from the base, and NOTHING ELSE ─
+    # AW, 17 November: "Fig S19 is very crowded. If the objective is showing
+    # ablations keep only ELAJ_B_hi and remove the rest." The nine
+    # comparison methods and the five other frontier arms were answering a
+    # different question, which Fig. 2 of the main text already answers.
+    # What is left is one base point with five arrows off it, so the length
+    # and direction of each arrow is the whole figure.
+    fig, ax = fig_ax(92, 68)
+    bx = float(D["p1_dab168_kl1"][("knn-agreement", "patient_id")])
+    by = float(D["p1_dab168_kl1"][("cross-donor", "menstrual phase")])
+    tips = []
     for a in A_ARMS:
-        x_, y_ = float(D[a][("knn-agreement", "patient_id")]), float(D[a][("cross-donor", "menstrual phase")])
-        ax.annotate("", (x_, y_), (bx, by), arrowprops=dict(arrowstyle="-|>", color=A_C[a],
-                                                             lw=.7, shrinkA=2, shrinkB=2))
-        ax.plot(x_, y_, "D", color=A_C[a], ms=3.4, mec="white", mew=.4, label=ARM_LABEL[a])
+        x_ = float(D[a][("knn-agreement", "patient_id")])
+        y_ = float(D[a][("cross-donor", "menstrual phase")])
+        ax.annotate("", (x_, y_), (bx, by),
+                    arrowprops=dict(arrowstyle="-|>", color=A_C[a], lw=.9,
+                                    shrinkA=3, shrinkB=3))
+        ax.plot(x_, y_, "D", color=A_C[a], ms=4.2, mec="white", mew=.5, zorder=3)
+        tips.append((x_, y_, ARM_LABEL[a], A_C[a]))
+    ax.plot(bx, by, "o", color=INK, ms=6, mec="white", mew=.6, zorder=4)
+    ax.annotate(ARM_LABEL["p1_dab168_kl1"], (bx, by), xytext=(0, 8),
+                textcoords="offset points", fontsize=FS_LEG, color=INK,
+                ha="center", fontweight="bold")
+    # the base sits mid-field, so call-outs go to whichever side has room
+    for x_, y_, txt, c in tips:
+        ha = "left" if x_ >= bx else "right"
+        ax.annotate(txt, (x_, y_), xytext=(4 if ha == "left" else -4, -4),
+                    textcoords="offset points", fontsize=FS_LEG, color=c, ha=ha,
+                    va="top")
     ax.set_xlabel("donor recovery (lower is better)")
     ax.set_ylabel("cross-donor cycle agreement")
-    ax.legend(fontsize=4.6, loc="lower right")
+    ax.margins(.18)
     save(fig, "frontier_with_ablations", cite=True)
 
 
@@ -727,7 +841,7 @@ def umap_panel(arm: str, colouring: str, cite=False):
                for o, n in zip(order, names) if (vals == o).any()]
     if grey.any():
         handles.append(Line2D([], [], marker="o", lw=0, ms=3.5, color=GREY_PT, label="unlabelled"))
-    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.0, .5), fontsize=4.8,
+    ax.legend(handles=handles, loc="center left", bbox_to_anchor=(1.0, .5), fontsize=FS_LEG,
               handletextpad=.3, borderaxespad=0)
     save(fig, f"umap_{arm}_{colouring}", cite=cite)
 
@@ -754,7 +868,7 @@ def umap_panels():
     studies = list(m_all.study.value_counts().index)        # largest first
     SPEC = [
         ("cell family", m_all["cell family"], FAMS, FAMILY_C, 2),
-        ("study", m_all.study, studies, STUDY_C, 3),
+        ("study", m_all.study, studies, STUDY_C, 2),
         ("menstrual phase", m_all["menstrual phase"].map(PHASE_COARSE),
          PHASE_ORDER, PHASE_C, 2),
         ("disease status", m_all.disease_status, DIS_ORDER, DIS_C, 2),
@@ -768,13 +882,24 @@ def umap_panels():
             continue
         xy = np.load(cache)
         assert len(xy) == len(m_all), f"{arm}: {len(xy)} points, {len(m_all)} cells"
-        # 180 x 208 mm so the float FILLS its page. At \textwidth (161 mm
-        # in this document) that renders about 186 mm tall, which leaves
-        # room for a three-line caption inside a 230 mm text height. The
-        # first 2x2 draft was 170 mm tall and left a third of the page
-        # empty under a full-page float, which is the worst of both.
-        fig, axes = plt.subplots(2, 2, figsize=(180 * MM, 208 * MM))
-        for ax, (title, vals, order, cols, ncol) in zip(axes.ravel(), SPEC):
+        # ONE ROW OF FOUR. AW, 17 November: "UMAP panels should be 1x4 not
+        # 2x2. All UMAPs are squished, please fix." Two fixes, because the
+        # squish and the layout are separate faults: the row is 1x4, and
+        # every axes is set to an equal aspect with adjustable="datalim",
+        # which widens the data limits to fill the box instead of
+        # stretching the embedding to fit it. A UMAP drawn on unequal axes
+        # is a different shape from the one the reader is asked to compare.
+        fig, axes = plt.subplots(1, 4, figsize=(180 * MM, 70 * MM))
+        for pl, (ax, (title, vals, order, cols, ncol)) in zip(
+                "abcd", zip(axes.ravel(), SPEC)):
+            ax.set_aspect("equal", adjustable="datalim")
+            # PANEL LETTERS, because the legends refer to panels by letter,
+            # which is what IBDex and scGPT both do and what NMI expects.
+            # The title is drawn as text rather than set_title so it can be
+            # indented clear of the letter; at loc="left" the two overlap
+            # and print "acell family".
+            ax.text(-.02, 1.13, pl, transform=ax.transAxes, fontsize=8,
+                    fontweight="bold", va="top", ha="left", color=INK)
             cmap = dict(zip(order, cols))
             grey = vals.isna().values
             ax.scatter(xy[grey, 0], xy[grey, 1], s=.18, c=GREY_PT, lw=0, rasterized=True)
@@ -785,7 +910,8 @@ def umap_panels():
             ax.set_xticks([]); ax.set_yticks([])
             for sp in ax.spines.values():
                 sp.set_visible(False)
-            ax.set_title(title, fontsize=FS_TITLE, loc="left", pad=3)
+            ax.text(.09, 1.10, title, transform=ax.transAxes,
+                    fontsize=FS_TITLE, va="top", ha="left", color=INK)
             names = ([STUDY_NAME[o] for o in order] if title == "study" else order)
             handles = [Line2D([], [], marker="o", lw=0, ms=3.2, color=cmap[o], label=n)
                        for o, n in zip(order, names) if (vals == o).any()]
@@ -793,11 +919,11 @@ def umap_panels():
                 handles.append(Line2D([], [], marker="o", lw=0, ms=3.2,
                                       color=GREY_PT, label="unlabelled"))
             ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(.5, -.02),
-                      ncol=ncol, fontsize=4.6, handletextpad=.25,
-                      columnspacing=.8, borderaxespad=0)
+                      ncol=ncol, fontsize=FS_LEG, handletextpad=.2,
+                      columnspacing=.6, borderaxespad=0)
         fig.suptitle(ARM_LABEL[arm], fontsize=FS_TITLE + 1, fontweight="bold",
-                     x=.012, ha="left", y=.992)
-        fig.subplots_adjust(bottom=.05, top=.95, hspace=.24, wspace=.06)
+                     x=.012, ha="left", y=.995)
+        fig.subplots_adjust(bottom=.26, top=.86, wspace=.04)
         save(fig, f"umap_panel_{arm}", cite=(arm != ARM))
 
 
@@ -959,16 +1085,29 @@ def claims():
 
     # X8 / X9 / severity composition
     c = pd.read_csv(CLAIMS / "x8_x9_composition.csv")
+    # ONLY THE LESION CONTRAST KEEPS A TABLE. AW, 17 November: "The claims
+    # axis note is about the claims not discussed in the main prose. Remove
+    # the stuff about severity. Also remove any other claims discussed in
+    # detail in the prose." Results gives the control-against-eutopic test
+    # and the severity test with all four P values each, so both fragments
+    # and both figures went; the eutopic-against-lesion contrast appears
+    # nowhere in the main text and stays. The two dropped contrasts are
+    # still PRINTED here, so the claims ledger's outcome column has a
+    # derivation behind it.
     for contrast, a, b, cols, tag in (
-            ("control_vs_eutopic", "mean_control", "mean_eutopic", ["control", "eutopic"], "x8_composition"),
+            ("control_vs_eutopic", "mean_control", "mean_eutopic", ["control", "eutopic"], None),
             ("eutopic_vs_ectopic", "mean_eutopic", "mean_ectopic", ["eutopic", "ectopic"], "x9_composition"),
-            ("severity_low_vs_high", "mean_low", "mean_high", ["low severity", "high severity"], "x8_severity")):
+            ("severity_low_vs_high", "mean_low", "mean_high", ["low severity", "high severity"], None)):
         sub = c[c.contrast == contrast].set_index("family").loc[FAMS]
         rows = [[f, num(sub.loc[f, a], 3), num(sub.loc[f, b], 3), num(sub.loc[f, "F"], 3),
                  num(sub.loc[f, "p"], 4) if sub.loc[f, "p"] > 0 else "$<$ 0.0001"] for f in FAMS]
-        tex(tag, tabular("@{}lrrrr@{}", ["family", f"mean share, {cols[0]}",
-                                            f"mean share, {cols[1]}", "$F$", "$P$"], rows))
-        print(f"       {tag}: {int(sub.n_donors.iloc[0])} donors")
+        if tag:
+            tex(tag, tabular("@{}lrrrr@{}", ["family", f"mean share, {cols[0]}",
+                                             f"mean share, {cols[1]}", "$F$", "$P$"], rows))
+        else:
+            print(f"       {contrast} (no fragment, Results carries it): "
+                  + ", ".join(f"{f} P={sub.loc[f, 'p']:.4f}" for f in FAMS))
+        print(f"       {contrast}: {int(sub.n_donors.iloc[0])} donors")
 
     # X12 step A, both label sources
     for src, tag in (("annotated", "x12_auc_annotated"), ("transferred", "x12_auc_transferred")):
@@ -1007,34 +1146,55 @@ def claims():
     bottom = gs.tail(15).iloc[::-1]
     tex("x12_bottom_genes", tabular("@{}rlr@{}", ["rank", "gene", "shift towards control"],
         [[str(len(gs) - i), r.gene, num(-r.shift_towards_disease)] for i, r in bottom.iterrows()]))
-    tex("x12_replication", tabular("@{}lrrrrl@{}",
-        ["end of the ranking", "genes taken", "external list", "hits", "hypergeometric $P$", "genes"],
-        [[r.end, str(int(r.n_top)), f"{int(r.external_n)} {r.external_list}", str(int(r.hits)),
-          (lambda m_, e_: f"${m_}\\times10^{{{int(e_)}}}$")(*f"{r.p_hypergeometric:.2e}".split("e"))
-          if r.hits else "1.0",
-          esc(r.genes).replace(";", ", ") if isinstance(r.genes, str) else "--"]
-         for _, r in ext.iterrows()]))
+    # NO FRAGMENT. AW, 17 November: "What point is Table S28 supposed to
+    # make?? There are barely any numbers there." Two rows under six
+    # headings, four of them dashes. The four values that matter are now in
+    # the note's own sentence and in the figure's legend, and they are
+    # printed here so each still has a derivation.
+    for _, r in ext.iterrows():
+        print(f"       replication, {r.end}: {int(r.hits)} of {int(r.n_top)} "
+              f"on a {int(r.external_n)}-gene list, P={r.p_hypergeometric:.2e}")
 
-    fig, ax = fig_ax(120, 60)
+    # THE CURVE, NOT THE GENE NAMES. AW, 17 November: "S33 is very messy."
+    # It was: fifteen labels fanned out of one corner on leader lines that
+    # crossed each other, because all fifteen sit inside the first 0.1% of
+    # the x axis. The names are already in Tables S26 and S27, and drawing
+    # them again is the table-in-colours fault one more time. What only a
+    # figure can say here is the SHAPE: the decoder's response is flat
+    # across fourteen thousand genes and turns hard at both ends, and the
+    # external replication is entirely on one of those ends.
+    fig, ax = fig_ax(110, 58)
     x = np.arange(len(gs)); yv = gs.shift_towards_disease.values
-    ax.plot(x, yv, color=INK, lw=.8)
+    ax.plot(x, yv, color=INK, lw=.9, zorder=2)
     ax.axhline(0, color=HAIR, lw=.5)
     for i, r in gs.head(15).iterrows():
         c = "#8C2D3F" if r.gene in hits else (AMBER if r.gene in novel else SOFT)
-        ax.plot(i, r.shift_towards_disease, "o", color=c, ms=3.2, mec="white", mew=.3)
-        ax.annotate(r.gene, (i, r.shift_towards_disease), xytext=(4 + (i % 3) * 22, 10 - (i % 5) * 7),
-                    textcoords="offset points", fontsize=4.4, color=c,
-                    arrowprops=dict(arrowstyle="-", color=HAIR, lw=.4))
+        ax.plot(i, r.shift_towards_disease, "o", color=c, ms=3.4, mec="white",
+                mew=.35, zorder=3)
     for i, r in gs.tail(15).iterrows():
-        ax.plot(i, r.shift_towards_disease, "o", color=SOFT, ms=2.6, mec="white", mew=.3)
+        ax.plot(i, r.shift_towards_disease, "o", color=SOFT, ms=3.0, mec="white",
+                mew=.35, zorder=3)
+    # one bracket per end, carrying the count that is the whole point
+    lo, hi = ax.get_ylim()
+    ax.annotate("top 15, Table S26\n4 replicate externally", xy=(0, yv[0]),
+                xytext=(len(gs) * .10, yv[0] - (hi - lo) * .04),
+                fontsize=FS_BODY, color="#8C2D3F", va="top", ha="left",
+                linespacing=1.4,
+                arrowprops=dict(arrowstyle="-", color="#8C2D3F", lw=.5))
+    ax.annotate("bottom 15, Table S27\nnone replicates", xy=(len(gs) - 1, yv[-1]),
+                xytext=(len(gs) * .90, yv[-1] + (hi - lo) * .04),
+                fontsize=FS_BODY, color=SOFT, va="bottom", ha="right",
+                linespacing=1.4,
+                arrowprops=dict(arrowstyle="-", color=SOFT, lw=.5))
     ax.set_xlabel("genes ranked by decoder response to the immune disease direction (15,496)")
     ax.set_ylabel("shift towards disease")
-    ax.legend(handles=[Line2D([], [], marker="o", lw=0, color="#8C2D3F", ms=3.2,
-                              label="in the external up-regulated list (4 of top 15)"),
-                       Line2D([], [], marker="o", lw=0, color=AMBER, ms=3.2,
-                              label="no prior endometriosis report (4 of top 15)"),
-                       Line2D([], [], marker="o", lw=0, color=SOFT, ms=2.6,
-                              label="other top-15 and bottom-15 genes")], loc="upper right")
+    ax.legend(handles=[Line2D([], [], marker="o", lw=0, color="#8C2D3F", ms=3.4,
+                              label="on the external up-regulated list"),
+                       Line2D([], [], marker="o", lw=0, color=AMBER, ms=3.4,
+                              label="no prior endometriosis report"),
+                       Line2D([], [], marker="o", lw=0, color=SOFT, ms=3.0,
+                              label="other end-of-ranking genes")],
+              loc="upper center", bbox_to_anchor=(.5, -.20), ncol=3, fontsize=FS_LEG)
     save(fig, "x12_gene_ranking", cite=True)
 
     # PER-FAMILY AUC, AS A FOREST PLOT WITH ITS NUMBERS ALIGNED BESIDE IT.
@@ -1048,7 +1208,11 @@ def claims():
         d = pd.read_csv(CLAIMS / f"x12_by_family_{src}.csv")
         d["name"] = d.family.str.lower().replace({"all families": "all families, pooled"})
         d = d.sort_values("auc").reset_index(drop=True)
-        fig, ax = plt.subplots(figsize=(155 * MM, 52 * MM))
+        # SIZED SO THE TYPE SURVIVES, as for scib_metric_range. AW, 17
+        # November: "S31 and S32 are unreadable." The columns run to axes
+        # fraction 1.65, so a 155 mm axes made a 264 mm figure that
+        # \textwidth scaled to 0.61, putting every number at 3.4 pt.
+        fig, ax = plt.subplots(figsize=(88 * MM, 58 * MM))
         for sp in ("top", "right", "left"):
             ax.spines[sp].set_visible(False)
         y = np.arange(len(d))
@@ -1086,7 +1250,7 @@ def claims():
                     fontsize=FS_BODY, ha="center", va="center", color=tc,
                     fontweight="normal" if grey else "bold")
             if grey:
-                ax.text(1.567, yy, "ns", transform=ax.transAxes, fontsize=4.2,
+                ax.text(1.567, yy, "ns", transform=ax.transAxes, fontsize=FS_LEG,
                         ha="left", va="center", color="white", fontweight="bold",
                         bbox=dict(boxstyle="round,pad=0.18", fc="#C2777C", ec="none"))
         ax.legend(handles=[Line2D([], [], marker="o", lw=0, ms=6, color="#6F7681",
@@ -1095,7 +1259,7 @@ def claims():
                                   color="#8C2D3F", label="shuffled-label AUC"),
                            Line2D([], [], marker="o", lw=0, ms=6, color="#B9BEC6",
                                   label="does not clear its null")],
-                  loc="upper center", bbox_to_anchor=(.33, -.22), ncol=3, fontsize=4.8)
+                  loc="upper center", bbox_to_anchor=(.33, -.22), ncol=3, fontsize=FS_LEG)
         save(fig, f"x12_auc_by_family_{src}", cite=True)
 
     # composition strips, three contrasts, from D3
@@ -1111,7 +1275,7 @@ def claims():
     perL = lesion.groupby(["patient_id", "disease_status", "cell_family"]).n_cells.sum().reset_index()
     perL["fraction"] = perL.n_cells / perL.groupby(["patient_id", "disease_status"]).n_cells.transform("sum")
 
-    def strips(df, groupcol, groups, cols, fname, note):
+    def strips(df, groupcol, groups, cols, fname, note, cite=False):
         fig, ax = fig_ax(88, 55)
         rng = np.random.default_rng(3)
         for fi, f in enumerate(FAMS):
@@ -1125,14 +1289,15 @@ def claims():
         ax.set_ylabel("share of a donor's cells"); ax.set_ylim(-.02, 1.02)
         ax.legend(handles=[Line2D([], [], marker="o", lw=0, color=c, label=f"{g_} ({int(df[df[groupcol]==g_].patient_id.nunique())} donors)")
                            for g_, c in zip(groups, cols)] +
-                          [Line2D([], [], color=INK, lw=1, label="median")], loc="upper right", fontsize=4.8)
-        ax.text(.01, .98, note, transform=ax.transAxes, va="top", fontsize=4.8, color=SOFT)
-        save(fig, fname, cite=True)
+                          [Line2D([], [], color=INK, lw=1, label="median")], loc="upper right", fontsize=FS_LEG)
+        ax.text(.01, .98, note, transform=ax.transAxes, va="top", fontsize=FS_LEG, color=SOFT)
+        save(fig, fname, cite=cite)
 
     strips(per, "disease_status", ["control", "eutopic"], ["#9a8f80", "#b4603e"],
            "composition_control_vs_eutopic", "endometrium; transferred and annotated labels")
     strips(perL, "disease_status", ["eutopic", "ectopic"], ["#b4603e", "#3f7fa6"],
-           "composition_eutopic_vs_ectopic", "eutopic endometrium against lesion tissue")
+           "composition_eutopic_vs_ectopic", "eutopic endometrium against lesion tissue",
+           cite=True)
     sev = per[per.severity_cases_only.notna()].copy()
     strips(sev, "severity_cases_only", sorted(sev.severity_cases_only.unique()),
            ["#8fc2d6", "#9e3b25"], "composition_by_severity", "patients only, endometrium")
@@ -1148,11 +1313,11 @@ def claims():
     ax.barh(y, x14.auc - .5, left=.5, color=[FAM_C[f] for f in FAMS], height=.62)
     ax.plot(x14.null, y, "|", color="#8C2D3F", ms=9, mew=1.2, label="shuffled-label AUC")
     for yi, (f, r) in zip(y, x14.iterrows()):
-        ax.text(.72, yi, f"P = {r.p:.3f}", va="center", fontsize=4.8, color=SOFT)
+        ax.text(.72, yi, f"P = {r.p:.3f}", va="center", fontsize=FS_LEG, color=SOFT)
     ax.axvline(.5, color=INK, lw=.6); ax.set_yticks(y); ax.set_yticklabels(FAMS)
     ax.set_xlim(.4, .8); ax.set_xlabel("AUC, endometrium against lesion tissue, within one family")
     ax.legend(loc="lower right")
-    save(fig, "x14_tissue_within_family", cite=True)
+    save(fig, "x14_tissue_within_family")
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -1170,21 +1335,42 @@ def x13():
     tex("x13_reproducibility", tabular("@{}lrrrrrr@{}",
         ["family", "shared genes", "top-100 overlap", "Jaccard", r"Spearman $\rho$",
          "null max overlap", r"null $\rho$ range (20 shuffles)"], rows))
-    for col, xl, fname in (("overlap_n", "genes shared between the two studies' top hundred", "x13_overlap_vs_null"),
-                           ("spearman", "rank correlation over 13,034 jointly measured genes", "x13_spearman_vs_null")):
-        fig, ax = fig_ax(88, 45)
-        y = np.arange(4)
-        rng = np.random.default_rng(2)
+    # ONE FIGURE, TWO PANELS. AW, 17 November: "What is the point of
+    # S35/S36? They are illegible. Either improve them or remove them."
+    # They were two separate figures in the same layout saying the same
+    # thing on two scales, each drawn at 88 x 45 mm with grey type. The
+    # point is worth keeping: the observed agreement does not sit at the
+    # edge of the null, it sits nowhere near it, and that gap is what a
+    # table of two numbers cannot show. So they become one wider figure
+    # with both scales side by side, in ink rather than grey.
+    fig, axes = plt.subplots(1, 2, figsize=(165 * MM, 56 * MM))
+    y = np.arange(4)
+    rng = np.random.default_rng(2)
+    for pl, (ax, (col, xl)) in zip("ab", zip(axes, (
+            ("overlap_n", "genes shared between the two\nstudies' top hundred"),
+            ("spearman", "rank correlation over the 13,034\njointly measured genes")))):
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+        ax.text(-.14, 1.10, pl, transform=ax.transAxes, fontsize=8,
+                fontweight="bold", va="top", ha="left", color=INK)
         for yi, f in zip(y, FAMS):
             n = nul[nul.family == f][col].values
-            ax.plot(n, yi + rng.uniform(-.18, .18, len(n)), "o", ms=2.2, color=SOFT, alpha=.7, mec="none")
-            ax.plot(obs.loc[f, col], yi, "o", ms=5, color=FAM_C[f], mec="white", mew=.5, zorder=3)
-        ax.set_yticks(y); ax.set_yticklabels(FAMS)
-        ax.set_xlabel(xl)
-        ax.legend(handles=[Line2D([], [], marker="o", lw=0, ms=5, color=INK, label="observed"),
-                           Line2D([], [], marker="o", lw=0, ms=2.2, color=SOFT,
-                                  label="twenty within-study label shuffles")], loc="center right")
-        save(fig, fname, cite=True)
+            ax.plot(n, yi + rng.uniform(-.16, .16, len(n)), "o", ms=2.6, color=SOFT,
+                    alpha=.75, mec="none")
+            ax.plot(obs.loc[f, col], yi, "o", ms=6, color=FAM_C[f], mec="white",
+                    mew=.6, zorder=3)
+        ax.set_yticks(y); ax.set_yticklabels(FAMS, fontsize=FS_BODY, color=INK)
+        ax.tick_params(axis="x", labelcolor=INK, labelsize=FS_BODY + .5)
+        ax.set_xlabel(xl, fontsize=FS_BODY, color=INK, linespacing=1.5)
+        ax.margins(y=.22)
+    axes[0].legend(handles=[
+        Line2D([], [], marker="o", lw=0, ms=6, color=INK,
+               label="observed, coloured by family"),
+        Line2D([], [], marker="o", lw=0, ms=2.6, color=SOFT,
+               label="twenty within-study label shuffles")],
+        loc="upper center", bbox_to_anchor=(1.12, -.46), ncol=2, fontsize=FS_BODY)
+    fig.subplots_adjust(wspace=.22, bottom=.40)
+    save(fig, "x13_vs_null", cite=True)
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -1267,17 +1453,17 @@ def corpus():
     ax.legend(handles=[Line2D([], [], marker="s", lw=0, ms=4, color=colour[sname],
                               label=STUDY_NAME[sname]) for sname in order_by_size
                        if (cov.loc[sname, labs] > 0).any()],
-              loc="upper center", bbox_to_anchor=(.5, -.20), ncol=4, fontsize=4.8)
+              loc="upper center", bbox_to_anchor=(.5, -.20), ncol=4, fontsize=FS_LEG)
     save(fig, "label_coverage_by_study", cite=True)
 
     fig, ax = fig_ax(88, 50)
     order = cov.index
     ax.barh(range(len(order)), cov.cells / 1e3, color=[STUDY_C[i] for i in range(len(order))], height=.7)
     for i, s in enumerate(order):
-        ax.text(cov.cells[s] / 1e3 + 4, i, f"{int(cov.donors[s])} donor ids", va="center", fontsize=4.8, color=SOFT)
+        ax.text(cov.cells[s] / 1e3 + 4, i, f"{int(cov.donors[s])} donor ids", va="center", fontsize=FS_LEG, color=SOFT)
     ax.set_yticks(range(len(order))); ax.set_yticklabels([STUDY_NAME[s] for s in order])
     ax.invert_yaxis(); ax.set_xlabel("cells (thousands)"); ax.set_xlim(0, 560)
-    save(fig, "corpus_cells_and_donors", cite=True)
+    save(fig, "corpus_cells_and_donors")        # no note inputs it; exploratory tier
 
     # cycle-day coverage, one cohort
     fig, ax = fig_ax(88, 40)
@@ -1368,7 +1554,7 @@ def corpus():
     ax.legend(handles=[Line2D([], [], marker="o", lw=0, ms=5, color=c, label=k)
                        for k, c in SCOPE_C.items()] +
                       [Line2D([], [], color=HAIR, lw=1.0, label="the same label, both scopes")],
-              loc="upper right", fontsize=4.8)
+              loc="upper right", fontsize=FS_LEG)
     save(fig, "null_width_vs_donors", cite=True)
 
     # the seven-sample overlap table, parsed from the donor-overlap audit
@@ -1392,7 +1578,7 @@ def corpus():
     ax.axvline(250, color=INK, lw=.6, ls=":"); ax.axvline(500, color=INK, lw=.6, ls=":")
     ax.set_xlabel("genes in group (44 groups; dotted lines at the 250 and 500 construction bounds)")
     ax.set_ylabel("groups")
-    save(fig, "group_sizes", cite=True)
+    save(fig, "group_sizes")        # no note inputs it; exploratory tier
 
     # per-study purity for the reported arm
     rr = bench_rows(BENCH / "full/full_p1_dab168_kl1/benchmark.csv")
@@ -1407,7 +1593,7 @@ def corpus():
     ax.set_yticks(range(len(order))); ax.set_yticklabels([STUDY_NAME[s] for s in order])
     ax.invert_yaxis(); ax.set_xlim(0, 1); ax.set_xlabel("study purity, held-out cells, ELAJ B$_{hi}$")
     ax.legend(loc="lower right")
-    save(fig, "study_purity_per_study", cite=True)
+    save(fig, "study_purity_per_study")        # no note inputs it; exploratory tier
 
 
 # ═════════════════════════════════════════════════════════════════════════

@@ -139,11 +139,24 @@ which is the first thing the scorecard tells us.
 \begin{figure}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/scib_metric_range.png}
-\caption[Range of each scIB metric]{\textbf{The range each metric spans
-across the eleven representations}, with \elaj\,B\textsubscript{hi}'s own
-score marked and the values beside it. The dotted line divides scIB's
-batch half, above, from its biological half. iLISI and cLISI return a
-single value for all eleven; kBET's whole range is 0.04.}
+\caption[Range of each scIB metric]{\textbf{Two of scIB's ten metrics
+return one value for every representation on this corpus, and the two that
+spread widest are the pair that penalises a continuous latent.} Each bar is
+the range one metric spans across the eleven representations of Table~S3,
+scored on the 176{,}803 held-out cells from the two studies that annotated
+their own, with study as the batch variable. The open circle is
+\elaj\,B\textsubscript{hi}'s own score and the aligned columns give the
+minimum, the maximum and the range. The dotted line divides scIB's batch
+half, above, from its biological half. Integration local inverse
+Simpson's index (iLISI) returns 0.0000 for all eleven and cell-type LISI
+(cLISI) returns 1.0000 for all eleven, so neither can rank anything here;
+$k$-nearest-neighbour batch effect test (kBET) spans 0.0400 end to end,
+which is a twentieth of what the adjusted Rand index (ARI) spans at 0.8512
+and normalised mutual information (NMI) at 0.7904. ARI and NMI are also the
+two on which \elaj\,B\textsubscript{hi} scores lowest and second lowest of
+the eleven, at 0.0498 and 0.0724, and both score a partition rather than a
+neighbourhood. PCR,
+principal component regression.}
 \label{sfig:scib-range}
 \end{figure}
 
@@ -200,7 +213,13 @@ metrics have no rank order to correlate.}
 \caption[scIB metrics against donor recovery and cycle]{\textbf{Each scIB
 metric against the two axes the paper reports.} The largest association was
 found in graph connectivity against donor recovery. All other correlations
-fell under $|\rho| < 0.35$, indicating very weak to negligible correlation.}
+fell under $|\rho| < 0.35$, indicating very weak to negligible correlation.
+Spearman rank correlations are taken across the eleven representations, so
+each point is one metric and $n = 11$; the largest is $\rho = -0.600$ at
+$P = 0.051$, which does not clear 0.05, and no coefficient in either
+column does. iLISI and cLISI are absent because a constant has no rank
+order. On this corpus, therefore, a representation's scIB score carries no
+information about either quantity the paper reports.}
 \label{sfig:scib-corr}
 \end{figure}
 
@@ -208,9 +227,10 @@ fell under $|\rho| < 0.35$, indicating very weak to negligible correlation.}
 
 ARI and NMI run Leiden clustering over a sweep of resolutions and report
 the best agreement between clusters and the label. On them
-\elaj\,B\textsubscript{hi} is last of eleven, at 0.0498 and 0.0724, and
-SCimilarity, which is pretrained with supervision on cell type, is first at
-0.9010 and 0.8555. Conversely, \elaj\,B\textsubscript{hi} scores 0.9854 on 
+\elaj\,B\textsubscript{hi} is last of eleven on ARI at 0.0498 and second
+to last on NMI at 0.0724, behind Geneformer's 0.0651, while SCimilarity,
+which is pretrained with supervision on cell type, is first at 0.9010 and
+0.8555. Conversely, \elaj\,B\textsubscript{hi} scores 0.9854 on 
 graph connectivity (second to scVI by 0.0001), 0.9820 on cross-donor cell family
 and 0.9864 on $k$NN cell family.
 
@@ -238,10 +258,18 @@ models sit inside the field's range, 0.5145 to 0.7483 and 0.5363 to 0.8060.
 \begin{figure}[t]
 \centering
 \includegraphics[width=.7\textwidth]{figures/scib_bio_half_two_arms.png}
-\caption[The bio half on the two reported arms]{\textbf{The biological
-half of the scorecard on the two reported models}, against the median of
-the nine other representations. The stronger prior raises the two
-clustering metrics and lowers the neighbourhood ones.}
+\caption[The bio half on the two reported arms]{\textbf{One coefficient
+moves the clustering metrics and the neighbourhood metrics in opposite
+directions.} The four biological metrics of the scorecard on
+\elaj\,B\textsubscript{hi} and \elaj\,B\textsubscript{lo}, which differ
+only in the weight on the Kullback--Leibler term, with the median of the
+nine other representations drawn as a rule. The stronger prior raises ARI
+from 0.0498 to 0.1708 and NMI from 0.0724 to 0.3364, and over the same step
+it lowers cross-donor cell family from 0.9820 to 0.9565 and the cycle from
+0.7346 to 0.6033. Isolated labels and the biological silhouette barely
+move. A metric that improves as the biology it is meant to track gets
+worse is reading the shape of the latent rather than its content, which is
+the mechanism this note argues for.}
 \label{sfig:scib-two-arms}
 \end{figure}
 

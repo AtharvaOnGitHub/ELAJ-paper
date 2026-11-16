@@ -133,83 +133,17 @@ on immune composition}, 101 donors, study as a covariate.}
 \input{tables/x3b_interaction}
 \end{table}
 
-\subsection{Does composition differ between patients and controls?}
-
-The claim is that, stratified by phase, cell composition barely differs
-between patients and controls, with one exception among 57 cell types
-\citep{duempelmann2026endometrium}, made from 60 donors. For each of 194
-donors with endometrium in the corpus, we computed the share of each family
-over the transferred and annotated labels together, then tested disease
-status after study with a permutation null of 5{,}000 reassignments within
-study.
-
-No family moves: $P = 0.6186$ for immune cells, 0.7360 stromal, 0.9016
-epithelial and 0.2358 endothelial (Table~\ref{stab:x8},
-Supplementary Fig.~\ref{sfig:comp-ce}). The raw means differ, 0.101 against
-0.230 for the immune share, and that difference does not survive study
-being accounted for, which is the pooling doing what it is for. One caution
-about the shape of the test: the four shares sum to one and we named the
-families in advance, so these are not four independent attempts.
-
-\begin{table}[t]
-\centering
-\caption[X8, composition by disease status]{\textbf{Per-donor cell-family
-share, control against eutopic endometrium}, 194 donors.}
-\label{stab:x8}
-\small
-\input{tables/x8_composition}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.65\textwidth]{figures/composition_control_vs_eutopic.png}
-\caption[Composition, control against eutopic]{\textbf{Each donor's share
-of each family, control against eutopic endometrium.} Bars are medians.}
-\label{sfig:comp-ce}
-\end{figure}
-
-\subsection{Does composition track severity?}
-
-To ask whether the same headcount recovers the surgeon's grade, we
-restricted to patients, split them into lower severity, graded mild or
-rASRM stage I to II, and higher, graded severe or stage III to IV, 51
-donors, and ran the same test.
-
-Nothing tracks severity: $P = 0.2092$ for immune cells, 0.1624
-endothelial, 0.9696 stromal and 0.9130 epithelial
-(Table~\ref{stab:x8sev}, Supplementary Fig.~\ref{sfig:comp-sev}). Set this
-beside the latent result, where merged severity clears its null at 118
-donors and mild against severe among patients does not at 57. Two
-independent readouts now fail on the same contrast, one from the
-representation and one from a headcount with no model in it. Both are
-negatives at about 55 donors, so the pairing is the argument and neither
-number is decisive alone.
-
-\begin{table}[t]
-\centering
-\caption[X8, composition by severity]{\textbf{Per-donor cell-family share
-by surgical severity, patients only}, 51 donors.}
-\label{stab:x8sev}
-\small
-\input{tables/x8_severity}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.65\textwidth]{figures/composition_by_severity.png}
-\caption[Composition by severity]{\textbf{Each patient's share of each
-family, by severity grade.} The figure draws every patient carrying a
-grade; the test used the 51 with the required covariates.}
-\label{sfig:comp-sev}
-\end{figure}
-
 \subsection{Does composition differ between lesion and endometrium?}
 
 The claim is that perivascular, endothelial and immune cells form a larger
 share of lesions and stromal cells a smaller one
-\citep{sarsenova2024metabolic}, from four paired samples. We ran the same
-per-donor composition test over 151 donors, contrasting eutopic
-endometrium with lesion tissue.
+\citep{sarsenova2024metabolic}, from four paired samples. For each of 151
+donors we computed the share of each family over the transferred and
+annotated labels together, then tested eutopic endometrium against lesion
+tissue after study, with a permutation null of 5{,}000 reassignments within
+study. One caution about the shape of that test: the four shares sum to
+one and we named the families in advance, so these are not four
+independent attempts.
 
 One family moves. The epithelial share falls from 0.147 in eutopic
 endometrium to 0.022 in lesion tissue, 6.6-fold, $F = 20.9$, $P < 0.0001$,
@@ -217,9 +151,9 @@ and immune, endothelial and stromal do not clear
 (Table~\ref{stab:x9}, Supplementary Fig.~\ref{sfig:comp-ee}). The direction
 agrees with the claim. However, the source names the confound: epithelial
 cells are lost when fibrous lesion tissue is dissociated, and nothing in
-the corpus separates that from biology. The label-absorption error of
-the label absorption of \ref{note:limitations} would push the epithelial share in
-lesions up and not down, so it does not manufacture this result.
+the corpus separates that from biology. The label absorption of
+\ref{note:limitations} would push the epithelial share in lesions up and not
+down, so it does not manufacture this result.
 Perivascular cells are not one of our four families, so the claim's central
 compartment stays out of reach.
 
@@ -235,8 +169,18 @@ eutopic endometrium against lesion tissue}, 151 donors.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=.65\textwidth]{figures/composition_eutopic_vs_ectopic.png}
-\caption[Composition, eutopic against lesion]{\textbf{Each donor's share
-of each family, eutopic endometrium against lesion tissue.}}
+\caption[Composition, eutopic against lesion]{\textbf{One family of four
+separates lesion tissue from eutopic endometrium, and it is the one the
+source study names a dissociation artefact.} Each donor's share of each
+cell family over the transferred and annotated labels together, eutopic
+endometrium against lesion tissue, 151 donors, bars at the medians. The
+epithelial share falls from a mean of 0.147 to 0.022, a 6.6-fold drop at
+$F = 20.9$ and $P < 0.0001$ after study. Stromal, endothelial and immune do
+not clear, at $P = 0.8180$, 0.7002 and 0.1194, although the immune mean
+nearly doubles from 0.230 to 0.401. The four shares sum to one and the
+families were named in advance, so these are not four independent
+attempts. Perivascular cells, the compartment the claim is actually about,
+are not one of the four families and stay out of reach.}
 \label{sfig:comp-ee}
 \end{figure}
 
@@ -302,18 +246,39 @@ same test over 207 donor records with transferred labels.}}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=.65\textwidth]{figures/x12_auc_by_family_annotated.png}
-\caption[Disease AUC by family, own labels]{\textbf{Held-out AUC of the
-disease direction within each family and pooled}, studies' own labels,
-with the shuffled-label value marked.}
+\includegraphics[width=\textwidth]{figures/x12_auc_by_family_annotated.png}
+\caption[Disease AUC by family, own labels]{\textbf{Pooling the four
+families destroys a disease direction that is legible inside the immune
+compartment alone.} Held-out area under the receiver operating
+characteristic curve (AUC) for a direction separating control from eutopic
+endometrium, fitted within each cell family and over all four pooled,
+using only the two studies that annotated their own cells. Circles are the
+held-out AUC with its 95\% interval; the dark tick is the same procedure
+on shuffled labels; rows that do not clear their null are greyed and
+badged ns, and the aligned columns give every value including the donor
+count. Immune reaches 0.7084 against a shuffled 0.4806 at $P = 0.015$ over
+94 donors. Pooling the families falls to 0.6048 at $P = 0.155$ over a
+larger 114, so the loss is not a loss of donors, and epithelial cells
+carry nothing at 0.4663. Endothelial sits at exactly $P = 0.050$, which is
+why this figure prints every $P$ rather than replacing it with a badge.}
 \label{sfig:x12-auc-a}
 \end{figure}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=.65\textwidth]{figures/x12_auc_by_family_transferred.png}
-\caption[Disease AUC by family, transferred labels]{\textbf{The same,
-over 207 donor records with transferred labels.}}
+\includegraphics[width=\textwidth]{figures/x12_auc_by_family_transferred.png}
+\caption[Disease AUC by family, transferred labels]{\textbf{The same test
+over nearly twice the donors, on transferred labels, and nothing clears
+its null.} Layout and procedure as in
+Supplementary Fig.~\ref{sfig:x12-auc-a}, run over 207 donor records whose
+cell families come from the nearest-neighbour transfer rather than from a
+study's own annotation. Immune remains the strongest compartment and keeps
+its sign, 0.5960 against a shuffled 0.4821 at $P = 0.072$ over 162 donors,
+but it does not strengthen with scale, and the pooled contrast falls to
+0.5176. Two explanations are not separable here: transferred labels add
+noise, or the nine added studies are heterogeneous in ways the two
+annotated ones are not. Neither this figure nor
+Supplementary Fig.~\ref{sfig:x12-auc-a} should be quoted alone.}
 \label{sfig:x12-auc-t}
 \end{figure}
 
@@ -338,8 +303,8 @@ upregulated in the eutopic endometrium of patients
 \citep{zhao2017transcriptome}. Four of our fifteen disease-end genes are on
 that list, SERPINB2 at 72.95-fold, MMP27 at 40.93, LRRC15 at 25.20 and
 INHBA at 15.33, a hypergeometric $P$ of $3.95 \times 10^{-7}$ for fifteen
-draws from 15{,}496, and none of our fifteen control-end genes is
-(Table~\ref{stab:x12rep}). In addition, IL1B, tenth here, is the
+draws from 15{,}496, and none of our fifteen control-end genes is on it at
+all. In addition, IL1B, tenth here, is the
 highest-ranked gene in \texttt{duempelmann\_2026}'s own supervised
 classifier of disease, so two models with different objectives select it,
 and CCL3 and ITGAX appear in that cohort's ligand-receptor findings as well
@@ -379,22 +344,22 @@ moving most towards control along the same direction.}}
 \input{tables/x12_bottom_genes}
 \end{table}
 
-\begin{table}[t]
-\centering
-\caption[X12, external replication]{\textbf{Overlap of each end of the
-ranking with an external cohort's upregulated list.}}
-\label{stab:x12rep}
-\footnotesize
-\resizebox{\textwidth}{!}{\input{tables/x12_replication}}
-\end{table}
-
 \begin{figure}[t]
 \centering
 \includegraphics[width=.9\textwidth]{figures/x12_gene_ranking.png}
-\caption[The gene ranking along the immune direction]{\textbf{All
-15{,}496 genes ranked by decoder response to the immune disease direction.}
-The four externally replicating genes and the four unindexed genes are
-marked at the disease end; the control end replicates nothing.}
+\caption[The gene ranking along the immune direction]{\textbf{The decoder's
+response is flat across fourteen thousand genes and turns hard at both
+ends, and only one of those ends replicates externally.} All 15{,}496
+genes ranked by the decoder's response to the immune disease direction,
+with the top fifteen and bottom fifteen marked. Colour at the disease end
+separates the four genes on an external cohort's 66-gene upregulated list,
+SERPINB2, MMP27, LRRC15 and INHBA, from the four with no prior
+endometriosis report in the eleven pooled studies, the Open Targets
+Platform or PubMed, SIGLEC7, ADAMDEC1, ALPK2 and KCNH1. The gene names are
+in Tables~\ref{stab:x12top} and~\ref{stab:x12bot} and are not repeated
+here. Four hits from fifteen draws out of 15{,}496 against a 66-gene list
+carries a hypergeometric $P = 3.95 \times 10^{-7}$; the control end of the
+same ranking, drawn the same way against the same list, returns none.}
 \label{sfig:x12-rank}
 \end{figure}
 
@@ -413,7 +378,7 @@ null.
 Most tissue structure is gone. What remains sits in stromal and endothelial
 cells, AUC 0.6226 at $P = 0.077$ and 0.6175 at 0.095, with immune and
 epithelial at chance (Table~\ref{stab:x14},
-Supplementary Fig.~\ref{sfig:x14}). Tissue is near-perfectly confounded
+Tissue is near-perfectly confounded
 with disease status here, since ovary and peritoneum are almost all ectopic
 donors. This is therefore the latent-level companion to the lesion
 composition test above and not an independent axis, and neither family
@@ -427,14 +392,6 @@ tissue within each transferred family}, 262 donors.}
 \small
 \input{tables/x14_tissue}
 \end{table}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.6\textwidth]{figures/x14_tissue_within_family.png}
-\caption[Tissue within a family, drawn]{\textbf{Table~\ref{stab:x14}
-drawn.}}
-\label{sfig:x14}
-\end{figure}
 
 \subsection{Do marker signatures reproduce across cohorts?}
 
@@ -479,8 +436,7 @@ The two cohorts rank the same genes at the top for every family, sharing 61
 to 76 of each other's top hundred at rank correlations from 0.7129 to
 0.8256, where twenty within-study label shuffles never share more than
 three genes and never leave the interval $-0.048$ to $+0.067$
-(Table~\ref{stab:x13}, Supplementary Figs.~\ref{sfig:x13-overlap}
-and~\ref{sfig:x13-rho}). Two cohorts that sequenced different people, in
+(Table~\ref{stab:x13}, Supplementary Fig.~\ref{sfig:x13}). Two cohorts that sequenced different people, in
 different laboratories, on different platforms, and annotated their cells
 independently, agree on what marks a family once they are read on one gene
 space. On the marker half of the claim, the signatures reproduce.
@@ -510,20 +466,22 @@ two lists.}
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=.65\textwidth]{figures/x13_overlap_vs_null.png}
-\caption[Top-hundred overlap against the null]{\textbf{Genes shared between
-the two cohorts' top hundred, by family}, observed against twenty label
-shuffles.}
-\label{sfig:x13-overlap}
-\end{figure}
-
-\begin{figure}[t]
-\centering
-\includegraphics[width=.65\textwidth]{figures/x13_spearman_vs_null.png}
-\caption[Rank correlation against the null]{\textbf{Rank correlation
-between the two signatures over 13{,}034 genes, by family}, observed against
-twenty label shuffles.}
-\label{sfig:x13-rho}
+\includegraphics[width=\textwidth]{figures/x13_vs_null.png}
+\caption[Marker agreement against the label-shuffled null]{\textbf{The two
+cohorts' marker signatures agree far outside anything label shuffling
+produces.} Each row is one cell family; coloured points are the observed
+agreement between \texttt{duempelmann\_2026} and \texttt{marecko\_2024},
+grey points the twenty within-study label shuffles. \textbf{a}, Genes
+shared between the two studies' top hundred: 76 stromal, 69 epithelial, 69
+endothelial and 61 immune, against a shuffled maximum of three in any
+family. \textbf{b}, Spearman rank correlation between the two signatures
+over the 13{,}034 genes both panels measure: 0.8256, 0.8121, 0.7129 and
+0.8053, against a shuffled range of $-0.048$ to $+0.067$. The shuffles keep
+each study's family proportions and rerun the whole comparison, so they
+measure the floor that list length and gene count impose rather than
+chance alone. Neither panel is a near miss: no family's observed value is
+within an order of magnitude of its own null.}
+\label{sfig:x13}
 \end{figure}
 
 \subsection{What the axis settled}
