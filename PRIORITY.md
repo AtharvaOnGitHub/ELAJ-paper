@@ -24,13 +24,17 @@ Discussions rather than from our own notes.
 
 | section | state |
 |---|---|
-| Abstract | **stale. Full rewrite.** Must now carry the claims axis |
-| Introduction | **stale. Full rewrite** to the supervisor's spine |
-| Results | drafted and shipped 13 Nov, **X13 added since**. WITH THE SUPERVISOR UNTIL MONDAY |
-| Discussion | written and shipped 14 Nov, **X13 added since** |
+| Abstract | **DONE and AW-edited, 17 Nov.** 188 words. Third rewrite; the first two were thrown out, see CONTINUITY |
+| Introduction | **DONE and AW-edited, 17 Nov.** 662 words, 19 citations, against the guide's five pointers |
+| Results | drafted 13 Nov, X13 and the X16 cycle paragraph added since. **Not re-read by the supervisor** |
+| Discussion | written 14 Nov, X13, the X16 sentence and AW's grouping future-work note added since |
 | Methods | done, 5,745 words, tweaks only |
-| Supplementary | **building.** Own document and build; Note 1 done with both figures; Data packaged and sent; scIB scorecard complete |
+| Supplementary | **six notes, 51 pages**, zero overfull, zero undefined, figure-scale check green. Note 7 (X15/X16) not written |
 | Extended Data | one item, PRISMA. Nine slots open |
+
+⚠ **THE MAIN TEXT IS OVER THE CAP.** Introduction 662, Results about 2,190,
+Discussion about 1,100, so roughly 3,950 against NMI's 3,500. Results carries
+the excess. The abstract sits outside that count.
 
 **Nothing in Results may be rewritten before his Monday comments arrive**, or
 they will land on a version that no longer exists.
@@ -95,6 +99,39 @@ shares with the original pass reproduce to the printed precision, so it is
 comparable. `scib_table.py` parses it out of the log, which is kept where
 that CSV would have been, and prefers the CSV if it ever appears. The
 scorecard has no empty cell.
+
+---
+
+# 0. Where this stands, 17 November
+
+**Both HPC jobs landed and one still needs scoring.** The probe is complete
+and its integrity row reproduces Table 1 exactly on six axes. **`a1_seed42`
+trained but has NO benchmark row**; the two commands are in 1a below, AW
+kicked off the first, and nothing in Notes 3 or 5 can quote a seed band
+until the second finishes.
+
+**Written this session.** Abstract and Introduction, both AW-edited.
+Supplementary notes cut from eight to six. X15 and X16 recorded in all four
+tracking files. `check_figure_scale.py` added to `build_supp.sh`.
+
+**Next, in the order I would take them:**
+
+1. **Note 7**, the X15 and X16 note. The material exists: `supp_figures.py
+   --only x15,x16` writes five figures and a table, `EXPERIMENTS.md` has
+   both protocols with their cautions, `x16_cycle_axis.csv` sources every
+   number. **X15's group rankings are DISCARDED** (section 4), so the note
+   is mostly X16.
+2. **Score `a1_seed42`** when the dump lands, then the seed band into Notes
+   3 and 5.
+3. **Trim the main text** by about 450 words, which is Results' to give.
+4. **Supplementary Methods**, still nothing, and two Results pointers dangle.
+5. Citation pass, Source Data, Reporting Summary.
+
+⚠ **THE PROPAGATION DIAGRAM IS PAUSED.** AW, 17 November: *"Pause on the
+diagram for now."* The draft is in `supp_figures.py` as `x15_propagation()`
+with colliding labels and a legend over the top box. The layout patch that
+would have fixed it failed its own assertion and was never written, so the
+function sits at its first draft. Nothing depends on it.
 
 ---
 
