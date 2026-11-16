@@ -1597,9 +1597,169 @@ def corpus():
 
 
 # ═════════════════════════════════════════════════════════════════════════
+# ═════════════════════════════════════════════════════════════════════════
+# 9. X15, the pathway groups: what each one carries on its own
+# ═════════════════════════════════════════════════════════════════════════
+PROBE = ROOT / "Outputs/probes/p1_groups/stages.csv"
+D5 = ROOT / "Outputs/supplementary/data/D5_pathway_groups_and_genes.csv"
+CHANCE = {"cell family": 0.673, "menstrual phase": 0.370}
+
+
+def group_short(name: str) -> str:
+    """`reactome_complement_cascade_plus_9_more` -> `complement cascade (+9)`.
+
+    The group keys are built from the Reactome or GO term they were cut
+    from plus a count of what was merged in, and some run to 140
+    characters. A figure needs the term and the merge count and nothing
+    else.
+    """
+    n = re.sub(r"^(reactome|go)_", "", name)
+    n = re.sub(r"_r_hsa_\d+", "", n)
+    n = re.sub(r"_go_\d+", "", n)
+    m = re.search(r"_plus_(\d+)_more$", n)
+    extra = f" (+{m.group(1)})" if m else ""
+    n = re.sub(r"_plus_\d+_more$", "", n)
+    m2 = re.search(r"_(\d+)_pathways(_\d+)?$", n)
+    if m2:
+        extra = f" ({m2.group(1)} pathways)" + (f" {m2.group(2)[1:]}" if m2.group(2) else "")
+        n = re.sub(r"_\d+_pathways(_\d+)?$", "", n)
+    return n.replace("_", " ") + extra
+
+
+def x15_read():
+    """The probe, with a stable G01..G44 id per group and its gene count.
+
+    IDS ARE THE MODEL'S OWN ORDER, not the score order. A group's id has to
+    mean the same thing in every figure and every sentence, and a
+    score-ordered id would change the moment the model is re-scored.
+    """
+    d = pd.read_csv(PROBE)
+    g = d[d.method.str.startswith("group/")].copy()
+    g["grp"] = g.method.str.replace("group/", "", regex=False)
+    p = g.pivot_table(index="grp", columns="label", values="value")
+    p.columns = ["family", "phase"]
+    d5 = pd.read_csv(D5)
+    p["n_genes"] = d5.groupby("group").size()
+    order = d5.groupby("group").global_idx.min().sort_values()
+    p["gid"] = [f"G{list(order.index).index(k) + 1:02d}" for k in p.index]
+    p["short"] = [group_short(k) for k in p.index]
+    assert len(p) == 44 and p.n_genes.notna().all(), "44 groups with sizes"
+    lat = d[d.method == "latent"]
+    L = {l: float(lat[(lat.test == "knn-agreement") & (lat.label == l)].value.iloc[0])
+         for l in ("cell family", "menstrual phase")}
+    return p.sort_values("gid"), L
+
+
+def x15():
+    p, L = x15_read()
+    lf, lp = L["cell family"], L["menstrual phase"]
+
+    # ── the table the note reads from ────────────────────────────────────
+    rows = [[r.gid, esc(r.short), str(int(r.n_genes)), num(r.family), num(r.phase)]
+            for _, r in p.iterrows()]
+    tex("x15_groups", tabular("@{}llrrr@{}",
+        ["id", "pathway group", "genes", "cell family", "menstrual phase"], rows))
+
+    # ── FIGURE 1. every group ranked, with the latent drawn through them ──
+    # AW asked for a Pareto. A Pareto needs the parts to SUM to the whole
+    # and these do not: each value is how well one group recovers the label
+    # on its own, and the groups overlap heavily, so the top 20% of them
+    # hold 24.5% of the sum on both labels and the cumulative curve is a
+    # straight line. The question behind the request is answerable and this
+    # is the shape that answers it: how many single groups come close to
+    # what the whole latent does.
+    fig, axes = plt.subplots(1, 2, figsize=(170 * MM, 96 * MM))
+    for ax, (col, lv, title, pl) in zip(axes, (
+            ("family", lf, "cell family", "a"),
+            ("phase", lp, "menstrual phase", "b"))):
+        q = p.sort_values(col, ascending=False)
+        y = np.arange(len(q))
+        ax.hlines(y, 0, q[col].values, color="#C3C8CF", lw=1.0, zorder=1)
+        ax.scatter(q[col].values, y, s=11, color=FAM_C["immune"] if col == "phase"
+                   else FAM_C["stromal"], zorder=3, lw=0)
+        ax.axvline(lv, color=INK, lw=1.1, zorder=4)
+        ax.text(lv, -1.6, f"the 16-number latent, {lv:.3f}", fontsize=FS_LEG,
+                color=INK, ha="right", va="bottom", rotation=0)
+        ax.set_yticks(y); ax.set_yticklabels(q.gid, fontsize=4.4)
+        ax.invert_yaxis()
+        ax.set_xlim(0, 1.0); ax.set_xlabel(f"{title}, excess over chance")
+        ax.set_title(f"{pl}  {title}", fontsize=FS_TITLE, loc="left",
+                     fontweight="bold")
+        n80 = int((q[col] >= lv * 0.8).sum())
+        ax.text(.02, .02, f"{n80} of 44 groups reach 80%\nof the latent on their own",
+                transform=ax.transAxes, fontsize=FS_LEG, va="bottom",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=HAIR, lw=.5))
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+    fig.subplots_adjust(wspace=.30, bottom=.11, top=.93)
+    save(fig, "x15_groups_ranked", cite=True)
+
+    # ── FIGURE 2. identity against time, which is where the biology is ───
+    # Phase regressed on family. The residual is the phase signal a group
+    # carries BEYOND its general informativeness, which is the only way to
+    # name a cycle-carrying pathway given the two correlate at +0.665.
+    b_, a_ = np.polyfit(p.family, p.phase, 1)
+    p = p.assign(resid=p.phase - (a_ + b_ * p.family))
+    fig, ax = fig_ax(120, 84)
+    xs = np.linspace(p.family.min() - .03, p.family.max() + .03, 50)
+    ax.plot(xs, a_ + b_ * xs, color=SOFT, lw=.9, ls="--", zorder=1)
+    above = p.resid > 0
+    ax.scatter(p.family[above], p.phase[above], s=22, color=FAM_C["immune"],
+               lw=.4, edgecolor="white", zorder=3)
+    ax.scatter(p.family[~above], p.phase[~above], s=22, color=GREY_PT,
+               lw=.4, edgecolor="white", zorder=3)
+    lab = pd.concat([p.nlargest(4, "resid"), p.nsmallest(3, "resid")])
+    # short enough that a label never runs off the axes; the id carries the
+    # identification and the table carries the full name.
+    def tag(r):
+        w = r.short.split(" (")[0].split()
+        n = 2 if len(" ".join(w[:2])) > 11 else 3
+        return f"{r.gid} " + " ".join(w[:n])
+    pts = [(r.family, r.phase, tag(r),
+            FAM_C["immune"] if r.resid > 0 else SOFT) for _, r in lab.iterrows()]
+    ax.margins(.16)
+    label_points(ax, pts, fontsize=FS_LEG, gap=7.0)
+    ax.set_xlabel("cell family, excess over chance")
+    ax.set_ylabel("menstrual phase, excess over chance")
+    r2 = np.corrcoef(p.family, p.phase)[0, 1] ** 2
+    ax.text(.02, .97, f"$R^2$ = {r2:.3f}\nslope {b_:.2f}", transform=ax.transAxes,
+            va="top", fontsize=FS_BODY, color=INK, linespacing=1.5,
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
+    ax.legend(handles=[
+        Line2D([], [], marker="o", lw=0, ms=4.5, color=FAM_C["immune"],
+               label="more cycle than its identity score predicts"),
+        Line2D([], [], marker="o", lw=0, ms=4.5, color=GREY_PT,
+               label="less"),
+        Line2D([], [], color=SOFT, lw=.9, ls="--", label="least-squares fit")],
+        loc="lower right", fontsize=FS_LEG)
+    save(fig, "x15_identity_vs_time", cite=True)
+
+    # ── the readings the prose quotes, printed so each has a derivation ──
+    print("       X15, quoted in the note:")
+    for col, lv, nm in (("family", lf, "cell family"), ("phase", lp, "menstrual phase")):
+        ch = CHANCE[nm]
+        raw = lambda x: ch + x * (1 - ch)
+        print(f"         {nm}: latent {lv:.4f} (raw {raw(lv):.3f}), best group "
+              f"{p[col].max():.4f} (raw {raw(p[col].max()):.3f}), "
+              f"median {p[col].median():.4f}, min {p[col].min():.4f}")
+        for f in (0.95, 0.9, 0.8):
+            print(f"           {int((p[col] >= lv * f).sum()):2d} of 44 reach {f:.0%} of the latent")
+    print(f"         phase >= family in {int((p.phase >= p.family).sum())} of 44 groups")
+    print(f"         size vs score: family rho={spearmanr(p.family, p.n_genes)[0]:+.3f} "
+          f"P={spearmanr(p.family, p.n_genes)[1]:.3f}; "
+          f"phase rho={spearmanr(p.phase, p.n_genes)[0]:+.3f} "
+          f"P={spearmanr(p.phase, p.n_genes)[1]:.3f}")
+    print(f"         phase-on-family R2={r2:.3f}")
+    print("         cycle-specific (top residual): "
+          + ", ".join(f"{r.gid} {r.short}" for _, r in p.nlargest(4, "resid").iterrows()))
+    print("         identity-only (bottom residual): "
+          + ", ".join(f"{r.gid} {r.short}" for _, r in p.nsmallest(3, "resid").iterrows()))
+
+
+
 GROUPS = {"scib": scib, "field": field, "arms": arms, "transfer": transfer,
           "claims": claims, "x13": x13, "corpus": corpus, "umaps": umaps,
-          "umap_panels": umap_panels}
+          "umap_panels": umap_panels, "x15": x15}
 
 
 def main() -> int:

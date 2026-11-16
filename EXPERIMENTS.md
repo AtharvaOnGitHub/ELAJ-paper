@@ -645,6 +645,71 @@ transcriptional signal a group carries at all, rather than anything
 specific to either label. Any claim that a particular pathway carries the
 cycle has to clear that correlation first.
 
+### Going past the scalars, 17 November
+
+AW: *"These are still in the realm of statistical interpretation of results.
+We can go a few levels deeper than this."* He was right. What follows uses
+the underlying objects rather than the 88 per-group numbers, and needs no
+new compute: `D5_pathway_groups_and_genes.csv` (gene to group),
+`x12_gene_shifts_orth.csv` (the decoder's per-gene response along the immune
+disease direction, all 15,496) and the dumped latent.
+
+**Result 3. The cycle is ONE axis in the latent; cell identity is THREE.**
+Linear discriminant analysis on the sixteen dimensions, 150,000 cells:
+
+| label | share of between-class separation per discriminant |
+|---|---|
+| menstrual phase | **0.601**, 0.196, 0.108, 0.069, 0.023, 0.004 |
+| cell family | 0.434, 0.312, 0.254 |
+
+Phase puts 60% of its separation on a single direction and 80% on two. Cell
+family spreads evenly over three. **The model encodes the cycle as a
+gradient and cell identity as territories**, which is what the UMAPs show
+and what Results already says about families being contiguous regions, now
+as a measured decomposition rather than a reading of a picture.
+
+**This is why no group recovers the cycle alone.** A single axis assembled
+as a weighted combination across 44 groups is not present in any one of
+them; three balanced axes of cell identity are visible from almost any
+pathway, which is why 17 of 44 groups reach 80% of the latent on family and
+2 of 44 do on phase.
+
+**Result 4. The disease direction rides on the identity machinery, not on
+the cycle machinery.** For each group, take the root-mean-square response of
+its genes along X12's immune disease direction, and correlate that with what
+the group carries:
+
+| | Spearman | permutation $P$ |
+|---|---:|---:|
+| group's **cell family** score vs its disease loading | **$+0.519$** | **0.0005** |
+| group's **menstrual phase** score vs its disease loading | $+0.262$ | 0.090 |
+| group's **gene count** vs its disease loading | $-0.232$ | 0.13 |
+
+**And the partial correlations settle which of the two it is.** Holding
+phase constant, family against disease loading is $+0.501$, $P = 0.0005$.
+Holding family constant, phase against disease loading is $-0.118$,
+$P = 0.44$: it vanishes. The null reshuffles gene-to-group assignment while
+keeping every group's size, 2,000 times, and centres on zero with
+sd 0.155, so the observed $+0.519$ is 3.3 standard deviations out.
+
+**What that means.** The pathway groups that tell you what kind of cell you
+are looking at are the same groups the disease signal is written in. The
+groups that track where the tissue is in its cycle are not. Disease and
+cycle are carried by different parts of the architecture, which is the
+mechanism behind their behaving as separate axes everywhere else in the
+paper: it is why the frontier trades the cycle against donor-blindness
+while the disease readout follows donor memorisation instead (B3,
+$\rho = +0.721$).
+
+⚠ **One thing was tried and gives nothing; do not re-run it.** The direct
+geometry, the angle between X12's disease direction and each label's leading
+discriminant axis, sits inside the random-direction null on every label
+(phase $|\cos| = 0.312$, 78th percentile; family 0.194, 55th; disease\_status
+0.153, 44th). The comparator is also confounded, because the whole-corpus
+`disease_status` discriminant is dominated by ectopic against eutopic, which
+is tissue, and tissue is a decoder covariate. The gene-level route above is
+the one that works.
+
 ⚠ **No counts baseline exists.** `--no-references` skipped the two per-group
 PCA reference families, which are two thirds of the job's cost and what
 fill `counts_raw`, `counts_log` and every `delta` column. X15 therefore says
