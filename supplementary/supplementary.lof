@@ -19,15 +19,15 @@
 \contentsline {figure}{\numberline {S18}{\ignorespaces UMAP, $\lambda _{\mathrm {dab}} = 336$, $w_{\mathrm {kl}} = 30$}}{30}{figure.caption.34}%
 \contentsline {figure}{\numberline {S19}{\ignorespaces The ablations on the frontier}}{31}{figure.caption.38}%
 \contentsline {figure}{\numberline {S20}{\ignorespaces Reconstruction loss per epoch, ablations}}{35}{figure.caption.39}%
-\contentsline {figure}{\numberline {S21}{\ignorespaces Validation cycle agreement per epoch, ablations}}{35}{figure.caption.40}%
+\contentsline {figure}{\numberline {S21}{\ignorespaces Validation cycle agreement per epoch, ablations}}{36}{figure.caption.40}%
 \contentsline {figure}{\numberline {S22}{\ignorespaces Decoder reliance on the latent, all arms}}{36}{figure.caption.41}%
-\contentsline {figure}{\numberline {S23}{\ignorespaces UMAP, random grouping}}{36}{figure.caption.42}%
+\contentsline {figure}{\numberline {S23}{\ignorespaces UMAP, random grouping}}{37}{figure.caption.42}%
 \contentsline {figure}{\numberline {S24}{\ignorespaces UMAP, head-free}}{37}{figure.caption.43}%
-\contentsline {figure}{\numberline {S25}{\ignorespaces UMAP, no elastic cell similarity}}{37}{figure.caption.44}%
+\contentsline {figure}{\numberline {S25}{\ignorespaces UMAP, no elastic cell similarity}}{38}{figure.caption.44}%
 \contentsline {figure}{\numberline {S26}{\ignorespaces UMAP, no DNS sentinel}}{38}{figure.caption.45}%
-\contentsline {figure}{\numberline {S27}{\ignorespaces UMAP, no order statistics}}{38}{figure.caption.46}%
-\contentsline {figure}{\numberline {S28}{\ignorespaces Composition, eutopic against lesion}}{43}{figure.caption.53}%
-\contentsline {figure}{\numberline {S29}{\ignorespaces Disease AUC by family, own labels}}{46}{figure.caption.57}%
-\contentsline {figure}{\numberline {S30}{\ignorespaces Disease AUC by family, transferred labels}}{47}{figure.caption.58}%
-\contentsline {figure}{\numberline {S31}{\ignorespaces The gene ranking along the immune direction}}{48}{figure.caption.61}%
-\contentsline {figure}{\numberline {S32}{\ignorespaces Marker agreement against the label-shuffled null}}{49}{figure.caption.64}%
+\contentsline {figure}{\numberline {S27}{\ignorespaces UMAP, no order statistics}}{39}{figure.caption.46}%
+\contentsline {figure}{\numberline {S28}{\ignorespaces Composition, eutopic against lesion}}{44}{figure.caption.53}%
+\contentsline {figure}{\numberline {S29}{\ignorespaces Disease AUC by family, own labels}}{47}{figure.caption.57}%
+\contentsline {figure}{\numberline {S30}{\ignorespaces Disease AUC by family, transferred labels}}{48}{figure.caption.58}%
+\contentsline {figure}{\numberline {S31}{\ignorespaces The gene ranking along the immune direction}}{49}{figure.caption.61}%
+\contentsline {figure}{\numberline {S32}{\ignorespaces Marker agreement against the label-shuffled null}}{50}{figure.caption.64}%

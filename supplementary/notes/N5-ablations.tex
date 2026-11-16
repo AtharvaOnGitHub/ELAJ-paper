@@ -112,7 +112,14 @@ biological losses of any ablation on three of the four.
 The decoder's reliance on the latent relative to the covariates fell from
 7.46 to 2.43 (Supplementary Fig.~\ref{sfig:reliance}). With the pathway
 structure gone the decoder found a cheaper route to the counts through
-provenance, which is why it reconstructs better and encodes less. Thus the
+provenance, which is why it reconstructs better and encodes less. What is
+lost is the partition and not the budget: the ablation holds group sizes,
+each gene's position, parameter count, attention cost and effective gene
+space exactly as in the base, and across the 44 groups of the base a
+group's size predicts neither what it carries about cell family, Spearman
+$-0.058$ at $P = 0.71$, nor what it carries about the cycle, $+0.130$ at
+$P = 0.40$. A group is informative because of which genes share it, not
+how many do. Thus the
 inductive-bias claim of the paper is demonstrated here rather than
 asserted, and this is also why we do not treat reconstruction loss as a
 model-selection criterion for a representation. Supplementary

@@ -587,6 +587,89 @@ finding what we built in. The test has to ask whether tissue differences
 survive *within* a transferred cell label after study is accounted for, and
 the framing matters more than the number.
 
+## X16 — The cycle as one continuous axis, and whose axis it is
+
+`figures/scripts/supp_figures.py --only x16`, local, from the dumped latent
+at `Outputs/cells/p1_dab168_kl1/`. No new compute.
+
+**Why.** AW, 17 November: *"See if it can be proven that cycle is
+continuous in one axis. The continuity of cycle information would show once
+and for all that endometriosis is biologically cyclical."* And: *"We know
+that cycle is understood in the context of a cell family. See how that
+translates."*
+
+**The design, and it is what makes the result worth anything.** Cycle day
+and serum progesterone exist in `duempelmann_2026` alone. So the cycle axis
+is fitted by linear discriminant analysis on the **phase labels of
+`marecko_2024` and the two `garcia_alonso` deposits only**, 150,000 cells,
+and never sees a Dümpelmann cell. It is then used to project Dümpelmann's
+60 donors. Phase was supervised as a nine-level label; **the cycle day
+behind it and the hormone behind that were never inputs to anything.**
+
+**Result 1. The cycle is one axis, and it is continuous against two
+variables the model never saw.** Per donor, median over that donor's cells:
+
+| | Spearman | $P$ | n |
+|---|---:|---:|---:|
+| cycle axis against **cycle day** | **$+0.757$** | $2.7 \times 10^{-12}$ | 60 donors |
+| cycle axis against **serum progesterone** | **$+0.844$** | $2.7 \times 10^{-17}$ | 60 donors |
+
+The axis carries 63% of all phase separation in the latent and the second
+carries 22%, so this is one direction and not a subspace. Binned donor
+medians fall monotonically across the cycle, 0.97, 0.88, 0.47, $-0.26$,
+$-0.72$, $-0.69$, with the plateau at the end sitting where the luteal
+phase plateaus.
+
+**Result 2. It resolves inside a single phase label.** Among the 18 donors
+all labelled periovulatory, the axis still orders their cycle days,
+$\rho = -0.642$ at $P = 0.004$. Among the 28 labelled proliferative it does
+not, $\rho = -0.225$ at $P = 0.25$. So the continuity is real in at least
+one phase and is not merely the discrete label re-expressed, and it is not
+yet established everywhere.
+
+**Result 3. The cycle closes.** On the first two cycle axes the nine phase
+centroids advance round the circle in biological order: circular resultant
+0.802 against a permutation null averaging 0.308, $P = 0.0018$, with the
+statistic made blind to which way round the loop runs. **The secretory arm
+is strictly ordered across five consecutive labels spanning 220 degrees,
+and the four proliferative-side labels crowd into 24 degrees.** The
+endometrium changes far more, per day, after ovulation than before it, and
+the latent spends its geometry accordingly.
+
+**Result 4. Stromal cells run on a different cycle from everything else.**
+Fitting each family its own cycle axis, again off Dümpelmann:
+
+| | stromal | epithelial | endothelial | immune |
+|---|---:|---:|---:|---:|
+| vs the pooled cycle axis | **0.560** | 0.910 | 0.811 | 0.895 |
+
+Epithelial, endothelial and immune cycle axes agree with each other
+($|\cos|$ 0.69 to 0.81) and with the pooled axis. **Stromal agrees with
+none of them**, 0.28 to 0.47 against the other three. Stromal is also the
+family that carries the most cycle signal of the four (C2: 1.0677 against
+0.9824, 0.3918, 0.3409). The reading that fits both facts is
+decidualisation, which is the transformation stromal cells alone undergo
+under progesterone, and it means the pooled cycle number is an average over
+two different clocks rather than one shared one.
+
+⚠ **One cohort supplies both continuous variables.** Day and progesterone
+are Dümpelmann's 60 donors and nobody else's, which is the limitation N3
+already states about the cycle-day axis. The fit being out of cohort is
+what makes the test meaningful; it does not make the test replicated.
+
+⚠ **A dead end, so nobody repeats it.** The angle between X12's disease
+direction and each label's leading discriminant axis sits inside the
+random-direction null on every label (phase $|\cos| = 0.312$, 78th
+percentile). The whole-corpus `disease_status` discriminant is also
+confounded by tissue, which is a decoder covariate.
+
+⚠ **A bug worth remembering.** Orienting the projection for a scatter and
+then reusing the same sign on one of two axes MIRRORS the plane, which
+reverses the direction of rotation. That took the circular resultant from
+0.802 to 0.263 and the $P$ from 0.0018 to 0.58 before it was caught. The
+loop is now computed in the unflipped frame with a reflection-invariant
+statistic.
+
 ## X15 — Group embedding analysis
 
 `axw1008/src/scripts/probe_stages.py`, run as `probe_stages.sh
@@ -625,6 +708,24 @@ and the same estimator as the paper's headline table.
 Each group is eighteen times wider than the latent, so the comparison runs
 against us and the latent wins anyway. Whatever the latent is, it is not a
 copy of its best-informed group.
+
+⚠⚠ **RESULTS 1 AND 2 ARE DISCARDED, AW 17 November.** *"This would've been
+completely different if the same groups were rearranged by pathways but
+slightly differently. In theory, a group could be optimised for cell's
+family/phase signal."* He is right, and the objection is structural rather
+than a quibble: a group's score is a property of **our cut** of Reactome
+and GO, not of the biology, and nothing here separates the two. They are
+kept below because the probe produced them and because Result 3 depends on
+the same run, not because the ranking means anything.
+
+**The experiment that would settle it exists and is one job.** Run the same
+probe against `a1_randgroups`, whose checkpoint is on disk and whose genes
+were reassigned at random while every other quantity was held. If a random
+partition spreads its 44 groups over the same 0.33 to 0.97 range, the
+spread is an artefact of partitioning anything; if it is far tighter, our
+pathway cut creates the differentiation and the ranking means what it
+appears to mean. Until that is run, **no sentence in the paper should rest
+on which group came top.**
 
 **Result 2. The groups are not interchangeable.**
 

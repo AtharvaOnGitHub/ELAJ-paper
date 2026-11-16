@@ -1754,12 +1754,244 @@ def x15():
           + ", ".join(f"{r.gid} {r.short}" for _, r in p.nlargest(4, "resid").iterrows()))
     print("         identity-only (bottom residual): "
           + ", ".join(f"{r.gid} {r.short}" for _, r in p.nsmallest(3, "resid").iterrows()))
+    x15_propagation()
+
+
+
+def x15_propagation():
+    """Where cell identity and the cycle appear as a cell moves through.
+
+    AW asked for a diagram of how the phase and family signal propagates.
+    Everything annotated on it is measured: the group-stage spreads come
+    from the X15 probe, the latent-stage values from the same probe's
+    integrity row, and the dimensionality of each label at the latent from
+    the X16 discriminant decomposition.
+    """
+    p_, L = x15_read()
+    fig, ax = plt.subplots(figsize=(170 * MM, 86 * MM))
+    ax.set_xlim(0, 100); ax.set_ylim(0, 54); ax.axis("off")
+    box = dict(boxstyle="round,pad=0.45", lw=.9)
+    FAMC, PHC = FAM_C["stromal"], FAM_C["immune"]
+
+    def stage(x, w, title, sub):
+        ax.add_patch(plt.Rectangle((x, 30), w, 14, fc="#F2F4F6", ec=HAIR, lw=.8,
+                                   zorder=1))
+        ax.text(x + w / 2, 40.5, title, ha="center", va="center",
+                fontsize=FS_TITLE, fontweight="bold", color=INK)
+        ax.text(x + w / 2, 35.0, sub, ha="center", va="center",
+                fontsize=FS_LEG, color=SOFT, linespacing=1.4)
+
+    stage(2, 20, "15,496 genes", "one measurement\nper gene, per cell")
+    stage(32, 26, "44 pathway groups", "247 to 493 genes each\n288 numbers out of each")
+    stage(70, 26, "16 dimensions", "everything the model\nkeeps about a cell")
+    for x0, x1 in ((22.6, 31.4), (58.6, 69.4)):
+        ax.annotate("", (x1, 37), (x0, 37),
+                    arrowprops=dict(arrowstyle="-|>", color=INK, lw=1.3))
+    ax.text(27, 39.4, "sorted by\npathway", ha="center", fontsize=FS_LEG,
+            color=SOFT, linespacing=1.3)
+    ax.text(64.5, 39.4, "combined", ha="center", fontsize=FS_LEG, color=SOFT)
+
+    # ── what each stage can tell you, measured ───────────────────────────
+    ax.text(1, 25.5, "what you could read off, at each stage:", fontsize=FS_BODY,
+            color=INK, fontweight="bold")
+    for i, (lab, c, gmed, gmin, gmax, lv, reach, dims) in enumerate((
+            ("cell family", FAMC, p_.family.median(), p_.family.min(), p_.family.max(),
+             L["cell family"], 17, "3 balanced axes"),
+            ("menstrual phase", PHC, p_.phase.median(), p_.phase.min(), p_.phase.max(),
+             L["menstrual phase"], 2, "1 axis, 63% of it"))):
+        y = 18.5 - i * 11
+        ax.text(1, y + 3.0, lab, fontsize=FS_BODY, color=c, fontweight="bold")
+        # group-stage range bar, drawn on a 0..1 scale mapped into the column
+        gx0, gw = 32, 26
+        ax.plot([gx0 + gmin * gw, gx0 + gmax * gw], [y, y], color=c, lw=3,
+                solid_capstyle="round", alpha=.45, zorder=2)
+        ax.plot([gx0 + gmed * gw], [y], "o", ms=6, color=c, mec="white", mew=.8, zorder=3)
+        ax.text(gx0 + gmax * gw + 1.0, y, f"best {gmax:.2f}", fontsize=FS_LEG,
+                color=SOFT, va="center")
+        ax.text(gx0, y - 3.4, f"median {gmed:.2f} across the 44", fontsize=FS_LEG, color=SOFT)
+        lx0, lw_ = 70, 26
+        ax.plot([lx0 + lv * lw_], [y], "D", ms=7, color=c, mec="white", mew=.8, zorder=3)
+        ax.text(lx0 + lv * lw_ + 1.2, y, f"{lv:.2f}", fontsize=FS_BODY, color=c,
+                va="center", fontweight="bold")
+        ax.text(lx0, y - 3.4, f"{dims};  {reach} of 44 groups get\nthis far on their own",
+                fontsize=FS_LEG, color=SOFT, linespacing=1.3)
+    ax.text(1, 2.2, "Bars are the range across the 44 groups and the circle is their median, "
+                    "on the scale each column spans (0 to 1,\nexcess over chance). Diamonds "
+                    "are the finished latent. Identity is already there group by group; the "
+                    "cycle is not in any of them.",
+            fontsize=FS_LEG, color=INK, linespacing=1.5)
+    ax.legend(handles=[
+        Line2D([], [], color=INK, lw=3, alpha=.45, label="range over the 44 groups"),
+        Line2D([], [], marker="o", lw=0, ms=6, color=INK, label="median group"),
+        Line2D([], [], marker="D", lw=0, ms=7, color=INK, label="the 16-dimensional latent")],
+        loc="upper right", bbox_to_anchor=(1.0, .60), fontsize=FS_LEG, frameon=False)
+    save(fig, "x15_propagation", cite=True)
+
+# ═════════════════════════════════════════════════════════════════════════
+# 10. X16, the cycle as one continuous axis, and whose axis it is
+# ═════════════════════════════════════════════════════════════════════════
+PHASE_ORD = {"menstrual": 0, "proliferative_early": 1, "proliferative": 2,
+             "proliferative_late": 3, "periovulatory": 4, "secretory_early": 5,
+             "secretory_early_mid": 6, "secretory_mid": 7, "secretory_late": 8}
+
+
+def _cycle_setup():
+    """The latent, z-scored, with the cycle axes fitted OFF duempelmann.
+
+    THE FIT NEVER SEES THE TEST COHORT. Cycle day and serum progesterone
+    exist only in duempelmann_2026, so the discriminant is fitted on the
+    phase labels of marecko_2024 and the two garcia_alonso deposits alone.
+    Everything measured against day or progesterone is therefore out of
+    cohort as well as out of sample, and neither variable was ever an input
+    to the model: phase was supervised as a label, the day behind it and the
+    hormone behind that were not.
+    """
+    from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+    rng = np.random.default_rng(0)
+    Z = np.load(CELLS / ARM / "latent.npy")
+    m = pd.read_csv(CELLS / ARM / "metadata.csv.gz", low_memory=False)
+    Zs = (Z - Z.mean(0)) / Z.std(0)
+    has = m["menstrual phase"].notna().values
+    fit = has & (m.study != "duempelmann_2026").values
+    idx = rng.choice(np.flatnonzero(fit), 150_000, replace=False)
+    lda = LDA(solver="eigen", shrinkage="auto").fit(Zs[idx], m["menstrual phase"].values[idx])
+    W = lda.scalings_[:, :2]
+    W = W / np.linalg.norm(W, axis=0, keepdims=True)
+    return Zs, m, W, lda.explained_variance_ratio_, rng
+
+
+def x16():
+    from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
+    Zs, m, W, ev, rng = _cycle_setup()
+    has = m["menstrual phase"].notna().values
+    te = (m.study == "duempelmann_2026").values & m.CycleDay.notna().values
+    pr = Zs[te] @ W[:, 0]
+    dn = pd.DataFrame({"proj": pr, "day": m.CycleDay.values[te],
+                       "prog": m.ProgesteroneSerum.values[te],
+                       "ph": m["menstrual phase"].values[te],
+                       "pid": m.patient_id.values[te]}).groupby("pid").median(numeric_only=True)
+    # orientation is arbitrary in a discriminant; point it along rising day
+    sgn = np.sign(spearmanr(dn.proj, dn.day)[0]) or 1.0
+    dn["proj"] *= sgn
+    r_day, p_day = spearmanr(dn.proj, dn.day)
+    r_pg, p_pg = spearmanr(dn.proj, dn.prog)
+
+    # ── FIGURE a/b: the axis against two variables the model never saw ───
+    fig, axes = plt.subplots(1, 2, figsize=(165 * MM, 68 * MM))
+    for ax, (col, xl, r_, p_, pl) in zip(axes, (
+            ("day", "cycle day recorded by the clinic", r_day, p_day, "a"),
+            ("prog", "serum progesterone (nmol/l)", r_pg, p_pg, "b"))):
+        ax.scatter(dn[col], dn.proj, s=16, color=FAM_C["stromal"], lw=.4,
+                   edgecolor="white", zorder=3)
+        ax.set_xlabel(xl); ax.set_ylabel("position on the cycle axis")
+        ax.text(.03, .97, f"Spearman $\\rho$ = {r_:+.3f}\n$P$ = {p_:.1e}, n = {len(dn)} donors",
+                transform=ax.transAxes, va="top", fontsize=FS_BODY, linespacing=1.5,
+                bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
+        ax.set_title(f"{pl}", fontsize=FS_TITLE, loc="left", fontweight="bold")
+        for sp in ("top", "right"):
+            ax.spines[sp].set_visible(False)
+    fig.subplots_adjust(wspace=.28, bottom=.19)
+    save(fig, "x16_cycle_axis_external", cite=True)
+
+    # ── FIGURE: the cycle closes ─────────────────────────────────────────
+    # NO SIGN FLIP IN THIS FRAME. `sgn` orients the 1-D projection so the
+    # scatters above read left to right with the cycle; applying it to one
+    # of two axes would MIRROR the plane, which reverses the direction of
+    # rotation and destroys the very ordering this test is about. That bug
+    # took the resultant from 0.80 to 0.26 before it was caught.
+    Pa = Zs[has] @ W
+    cen = (pd.DataFrame({"a": Pa[:, 0], "b": Pa[:, 1],
+                         "ph": m["menstrual phase"].values[has]})
+           .groupby("ph").mean())
+    cen["ord"] = cen.index.map(PHASE_ORD)
+    cen = cen.sort_values("ord")
+    ang = np.degrees(np.arctan2(cen.b, cen.a)) % 360
+
+    def resultant(a_rad, o):
+        """Reflection-invariant: a cycle traced clockwise is still a cycle.
+
+        The statistic is the mean resultant length of the phase angles
+        minus an evenly spaced ramp in label order. Taking the better of
+        the ramp and its reverse makes it blind to which way round the
+        loop runs, and the null below takes the same maximum, so nothing
+        is gained by the extra degree of freedom.
+        """
+        k = 2 * np.pi * np.asarray(o) / len(o)
+        return max(float(np.abs(np.mean(np.exp(1j * (a_rad - k))))),
+                   float(np.abs(np.mean(np.exp(1j * (a_rad + k))))))
+
+    ar = np.radians(ang.values)
+    obs = resultant(ar, cen["ord"].values)
+    null = [resultant(ar, rng.permutation(cen["ord"].values)) for _ in range(20000)]
+    pcirc = float(np.mean(np.array(null) >= obs))
+
+    fig, ax = fig_ax(104, 92)
+    cm = plt.get_cmap("twilight")
+    ax.plot(list(cen.a) + [cen.a.iloc[0]], list(cen.b) + [cen.b.iloc[0]],
+            color=SOFT, lw=.9, ls="-", zorder=1, alpha=.8)
+    for i, (k, r) in enumerate(cen.iterrows()):
+        ax.scatter(r.a, r.b, s=70, color=cm(i / len(cen)), lw=.6,
+                   edgecolor="white", zorder=3)
+    pts = [(r.a, r.b, k.replace("_", " "), INK) for k, r in cen.iterrows()]
+    label_points(ax, pts, fontsize=FS_LEG, gap=7.5)
+    ax.axhline(0, color=HAIR, lw=.4); ax.axvline(0, color=HAIR, lw=.4)
+    ax.margins(.22)
+    ax.set_xlabel(f"cycle axis 1 ({ev[0]:.0%} of phase separation)")
+    ax.set_ylabel(f"cycle axis 2 ({ev[1]:.0%})")
+    ax.text(.03, .97, f"labels advance round the circle in\nbiological order: "
+                      f"resultant {obs:.2f}, $P$ = {pcirc:.4f}",
+            transform=ax.transAxes, va="top", fontsize=FS_BODY, linespacing=1.5,
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
+    save(fig, "x16_cycle_closes", cite=True)
+
+    # ── per family: whose cycle axis is it? ──────────────────────────────
+    fam = m["cell family"].values
+    both = has & m["cell family"].notna().values
+    axd = {}
+    for f in FAMS:
+        sel = np.flatnonzero(both & (fam == f) & (m.study != "duempelmann_2026").values)
+        if len(sel) < 4000:
+            continue
+        sel = rng.choice(sel, min(60_000, len(sel)), replace=False)
+        lf = LDA(solver="eigen", shrinkage="auto").fit(Zs[sel], m["menstrual phase"].values[sel])
+        v = lf.scalings_[:, 0]
+        axd[f] = v / np.linalg.norm(v)
+    ks = list(axd)
+    M = np.array([[abs(float(axd[x] @ axd[y])) for y in ks] for x in ks])
+    fig, ax = fig_ax(78, 70)
+    im = ax.imshow(M, cmap="Blues", vmin=0, vmax=1)
+    ax.set_xticks(range(len(ks))); ax.set_xticklabels(ks, rotation=35, ha="right")
+    ax.set_yticks(range(len(ks))); ax.set_yticklabels(ks)
+    for i in range(len(ks)):
+        for jj in range(len(ks)):
+            ax.text(jj, i, f"{M[i, jj]:.2f}", ha="center", va="center",
+                    fontsize=FS_BODY, color="white" if M[i, jj] > .6 else INK)
+    ax.set_title("alignment between each family's own cycle axis",
+                 fontsize=FS_TITLE, loc="left")
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    save(fig, "x16_family_cycle_axes", cite=True)
+
+    print("       X16, quoted in the note:")
+    print(f"         cycle axis vs cycle day, 60 donors:  rho={r_day:+.3f} P={p_day:.1e}")
+    print(f"         cycle axis vs serum progesterone:    rho={r_pg:+.3f} P={p_pg:.1e}")
+    print(f"         phase separation on axis 1 / axis 2: {ev[0]:.3f} / {ev[1]:.3f}")
+    print(f"         the loop closes: resultant {obs:.3f}, permutation P={pcirc:.4f}")
+    sec = ["periovulatory", "secretory_early", "secretory_early_mid",
+           "secretory_mid", "secretory_late"]
+    print(f"         secretory arm spans {ang[sec[-1]] - ang[sec[0]]:.0f} degrees, "
+          f"strictly ordered: {all(ang[sec[i]] < ang[sec[i+1]] for i in range(4))}")
+    for i, x in enumerate(ks):
+        for y in ks[i + 1:]:
+            print(f"         |cos| {x} vs {y}: {abs(float(axd[x] @ axd[y])):.3f}")
+    for k, v in axd.items():
+        print(f"         |cos| {k} vs pooled axis: {abs(float(v @ W[:, 0])):.3f}")
 
 
 
 GROUPS = {"scib": scib, "field": field, "arms": arms, "transfer": transfer,
           "claims": claims, "x13": x13, "corpus": corpus, "umaps": umaps,
-          "umap_panels": umap_panels, "x15": x15}
+          "umap_panels": umap_panels, "x15": x15, "x16": x16}
 
 
 def main() -> int:
