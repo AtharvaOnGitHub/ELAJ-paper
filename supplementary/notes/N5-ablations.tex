@@ -2,9 +2,16 @@
 % SUPPLEMENTARY NOTE 5 — the five ablations, at length.
 %
 % SOURCES. Benchmark values through table1.collect(); per-epoch values and
-% the decoder-reliance ratio from each arm's metrics.csv; the prediction
-% bands and the not-ablated table from axw1008/docs/paper/ABLATIONS.md,
-% written before the runs.
+% the decoder-reliance ratio from each arm's metrics.csv.
+%
+% AW, 17 November: "Remove prediction bands and what we did not ablate from
+% Note 5. Remove tables and any mentions of it as well." Both were a record
+% of our process rather than a property of the models. Where a registered
+% band had carried a real finding -- that removing the elastic term IMPROVED
+% cell family, which is not what the term is named for -- the finding stays
+% and the band is gone. The four-colouring UMAP panels now carry disease
+% status, so the two standalone disease figures went with them, and every
+% comparison against the base points at main-text Fig. 4.
 %
 % The Results subsection states each result in one paragraph. This note
 % gives the mechanism, the training record and the picture, which is where
@@ -23,23 +30,11 @@ We made five single-key changes against the reported model, retrained each
 from scratch under the protocol of \ref{note:frontier},
 and scored each on the same held-out cells. The main text gives each its
 result. In this note we give the mechanism behind each, the training record
-that shows it, the predictions we specified before the runs, and the
-components we deliberately left alone. One rule governed all five and a
+that shows it and the latent it produced. One rule governed all five and a
 test in the repository enforces it: each configuration differs from the
 base on exactly one declared key. A configuration that needs two keys is
 one whose question is confounded, and we retired one such configuration
 before running it.
-
-\subsection{Every arm beside the base}
-
-Tables~\ref{stab:abl-bio} and~\ref{stab:abl-cost} give each ablation on
-each axis with its difference from the base, and Table~\ref{stab:abl-train}
-the training record. Supplementary Fig.~\ref{sfig:frontier-abl} places the
-five on the frontier's two axes with an arrow from the base to each, so the
-direction of every change can be read against the six frontier models and
-the nine comparison methods. Three of the five move the model along the
-same line the frontier models trace. Two move it off that line, and those
-two are the ones that bear on the inductive bias.
 
 \begin{table}[p]
 \centering
@@ -83,7 +78,7 @@ are grey.}
 \label{sfig:frontier-abl}
 \end{figure}
 
-\subsection{Random gene grouping: the arm that fits best and holds least}
+\subsection{Random gene grouping}
 
 To test whether the pathway partition carries biology or only cost, we
 reassigned every gene to a random group, holding group sizes, each gene's
@@ -108,12 +103,12 @@ provenance, which is why it reconstructs better and encodes less. Thus the
 inductive-bias claim of the paper is demonstrated here rather than
 asserted, and this is also why we do not treat reconstruction loss as a
 model-selection criterion for a representation. Supplementary
-Figs.~\ref{sfig:umap-rand} and~\ref{sfig:umap-rand-disease} show the
-latent by family, study, phase and disease status. The family regions remain, which is
-consistent with cell family being saturated across every representation in
-Table~1, and the disease metric records what the picture alone cannot.
+Fig.~\ref{sfig:umap-rand} shows the latent by family, study, phase and
+disease status. The family regions remain, which is consistent with cell
+family being saturated across every representation in Table~1, and the
+disease metric records what the picture alone cannot.
 
-\subsection{The phase head: a third of the cycle signal, and a regulariser}
+\subsection{The phase head}
 
 To separate the contribution of the supervised head from that of the
 architecture, we set its weight to zero and retrained. Removing it left
@@ -141,10 +136,10 @@ encoded little of anything. Overall, what the head does on this record is
 hold the gap between training and held-out loss closed from the first
 epoch, which reaches well beyond the one label it supervises.
 Supplementary Fig.~\ref{sfig:umap-nophase} shows the selected checkpoint's
-latent beside the base's (Supplementary Fig.~\ref{sfig:umap-168-1}); the
-phase panel is the one to compare.
+latent beside the base's (main-text Fig.~4); the phase panel is the one to
+compare.
 
-\subsection{Elastic cell similarity: it travels the frontier}
+\subsection{Elastic cell similarity}
 
 To ask what the largest weight in the objective buys, we disabled the
 elastic cell similarity term and retrained. Every axis moved in one
@@ -157,14 +152,13 @@ is paying for mixing in biology, which makes it the same kind of
 coefficient as $w_{\mathrm{kl}}$, one that moves the model along the
 trade-off rather than expanding it. Its arrow in
 Supplementary Fig.~\ref{sfig:frontier-abl} runs along the frontier models'
-own line. Notably, the band we set beforehand assumed the term was holding
-cell family together, at 0.94 to 0.975, and family improved instead. That
-miss is worth recording, because it corrected what we believed the term was
-for. The embedding shows what the cost axes summarise: Supplementary
-Fig.~\ref{sfig:umap-noecs}'s study panel has single-study territories that
-the base's (Supplementary Fig.~\ref{sfig:umap-168-1}) does not.
+own line. Notably, cell family improved when the term was removed, which a
+term named for cell similarity should not allow, so what it holds together
+is the mixing and not the families. The embedding shows what the cost axes
+summarise: Supplementary Fig.~\ref{sfig:umap-noecs}'s study panel has
+single-study territories that the base's (main-text Fig.~4) does not.
 
-\subsection{The order statistics: a cycle mechanism}
+\subsection{The order statistics}
 
 Each group's readout hands forward a learned summary token and eight pooled
 order statistics of its gene tokens, 288 numbers in all. To ask what the
@@ -174,13 +168,12 @@ statistics from the gene tokens and holds no parameters for them.
 
 The cycle fell by 0.0962 and the sixty-way cell type by 0.0138, while cell
 family moved by 0.0022 and reconstruction improved, 0.3979 against 0.4024.
-Our band for the cycle was 0.66 to 0.73 and the outcome landed at 0.6384,
-below it, so the statistics matter more than we predicted and on one axis
-in particular. What a weighted average discards is the shape of a group's
-distribution, and on this corpus that shape carries the cycle and almost
-none of the cell identity.
+Keeping the summary token alone is keeping a weighted average, and what a
+weighted average discards is the shape of a group's distribution. On this
+corpus that shape carries the cycle and almost none of the cell identity,
+and it costs the model nothing in fit to throw away.
 
-\subsection{The DNS sentinel: visible, not measurable}
+\subsection{The DNS sentinel}
 
 To ask whether an unmeasured gene must be distinguishable from a measured
 zero, we replaced the sentinel for genes a study never assayed with a zero
@@ -191,15 +184,16 @@ the scalars this is the smallest change of the five.
 The embedding disagrees. With the phase head, the adversary and the
 per-study normalisation all still running, the latent breaks into
 single-study regions where the base has a continuum
-(Supplementary Fig.~\ref{sfig:umap-nodns}, against the base's study panel),
+(Supplementary Fig.~\ref{sfig:umap-nodns}, against the base's study panel
+in main-text Fig.~4),
 and the decoder's reliance ratio falls from 7.46 to 5.48. A neighbourhood
 metric is insensitive to that kind of reorganisation, which is a limit of
 the metric and not evidence that the component does nothing.
 
-Our reasoning for this run was wrong and the record keeps it. We expected
-the sentinel to suppress a study signal, and the prediction we wrote from
-that reasoning stands as written. Marking unmeasured genes explicitly makes
-a panel more legible, not less. What the sentinel buys is that the model
+Our reasoning going in was backwards and the result corrected it. We
+expected the sentinel to suppress a study signal, and it does the opposite:
+marking unmeasured genes explicitly makes a panel more legible, not less,
+so removing the marker is what lets study identity organise the latent. What the sentinel buys is that the model
 never learns a gene is silent in a cell type when nobody looked at it.
 Absence of measurement stays distinct from a measured absence.
 
@@ -231,63 +225,8 @@ at its selected checkpoint.}}
 \label{sfig:reliance}
 \end{figure}
 
-\subsection{What was predicted before the runs}
 
-For each ablation we wrote bands into its configuration file before
-training (Table~\ref{stab:abl-pred}). Six of eleven landed. The misses
-carry more than the hits. Specifically, the head-free run's donor recovery
-landed under its band because the run was returned at epoch 0; cell family
-did not fall without the similarity term or without the sentinel, and rose
-without the former; and the cycle fell further than we predicted without
-the order statistics. Each of those corrected a belief about what the
-component was for, and the text above is written to the outcome and not to
-the prediction.
-
-\begin{table}[t]
-\centering
-\caption[Registered predictions, ablations]{\textbf{The bands we specified
-before each ablation ran, against the outcomes.} Benchmark terms; donor
-recovery is lower-is-better.}
-\label{stab:abl-pred}
-\small
-\input{tables/ablation_predictions}
-\end{table}
-
-\subsection{What was not ablated, and why}
-
-A reviewer will ask about each of these, so we record the reasons
-(Table~\ref{stab:not-ablated}). One configuration we built and then retired
-before running: a latent with four circular dimensions in place of eight
-Gaussian ones. Its width would have matched the base at sixteen while the
-intrinsic dimension fell to twelve, because a point on a circle has one
-degree of freedom carried in two numbers. A circle also carries less than a
-Gaussian coordinate, since it is compact and its divergence from the prior
-is a function of concentration alone. Whichever way that run came back we
-could not have attributed it to geometry, so we did not run it.
-
-\begin{table}[t]
-\centering
-\caption[Components deliberately not ablated]{\textbf{Components we did not
-ablate, and the reason for each.}}
-\label{stab:not-ablated}
-\small
-\begin{tabular}{@{}p{38mm}p{112mm}@{}}
-\toprule
-component & why no ablation \\
-\midrule
-adversarial weight $\lambda_{\mathrm{dab}}$ & the frontier grid already varies it over 7, 168 and 336 at two latent prices; a point at zero would restate what six runs show \\
-decoder conditioning on study, platform and tissue & a conditional VAE conditions its decoder by definition, so removing it tests the class of model and not this one \\
-domain-specific batch normalisation & no clean switch exists: freezing the per-study affine leaves per-study normalisation statistics in place, so the run would measure something we could not name \\
-one study per batch & required by the normalisation above, so it cannot move independently \\
-two-stage against flat attention & flat attention at matched effective gene space is roughly 50 million parameters against 1.1 million, so the claim is arithmetic and not a run \\
-bilinear decoder, library-size composition, negative binomial over Poisson & argued from parameter cost and from the measured overdispersion of the counts \\
-the aggregation-stage readout & excluded from the order-statistics run so that it stays one variable; untested at the cell stage \\
-gene masking & measured a very small effect in development, and we describe it as a detail rather than claim it \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{What the five show together}
+\subsection{What the ablations show}
 
 Overall, the five ablations separate into two kinds. The elastic cell
 similarity term and, in the frontier grid, the information cost move the
@@ -303,55 +242,35 @@ in the embedding.
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_randgroups.png}
 \caption[UMAP, random grouping]{\textbf{The random-grouping latent},
-by cell family, study and menstrual phase. Compare the base model at
-Supplementary Fig.~\ref{sfig:umap-168-1}; the cells are identical.}
+by cell family, study, menstrual phase and disease status. Compare the base
+model at main-text Fig.~4; the cells are identical.}
 \label{sfig:umap-rand}
 \end{figure}
 
 \begin{figure}[p]\centering
-\includegraphics[width=.62\textwidth]{figures/umap_a1_randgroups_disease.png}
-\caption[UMAP by disease, random grouping]{\textbf{The random-grouping
-latent by disease status}, the one colouring outside the three-panel set,
-shown because disease is the axis this ablation costs most. Compare
-Supplementary Fig.~\ref{sfig:umap-base-disease}.}
-\label{sfig:umap-rand-disease}
-\end{figure}
-
-\begin{figure}[p]\centering
-\includegraphics[width=.62\textwidth]{figures/umap_p1_dab168_kl1_disease.png}
-\caption[UMAP by disease, \elaj\,B\textsubscript{hi}]{\textbf{The
-reported latent by disease status.}}
-\label{sfig:umap-base-disease}
-\end{figure}
-
-\begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_nophase.png}
-\caption[UMAP, head-free]{\textbf{The head-free latent}, by cell family, study
-and menstrual phase. Compare the base model at Supplementary
-Fig.~\ref{sfig:umap-168-1}.}
+\caption[UMAP, head-free]{\textbf{The head-free latent}, by cell family, study,
+menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
 \label{sfig:umap-nophase}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_noecs.png}
-\caption[UMAP, no elastic cell similarity]{\textbf{The no elastic cell similarity latent}, by cell family, study
-and menstrual phase. Compare the base model at Supplementary
-Fig.~\ref{sfig:umap-168-1}.}
+\caption[UMAP, no elastic cell similarity]{\textbf{The no elastic cell similarity latent}, by cell family, study,
+menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
 \label{sfig:umap-noecs}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_nodns.png}
-\caption[UMAP, no DNS sentinel]{\textbf{The no DNS sentinel latent}, by cell family, study
-and menstrual phase. Compare the base model at Supplementary
-Fig.~\ref{sfig:umap-168-1}.}
+\caption[UMAP, no DNS sentinel]{\textbf{The no DNS sentinel latent}, by cell family, study,
+menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
 \label{sfig:umap-nodns}
 \end{figure}
 
 \begin{figure}[p]\centering
 \includegraphics[width=\textwidth]{figures/umap_panel_a1_clsonly.png}
-\caption[UMAP, no order statistics]{\textbf{The no order statistics latent}, by cell family, study
-and menstrual phase. Compare the base model at Supplementary
-Fig.~\ref{sfig:umap-168-1}.}
+\caption[UMAP, no order statistics]{\textbf{The no order statistics latent}, by cell family, study,
+menstrual phase and disease status. Compare the base model at main-text Fig.~4.}
 \label{sfig:umap-clsonly}
 \end{figure}

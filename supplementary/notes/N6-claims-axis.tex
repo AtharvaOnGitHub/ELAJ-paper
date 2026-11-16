@@ -23,9 +23,9 @@ another's, because no two share donors or a cell vocabulary. Our claims
 axis asks which of those claims the pooled corpus can settle, and settles
 the ones it can. In this note we give the ledger of claims, then each test
 as a protocol with its full table, in the order the tests depend on one
-another. The label transfer every composition test rests on is
-\ref{note:transfer}, and the marker-signature test is
-\ref{note:markers}.
+another. The label transfer that every composition test rests on is set out
+under \emph{Beyond two studies the cell families are predictions} in
+\ref{note:limitations}.
 
 \subsection{The ledger}
 
@@ -55,7 +55,7 @@ eutopic endometrium of patients is transcriptionally altered & \texttt{duempelma
 composition barely differs between patients and controls once phase is accounted for & \texttt{duempelmann\_2026}, 60 & X8, per-donor composition, 194 & supported: no family moves, $P \geq 0.24$ \\
 severity is a dose: severe disease gives five times the differentially expressed genes of mild & \texttt{duempelmann\_2026}, 60 & latent severity among patients, 57; composition among patients, 51 & not recoverable at this donor count, in either readout; a different quantity, not a contradiction \\
 macrophages and decidualised stromal cells are the compartments most likely dysregulated & \texttt{marecko\_2024}, 58,\newline from GWAS & X12, held-out disease direction within each family, 85 to 114 & immune half supported, 0.7084 at $P = 0.015$; stromal half not recoverable, 0.5920 at $P = 0.175$ \\
-prior atlases lack reproducible marker signatures & \texttt{marecko\_2024} & X13, \ref{note:markers} & not supported on the marker half: 61 to 76 of each family's top hundred reproduce \\
+prior atlases lack reproducible marker signatures & \texttt{marecko\_2024} & X13, below & not supported on the marker half: 61 to 76 of each family's top hundred reproduce \\
 disease abolishes the cyclical variation of immune composition & \texttt{lin\_2023}\newline (Huang), 13 & X3, cycle agreement by disease, 112; X3b, phase-by-disease interaction on composition, 101 & not supported in either test \\
 composition differs between lesion and eutopic tissue & \texttt{ferrero\_2024}\newline (Sarsenova), 4 pairs & X9, per-donor composition by tissue, 151 & one family moves, epithelial 6.6-fold lower, confounded with dissociation; perivascular not resolvable \\
 the same cell type differs transcriptionally by tissue site & \texttt{fonseca\_2023}, 48 & X14, tissue within a transferred family, 262 & weak residue in stromal and endothelial, $P = 0.08$ and $0.10$; tissue is a decoder covariate \\
@@ -218,7 +218,7 @@ and immune, endothelial and stromal do not clear
 agrees with the claim. However, the source names the confound: epithelial
 cells are lost when fibrous lesion tissue is dissociated, and nothing in
 the corpus separates that from biology. The label-absorption error of
-\ref{note:transfer} would push the epithelial share in
+the label absorption of \ref{note:limitations} would push the epithelial share in
 lesions up and not down, so it does not manufacture this result.
 Perivascular cells are not one of our four families, so the claim's central
 compartment stays out of reach.
@@ -436,6 +436,96 @@ drawn.}}
 \label{sfig:x14}
 \end{figure}
 
+\subsection{Do marker signatures reproduce across cohorts?}
+
+The largest prior atlas of the endometrium states that earlier atlases lack
+reproducible marker gene signatures, consensus annotation, and even cycle
+coverage \citep{mareckova2024heca}. We can test the marker half of that
+claim here and in no single cohort, because testing it needs independently
+annotated cohorts measured on one gene space, which is what the pooled
+corpus is. It is also the one test in this axis that uses the count
+matrices and the studies' own annotations and never touches the model, so
+it is a statement about the corpus and not about \elaj{}.
+
+Two studies annotated their own cells at the family level,
+\texttt{duempelmann\_2026} with 132{,}259 held-out cells and
+\texttt{marecko\_2024} with 44{,}544, each labelling stromal, epithelial,
+endothelial and immune. Within each study and for each family, we derived a
+one-against-rest signature over every gene that study measured: the
+standardised mean difference, on log-transformed counts per ten thousand,
+between the family's cells and the rest of that study's cells. The
+statistic is deterministic, runs in two sparse passes, and is monotone in
+the $t$-statistic a marker ranking would use. We used the two studies' own
+labels and not the transferred ones, because a signature derived from a
+transferred label is a reading of a prediction, and agreement between two
+such signatures would partly measure whether the transfer was consistent
+rather than whether the biology is.
+
+Specifically, we restricted every comparison to the 13{,}034 genes both
+panels measured. A study's panel does not measure every gene in the
+vocabulary, and an unmeasured gene arrives as a structural zero. Compared
+without the restriction, a gene absent from one panel reads as a confident
+non-marker there rather than as unknown, which would depress every
+agreement by an amount that depends on how different the two panels are. We
+then scored agreement two ways per family: the number of genes shared
+between the two studies' top hundred, and the Spearman rank correlation
+between the two signatures over all 13{,}034 genes. Our null shuffles
+family labels within each study, keeping each study's family proportions,
+and reruns the whole comparison twenty times. The overlap of two
+top-hundred lists has a floor set by the list length and the gene count,
+and the null is what measures that floor.
+
+The two cohorts rank the same genes at the top for every family, sharing 61
+to 76 of each other's top hundred at rank correlations from 0.7129 to
+0.8256, where twenty within-study label shuffles never share more than
+three genes and never leave the interval $-0.048$ to $+0.067$
+(Table~\ref{stab:x13}, Supplementary Figs.~\ref{sfig:x13-overlap}
+and~\ref{sfig:x13-rho}). Two cohorts that sequenced different people, in
+different laboratories, on different platforms, and annotated their cells
+independently, agree on what marks a family once they are read on one gene
+space. On the marker half of the claim, the signatures reproduce.
+
+Three bounds attach to it. It is one pair of cohorts, because only two
+studies in the corpus annotated their own cells. It is four families,
+because that is the vocabulary the two share, so whether finer cell types
+reproduce as well is not answered here and would need the finer
+vocabularies reconciled first. In addition, the restriction to jointly
+measured genes is what makes the comparison fair and it is also a choice: a
+reader who compares the two cohorts on each study's full panel will find
+lower agreement, and that difference is the panels and not the biology. The
+other half of the complaint, cycle coverage, applies to this corpus, since
+our phase labels come from three studies and a cycle day from one. We quote
+the corpus against the claim with that half conceded.
+
+\begin{table}[t]
+\centering
+\caption[Marker reproducibility by family]{\textbf{Agreement between the
+two cohorts' per-family marker signatures, against twenty within-study
+label shuffles.} Jaccard is the top-hundred overlap over the union of the
+two lists.}
+\label{stab:x13}
+\footnotesize
+\resizebox{\textwidth}{!}{\input{tables/x13_reproducibility}}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.65\textwidth]{figures/x13_overlap_vs_null.png}
+\caption[Top-hundred overlap against the null]{\textbf{Genes shared between
+the two cohorts' top hundred, by family}, observed against twenty label
+shuffles.}
+\label{sfig:x13-overlap}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.65\textwidth]{figures/x13_spearman_vs_null.png}
+\caption[Rank correlation against the null]{\textbf{Rank correlation
+between the two signatures over 13{,}034 genes, by family}, observed against
+twenty label shuffles.}
+\label{sfig:x13-rho}
+\end{figure}
+
 \subsection{What the axis settled}
 
 Overall, of the twelve claims in the ledger we could test eight. Two were
@@ -443,7 +533,7 @@ supported at three times the donor count that produced them: composition
 not differing between patients and controls, and the immune half of the
 dysregulated-compartment prediction. Two were not supported, the cycle
 being flattened by disease, tested two ways, and the marker-signature
-complaint of \ref{note:markers}. One was supported in
+complaint of the largest prior atlas. One was supported in
 direction and is confounded in this corpus, the epithelial depletion in
 lesions. Three were not recoverable at this donor count rather than
 refuted: the severity dose, the stromal half of the compartment prediction

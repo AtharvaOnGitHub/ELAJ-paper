@@ -113,8 +113,8 @@ re-derived.
 | | state |
 |---|---|
 | **Note 1**, gene-group sizing | **done**, AW-edited, with Figures S1 and S2 and Table S2 |
-| **Notes 2 to 8** | drafted 15 Nov, register pass applied, **N2 and N3 reviewed by AW and his comments applied 16 Nov**. N4 to N8 await his read |
-| Note 9, X15 | waits on the `--only-groups` probe job |
+| **Notes 2 to 6** | **EIGHT NOTES ARE NOW SIX**, AW's 17 Nov review applied in full. N2 is "okay" in his words. See the section below |
+| Note 7, X15 | waits on the `--only-groups` probe job. It is **Note 7** now, not Note 9 |
 | **Supplementary Data D1 to D5** | **built and sent.** `Outputs/supplementary/send/` |
 | **scIB scorecard** | **complete**, no empty cell |
 | Source Data | waits on the figures being final |
@@ -257,6 +257,39 @@ already expands to the whole phrase, so "Supplementary Note~\ref{}" printed
 it twice, 16 times. And a caption said red marked the absent cycle days,
 which are zero-height bars.
 
+## AW's second supplementary review, applied 17 November
+
+**His one-line rule, and it is the heading for all of it:** *"Prose is for
+observations, tables are for numbers, figures are for intuition."*
+
+**Eight notes are six.** Files track Note numbers, so N7 became
+`N6-claims-axis.tex` and the X15 note is Note 7 when it lands.
+
+| | what changed |
+|---|---|
+| **N2** | one dead reference repointed. AW: "Note 2 looks okay" |
+| **N3** | Table S8, the null widths, removed; the figure makes the point and the caption now stands alone. **Note 6 folded in**: the label transfer is three paragraphs under *Limits of the claims axis* with ONE table (validation) and ONE figure (distance by group), the four other transfer tables gone. *Every configuration is a single run* rewritten off the prediction bands and onto what a seed replicate would bound |
+| **N4** | *Every arm on every axis* was a readout of its own table; now *The two coefficients do different things*, which states the two patterns and leaves every value in the tables. Table S13 and all prediction-band prose gone. The \elaj{} B\textsubscript{hi} UMAP figure gone |
+| **N5** | prediction bands and *what we did not ablate* gone, prose and tables. Two standalone disease UMAPs gone, since disease is now a panel. Every base-model comparison points at main-text Fig.~4 |
+| **N6** (was N7) | **Note 8 folded in** as *Do marker signatures reproduce across cohorts?* |
+
+**Every multi-panel UMAP now carries disease status**, four colourings in a
+2x2 at 180 x 208 mm, one full page each. Ten figures, the reported arm drawn
+into the exploratory tier only.
+
+**Counts**: 38 tables to 30, 41 figures to 36, 58 pages, zero overfull, zero
+undefined. Both main-text auditors still green.
+
+⚠ **Still needs AW's confirmation, carried over from the 16 Nov review:**
+the Fig S4 / Table S5 reading, where his two bullets conflicted.
+
+⚠ **One fact left the document with Note 6** and may be worth a sentence
+somewhere: `garcia_alonso_2021_b` transfers 99.9% epithelial, which
+identifies it as an epithelium-sorted deposit rather than whole tissue.
+`supp_figures.py --only transfer` still prints it.
+
+---
+
 # 2. Ready to go now. No dependencies, no compute.
 
 Ordered by what I would do first.
@@ -306,11 +339,13 @@ Ordered by what I would do first.
 
 # 4. Decisions waiting on AW
 
-1. **Is the rho = +0.721 asymmetry cut on purpose?** It left Results for the
-   Discussion, then left the Discussion when the metrics paragraph was cut, so
-   **it is now nowhere in the paper.** It was importance 9 in the inventory and
-   its job was to explain why our cycle advantage cannot be identity leaking
-   through. Restore in a clause, move to a Note, or drop deliberately.
+1. ~~**Is the rho = +0.721 asymmetry cut on purpose?**~~ **NOT A DECISION. It
+   is in the paper.** Supplementary Note 3, *Disease agreement is partly a
+   readout of donor memorisation*, states it at rho = +0.721, P = 0.019 with
+   the cycle's +0.176 beside it and Table S8 under it. AW, 17 November: *"Are
+   you sure rho is not in supplementary?"* I had claimed it was nowhere
+   without grepping. The only live question is whether it also wants a clause
+   in the main-text Discussion, which is AW's call and is not a blocker.
 2. **F2 and F3: one figure or two?** Two main-text additions take the paper to
    NMI's six-item cap exactly. One two-panel figure keeps it at five and pairs
    the mechanism with its consequence. Undecided.
@@ -338,10 +373,16 @@ Ordered by what I would do first.
    **1% of the reported figure's own value**. Family, severity, stage and
    grade have **zero** exposure on both scopes, structurally, because both
    deposits are control endometrium carrying a phase label and nothing else.
-   Every correction moves against us. **Note 3 now states this as a measured
-   bound rather than a worry**, which is option (b) taken provisionally.
-   **STILL OPEN: (a) re-score all eleven with aliases resolved in the scorer**
-   -- no retraining, the latents are dumped -- **or stay with (b).** It must
+   Every correction moves against us. **Note 3 states this as a measured
+   bound, in AW's own edited wording, down to "the error is smaller than any
+   inter-representation difference". Option (b) is TAKEN, not provisional,
+   and the paper is complete without anything further.** AW, 17 November:
+   *"Didn't you add split leak info to the supplementary note on
+   limitations? Why the pending question?"* He was right to ask; I had
+   reported the document's state without reading it.
+   **The one thing still open is whether to spend (a): re-score all eleven
+   with aliases resolved in the scorer** -- no retraining, the latents are
+   dumped. It is an upgrade, not a repair. It must
    be all eleven or none: a corrected \elaj{} against nine uncorrected
    competitors is worse than reporting none of it, and on scaled numbers our
    phase lands near Scanorama's.
@@ -364,7 +405,10 @@ frontier has been explained.
 
 - [ ] **The renumbering.** `figure4.py` becomes Figure 3. Script names match
       paper numbers, so this renames files, captions, every `\ref`, and both
-      auditors' pins.
+      auditors' pins. ⚠ **AND `supplementary/notes/`**: since 17 November the
+      supplementary points at main-text Fig.~4 in nine places, because every
+      \elaj{} B\textsubscript{hi} UMAP was removed from it in favour of the
+      main-text figure. `grep -rn 'Fig.~4' supplementary/notes/` finds them.
 - [ ] **Every panel referenced in prose.** Figures 2, 3 and 4 still have panels
       no sentence points at.
 - [x] Figure 1 panel c's clipped x-label. An assert now fails the render.

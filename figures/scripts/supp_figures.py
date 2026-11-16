@@ -544,39 +544,12 @@ def arms():
         ["arm", "epochs", "best", "train$_{nb}$", "val$_{nb}$",
          "train$_{nb}$ last", "val$_{nb}$ last", "reliance"], rows))
 
-    # ── registered predictions. READ FROM MARKDOWN, declared here. ──────
-    # a-series: axw1008/docs/paper/ABLATIONS.md, "The wave" table (bands in
-    # benchmark terms). p-series: RETRAIN_EXPECTATIONS.md lines 145-151.
-    A_PRED = {  # arm: {axis: (lo, hi)}
-        "a1_nophase": {"phase": (0.45, 0.62), "family": (0.975, 0.985), "donor": (0.48, 0.56)},
-        "a1_noecs": {"family": (0.94, 0.975), "donor": (0.48, 0.58)},
-        "a1_clsonly": {"family": (0.955, 0.978), "phase": (0.66, 0.73)},
-        "a1_nodns": {"donor": (0.50, 0.58), "family": (0.96, 0.98)},
-        "a1_randgroups": {"family": (0.93, 0.97), "phase": (0.62, 0.72)},
-    }
-    P_PRED = {
-        "p1_dab7_kl1": {"family": (0.965, 1.0), "phase": (0.62, 1.0), "donor": (0.55, 0.65)},
-        "p1_dab168_kl1": {"family": (0.960, 1.0), "phase": (0.58, 0.65), "donor": (0.48, 0.58)},
-        "p1_dab7_kl30": {"family": (0.955, 0.970), "phase": (0.55, 0.62), "donor": (0.42, 0.50)},
-        "p1_dab336_kl30": {"family": (0.94, 0.96), "phase": (0.0, 0.55), "donor": (0.0, 0.40)},
-        "p1_dab168_kl30": {"family": (0.955, 0.967), "phase": (0.55, 0.60), "donor": (0.38, 0.44)},
-    }
-    AXK = {"phase": ("cross-donor", "menstrual phase"), "family": ("cross-donor", "cell family"),
-           "donor": ("knn-agreement", "patient_id")}
-    for tag, PRED in (("ablation_predictions", A_PRED), ("arms_predictions", P_PRED)):
-        rows, hits, n = [], 0, 0
-        for arm, bands in PRED.items():
-            for ax_, (lo, hi) in bands.items():
-                v = float(D[arm][AXK[ax_]])
-                hit = lo <= v <= hi
-                hits += hit; n += 1
-                band = (f"$\\geq$ {lo:.3f}" if hi >= 1.0 else
-                        f"$\\leq$ {hi:.2f}" if lo == 0.0 else f"{lo:.3f} to {hi:.3f}")
-                rows.append([ARM_TEX[arm], {"phase": "cycle", "family": "family",
-                                            "donor": "donor"}[ax_],
-                             band, num(v), "landed" if hit else "missed"])
-        tex(tag, tabular("@{}llrrl@{}", ["arm", "axis", "registered band", "observed", ""], rows))
-        print(f"       {tag}: {hits} of {n} bands landed")
+    # ── THE REGISTERED PREDICTION BANDS ARE GONE. ───────────────────────
+    # AW, 17 November: "Remove prediction bands. That was internal." They
+    # were an honest record of what we expected before each run, and they
+    # are a record of our own process rather than a property of the models,
+    # which is not what a supplementary note is for. Both band tables and
+    # every mention of them left Notes 4 and 5 in the same pass.
 
     # ── loss curves ──────────────────────────────────────────────────────
     for series, arms_, cmap, fname in (("p", P_ARMS, None, "training_loss_pseries"),
@@ -760,14 +733,21 @@ def umap_panel(arm: str, colouring: str, cite=False):
 
 
 def umap_panels():
-    """One figure per model: cell family, study, menstrual phase.
+    """One figure per model: cell family, study, menstrual phase, disease.
 
     AW, 16 November: "For each model's UMAPs I want to show the following.
-    So let's make panelled figures by model." Three colourings of ONE
-    embedding is the comparison a reader can actually make -- nothing moves
-    between panels except colour -- and it replaces three separate figures
-    per model with one. The three are chosen because they are the paper's
-    three axes: what a cell is, where it came from, and when in the cycle.
+    So let's make panelled figures by model", and on 17 November, "Add
+    disease status UMAP to all multi-panel UMAPs". Four colourings of ONE
+    embedding is a comparison a reader can actually make, because nothing
+    moves between the panels except the colour. The four are the paper's
+    four questions of a cell: what it is, where it came from, when in the
+    cycle it was taken, and whether that person has the disease.
+
+    THE REPORTED ARM IS DRAWN AND NOT CITED. AW, 17 November: "Remove UMAPs
+    of ELAJ_B_hi from supplementary. All its UMAPs are available in the main
+    prose. Reference those." Main-text Fig. 4 is that latent under nine
+    colourings, these four among them, so a supplementary copy is the same
+    picture twice. It still lands in the exploratory tier.
     """
     idx = sample_index()
     m_all = meta().iloc[idx].reset_index(drop=True)
@@ -777,6 +757,7 @@ def umap_panels():
         ("study", m_all.study, studies, STUDY_C, 3),
         ("menstrual phase", m_all["menstrual phase"].map(PHASE_COARSE),
          PHASE_ORDER, PHASE_C, 2),
+        ("disease status", m_all.disease_status, DIS_ORDER, DIS_C, 2),
     ]
     rng = np.random.default_rng(1)
     perm = rng.permutation(len(m_all))
@@ -787,8 +768,13 @@ def umap_panels():
             continue
         xy = np.load(cache)
         assert len(xy) == len(m_all), f"{arm}: {len(xy)} points, {len(m_all)} cells"
-        fig, axes = plt.subplots(1, 3, figsize=(180 * MM, 78 * MM))
-        for ax, (title, vals, order, cols, ncol) in zip(axes, SPEC):
+        # 180 x 208 mm so the float FILLS its page. At \textwidth (161 mm
+        # in this document) that renders about 186 mm tall, which leaves
+        # room for a three-line caption inside a 230 mm text height. The
+        # first 2x2 draft was 170 mm tall and left a third of the page
+        # empty under a full-page float, which is the worst of both.
+        fig, axes = plt.subplots(2, 2, figsize=(180 * MM, 208 * MM))
+        for ax, (title, vals, order, cols, ncol) in zip(axes.ravel(), SPEC):
             cmap = dict(zip(order, cols))
             grey = vals.isna().values
             ax.scatter(xy[grey, 0], xy[grey, 1], s=.18, c=GREY_PT, lw=0, rasterized=True)
@@ -809,19 +795,18 @@ def umap_panels():
             ax.legend(handles=handles, loc="upper center", bbox_to_anchor=(.5, -.02),
                       ncol=ncol, fontsize=4.6, handletextpad=.25,
                       columnspacing=.8, borderaxespad=0)
-        fig.suptitle(ARM_LABEL[arm], fontsize=FS_TITLE, fontweight="bold",
-                     x=.012, ha="left", y=.995)
-        fig.subplots_adjust(bottom=.30, top=.90, wspace=.06)
-        save(fig, f"umap_panel_{arm}", cite=True)
+        fig.suptitle(ARM_LABEL[arm], fontsize=FS_TITLE + 1, fontweight="bold",
+                     x=.012, ha="left", y=.992)
+        fig.subplots_adjust(bottom=.05, top=.95, hspace=.24, wspace=.06)
+        save(fig, f"umap_panel_{arm}", cite=(arm != ARM))
 
 
 def umaps(cite_only=False):
-    # THE PANELS REPLACED THESE. umap_panels() ships one figure per model
-    # carrying family, study and phase together, so the single-colouring
-    # versions stay in the exploratory tier only. Disease keeps a cited
-    # pair, because the random-grouping ablation is read against the base
-    # on that colouring and it is not one of the panel's three.
-    cited = {("a1_randgroups", "disease"), ("p1_dab168_kl1", "disease")}
+    # THE PANELS REPLACED THESE, AND NOW ALL FOUR OF THEM. umap_panels()
+    # ships one figure per model carrying family, study, phase AND disease
+    # together, so no single-colouring version is cited anywhere and these
+    # exist for the exploratory tier alone.
+    cited: set[tuple[str, str]] = set()
     for arm in ALL_ARMS:
         if not umap_cache(arm).exists():
             print(f"  ! no UMAP cache for {arm}")
@@ -862,49 +847,31 @@ def transfer():
     tex("transfer_validation", tabular("@{}lrrr@{}",
         ["test", "accuracy", "balanced", "majority baseline"], rows, [2]))
 
-    # rejection rules, recomputed on the transferred cells
-    rows = []
-    for cut in (1.5, 2.0, 2.5, 3.0):
-        rows.append([f"{cut:.1f}",
-                     f"{(t.mean_distance[gran] > cut).mean() * 100:.1f}\\%",
-                     f"{(t.mean_distance[li_imm] > cut).mean() * 100:.1f}\\%",
-                     f"{(t.mean_distance[tr & ~li] > cut).mean() * 100:.1f}\\%"])
-    tex("transfer_rejection", tabular("@{}rrrr@{}",
-        ["distance cut", "granulosa rejected", r"\texttt{li\_2025} immune lost",
-         "other transferred cells lost"], rows))
-    # vote-based rule
-    rows = []
-    for cut in (1.0, 0.9, 0.8, 0.6):
-        rows.append([f"$<$ {cut:.1f}",
-                     f"{(t.vote_fraction[gran] < cut).mean() * 100:.1f}\\%",
-                     f"{(t.vote_fraction[li_imm] < cut).mean() * 100:.1f}\\%",
-                     f"{(t.vote_fraction[tr & ~li] < cut).mean() * 100:.1f}\\%"])
-    tex("transfer_vote_rule", tabular("@{}rrrr@{}",
-        ["vote fraction", "granulosa rejected", r"\texttt{li\_2025} immune lost",
-         "other transferred cells lost"], rows))
-
-    # neighbourhood statistics
+    # ── THE REJECTION-RULE AND NEIGHBOURHOOD TABLES ARE GONE. ───────────
+    # AW, 17 November, folding this note into Note 3: "Keep one figure and
+    # one table that is relevant to the limitation, get rid of the rest."
+    # The limitation is that a cell type absent from the reference is
+    # absorbed silently, so the table that stays is the validation (it
+    # carries both the accuracy and the granulosa failure) and the figure
+    # that stays is the distance distribution (it shows why no threshold
+    # rescues it). The numbers the folded paragraph quotes are printed
+    # here instead, so each one still has a derivation behind it.
     tt = t[tr]
-    rows = [["cells labelled by transfer", intc(tr.sum())],
-            ["median vote fraction", f"{tt.vote_fraction.median():.3f}"],
-            ["vote unanimous across all 25 neighbours", f"{(tt.vote_fraction == 1).mean() * 100:.1f}\\%"],
-            ["vote fraction below 0.6", f"{(tt.vote_fraction < .6).mean() * 100:.2f}\\%"],
-            ["neighbourhoods drawing on more than one donor", f"{(tt.n_donors_in_neighbourhood > 1).mean() * 100:.1f}\\%"],
-            ["neighbourhoods drawing on both annotated studies", f"{(tt.n_studies_in_neighbourhood > 1).mean() * 100:.1f}\\%"],
-            ["mean distance to the 25th neighbour, granulosa", f"{t.mean_distance[gran].mean():.3f}"],
-            [r"mean distance to the 25th neighbour, \texttt{li\_2025} immune", f"{t.mean_distance[li_imm].mean():.3f}"],
-            ["mean distance to the 25th neighbour, all other transferred", f"{t.mean_distance[tr & ~li].mean():.3f}"]]
-    tex("transfer_neighbourhood", tabular("@{}lr@{}", ["quantity", "value"], rows))
-
-    # per-study transferred composition
     comp = (pd.crosstab(m.study[tr], t.cell_family_transferred[tr], normalize="index")
             .reindex(columns=FAMS))
-    rows = []
-    for s in comp.index:
-        n = int(tr[m.study.values == s].sum())
-        rows.append([f"\\texttt{{{esc(s)}}}", intc(n)] + [f"{comp.loc[s, f] * 100:.1f}" for f in FAMS])
-    tex("transfer_composition", tabular("@{}lrrrrr@{}",
-        ["study", "cells transferred"] + [f"{f} \\%" for f in FAMS], rows))
+    print("       transfer, quoted in Note 3:")
+    print(f"         transferred cells                     {int(tr.sum()):,}")
+    print(f"         unanimous vote across 25 neighbours   {(tt.vote_fraction == 1).mean() * 100:.1f}%")
+    print(f"         mean distance, granulosa              {t.mean_distance[gran].mean():.3f}")
+    print(f"         mean distance, li_2025 immune         {t.mean_distance[li_imm].mean():.3f}")
+    print(f"         mean distance, other transferred      {t.mean_distance[tr & ~li].mean():.3f}")
+    for lab, mask in (("granulosa rejected", gran), ("li_2025 immune lost", li_imm),
+                      ("other transferred lost", tr & ~li)):
+        print(f"         unanimity rule, {lab:<22} {(t.vote_fraction[mask] < 1.0).mean() * 100:.1f}%")
+    print(f"         garcia_alonso_2021_b epithelial       "
+          f"{comp.loc['garcia_alonso_2021_b', 'epithelial'] * 100:.1f}%")
+    print(f"         li_2025 immune / stromal              "
+          f"{comp.loc['li_2025', 'immune'] * 100:.1f}% / {comp.loc['li_2025', 'stromal'] * 100:.1f}%")
 
     # figures
     fig, ax = fig_ax(88, 55)
@@ -927,7 +894,7 @@ def transfer():
                 color=c, label=lab)
     ax.set_xlabel("vote fraction of the winning family among 25 neighbours")
     ax.set_ylabel("density"); ax.set_yscale("log"); ax.legend(loc="upper left")
-    save(fig, "transfer_vote_by_group", cite=True)
+    save(fig, "transfer_vote_by_group")
 
     fig, ax = fig_ax(88, 55)
     order = comp.loc[comp.index.isin(m.study.unique())].index
@@ -940,7 +907,7 @@ def transfer():
     ax.set_yticks(range(len(order))); ax.set_yticklabels([STUDY_NAME[s] for s in order])
     ax.invert_yaxis(); ax.set_xlim(0, 1); ax.set_xlabel("share of transferred cells")
     ax.legend(loc="lower right", ncol=4, bbox_to_anchor=(1, 1.0))
-    save(fig, "transfer_composition_by_study", cite=True)
+    save(fig, "transfer_composition_by_study")
 
     fig, ax = fig_ax(88, 50)
     frac = pd.Series({s: (tt.n_studies_in_neighbourhood[m.study[tr].values == s] > 1).mean()
@@ -1361,10 +1328,10 @@ def corpus():
               "EndometriosisGrade": "grade", "severity (study vocabularies)": "severity (study vocabularies)"}
     nw["label"] = nw.label.map(pretty).fillna(nw.label)
     nw = nw.sort_values(["scope", "donors"])
-    tex("null_widths", tabular("@{}llrrrr@{}",
-        ["scope", "label", "donors", "null$_{95}$", "observed", "$P$"],
-        [[r.scope, r.label, str(int(r.donors)), num(r.null95, 2), num(r.value), num(r.p, 3)]
-         for _, r in nw.iterrows()]))
+    # NO TABLE HERE. AW, 17 November: "Remove table S8." The null widths
+    # were a table and a figure of the same numbers, and the figure is the
+    # one that carries the point, which is the shape of the narrowing. `nw`
+    # is still built because the figure below is drawn from it.
     # ONE LINE PER LABEL, ACROSS ITS SCOPES. AW, 16 November: "Can figure 9
     # have held-out, whole corpus, and whole corpus validation connected by
     # a line for each variable? It would perform the job a visualisation is

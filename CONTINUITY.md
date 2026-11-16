@@ -1194,3 +1194,76 @@ beside the picture, and colour always means something.
 - **Dümpelmann supplies its own phase column.** No cycle-day-to-phase
   conversion happens anywhere in this project.
 
+
+## 17 November: AW's second supplementary review, and two things I claimed without looking
+
+**THE ONE-LINE RULE, AW's own words, and it settles a whole class of
+argument:**
+
+> Prose is for observations, tables are for numbers, figures are for
+> intuition.
+
+That is what was wrong with N4's *Every arm on every axis*, which recited
+eighteen values the table beside it already carried. Rewritten, the prose
+names the two patterns and the tables keep every number. The subsection
+title went too: *Every arm on every axis* is a readout's name, and *The two
+coefficients do different things* is an observation's.
+
+### Two claims I made about our own document without opening it
+
+**1. I listed the leak as an open question when Note 3 already answers it.**
+AW: *"Didn't you add split leak info to the supplementary note on
+limitations? Why the pending question?"* He is right. N3 carries the
+measured bound, in his own edited wording, down to "the error is smaller
+than any inter-representation difference". Option (b) is taken. The only
+thing still open is whether to spend a scoring pass on (a), and saying "the
+leak is pending" instead of "the re-score is optional" misreported the
+document.
+
+**2. I said the rho = +0.721 asymmetry is nowhere in the paper.** It has its
+own paragraph in N3, *Disease agreement is partly a readout of donor
+memorisation*, with Table S8 beside it. AW: *"Are you sure rho is not in
+supplementary?"*
+
+**The failure is one failure, and it is the Wikipedia failure pointed
+inward.** I have a rule about checking the code rather than a summary of the
+code. The same rule applies to our own paper: **before reporting what the
+document says, grep the document.** Both answers were one `grep` away and
+both were in a file I had edited myself the day before.
+
+### Four more rules from this review
+
+1. **Internal process material is not a supplementary note.** The
+   registered prediction bands and *what we did not ablate* were an honest
+   record of what we expected before each run. AW: *"That was internal."* A
+   note reports properties of the models, not of our planning. Where a band
+   carried a real finding, the finding stays and the band goes: removing
+   the elastic term IMPROVED cell family, which a term named for cell
+   similarity should not allow.
+2. **Never draw in the supplementary what the main text already shows.**
+   Every \elaj\,B\textsubscript{hi} UMAP left: main-text Fig.~4 is that
+   latent under nine colourings, so the supplementary copies were the same
+   picture twice. Everything that compared against the base now points at
+   Fig.~4. **That makes the supplementary depend on the main text's figure
+   NUMBERS**, so the pending Figure 4 to Figure 3 renumbering now has to
+   sweep `supplementary/notes/` as well.
+3. **A multi-panel UMAP carries disease status.** AW's instruction, applied
+   to all ten. They are now 2x2 at 180 x 208 mm, one full page each, which
+   is also what killed the two standalone disease figures.
+4. **A note that exists to serve another note is not a note.** Eight became
+   six. The label transfer was a whole note whose argument is a limitation,
+   so it is now three paragraphs plus one table and one figure inside N3's
+   *Limits of the claims axis*; the marker test was a whole note answering
+   one ledger row, so it is a subsection of the claims note. AW's criterion
+   for what survives a fold: **keep the figure and the table that serve the
+   limitation, drop the rest.** Four transfer tables became one.
+
+### A number I got wrong inside the fix for a readout
+
+Rewriting N4 I wrote that raising the adversary from 7 to 168 leaves the
+cycle and cell family where they are. **True at $w_{\mathrm{kl}} = 1$ only.**
+At 30 the same move takes the cycle 0.6791 to 0.6033 and family 0.9841 to
+0.9565. Caught by re-reading the generated table, which is the only reason
+to re-read it. **Prose that generalises across a grid has to be checked
+against every cell of the grid, not against the column the argument lives
+in.**

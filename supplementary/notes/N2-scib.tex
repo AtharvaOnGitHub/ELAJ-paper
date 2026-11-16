@@ -24,8 +24,8 @@ instruments built for this corpus, donor recovery and cross-donor agreement
 (Methods, \emph{Cross-donor agreement}). The field's standard instrument is
 the scIB battery \citep{luecken2022benchmarking}, ten metrics in two halves,
 and the atlas-building review recommends it for choosing an integration
-\citep{hrovatin2025atlases}. We therefore scored every representation in
-Table~1 on all ten. In this note we report the full scorecard, identify
+\citep{hrovatin2025atlases}. We therefore scored every representation reported 
+in this paper on all ten. In this note we report the full scorecard, identify
 which of the ten separate these representations, and explain why the ones
 that do are ranking on something other than the quantity the paper is
 about. Throughout, the claim is about this corpus. scIB was built to rank
@@ -78,8 +78,7 @@ explained by study is zero before and after.}
 
 \subsection{What the ten metrics ask}
 
-Before the numbers, what each metric is for. The battery splits in two.
-The five batch metrics ask whether the declared batch, here the study, has
+The five batch metrics ask whether the declared batch, study identity, has
 stopped being visible. iLISI counts how many studies a cell's
 neighbourhood draws on. kBET asks the stricter version of the same
 question, whether the local mix of studies matches the global one.
@@ -116,7 +115,7 @@ studies for iLISI, where many is best, and labels for cLISI, where one is
 best. A median of that kind can only move if neighbourhoods differ in
 their composition from one representation to the next.
 
-They do not, and the reason is the corpus rather than the code. Our
+They do not, and the reason is the corpus. Our
 labelled cells come from two studies at a three-to-one imbalance,
 132{,}259 against 44{,}544, and in every representation the typical
 labelled neighbourhood draws on one study and one family. One study per
@@ -219,8 +218,8 @@ These contradictory numbers are explained by the mechanism. In \elaj, each
 family occupies a connected region and a cell's neighbours are its own family, 
 but the region does not break into discrete clusters at any resolution the 
 sweep visits. That is because, inside each family the latent is organised along 
-the menstrual cycle (\ref{note:frontier}, 
-Fig.~\ref{sfig:umap-168-1}). The clustering metric is built to reward a 
+the menstrual cycle (main-text Fig.~4d, 
+\ref{note:frontier}). The clustering metric is built to reward a 
 latent that falls into pieces coinciding with the label, so a latent that is 
 continuous within the label scores low on it by construction. This paper being 
 about the cycle is bound to perform worse on such a metric.
