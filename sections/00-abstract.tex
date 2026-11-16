@@ -1,71 +1,64 @@
 % =====================================================================
-% ABSTRACT — NMI's own spec for an Article, verbatim from Content Types:
-% "Abstract - up to 150 words, unreferenced."
+% ABSTRACT. Third rewrite, 17 November 2026.
 %
-% REWRITTEN TWICE on 17 November 2026. The first rewrite led on the
-% batch-effect confound and AW threw it out: "batch effects are
-% everywhere. We cannot lead with batch effects being the reason to build
-% a disease atlas. That is like saying we are constructing a building so
-% concrete columns are used." He is right, and reading how disease
-% atlases actually open shows how far off it was.
+% AW's direction for this one: "What if we were to lead with the AI side
+% instead of scale. Endometriosis is still the starting point. We add
+% scale and some really innovative architecture. E3 is good but needs to
+% be stated in a more understandable tone leading with the result. E4 is
+% also a catchy result for a disease atlas." And: "'Claims no contributing
+% cohort could test alone are settled' lines like these are not headline
+% results."
 %
-% HOW DISEASE-ATLAS ABSTRACTS POSITION THEMSELVES. Read in full:
+% SO THE ORDER IS: endometriosis, then the architecture, then the scale,
+% then what the atlas found. Scale is no longer the second beat; it
+% arrives after the model has been described, as something the approach
+% made affordable rather than as the claim itself.
 %
-%   HECA (Mareckova 2024, Nat Genet, our own tissue and the closest
-%   comparator) opens "The complex and dynamic cellular composition of
-%   the human endometrium remains poorly understood. Previous endometrial
-%   single-cell atlases profiled FEW DONORS and lacked consensus in
-%   defining cell types." Then the naming sentence with its scale, then
-%   BIOLOGICAL FINDINGS (stromal-epithelial coordination via TGF-beta;
-%   GWAS integration pinpointing decidualised stromal cells and
-%   macrophages), then the resource.
+% E3 NOW LEADS WITH THE RESULT AND NAMES THE GENES. The previous draft
+% opened on the method ("Decoding that direction returns...") and said
+% "four of its fifteen leading genes", which asks the reader to hold an
+% abstraction. IBDex names its genes outright, DMBT1, DUOXA2, OLFM4,
+% NOS2, CXCL1, and HLCA names SPP1+ macrophages, so naming them is in
+% register for a disease atlas.
 %
-%   HLCA (Sikkema 2023, Nat Med) leads with scale, 49 datasets and 2.4
-%   million cells from 486 individuals, then the biology it enabled
-%   (SPP1+ profibrotic macrophages shared across COVID-19, fibrosis and
-%   carcinoma), then availability.
+% E4 IS PROMOTED to its own sentence on AW's reading that four genes no
+% prior endometriosis report contains is catchy for an atlas. It is the
+% one claim here that is a discovery rather than a confirmation.
 %
-%   scIBD (Nie 2023, Nat Comput Sci) is one sentence of what it enables:
-%   rare cell types, and the commonalities and differences between UC and
-%   Crohn's.
+% THE META-SENTENCE IS GONE. "Claims no contributing cohort could test
+% alone are settled" describes an activity, not a finding. What replaced
+% it is the two findings themselves, with their donor counts.
 %
-% NOT ONE OF THEM MENTIONS BATCH CORRECTION OR INTEGRATION METHOD. It is
-% plumbing. They lead on biology poorly understood and on DONOR COUNT,
-% which is the axis HECA names as the weakness of what came before it and
-% the axis we beat it on four times over.
-%
-% WHICH RESULTS LEAD, from RESULTS_INVENTORY.md rather than memory. Six
-% score 10 on importance: A1, A2, B1, C3, E2, E3. E3 is the only result
-% scoring 9+ on BOTH significance and importance and the first draft of
-% this abstract omitted it entirely. It is here now and it is the brag:
-% four of fifteen genes replicating an external cohort at 4e-7 with none
-% at the other end.
-%
-% Numbers belong here; see the six NMI abstracts in NMI_register, which
-% are full of them. Measured lengths there, excluding the "Abstract"
-% prefix and subject terms: 147, 189, 190, 155, 176, 203; median 183.
-% This is 168. The 150 in Content Types is the instruction and the gap is
-% recorded so trimming is a decision. To reach ~152, cut "and four have
-% no prior endometriosis report" and shorten the closing clause.
+% LENGTH. 236 words against NMI's 150 spec; the six NMI abstracts measure
+% 147 to 203, median 183. AW, 17 November: "Feel free to go over, I can
+% edit", and the standing rule is to seed complete rather than short. The
+% cheapest cuts, in order: the frontier sentence (25 words, but it is
+% result B1 at importance 10), the eight gene names (12 words), and the
+% closing composition clause.
 % =====================================================================
 
 \begin{abstract}
 \noindent
-The cellular biology of endometriosis has been studied one surgical cohort
-at a time, and the field's reference atlas of the endometrium spans 63
-donors. Here we present \elaj, a single-cell disease atlas of endometriosis
-built from 1{,}577{,}728 cells and 254 donors across eleven studies. A
-1{,}883{,}986-parameter conditional variational autoencoder reads genes as
-44 pathway groups and retains more menstrual-cycle signal at lower donor
-identity than nine competing representations, foundation models over fifty
-times its size among them. Within immune cells the atlas resolves a disease
-direction that holds on donors it never saw, at an AUC of 0.708. Decoding
-that direction returns macrophage-led inflammation: four of its fifteen
-leading genes replicate an external cohort's upregulated list at
-\textit{P}~=~4~\texttimes~10\textsuperscript{--7}, none at the control end,
-and four have no prior endometriosis report. Claims no contributing cohort
-could test alone are settled. Cell composition does not differ between
-patients and controls at three times the donor count that first reported
-it, cycle variation is not abolished by disease, and severity among
-patients is recovered by neither readout.
+Endometriosis is diagnosed by surgery, so its biology has been studied one
+small cohort at a time, and the field's reference atlas of the endometrium
+spans 63 donors. Here we present \elaj, a single-cell disease atlas of
+endometriosis in which biological structure built into the model replaces
+pretraining scale. A conditional variational autoencoder reads each cell as
+44 pathway groups rather than as fifteen thousand independent genes, and
+returns sixteen interpretable dimensions. Two coefficients trace a frontier
+along which donor identity is traded against retained biology, so every
+result is reported from a named position on it. At 1{,}883{,}986 parameters
+\elaj\ holds more menstrual-cycle signal at lower donor identity than nine
+competing representations, foundation models over fifty times its size among
+them. The atlas is built from 1{,}577{,}728 cells and 254 donors across
+eleven studies, four times the donors of that reference atlas. Inside immune
+cells it separates patients from controls on donors it never saw, at an AUC
+of 0.708, and names the genes that carry the separation. Four of them,
+SERPINB2, MMP27, LRRC15 and INHBA, were independently reported as raised in
+patients by a cohort outside this corpus,
+\textit{P}~=~4~\texttimes~10\textsuperscript{--7}; none of the genes at the
+control end was. Four others, SIGLEC7, ADAMDEC1, ALPK2 and KCNH1, appear in
+no prior endometriosis report. Across 194 donors cell composition does not
+differ between patients and controls, and severity among patients is
+recovered by neither the latent nor a cell count.
 \end{abstract}
