@@ -105,6 +105,15 @@ scorecard has no empty cell.
 # ⓪ PENDING, 17 November evening — read this first
 
 ## ⚠ The X12 gene ranking was wrong, and the paper still quotes it
+
+**LATER, 17 Nov: BOTH rankings are invalid, old and "corrected".**
+decode_sanity (job 62036623) decoded labelled lymphoid and myeloid cells and
+got identity INVERTED at epoch 4 and wrong at epoch 9: the script fed the
+decoder all-zero covariates, and the decoder's per-cell gain (which scales
+the whole profile) depends on them. `decode_real.py` redoes it properly
+(real cells, real covariates, the model's decode_once), stops unless the
+latent matches the dump and lymphoid/myeloid markers decode correctly, then
+writes the six rankings. NOTHING gene-level is usable until it reports.
 `decode_dx_61604807` decoded the epoch-4 latent with the **epoch-9** decoder
 (the wrapper took the newest checkpoint file). Corrected 17 Nov: the
 selected-epoch ranking correlates **-0.118** with the old one and shares
