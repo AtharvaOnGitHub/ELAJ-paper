@@ -38,6 +38,7 @@ def main() -> None:
         ("Value encoding", "one learned direction per gene, scaled by its count"),
         ("Token width $d$", f(M["d_token"])),
         ("Genes, groups", f"15{{,}}496 genes in {M['n_groups']} groups"),
+        ("Measured genes shown to the encoder", f"{T['gene_mask_target']:,} per cell, in training".replace(",", "{,}", 1)),
         ("Gene encoder", None),
         ("Transformer layers per group", f(M["group_encoder"]["n_layers"])),
         ("Attention heads", f(M["group_encoder"]["n_heads"])),
@@ -55,7 +56,12 @@ def main() -> None:
         ("Decoder", None),
         ("Width $d_{\\mathrm{dec}}$", f(M["d_dec"])),
         ("Tissue, platform, study embeddings", f"{M['d_tissue']}, {M['d_platform']}, {M['d_study']} dimensions"),
-        ("Covariates zeroed per step", f"probability {f(M['drain']['blank_covariates_p'])}"),
+        # THE VALUE IN FORCE, NOT THE STORED ONE. run_config records 0.25 under
+        # model.drain, but EndoFoundationModel applies it only when the drain is
+        # enabled, and it was not: train_blanked_covariates is 0.0 every epoch.
+        ("Disease embedding", "none" if M["d_disease"] == 0 else f(M["d_disease"])),
+        ("Covariates zeroed per step", f"probability {f(M['drain']['blank_covariates_p'])}"
+         if M["drain"]["enabled"] else "never"),
         ("Objective", None),
         ("Reconstruction weight $w_{\\mathrm{nb}}$", f(M["loss"]["w_nb"])),
         ("KL weight $w_{\\mathrm{kl}}$", f(M["loss"]["w_kl_gauss"])),

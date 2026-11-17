@@ -8,6 +8,7 @@ Setting & Value \\
 \quad Value encoding & one learned direction per gene, scaled by its count \\
 \quad Token width $d$ & 32 \\
 \quad Genes, groups & 15{,}496 genes in 44 groups \\
+\quad Measured genes shown to the encoder & 12{,}500 per cell, in training \\
 \addlinespace
 \multicolumn{2}{@{}l}{\textit{Gene encoder}} \\
 \quad Transformer layers per group & 2 \\
@@ -29,7 +30,8 @@ Setting & Value \\
 \multicolumn{2}{@{}l}{\textit{Decoder}} \\
 \quad Width $d_{\mathrm{dec}}$ & 64 \\
 \quad Tissue, platform, study embeddings & 16, 16, 16 dimensions \\
-\quad Covariates zeroed per step & probability 0.25 \\
+\quad Disease embedding & none \\
+\quad Covariates zeroed per step & never \\
 \addlinespace
 \multicolumn{2}{@{}l}{\textit{Objective}} \\
 \quad Reconstruction weight $w_{\mathrm{nb}}$ & 1 \\
