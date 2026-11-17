@@ -380,6 +380,10 @@ def i6(fig, rect):
     a2.get_xticklabels()[0].set_ha("left"); a2.get_xticklabels()[1].set_ha("right")
     a2.tick_params(length=2, pad=2)
     a2.set_ylabel("share of the\nstudies' genes", fontsize=FS_BODY, labelpad=2)
-    a2.text(n * .30, .21, "if spread evenly", fontsize=FS_SMALL, color=SOFT, rotation=10)
+    # the label follows the diagonal's on-screen angle, whatever the panel's shape
+    (x0p, y0p), (x1p, y1p) = a2.transData.transform([(0, 0), (n, 1)])
+    ang = np.degrees(np.arctan2(y1p - y0p, x1p - x0p))
+    a2.text(n * .34, .26, "if spread evenly", fontsize=FS_SMALL, color=SOFT,
+            rotation=ang, rotation_mode="anchor", ha="left", va="top")
     clean(a2)
     return a1, a2
