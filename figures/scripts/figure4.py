@@ -1,5 +1,13 @@
 """Figure 4 — this is what endometriosis looks like, in nine UMAPs.
 
+RESTRUCTURED 17 NOVEMBER, AW: "Remove 4a. Move b-f up by one. New 4f would
+be the phase axis UMAP from C1." Cell family left (Figure 1d already shows
+it) and the X16 cycle axis came in at f, beside cycle day and progesterone,
+so the three continuous readings of the cycle sit in one row: two the clinic
+measured, one the latent holds. The axis is fitted OFF duempelmann by
+supp_figures._cycle_setup, imported so the panel and the X16 numbers come
+from the same discriminant.
+
     /Users/atharvawaghmare/miniconda3/envs/elaj/bin/python figures/scripts/figure4.py
 
 ONE embedding, nine colourings. Nothing moves between panels except colour,
@@ -89,13 +97,34 @@ LABEL = {"Endometriosis_stage": {"0.0": "control", "1.0": "rASRM I",
                                  "2.0": "rASRM II", "3.0": "rASRM III",
                                  "4.0": "rASRM IV"}}
 
+# THE CYCLE AXIS, panel f. One linear discriminant over the 16-d latent,
+# fitted on phase labels outside duempelmann_2026 and oriented along rising
+# cycle day on duempelmann's donors, exactly as x16() orients it.
+from scipy.stats import spearmanr                                   # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from supp_figures import _cycle_setup                               # noqa: E402
+Zs, _meta_full, W, _, _ = _cycle_setup()
+proj = Zs @ W[:, 0]
+te = ((_meta_full.study == "duempelmann_2026") & _meta_full.CycleDay.notna()).to_numpy()
+dn = (pd.DataFrame({"p": proj[te], "d": _meta_full.CycleDay.to_numpy()[te],
+                    "pid": _meta_full.patient_id.to_numpy()[te]})
+      .groupby("pid").median())
+sgn = np.sign(spearmanr(dn.p, dn.d)[0]) or 1.0
+print(f"cycle axis vs day over {len(dn)} donors: rho={spearmanr(sgn*dn.p, dn.d)[0]:+.4f}"
+      "  (x16_cycle_axis.csv holds 0.7565)")
+# shown on phase-labelled cells only, as C1 drew it: the axis is a reading
+# of the cycle, and on cells with no cycle annotation it has nothing to say
+ax_score = (sgn * proj)[idx]
+m["cycle axis"] = np.where(m["menstrual phase"].notna(), ax_score, np.nan)
+del Zs, _meta_full
+
 PANELS = [
-    ("cell family", "cell family", "cat", None),
     ("study", "study", "cat", None),
     ("tissue", "tissue", "cat", None),
     ("menstrual phase", "phase group", "cat", (PHASE_ORDER, PHASE_COL)),
     ("cycle day", "CycleDay", "seq", None),
     ("serum progesterone", "ProgesteroneSerum", "seq", None),
+    ("cycle axis", "cycle axis", "axis", None),
     ("disease status", "disease_status", "cat", None),
     ("severity", "severity", "cat", (SEV_ORDER, SEV_COL)),
     ("surgical stage", "Endometriosis_stage", "cat", None),
@@ -134,6 +163,18 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
         ax.legend(handles=handles, fontsize=4.0, frameon=False, ncol=ncol,
                   loc="lower left", handletextpad=.3, columnspacing=.6,
                   borderpad=.1, labelspacing=.25)
+    elif kind == "axis":
+        # unitless, so no numbers on the bar: early and late, clipped to the
+        # 2nd-98th percentile so a few extreme cells do not flatten the rest
+        x = v.to_numpy(dtype=float)
+        keep = SHUF[ok[SHUF]]
+        lo, hi = np.percentile(x[keep], [2, 98])
+        sc = ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=x[keep], cmap="viridis",
+                        vmin=lo, vmax=hi, lw=0, alpha=.45, rasterized=True, zorder=2)
+        cb = fig.colorbar(sc, ax=ax, fraction=.035, pad=.01, ticks=[lo, hi])
+        cb.ax.set_yticklabels(["early", "late"])
+        cb.ax.tick_params(labelsize=4.2, length=1.5, color=SOFT)
+        cb.outline.set_visible(False)
     else:
         # viridis for both continuous panels, perceptually uniform and the
         # same scale shape, so cycle day and progesterone are comparable by

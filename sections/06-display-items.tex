@@ -172,22 +172,23 @@ produced.}
 
 \subsection*{Figure 4 --- What endometriosis looks like, in nine UMAPs}
 \note{NINE PANELS over the whole corpus, one embedding, nine colourings:
-\textbf{a} cell family, \textbf{b} study, \textbf{c} tissue, \textbf{d}
-menstrual phase, \textbf{e} cycle day, \textbf{f} serum progesterone,
-\textbf{g} disease status, \textbf{h} merged severity, \textbf{i} surgical
-stage. Grade was dropped on AW's ruling of 6 November: it is a coarsening of
-the same rASRM scale, so showing both spent a panel twice, and the merge is
-what Results \texttt{[4]} actually tests. It also covers more of the map, 41\%
-of cells against grade's 30\%. The merged column is built by importing the
-project's own harmoniser rather than retyping the mapping, so the figure and
-the numbers cannot drift apart. Each
-title carries the share of cells the label covers, so a reader sees coverage
-and structure together.
+\textbf{a} study, \textbf{b} tissue, \textbf{c} menstrual phase,
+\textbf{d} cycle day, \textbf{e} serum progesterone, \textbf{f} the X16
+cycle axis, \textbf{g} disease status, \textbf{h} merged severity,
+\textbf{i} surgical stage.
+\\RESTRUCTURED 17 NOVEMBER on AW's ruling: cell family removed (Figure 1d
+already shows it), the old b--f moved up one, and the cycle axis added at
+\textbf{f}, so the second row is the cycle read three ways, two measured by
+the clinic and one held by the latent. The axis is the X16 discriminant,
+imported from \texttt{supp\_figures.\_cycle\_setup}, and the render
+reproduces $\rho$ = 0.7565 against cycle day.
+\\Grade was dropped on AW's ruling of 6 November: it is a coarsening of
+the same rASRM scale. The merged severity column is built by importing the
+project's own harmoniser rather than retyping the mapping. Each title
+carries the share of cells the label covers.
 \\CARRIES C4 and C5, and the staging result visually: \textbf{h} and
 \textbf{i} show no structure that any of the other panels show.
-\\ONE SHARED SHUFFLED Z-ORDER across every panel. Drawing one class at a time
-put the last class on top: disease status is 42\% eutopic and looked 100\%
-only because \texttt{eutopic} sorts last.
+\\ONE SHARED SHUFFLED Z-ORDER across every panel.
 \\RENDERED, 400{,}000 of 1{,}577{,}728 cells, no split restriction, which is
 correct because none of these labels is a model input.}
 
@@ -195,24 +196,29 @@ correct because none of these labels is a model input.}
 \includegraphics[width=\linewidth]{figures/pinned/figure4.png}
 \caption{\textbf{Endometriosis viewed through \elaj.} All panels show the 
 UMAP of ELAJ$_{B\,hi}$'s sixteen-dimensional latent, 400{,}000 cells drawn at
-random, recoloured by one variable each: cell family (\textbf{a}), study 
-(\textbf{b}), anatomical site (\textbf{c}), harmonised menstrual phase 
-(\textbf{d}), cycle day (\textbf{e}), serum progesterone (\textbf{f}), 
-disease status (\textbf{g}), merged severity (\textbf{h}) and surgical stage 
-(\textbf{i}). Each title gives the share of cells carrying that label, and 
-cells without it are drawn in grey. Severity in \textbf{h} merges the two
+random, recoloured by one variable each: study (\textbf{a}), anatomical
+site (\textbf{b}), harmonised menstrual phase (\textbf{c}), cycle day
+(\textbf{d}), serum progesterone (\textbf{e}), position on the cycle axis
+(\textbf{f}), disease status (\textbf{g}), merged severity (\textbf{h}) and
+surgical stage (\textbf{i}). Each title gives the share of cells carrying
+that label, and cells without it are drawn in grey. The cycle axis in
+\textbf{f} is a single linear direction in the latent, fitted to the phase
+labels of two cohorts and never to \texttt{duempelmann\_2026}, the only
+cohort recording cycle day and progesterone; it is drawn on phase-labelled
+cells and runs from early to late in the cycle. Severity in \textbf{h} merges the two
 cohorts' vocabularies onto one three-level scale; rASRM I--II are mild, 
 rASRM III--IV are severe. Of the nine variables only menstrual phase was 
 supplied to the model, through one supervised head.
 \\Read as a grid, the figure separates the variables that have a cellular
-correlate from those that do not. Cell identity (\textbf{a}), cycle day
-(\textbf{e}) and serum progesterone (\textbf{f}) each organise the embedding
-into contiguous structure, and the last two trace the same gradient, which is
-the cycle read as a continuum rather than as phases. Merged severity
+correlate from those that do not. Cycle day (\textbf{d}), serum
+progesterone (\textbf{e}) and the cycle axis (\textbf{f}) each organise the
+embedding into contiguous structure and trace the same gradient: the cycle
+read as a continuum rather than as phases, and held by the latent along one
+direction that orders a cohort it was never fitted on. Merged severity
 (\textbf{h}) and surgical stage (\textbf{i}) are drawn on the same cells at
 the same scale and organise nothing, a result that holds across all ten
-representations tested. Study (\textbf{b}) and anatomical site
-(\textbf{c}) retain visible structure: both are decoder covariates, and how
+representations tested. Study (\textbf{a}) and anatomical site
+(\textbf{b}) retain visible structure: both are decoder covariates, and how
 much of each survives in the latent is the cost this model is measured
 against.}
 \label{fig:endo}
