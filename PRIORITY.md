@@ -207,10 +207,21 @@ GPU, measured 20:40 on the same step for `a1_clsonly`, 2 h wall. **Then**,
 once it has written the latent:
 
 ```
-cd /rds/homes/a/axw1008/axw1008 && sbatch data_collation/scripts/benchmark_cpu.sh a1_seed42 --runs-dir outputs/a_series --methods none --external-latent /rds/homes/a/axw1008/axw1008/src/outputs/benchmarks/latents_elaj/a1_seed42/elaj__native__train --out outputs/benchmarks/full_a1_seed42
+cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/benchmark_cpu.sh a1_seed42 --no-elaj --methods none --external-latent /rds/homes/a/axw1008/axw1008/src/outputs/benchmarks/latents_elaj/a1_seed42/elaj__native__train --out outputs/benchmarks/full_a1_seed42
 ```
 
-CPU on bbdefault, measured 50:51, outside the bbgpu cap. ⚠ **The result has
+CPU on bbdefault, measured 50:51, outside the bbgpu cap.
+
+⚠ **THE FIRST ATTEMPT, job 61932543 (17 Nov), TIMED OUT AT 8 h WITHOUT A
+ROW**, because this command was written here without `--no-elaj`.
+`_benchmark_args.sh` adds `--include-elaj` unless told not to, so the job
+loaded the checkpoint and ran the transformer over the 192,402 val cells on
+CPU; the log goes silent at 16:20 after the val split loads. The
+`a1_clsonly` reference DID pass `--no-elaj`, which is invisible in its log
+because the parser consumes the flag. Fixed above, and `benchmark_cpu.sh`
+now refuses an `elaj__*` external latent without `--no-elaj` (`axw1008`,
+17 Nov), so the command as first written fails in a second instead of
+eight hours. ⚠ **The result has
 to land locally at `Outputs/benchmarks/full/full_a1_seed42/benchmark.csv`**,
 which is where `table1.collect()` reads the a-series from.
 
