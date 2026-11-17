@@ -221,7 +221,45 @@ inside the wall. So the note can say what the groups carry and **cannot**
 say what tokenisation costs against raw counts. Filling them is roughly two
 thirds of the job's cost again, and is AW's call.
 
-## The seed arm: trained, verified, and still needs its benchmark row
+## The seed arm: SCORED 17 Nov, and it moves the cycle more than predicted
+
+Rescored with `--no-elaj` after 61932543. Landed at
+`Outputs/Benchmarks/full_a1_seed42/` (NOT under `full/`, which is fine:
+`a1_seed42` is deliberately not in `table1.A_SERIES`). Every number in
+`axw1008/docs/paper/seed_band.csv`, written by `figures/scripts/seed_band.py`.
+Only the training seed changed; the donor split is the base's.
+
+| axis | seed 24 | seed 42 | difference | predicted band |
+|---|---:|---:|---:|---|
+| cross-donor phase | 0.7346 | 0.6756 | -0.0590 | 0.70-0.77, **MISSED** |
+| cross-donor family | 0.9820 | 0.9812 | -0.0008 | inside |
+| donor recovery | 0.5188 | 0.4797 | -0.0391 | 0.48-0.56, **just below** |
+| study separation | 0.7613 | 0.7321 | -0.0292 | not predicted |
+| disease, pooled | 0.3364 | 0.3164 | -0.0200 | inside |
+
+**The seed moves the model ALONG the trade-off, not off it**: less cycle,
+less donor, less study, cell family untouched. Same direction the knobs move.
+
+**What it does to claims, by the arm's own reading rule.**
+* "Most cycle signal of anything tested" (Fig 1a, Fig 1 caption, abstract?):
+  B_hi's margin over Scanorama is 0.0043, over scVI 0.029, over scANVI
+  0.0375; the seed difference is 0.059. **Not seed-robust**: seed 42 sits
+  below all three. Must be softened.
+* "Better than all nine on both axes at once" (Fig 1a): seed 42 is not
+  above scVI, scANVI or Scanorama on cycle. Still on the Pareto front (no
+  baseline has donor recovery below 0.5421). Reword to the front.
+* "Least donor identity" vs baselines: holds at both seeds (0.5188, 0.4797
+  against the best baseline's 0.5421).
+* Ablations: no-phase-head exceeds the seed on every axis but disease;
+  order statistics cost the cycle 1.6x the seed difference; random grouping
+  costs the cycle only 1.0x (INDISTINGUISHABLE) but cell family 27x and
+  disease 3.3x; no-DNS and no-ECS are within the seed on cycle. Note 5 must
+  say each of these.
+* Knobs (Fig 2a/b): the information cost moves the cycle 2.2x the seed;
+  lambda 7 vs 168 vs 336 differ on cycle by at most 0.34x the seed, so the
+  adversary's effect is on study separation (2.0-3.5x), not on the cycle.
+
+## (history) The seed arm: trained, verified, and still needs its benchmark row
 
 `Outputs/a_series/a1_seed42`, job 61860514. Eight epochs, early stopping,
 best epoch 2 against the base's epoch 4 of 10.
