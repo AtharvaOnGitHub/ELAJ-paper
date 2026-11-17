@@ -125,6 +125,16 @@ aligned under c's columns; e = I4b, the disease end of the gene ranking;
 f = I6, **PENDING**. When AW signs it off: point `figure2_draft.py` at
 `pinned/figure2.png`, retire the old `figure2.py`, then write the caption.
 
+**UPDATE, later 17 Nov.** 2a/2b SIGNED OFF by AW. 2c labels black, 2d
+violins with medians, excess over chance and P (X12 split file). 2e: AW chose
+option A, measured expression; **X17 is written, needs one scp and one
+sbatch** (EXPERIMENTS.md, X17). I6: AW asked for EndometDB and Open Targets
+lines; **X18 found EndometDB's rule-based list empty and its unthresholded
+statistic ANTI-correlated with our ranking** (EXPERIMENTS.md, X18). ⚠ **That
+puts the Zhao sentence in Results and the Discussion at risk**: a reviewer
+who checks the largest public cohort sees the opposite direction. Decision
+with AW. Do not draw I6 until it is made.
+
 **I6 is blocked on a question AW asked, 17 Nov: "What is special about
 Zhao 2017? Why are we comparing against them?"** The answer on file:
 bulk mRNA-seq, 8 eutopic endometria against 5 controls, the same contrast as
