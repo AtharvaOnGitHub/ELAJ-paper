@@ -193,14 +193,13 @@ systematically for their effects on the frontier and are detailed in
 the main paper. The rest were set during development, some of which are 
 detailed below. No automated hyperparameter search was used.
 
-\textbf{Input.} Counts were scaled as $\log(1 + 10^{4}\,x/n)$, where $x$
-is a gene's count and $n$ the cell's library size. On training steps, each cell's
+\textbf{Input.} On training steps, each cell's
 measured genes were hidden from the encoder at random until 12{,}500
 remained. This number lies just under the smallest panel in the corpus,
 13{,}144 genes, so every cell shows the encoder the same number of
 measured genes and a study cannot be recognised from how many genes it
-measured. The decoder is still required to predict every measured gene,
-including the hidden ones. The decoder does not predict DNS genes. The 
+measured. The decoder does not predict unmeasured genes, which are set
+through the DNS sentinel. The 
 token width and the 44 groups follow from the sizing argument of \ref{note:grouping}.
 
 \textbf{Covariates are never withheld.} The run's recorded configuration
