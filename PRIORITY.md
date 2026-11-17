@@ -148,7 +148,19 @@ never before reported")**.
    stated null. Fig 2 otherwise: a, b signed off; c (black labels, no y
    axes) and d (violins, medians, P) await review; e removed.
 4. **AW review:** figures (1a outcome row, 2c/2d, 4), supplementary notes.
-5. **Supplementary Methods: not written.** Two Results pointers dangle.
+5. **Supplementary Methods: WRITTEN 17 Nov, for AW's review**
+   (`supplementary/methods/supplementary_methods.tex`, after the Notes): Severity,
+   Pathway gene grouping in full, Training configuration with a generated
+   table (S28, `figures/scripts/supp_methods.py` from run_config.json), Label
+   transfer. Both Results pointers now read (Supplementary Methods, ...).
+   Found while writing: **main Methods says groups run 253 to 493 genes; the
+   shipped vocabulary is 247 to 493** (one GO group stays under the 250 floor
+   because the 500 ceiling wins). **The main text cites neither Reactome nor
+   GO**; the supplement now does. To add once results exist: the decoded gene
+   attribution (decode_real) and X17.
+   ⚠ **The main PDF will not build**: verify_numbers fails on Results'
+   four Zhao numbers (72.95, 40.93, 15.33, 3.95e-7), which the corrected
+   ranking no longer produces. Clears when the gene prose is settled.
 6. **Captions**, after figures are fixed (Fig 1 caption still calls the
    architecture panel a; Fig 2 caption describes the old figure).
 7. **Note 7** (X15/X16) not written; Note 3 has the X16 external-cohort figure.
