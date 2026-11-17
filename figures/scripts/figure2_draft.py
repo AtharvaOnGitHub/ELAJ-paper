@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fig2_panels as P                                              # noqa: E402
 
 OUT = Path(__file__).resolve().parents[1] / "draft"
-W, H = 180.0, 212.0
+W, H = 180.0, 232.0
 fig = plt.figure(figsize=(W / 25.4, H / 25.4))
 
 
@@ -50,36 +50,36 @@ def letter(x, y, l, title):
 
 
 # ── row 1: the knobs ─────────────────────────────────────────────────────
-ax_a = fig.add_axes(mm(14, 152, 70, 50))
-ax_b = fig.add_axes(mm(106, 152, 70, 50))
+ax_a = fig.add_axes(mm(14, 172, 70, 50))
+ax_b = fig.add_axes(mm(106, 172, 70, 50))
 P.frontier_by_kl(ax_a)
 P.frontier_by_dab(ax_b)
-letter(4, 205, "a", "Turning up the adversary, at each information cost")
-letter(96, 205, "b", "Turning up the information cost, at each adversary")
+letter(4, 225, "a", "Turning up the adversary, at each information cost")
+letter(96, 225, "b", "Turning up the information cost, at each adversary")
 
 # ── rows 2-3, left: composition over signal, one column per family ───────
 c_axes = []
 cw, gap, cx0 = 19.5, 2.0, 14.0     # closer, with no y axes (AW, 17 Nov)
 for i in range(4):
-    c_axes.append(fig.add_axes(mm(cx0 + i * (cw + gap), 94, cw, 34)))
+    c_axes.append(fig.add_axes(mm(cx0 + i * (cw + gap), 114, cw, 34)))
 P.i1(c_axes)
-letter(4, 134, "c", "How many cells of each family a donor has")
+letter(4, 154, "c", "How many cells of each family a donor has")
 
-ax_d = fig.add_axes(mm(cx0, 46, 4 * cw + 3 * gap, 34))   # taller (AW, 17 Nov)
+ax_d = fig.add_axes(mm(cx0, 66, 4 * cw + 3 * gap, 34))   # taller (AW, 17 Nov)
 # family i sits under the centre of c's column i, in the same figure units
 centres = [cx0 + i * (cw + gap) + cw / 2 for i in range(4)]
 ax_d.set_xlim(cx0, cx0 + 4 * cw + 3 * gap)
 P.i2b(ax_d, xpos=centres)
-letter(4, 84, "d", "How well disease can be read from those cells' state")
+letter(4, 104, "d", "How well disease can be read from those cells' state")
 
 # ── rows 2-3, right: the genes ───────────────────────────────────────────
-e0 = P.i4b(fig, mm(118, 52, 60, 80))
-letter(108, 134, "e", "The genes the disease direction moves")
+e0 = P.i4b(fig, mm(118, 72, 60, 80))
+letter(108, 154, "e", "The genes the disease direction moves")
 
 # ── row 4: I6, marked pending ────────────────────────────────────────────
-f1, f2 = P.i6(fig, mm(26, 8, 150, 24))
-letter(4, 35, "f", "An external cohort's upregulated genes, placed on our ranking")
-fig.text(176 / W, 34.7 / H, "PENDING: under discussion", fontsize=P.FS_SMALL,
+f1, f2 = P.i6(fig, mm(34, 6, 142, 40))
+letter(4, 51, "f", "Genes the corpus's own papers report in endometriosis, on our ranking")
+fig.text(176 / W, 51 / H, "DRAFT", fontsize=P.FS_SMALL,
          va="bottom", ha="right", color="#B03A2E", fontweight="bold")
 
 OUT.mkdir(parents=True, exist_ok=True)

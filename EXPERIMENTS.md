@@ -28,6 +28,7 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
 | X17 | Decoded disease genes against MEASURED expression | E3, Fig 2e | **written, not run**: needs one scp, then sbatch | CPU, < 1 h |
 | X18 | Disease ranking against Open Targets and EndometDB | E3, Fig 2f | **done, EndometDB disagrees** | CPU, minutes |
+| X19 | Genes the corpus papers report, on our ranking | Fig 2f | **done** | CPU, seconds |
 
 ---
 
@@ -875,3 +876,22 @@ flagged. **Consequence: no bulk list, Zhao's included, can validate a
 within-immune direction**, and Zhao's 4-of-15 overlap does not survive a
 cohort eight times its size. X17's held-out single-cell test is the
 replication that can.
+
+## X19 — the corpus's own papers' disease genes, on our ranking
+
+AW, 17 Nov: Figure 2f should highlight genes from the component studies
+(single-cell by definition) instead of Zhao's bulk list; EndometDB moves to
+two sentences in Note 6. `axw1008/src/scripts/corpus_disease_genes.py`,
+rule and filters in its docstring, writes `x19_corpus_disease_genes.csv`
+with the sentence behind every gene. 117 genes from ten papers, Sarsenova
+70 and Tan 22 of them; prose only, so Dümpelmann's 427 DEGs (supplementary
+table) contribute 3.
+
+**Result.** A modest tail excess, no whole-list shift: 4 in our top 1%
+(1.2 expected), 14 in the top 5% (5.9), MWU P = 0.44 over the whole
+ranking. **By study it splits by contrast**, read AFTER seeing it: the
+eutopic case-control papers sit at our disease end (median rank Marečková
+1%, Huang 5%, Chen 11%, Shih 14%, Dümpelmann 25%); the lesion papers do
+not (Sarsenova 48%, Tan 57%, Fonseca 94%, García-Alonso 97%).
+⚠ **No direction.** DKK1 is our rank 8 and Marečková reports it DOWN in
+stromal cells; a highlight is co-location, not agreement.

@@ -327,23 +327,51 @@ def i4b(fig, rect):
 # ═════════════════════════════════════════════════════════════════════════
 # f — I6, pending
 # ═════════════════════════════════════════════════════════════════════════
+def _study_colours():
+    """Figure 1a's study colours and names, by the same rule: studies sorted by
+    donors, the two Garcia-Alonso deposits merged, colour i to the i-th."""
+    from mock_fig1a_opt8 import SC
+    from figure1 import STUDY_NAME
+    m = pd.read_csv(ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz",
+                    usecols=["study", "patient_id"], low_memory=False)
+    per = m.groupby("study").patient_id.nunique()
+    ga = [k for k in per.index if k.startswith("garcia_alonso")]
+    per = per.drop(ga); per["garcia_alonso_2021"] = 15
+    per = per.sort_values(ascending=False)
+    names = dict(STUDY_NAME); names["garcia_alonso_2021"] = "García-Alonso 2021"
+    return {k: (SC[i], names.get(k, k)) for i, k in enumerate(per.index)}
+
+
 def i6(fig, rect):
+    """AW, 17 Nov: genes the corpus's own (single-cell) papers report as
+    altered in endometriosis, on our ranking. ONE line, the union's
+    cumulative share; above it one rug row per study in Figure 1a's colours,
+    named at its left. Genes and the sentence behind each:
+    x19_corpus_disease_genes.csv."""
     gs = _ranking(); n = len(gs)
-    txt = re.sub(r"\s+", " ", (ROOT.parent / "Atharva Papers" / "Validation" / "PMC5449958.txt").read_text())
-    up = {g for g, d, _ in re.findall(
-        r"\b([A-Z0-9orf.-]{2,15})\b ENSG\d+ (Upregulated|Downregulated) ([\d.]+)", txt)
-        if d == "Upregulated"}
     rank = pd.Series(np.arange(1, n + 1), index=gs.gene)
-    ru = rank.reindex(sorted(up)).dropna().astype(int).sort_values()
+    cg = pd.read_csv(CLAIMS / "x19_corpus_disease_genes.csv")
+    cg["rank"] = cg.gene.map(rank)
+    cg = cg.dropna(subset=["rank"])
+    col = _study_colours()
+    studies = [k for k in col if k in set(cg.study)]
     x0, y0, w, h = rect
-    a1 = fig.add_axes([x0, y0 + .74 * h, w, .14 * h])
-    a2 = fig.add_axes([x0, y0, w, .70 * h], sharex=a1)
-    a1.vlines(ru.values, 0, 1, color=WINE, lw=.6, alpha=.9)
-    a1.set_ylim(0, 1); a1.set_yticks([]); clean(a1, keep_x=False, keep_y=False)
+    rug_h = .42 * h
+    a1 = fig.add_axes([x0, y0 + .52 * h, w, rug_h])
+    a2 = fig.add_axes([x0, y0, w, .48 * h], sharex=a1)
+    for i, st in enumerate(studies):
+        r = cg.loc[cg.study == st, "rank"].to_numpy()
+        yy = len(studies) - 1 - i
+        a1.vlines(r, yy + .12, yy + .88, color=col[st][0], lw=.9)
+        a1.text(-.008, yy + .5, col[st][1], transform=a1.get_yaxis_transform(),
+                ha="right", va="center", fontsize=FS_SMALL, color=INK)
+    a1.set_ylim(0, len(studies)); a1.set_yticks([])
+    clean(a1, keep_x=False, keep_y=False)
     a1.tick_params(labelbottom=False, bottom=False)
-    xs = np.concatenate([[0], ru.values, [n]])
-    ys = np.concatenate([[0], np.arange(1, len(ru) + 1), [len(ru)]]) / len(ru)
-    a2.step(xs, ys, where="post", color=WINE, lw=1.2, zorder=3)
+    u = np.sort(cg.drop_duplicates("gene")["rank"].to_numpy())
+    xs = np.concatenate([[0], u, [n]])
+    ys = np.concatenate([[0], np.arange(1, len(u) + 1), [len(u)]]) / len(u)
+    a2.step(xs, ys, where="post", color=INK, lw=1.2, zorder=3)
     a2.plot([0, n], [0, 1], color=HAIR, lw=.8, ls="--", zorder=2)
     a2.set_xlim(0, n); a2.set_ylim(0, 1.02)
     a2.set_yticks([0, .5, 1]); a2.set_yticklabels(["0", "half", "all"], fontsize=FS_SMALL)
@@ -351,8 +379,7 @@ def i6(fig, rect):
                                               fontsize=FS_SMALL)
     a2.get_xticklabels()[0].set_ha("left"); a2.get_xticklabels()[1].set_ha("right")
     a2.tick_params(length=2, pad=2)
-    a2.set_ylabel("share of their\nlist reached", fontsize=FS_BODY, labelpad=2)
-    a2.text(n * .58, .36, "if their list were spread evenly", fontsize=FS_SMALL,
-            color=SOFT, rotation=12)
+    a2.set_ylabel("share of the\nstudies' genes", fontsize=FS_BODY, labelpad=2)
+    a2.text(n * .30, .21, "if spread evenly", fontsize=FS_SMALL, color=SOFT, rotation=10)
     clean(a2)
     return a1, a2
