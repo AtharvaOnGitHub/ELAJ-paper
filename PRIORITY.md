@@ -102,6 +102,42 @@ scorecard has no empty cell.
 
 ---
 
+# 0a. Figures in flux, 17 November — CAPTIONS ARE A TODO FOR AFTER
+
+**AW, 17 Nov: "Figure captions are a todo for after figures are fixed."**
+Do not polish any caption in `sections/06-display-items.tex` until AW
+signs off the figure it describes. Known stale meanwhile: Figure 1's caption
+still describes panel a as the architecture (it is now b) and does not
+mention the fifth Outcomes row; Figure 2's caption describes the OLD
+eight-panel knobs figure. Figure 4's caption was rewritten for its new
+panels on 17 Nov and is the one current caption.
+
+| figure | state | script |
+|---|---|---|
+| 1 | 1a gained a fifth outcome, "four genes never before reported" | `mock_fig1a_opt8.py`, `figure1.py` |
+| 2 | **being rebuilt.** Draft at `figures/draft/figure2_so_far.png`; `pinned/figure2.png` is still the old one and the manuscript still shows it | `figure2_draft.py` + `fig2_panels.py` |
+| 4 | cell family out, b-f up one, X16 cycle axis at f. Done | `figure4.py` |
+
+**New Figure 2, as assembled:** a, b = old 2b and 2d, polished to Figure 1c's
+conventions (x NOT reversed, so upper left is better, as in 1c; cell-family
+row dropped); c = I1 composition; d = I2b disease signal per family, ONE plot
+aligned under c's columns; e = I4b, the disease end of the gene ranking;
+f = I6, **PENDING**. When AW signs it off: point `figure2_draft.py` at
+`pinned/figure2.png`, retire the old `figure2.py`, then write the caption.
+
+**I6 is blocked on a question AW asked, 17 Nov: "What is special about
+Zhao 2017? Why are we comparing against them?"** The answer on file:
+bulk mRNA-seq, 8 eutopic endometria against 5 controls, the same contrast as
+X12, published with a full per-gene table, and not in the corpus because the
+corpus is single-cell. **No selection criterion was ever recorded**, and a
+reviewer will read one external list as a chosen one. The prose (Results
+E3 paragraph, Discussion paragraph 3) quotes a top-15 overlap only; I6 is a
+cutoff-free view of the same list and also shows about nine of their genes
+at our control end, which "none at the control end" (a top-15 statement)
+does not contradict but invites. Options are with AW in the session of 17
+Nov: state the criterion, or test against several external lists chosen by
+a written rule, and only then decide whether I6 earns a panel.
+
 # 0. Where this stands, 17 November
 
 **Both HPC jobs landed and one still needs scoring.** The probe is complete

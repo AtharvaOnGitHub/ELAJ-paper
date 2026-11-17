@@ -13,7 +13,8 @@ ROUND ONE'S VERDICTS (AW, 17 November), and where each went:
   C4  whose clock                dropped: "too abstract and could mean anything"
   I1  composition unchanged      KEPT as a Figure 2 panel, redrawn here unchanged
   I2  UMAP lit by disease signal REDRAWN without a UMAP: "we already have 10
-                                 UMAPs in the main figures"  -> I2b
+                                 UMAPs in the main figures"  -> I2b, then one
+                                 plot rather than four (round three)
   I3  direction donor by donor   dropped: "too much figure for too little information"
   I4  the gene spectrum          REDRAWN: "the 'towards control' side raises more
                                  questions than the intuition it creates" and
@@ -104,59 +105,14 @@ fig.subplots_adjust(left=.08, right=.99, top=.88, bottom=.16, wspace=.45)
 draw_i1(axes)
 save(fig, "I1_composition_unchanged")
 
-# ── I2b: where the disease can be read, without a UMAP ───────────────────
-# The same four families as I1, one column each, so the two can stack: I1
-# says how MANY of each family a donor has (unchanged), I2b says how well a
-# donor's disease status can be read from the STATE of that family's cells.
-# Dot = donor-level AUC, whisker = its bootstrap interval, the dashed line =
-# the permutation null. The axis is labelled in words only, per the brief;
-# the AUCs live in the legend and in x12_by_family_annotated.csv.
-auc_t = pd.read_csv(CLAIMS / "x12_by_family_annotated.csv").set_index("family")
-
-
-def draw_i2b(axes, with_ylabel=True):
-    lo_all = min(auc_t.loc[FAMS, "auc_lo"].min(), .30)
-    for ax, f in zip(axes, FAMS):
-        r = auc_t.loc[f]
-        ax.axhline(r.null, color=SOFT, lw=.7, ls=(0, (3, 2)), zorder=1)
-        ax.plot([0, 0], [r.auc_lo, r.auc_hi], color=FAM_C[f], lw=1.6,
-                solid_capstyle="round", alpha=.45, zorder=2)
-        ax.scatter([0], [r.auc], s=46, color=FAM_C[f], ec="white", lw=.8, zorder=3)
-        ax.set_xlim(-1, 1); ax.set_ylim(lo_all - .02, 1.0)
-        ax.set_xticks([])
-        # one tick, "perfect", on the first column only; the dashed null is
-        # named where it starts rather than by a tick that would sit a hair
-        # off it (the permutation null is 0.48-0.50, not exactly 0.5)
-        ax.set_yticks([1.0])                  # same on every column: y may be shared
-        ax.set_yticklabels(["perfect"], fontsize=FS_LEG)
-        if ax is axes[0]:
-            ax.text(-1, r.null + .015, "chance", fontsize=FS_LEG, color=SOFT,
-                    ha="left", va="bottom")
-        if ax is not axes[0]:                 # shared y: hide, do not unset
-            ax.tick_params(labelleft=False, left=False)
-        clean(ax, keep_x=False)
-    if with_ylabel:
-        axes[0].set_ylabel("disease read from\nthe cells' state", fontsize=FS_BODY)
-
-
-fig, axes = plt.subplots(1, 4, figsize=(120 * MM, 40 * MM), sharey=True)
-fig.subplots_adjust(left=.13, right=.99, top=.86, bottom=.08, wspace=.45)
-draw_i2b(axes)
-for ax, f in zip(axes, FAMS):
-    ax.set_title(f, fontsize=FS_TITLE, color=FAM_C[f], loc="left")
+# ── I2b: one plot, not four (AW, 17 Nov). Drawn by fig2_panels, which the
+# assembled figure2_draft.py also uses, so the two cannot drift.
+import fig2_panels                                                   # noqa: E402
+fig, ax = plt.subplots(figsize=(100 * MM, 42 * MM))
+fig.subplots_adjust(left=.16, right=.98, top=.95, bottom=.16)
+fig2_panels.i2b(ax)
+ax.set_xlim(-.6, 3.6)
 save(fig, "I2b_family_signal")
-
-# ── I1 over I2b: the pair as it would sit in Figure 2 ────────────────────
-# Same columns, so a reader reads down each family: its numbers do not move
-# with disease, its cells' state does, and most of all in immune.
-fig, axes = plt.subplots(2, 4, figsize=(120 * MM, 82 * MM),
-                         gridspec_kw={"height_ratios": [1.25, 1], "hspace": .32})
-fig.subplots_adjust(left=.13, right=.99, top=.93, bottom=.05, wspace=.45)
-draw_i1(axes[0])
-for ax in axes[1][1:]:
-    ax.sharey(axes[1][0])
-draw_i2b(axes[1])
-save(fig, "I1_I2b_stacked")
 
 # ── I4b: the disease end only, and narrow ────────────────────────────────
 # Round one drew all 15,496 genes as a two-sided spectrum. The control side
