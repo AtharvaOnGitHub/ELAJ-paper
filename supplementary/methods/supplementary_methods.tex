@@ -63,13 +63,11 @@ donors: 61 controls, 29 patients with mild disease and 28 with severe
 disease.
 
 A contrast that includes controls is partly a test of disease status,
-which the latent separates (main text). To ask whether the latent
-separates stages of disease among patients, we therefore also used the
+which the latent separates (main text). We therefore also used the
 same scale with controls removed, which leaves 333{,}984 cells from 57
-patients. In addition, the rASRM stage and the grade were each scored
-separately within their own study. A single implementation of the mapping
-is shared by every analysis and figure in the paper, and all three forms
-are given per donor in Supplementary Data~3. Overall, severity is assessed
+patients. A single implementation of the mapping is shared by all 
+analyses and figures in the paper, and all three forms are given per 
+donor in Supplementary Data~3. Overall, severity is assessed
 in three forms: merged with controls, merged among patients only, and in
 each study's own vocabulary.
 
@@ -82,7 +80,7 @@ biological processes. Gene membership came from the Reactome 2022
 2023 \citep{go2023knowledgebase} libraries distributed by Enrichr
 \citep{kuleshov2016enrichr}, and the parent--child structure from
 Reactome's pathway relation file, restricted to human pathways, and from
-the GO ontology file. The universe to be grouped was the 30{,}962 genes
+the GO ontology file. The superset to be grouped was the 30{,}962 genes
 found in at least one study of the corpus after symbol resolution (main
 Methods, \emph{Gene vocabulary}).
 
@@ -107,19 +105,21 @@ clears the floor or cannot be merged.
 
 The ceiling takes precedence over the floor. It bounds the memory of
 attention, which grows with the square of group size, and because groups
-are run in size buckets padded to their largest member, one oversized
-group would be paid for by every group in its bucket. A group whose every
-merge would exceed 500 genes is therefore left below the floor. This
-happened once, to a GO group of 247 genes.
+are run in size buckets padded to their largest member
+(\emph{Size buckets}, below), one oversized group would be paid for by
+every group in its bucket. A group whose every
+merge would exceed 500 genes is therefore left below the floor. One such 
+group of 247 genes exists in the model implementation.
 
 \textbf{Reactome first, GO on the residual.} We cut Reactome over the
-whole universe first, which assigned 10{,}114 genes to 28 groups. GO was
+whole superset first, which assigned 10{,}114 genes to 28 groups. GO was
 then cut over the genes Reactome had not assigned, which added 5{,}382
 genes in 16 groups. Reactome takes precedence because it is manually curated and organised
-by pathway, whereas GO is broader and its annotation noisier.
-The 15{,}466 genes annotated in neither hierarchy were dropped. Each group carries the name of one of its constituent pathways, or of an
-informative common ancestor, followed by the number of further pathways
-it absorbed.
+by pathway, whereas GO is broader and its annotation has a graph structure
+rather than a simpler tree structure. The 15{,}466 genes annotated in 
+neither hierarchy were dropped. Each group carries the name of one of 
+its constituent pathways, or of an informative common ancestor, followed 
+by the number of further pathways it absorbed.
 
 The resulting vocabulary has 15{,}496 genes in 44 groups of 247 to 493
 genes, with a median of 342 (Supplementary Table~\ref{stab:vocabulary}).
@@ -128,119 +128,120 @@ in Supplementary Data~5. In summary, the grouping is fixed before
 training, derived only from the two hierarchies, and never adjusted
 afterwards.
 
+\subsection{Size buckets}
+\label{smeth:buckets}
+
+Each gene group is read by its own transformer, with its own weights. At a
+token width of 32 every matrix product inside one of these transformers is
+small enough that launching it costs more than computing it, so running the
+44 groups one after another leaves the processor mostly idle. We therefore
+stacked the groups' weights and computed several groups in one batched
+call. A batched call needs one sequence length, so every group in it is
+padded with empty positions up to the longest. Attention costs grow with
+the square of sequence length, so the padding is expensive: run as a single
+block, 46.7\% of the attention arithmetic would be spent on empty positions
+(Supplementary Table~\ref{stab:buckets}).
+
+We instead sorted the groups by size and divided them into four buckets,
+each padded only to its own longest group. The division is the one that
+minimises the total padded attention work,
+\begin{equation}
+W = \sum_{b} n_b L_b^{2},
+\label{eq:bucketwork}
+\end{equation}
+where $n_b$ is the number of groups in bucket $b$ and $L_b$ its padded
+length, the size of its largest group plus the one learned summary token.
+Once the groups are sorted by size, an optimal division can always be taken
+as contiguous runs of the sorted list, so the exact minimum of
+equation~(\ref{eq:bucketwork}) is found by a dynamic program over the cut
+points rather than approximated by splitting the list evenly. In the
+reported vocabulary the four buckets hold 9, 14, 13 and 8 groups, and the
+share of arithmetic spent on padding falls to 12.9\%. Each further bucket
+would remove less than the one before.
+
+Bucketing changes the order in which groups are computed and nothing else.
+Each group keeps its own weights. Padded positions are masked as keys, so
+no gene attends to them, and they are never read as outputs, so the eight
+pooled summary statistics are computed over a group's real genes only. A
+test in the code base copies one set of weights into the bucketed and the
+unbucketed encoder and requires the two to give the same output for every
+group. The implementation can also drop the mask, and with it reach the
+fused attention kernel, for a bucket whose groups are all one size. No
+bucket in the reported vocabulary is uniform, so every bucket carries a
+mask and the saving is in arithmetic alone.
+
+\begin{table}[t]
+\centering
+\caption[Size buckets]{\textbf{The size buckets of the reported model.}
+Padded length includes the learned summary token. Arithmetic on padding is
+the share of padded attention work, $n_b L_b^2$ summed, spent on empty
+positions. Generated by running the model's own partition on its
+vocabulary, and checked against the partition the training run recorded.}
+\label{stab:buckets}
+\small
+\input{tables/buckets}
+\end{table}
+
 \subsection{Hyperparameters}
 \label{smeth:hyperparameters}
 
 Supplementary Table~\ref{stab:hyperparameters} lists every setting of the
-model reported in the main text. The table is generated from the
-configuration that the training run itself recorded, so it gives the
-values actually used. The settings fall into three kinds. Two were varied
-systematically, and they define the configurations compared in the main
-text. Several were set during development, each in response to a
-measurement that is given below. The remainder were held at their initial
-values throughout and never varied: a weight decay of $10^{-4}$, a batch
-size of 256, gradient clipping at a norm of 1.0, and two transformer
-layers, four attention heads and a dropout of 0.1 in each encoder. No
-automated hyperparameter search was used.
+model reported in the main text. The settings fall into two kinds: varied
+for the frontier and set during development. The information cost,
+$w_{\mathrm{kl}}$, and the adversary's reversal strength,
+$\lambda_{\mathrm{dab}}$, were varied systematically for their effect on
+the frontier and are detailed in the main paper. The rest were set during
+development, and some of them are detailed below. No automated
+hyperparameter search was used.
 
-\textbf{The two settings varied in this paper.} The reversal strength of
-the adversary, $\lambda_{\mathrm{dab}}$, scales the gradient of the study
-classifier as it is passed back to the encoder, and the information cost,
-$w_{\mathrm{kl}}$, prices each nat the latent holds. We trained six
-configurations, $\lambda_{\mathrm{dab}} \in \{7, 168, 336\}$ crossed with
-$w_{\mathrm{kl}} \in \{1, 30\}$, at the same seed and with every other
-setting identical, so that any difference between them is attributable to
-the two settings (\ref{note:frontier}). The model reported throughout,
-ELAJ$_{B\,hi}$, is $\lambda_{\mathrm{dab}} = 168$ and $w_{\mathrm{kl}} = 1$,
-and ELAJ$_{B\,lo}$ is $\lambda_{\mathrm{dab}} = 168$ and
-$w_{\mathrm{kl}} = 30$.
+\textbf{Gene masking.} On training steps, each cell's measured genes were
+hidden from the encoder at random until 12{,}500 remained. This number lies
+just under the smallest panel in the corpus, 13{,}144 genes, so every cell
+shows the encoder the same number of measured genes and a study cannot be
+recognised from how many genes it measured. The decoder does not predict
+DNS genes. The token width and the 44 groups follow from the sizing
+argument of \ref{note:grouping}.
 
-\textbf{Input.} Counts were scaled as $\log(1 + 10^{4}\,x/n)$, where $x$
-is a gene's count and $n$ the cell's library size. Each gene's value
-enters its token as one learned direction per gene, scaled by the gene's
-scaled count, and the token width is 32. On training steps, each cell's
-measured genes were hidden from the encoder at random until 12{,}500
-remained. This number lies just under the smallest panel in the corpus,
-13{,}144 genes, so every cell shows the encoder the same number of
-measured genes and a study cannot be recognised from how many genes it
-measured. The decoder is still required to predict every measured gene,
-including the hidden ones. The token width and the 44 groups follow from
-the sizing argument of \ref{note:grouping}.
+\textbf{Covariates are never withheld.} The run's recorded configuration
+carries a probability of 0.25 for withholding the decoder's covariates on a
+training step. That setting takes effect only together with a latent
+component that no configuration in this paper uses, and the training metrics
+confirms that no step withheld them. The table therefore gives the value in
+force.
 
-\textbf{Encoders.} Each gene group is read by its own two-layer
-transformer, and the group's tokens are summarised into nine tokens: one
-learned summary token and eight statistics pooled over the group's
-tokens, namely the mean, standard deviation, minimum, three quartiles,
-maximum and the mean of the four largest values. The groups are run in four buckets of similar size. Padded to the
-largest group in one block, 49.0\% of the attention arithmetic would be
-spent on padding, and a block without padding needs no attention mask,
-which lets it use the fused attention kernel. Bucketing changes only the
-order in which groups are computed, not the model. The cell encoder is a two-layer transformer of width 64 over the
-396 summary tokens of the 44 groups.
+\textbf{Objective weights.} Each term other than reconstruction was
+weighted so that its gradient on the latent stays below that of
+reconstruction. We measured these gradients after the first epoch and
+adjusted the weights against them, which reduced the menstrual-phase
+classifier's weight from 500 to 40 and set the cell-similarity weight.
 
-\textbf{Latent and decoder.} The latent has sixteen Gaussian dimensions
-and no circular dimensions. The decoder reads a 64-dimensional projection
-of the latent together with three learned covariate embeddings of sixteen
-dimensions each, for anatomical site, sequencing platform and study.
-Disease status has no embedding and is given to no part of the model.
-The decoder always receives the covariates. A variant in which they are
-withheld on a random share of steps was developed but is not used by any
-configuration in this paper.
+The adversary's capacity was set by its failure mode. An earlier
+single-layer adversary of 64 units was beaten by the encoder without the
+studies becoming inseparable. Its training loss fell to 0.21, against a
+chance level of $\ln 11 = 2.40$, while the cells' nearest neighbours in the
+latent still came from their own study 88\% of the time after balancing
+for study size. The encoder had learned to fool that adversary, not to
+remove study.
 
-\textbf{Objective weights.} Reconstruction carries a weight of 1, and each
-other term was weighted so that its gradient on the latent stays below
-that of reconstruction. We measured these gradients directly after the first epoch and adjusted
-the weights against them. The menstrual-phase
-classifier's weight was set first at 500 and reduced to 40 on that
-measurement, and it is trained with a label smoothing of 0.05. The elastic cell-similarity term uses scGPT's similarity threshold
-of 0.8 \citep{cui2024scgpt}, and its weight of 50 was set by the same
-criterion. The adversary has a loss weight of 0.5 and a network of
-three 256-unit layers with layer normalisation and no dropout, the shape
-of scGPT's adversarial discriminator. An earlier single-layer adversary of
-64 units was beaten by the encoder without the studies becoming
-inseparable: its training loss fell to 0.21 against a chance level of
-$\ln 11 = 2.40$ while the cells' nearest neighbours in the latent still came from
-their own study 88\% of the time, after balancing for study size.
+\textbf{Why the information-cost ramp is short.} By the end of the first
+epoch the latent already held about 44 nats per cell in development. A ramp
+that ends later prices information only after it has been stored, and a
+cost cannot then remove it. The free-bits allowance never constrained the
+latent, which stayed far above it throughout development.
 
-The information cost is ramped from zero to its maximum of 0.5 over the
-first 5\% of training steps. In development the latent held about 44 nats per cell by the end of
-the first epoch, so a ramp that ends later prices information only
-after it has been stored, and a cost cannot then remove it. Each Gaussian
-dimension carries a free-bits allowance of 0.25 nats, 4.0 nats in total,
-which the latent stayed far above in development and which therefore never
-constrained it.
-
-\textbf{Optimisation and checkpoint selection.} We used AdamW with
-$\beta = (0.9, 0.999)$ at a learning rate of $10^{-3}$, raised from an
-initial $3 \times 10^{-4}$ during development. The learning rate follows a
-cosine schedule over a 20-epoch horizon. Training ran in bf16, with the
-negative-binomial likelihood and the sampler held in fp32, and each batch
-of 256 cells is drawn from one study. Training stops early when the
-reconstruction loss on the validation donors has not improved for five
-epochs, counted after a two-epoch warmup. No configuration reported here
-reached the horizon, so the horizon sets only the shape of the schedule:
-with 20 epochs the learning rate at epoch 10 is still half its starting
-value.
-
-The checkpoint is the epoch with the lowest reconstruction loss on the
-validation donors. Reconstruction was chosen over a biological label
+\textbf{Learning rate and checkpoint selection.} The learning rate was
+raised from an initial $3 \times 10^{-4}$ during development. The
+checkpoint is selected on reconstruction rather than on a biological label
 because the validation donors are uninformative about menstrual phase:
-chance agreement on phase is 0.664 on the validation split against 0.380
-on the validation and test splits together. Labels therefore played no part
-in selection. The reported model was selected at epoch 4 of a run that
-stopped at epoch 9, and every metric in the paper is computed on that one
-checkpoint. Every configuration in the paper differs from this one only in
-the settings named where it is introduced (\ref{note:frontier}
-and~\ref{note:ablations}).
+chance agreement on phase is 0.664 on the validation split, against 0.380
+on the validation and test splits together. Every metric in the paper is
+computed on the one selected checkpoint, and every other configuration
+differs from it only in the settings named where it is introduced
+(\ref{note:frontier} and~\ref{note:ablations}).
 
-\textbf{Data split.} Donors were assigned to training, validation and test
-in proportions of 70, 15 and 15\%, stratified by study and anatomical site
-with seed 24, and all cells of a donor fall in one split. Donors that one
-source deposited under two identifiers were grouped before splitting.
-Two deposits were excluded from training and evaluation: one of chorionic
-villus and decidua, and one of organoids. Overall, two settings were
-varied, the remainder were fixed before the configurations compared in the
-paper were trained, and the same values apply to every one of them.
+\textbf{Data.} Donors that one source deposited under two identifiers were
+grouped before splitting. Two deposits were excluded from training and
+evaluation: one of chorionic villus and decidua, and one of organoids.
 
 \begin{table}[t]
 \centering
