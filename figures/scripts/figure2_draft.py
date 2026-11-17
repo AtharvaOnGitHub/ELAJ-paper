@@ -59,7 +59,7 @@ letter(96, 193, "b", "Turning up the information cost, at each adversary")
 
 # ── rows 2-3, left: composition over signal, one column per family ───────
 c_axes = []
-cw, gap, cx0 = 19.5, 5.0, 14.0
+cw, gap, cx0 = 19.5, 2.0, 14.0     # closer, with no y axes (AW, 17 Nov)
 for i in range(4):
     c_axes.append(fig.add_axes(mm(cx0 + i * (cw + gap), 82, cw, 34)))
 P.i1(c_axes)

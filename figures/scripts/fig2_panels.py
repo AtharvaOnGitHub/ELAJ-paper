@@ -69,8 +69,13 @@ def head(ax, letter, title=None, x=0.0, y=1.06):
 BENCH = ROOT / "Outputs/Benchmarks/full"
 DABS, KLS = (7, 168, 336), (1, 30)
 NAMED = {(168, 1): r"B$_{hi}$", (168, 30): r"B$_{lo}$"}
-KL_C = {1: INK, 30: NEUTRAL}
-DAB_C = {7: "#B9A6DA", 168: "#7A55BE", 336: "#3E2378"}   # one hue, light to dark
+# AW, 17 Nov: "Colours need some work." One hue per knob, so a reader knows
+# from colour alone which knob a line holds fixed: slate blue for the
+# information cost, violet for the adversary, each light to dark with its
+# value. Neither hue is a cell family's (Figure 2c/d sit beside these) and
+# neither is ELAJ's amber, which stays on B_hi and B_lo as in Figure 1c.
+KL_C = {1: "#22406E", 30: "#8EA6C9"}
+DAB_C = {7: "#B49FDB", 168: "#7752C0", 336: "#3D2283"}
 
 
 def _val(arm, test, label):
@@ -128,6 +133,13 @@ def _name_points(ax):
                     fontsize=FS_BODY, color=AMBER, fontweight="bold", zorder=6)
 
 
+def _key(ax, text):
+    """The varying knob and its values, bottom right (AW, 17 Nov). Same size
+    and weight as every other label in the panel; only colour varies."""
+    ax.text(.97, .04, text, transform=ax.transAxes, ha="right", va="bottom",
+            fontsize=FS_BODY, color=SOFT)
+
+
 def frontier_by_kl(ax):
     """a: the adversarial weight swept at each information cost."""
     _frontier_axes(ax)
@@ -137,23 +149,16 @@ def frontier_by_kl(ax):
             _arrow(ax, p, q, KL_C[k], 1.3)
         for d in DABS:
             _point(ax, (d, k), KL_C[k])
-    # the varying knob's value beside each unnamed point; named ones say B
-    off = {(7, 1): (6, 0, "left", "center"), (336, 1): (6, -2, "left", "top"),
-           (7, 30): (6, 0, "left", "center"), (336, 30): (6, -2, "left", "top")}
-    for key, (dx, dy, ha, va) in off.items():
-        ax.annotate(rf"$\lambda$ {key[0]}", KNOB[key], xytext=(dx, dy),
-                    textcoords="offset points", ha=ha, va=va, fontsize=FS_SMALL,
-                    color=SOFT)
     _name_points(ax)
+    _key(ax, r"$\lambda$ 7  $\rightarrow$  $\lambda$ 168  $\rightarrow$  $\lambda$ 336")
     # each line named once, beside it, in its own colour
     bx, by = KNOB[(168, 1)]
-    ax.annotate(r"$w_{kl}$ = 1", (bx, by), xytext=(-9, 0), textcoords="offset points",
-                ha="right", va="center", fontsize=FS_BODY, color=KL_C[1], fontweight="bold")
+    ax.annotate(r"$w_{kl}$ 1", (bx, by), xytext=(-9, 0), textcoords="offset points",
+                ha="right", va="center", fontsize=FS_BODY, color=KL_C[1])
     (x1, y1), (x2, y2) = KNOB[(168, 30)], KNOB[(7, 30)]
     xm = x1 + .30 * (x2 - x1); ym = y1 + .30 * (y2 - y1)
-    ax.annotate(r"$w_{kl}$ = 30", (xm, ym), xytext=(-2, 6), textcoords="offset points",
-                ha="right", va="bottom", fontsize=FS_BODY, color="#7C8592",
-                fontweight="bold")
+    ax.annotate(r"$w_{kl}$ 30", (xm, ym), xytext=(-2, 6), textcoords="offset points",
+                ha="right", va="bottom", fontsize=FS_BODY, color=KL_C[30])
 
 
 def frontier_by_dab(ax):
@@ -168,11 +173,9 @@ def frontier_by_dab(ax):
         p, q = KNOB[(d, 1)], KNOB[(d, 30)]
         m = (.5 * (p[0] + q[0]), .5 * (p[1] + q[1]))
         ax.annotate(rf"$\lambda$ {d}", m, xytext=(dx, dy), textcoords="offset points",
-                    ha=ha, va="center", fontsize=FS_BODY, color=DAB_C[d],
-                    fontweight="bold")
+                    ha=ha, va="center", fontsize=FS_BODY, color=DAB_C[d])
     _name_points(ax)
-    ax.text(.04, .07, r"each arrow: $w_{kl}$ 1 $\rightarrow$ 30", transform=ax.transAxes,
-            fontsize=FS_SMALL, color=SOFT)
+    _key(ax, r"$w_{kl}$ 1  $\rightarrow$  $w_{kl}$ 30")
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -196,14 +199,13 @@ def i1(axes):
             ax.plot([j - .3, j + .3], [np.median(v)] * 2, color=INK, lw=1.0, zorder=3)
         ax.set_xticks([0, 1]); ax.set_xticklabels(["control", "case"], fontsize=FS_SMALL)
         ax.set_xlim(-.6, 1.6); ax.set_ylim(0, 1)
-        ax.set_yticks([0, .5, 1])
+        # NO y axis (AW, 17 Nov): the claim is that the two clouds sit at the
+        # same height, which needs no scale to read
+        ax.set_yticks([])
         ax.tick_params(length=2, pad=2, labelsize=FS_SMALL)
-        if ax is not axes[0]:
-            ax.tick_params(labelleft=False)
-        ax.text(0, 1.02, f, transform=ax.transAxes, fontsize=FS_BODY, color=FAM_C[f],
-                fontweight="bold", va="bottom")
-        clean(ax)
-    axes[0].set_ylabel("share of a donor's cells", fontsize=FS_BODY, labelpad=2)
+        ax.text(.5, 1.02, f, transform=ax.transAxes, fontsize=FS_BODY, color=FAM_C[f],
+                va="bottom", ha="center")
+        clean(ax, keep_y=False)
 
 
 # ═════════════════════════════════════════════════════════════════════════
@@ -211,28 +213,46 @@ def i1(axes):
 # different y-axis lines")
 # ═════════════════════════════════════════════════════════════════════════
 def i2b(ax, xpos=None, labels=True):
-    """xpos: where each family sits on ax's x, so the panel can align with I1."""
+    """Violins of the 400 held-out donor AUCs per family, one chance line.
+
+    AW, 17 Nov: "Rethink this as one chance line against how much the 4 cell
+    families explain disease status. Can we try violin plots here? If not,
+    we need numbers in the figure." Both: the violins are the split
+    distributions X12 now writes (x12_by_family_annotated_splits.csv, whose
+    5th-95th percentiles ARE the table's interval), and each carries its
+    mean AUC. The chance line is drawn at 0.5; the per-family permutation
+    nulls sit at 0.48-0.50 and live in the table, not the figure.
+    """
     t = pd.read_csv(CLAIMS / "x12_by_family_annotated.csv").set_index("family")
+    sp = pd.read_csv(CLAIMS / "x12_by_family_annotated_splits.csv")
+    sp = sp[sp.kind == "held-out"]
     xpos = list(xpos) if xpos is not None else [0, 1, 2, 3]
-    half = .32 * (xpos[1] - xpos[0])
+    wid = .62 * (xpos[1] - xpos[0])
+    ax.axhline(.5, color=SOFT, lw=.7, ls=(0, (3, 2)), zorder=1)
     for x, f in zip(xpos, FAMS):
-        r = t.loc[f]
-        ax.plot([x - half, x + half], [r.null] * 2, color=SOFT, lw=.7, ls=(0, (3, 2)), zorder=1)
-        ax.plot([x, x], [r.auc_lo, r.auc_hi], color=FAM_C[f], lw=1.8, alpha=.45,
-                solid_capstyle="round", zorder=2)
-        ax.scatter([x], [r.auc], s=40, color=FAM_C[f], ec="white", lw=.8, zorder=3)
-    ax.text(xpos[0] - half, t.loc[FAMS[0], "null"] - .012, "chance", fontsize=FS_SMALL,
-            color=SOFT, ha="left", va="top")
-    ax.set_ylim(.28, 1.0)
-    ax.set_yticks([1.0]); ax.set_yticklabels(["perfect"], fontsize=FS_SMALL)
-    ax.tick_params(length=2, pad=2)
+        v = sp.loc[sp.family == f, "auc"].to_numpy()
+        vp = ax.violinplot([v], positions=[x], widths=wid, showextrema=False,
+                           points=200, bw_method=.35)
+        for b in vp["bodies"]:
+            b.set_facecolor(FAM_C[f]); b.set_edgecolor("none"); b.set_alpha(.55)
+        lo, hi = np.percentile(v, [5, 95])
+        ax.plot([x, x], [lo, hi], color=INK, lw=.8, zorder=3)
+        ax.scatter([x], [t.loc[f, "auc"]], s=14, color="white", ec=INK, lw=.8, zorder=4)
+        ax.text(x, v.max() + .025, f"{t.loc[f, 'auc']:.2f}", fontsize=FS_BODY,
+                color=INK, va="bottom", ha="center")
+    ax.text(ax.get_xlim()[0] if xpos[0] > 0 else xpos[0] - .5 * wid, .505, "chance",
+            fontsize=FS_BODY, color=SOFT, va="bottom", ha="left")
+    ax.set_ylim(.2, 1.05)
+    ax.set_yticks([.25, .5, .75, 1.0])
+    ax.tick_params(length=2, pad=2, labelsize=FS_SMALL)
     if labels:
         ax.set_xticks(xpos); ax.set_xticklabels(FAMS, fontsize=FS_BODY)
         for tl, f in zip(ax.get_xticklabels(), FAMS):
             tl.set_color(FAM_C[f])
+        ax.tick_params(axis="x", length=0)
     else:
         ax.set_xticks([])
-    ax.set_ylabel("disease read from\nthe cells' state", fontsize=FS_BODY, labelpad=2)
+    ax.set_ylabel("disease status from held-out\ndonors (AUC)", fontsize=FS_BODY, labelpad=2)
     clean(ax, keep_x=False)
 
 

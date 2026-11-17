@@ -111,7 +111,7 @@ import fig2_panels                                                   # noqa: E40
 fig, ax = plt.subplots(figsize=(100 * MM, 42 * MM))
 fig.subplots_adjust(left=.16, right=.98, top=.95, bottom=.16)
 fig2_panels.i2b(ax)
-ax.set_xlim(-.6, 3.6)
+ax.set_xlim(-.6, 4.0)
 save(fig, "I2b_family_signal")
 
 # ── I4b: the disease end only, and narrow ────────────────────────────────
