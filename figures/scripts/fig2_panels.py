@@ -203,7 +203,9 @@ def i1(axes):
         # same height, which needs no scale to read
         ax.set_yticks([])
         ax.tick_params(length=2, pad=2, labelsize=FS_SMALL)
-        ax.text(.5, 1.02, f, transform=ax.transAxes, fontsize=FS_BODY, color=FAM_C[f],
+        # black, not the family colour (AW, 17 Nov: "The colours are not
+        # doing any work" here; the panel compares control with case)
+        ax.text(.5, 1.02, f, transform=ax.transAxes, fontsize=FS_BODY, color=INK,
                 va="bottom", ha="center")
         clean(ax, keep_y=False)
 
@@ -227,29 +229,43 @@ def i2b(ax, xpos=None, labels=True):
     sp = pd.read_csv(CLAIMS / "x12_by_family_annotated_splits.csv")
     sp = sp[sp.kind == "held-out"]
     xpos = list(xpos) if xpos is not None else [0, 1, 2, 3]
-    wid = .62 * (xpos[1] - xpos[0])
+    step = xpos[1] - xpos[0]
+    wid = .62 * step
+    # AW, 17 Nov: callout at the MEDIAN point, median AUC and excess over
+    # chance together, P between the plot and the family name. Excess is
+    # over the drawn line, 0.5, so the arithmetic is checkable by eye; P is
+    # the table's permutation P (share of shuffled-label nulls at or above
+    # the mean held-out AUC), unchanged.
     ax.axhline(.5, color=SOFT, lw=.7, ls=(0, (3, 2)), zorder=1)
     for x, f in zip(xpos, FAMS):
         v = sp.loc[sp.family == f, "auc"].to_numpy()
+        med = float(np.median(v))
         vp = ax.violinplot([v], positions=[x], widths=wid, showextrema=False,
                            points=200, bw_method=.35)
         for b in vp["bodies"]:
             b.set_facecolor(FAM_C[f]); b.set_edgecolor("none"); b.set_alpha(.55)
         lo, hi = np.percentile(v, [5, 95])
         ax.plot([x, x], [lo, hi], color=INK, lw=.8, zorder=3)
-        ax.scatter([x], [t.loc[f, "auc"]], s=14, color="white", ec=INK, lw=.8, zorder=4)
-        ax.text(x, v.max() + .025, f"{t.loc[f, 'auc']:.2f}", fontsize=FS_BODY,
-                color=INK, va="bottom", ha="center")
-    ax.text(ax.get_xlim()[0] if xpos[0] > 0 else xpos[0] - .5 * wid, .505, "chance",
-            fontsize=FS_BODY, color=SOFT, va="bottom", ha="left")
-    ax.set_ylim(.2, 1.05)
+        ax.scatter([x], [med], s=14, color="white", ec=INK, lw=.8, zorder=4)
+        ax.annotate(f"{med:.2f}\n{med - .5:+.2f}", (x, med),
+                    xytext=(x + .5 * wid + .04 * step, med), textcoords="data",
+                    fontsize=FS_BODY, color=INK, va="center", ha="left",
+                    linespacing=1.15, zorder=5,
+                    bbox=dict(boxstyle="square,pad=0.08", fc="white", ec="none"))
+        p = float(t.loc[f, "p"])
+        ax.text(x, -.03, f"P = {p:.3f}", transform=ax.get_xaxis_transform(),
+                fontsize=FS_SMALL, color=SOFT, ha="center", va="top")
+    ax.text(1.0, .5, " chance", transform=ax.get_yaxis_transform(), fontsize=FS_BODY,
+            color=SOFT, va="center", ha="left", clip_on=False)
+    ax.text(1.0, 1.03, "beside each: median AUC, and its excess over chance",
+            transform=ax.transAxes, fontsize=FS_SMALL, color=SOFT, ha="right",
+            va="bottom")
+    ax.set_ylim(.2, 1.0)
     ax.set_yticks([.25, .5, .75, 1.0])
     ax.tick_params(length=2, pad=2, labelsize=FS_SMALL)
     if labels:
-        ax.set_xticks(xpos); ax.set_xticklabels(FAMS, fontsize=FS_BODY)
-        for tl, f in zip(ax.get_xticklabels(), FAMS):
-            tl.set_color(FAM_C[f])
-        ax.tick_params(axis="x", length=0)
+        ax.set_xticks(xpos); ax.set_xticklabels(FAMS, fontsize=FS_BODY, color=INK)
+        ax.tick_params(axis="x", length=0, pad=11)
     else:
         ax.set_xticks([])
     ax.set_ylabel("disease status from held-out\ndonors (AUC)", fontsize=FS_BODY, labelpad=2)

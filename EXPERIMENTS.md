@@ -26,6 +26,8 @@ ship with the published repo. Results land in `axw1008/docs/paper/`.
 | X13 | Reproducible marker signatures across studies | M2 | **done, counters M2** | CPU, 20 min |
 | X14 | Tissue effect within a transferred label | F1 | **done**, weak but real | CPU, small |
 | X15 | Group embedding analysis | Supplementary | todo, unscoped | unknown |
+| X17 | Decoded disease genes against MEASURED expression | E3, Fig 2e | **written, not run**: needs one scp, then sbatch | CPU, < 1 h |
+| X18 | Disease ranking against Open Targets and EndometDB | E3, Fig 2f | **done, EndometDB disagrees** | CPU, minutes |
 
 ---
 
@@ -821,3 +823,55 @@ PCA reference families, which are two thirds of the job's cost and what
 fill `counts_raw`, `counts_log` and every `delta` column. X15 therefore says
 what each group carries and says nothing about what the tokenisation costs
 against raw counts. Running them is a separate decision.
+
+
+## X17 — the decoded disease genes, on measured counts
+
+AW, 17 Nov, choosing option A for Figure 2e: *"This would've been a loophole
+in the results otherwise."* X12 step B names its genes through the decoder;
+nothing has checked them against counts. `disease_genes_expression.py` /
+`disease_genes_expression.sh` write per-donor, per-family pseudobulk for all
+15,496 genes (annotated and transferred labels, control and eutopic). The
+statistics run locally on that table: the top disease-side genes in immune
+cells, case against control, in the FIT donors (duempelmann, marecko) and,
+the real test, in HELD-OUT donors of every other study with control and
+eutopic endometrium; and the whole decoded ranking against measured fold
+change.
+
+**To run** (the transferred labels exist only on the Mac):
+
+```
+scp "/Users/atharvawaghmare/Endo research/ELAJ/Outputs/cells/p1_dab168_kl1/cell_family_transferred.csv.gz" axw1008@bluebear.bham.ac.uk:/rds/homes/a/axw1008/axw1008/src/outputs/cells/p1_dab168_kl1/
+cd /rds/homes/a/axw1008/axw1008 && git pull && sbatch data_collation/scripts/disease_genes_expression.sh
+```
+
+Then copy `src/outputs/analysis/x17_pseudobulk/` back.
+
+## X18 — the disease ranking against two external references
+
+`axw1008/src/scripts/external_references.py`, writes
+`x18_external_references.csv` and `x18_endometdb_PE_vs_CE.csv`. Rules fixed
+before computing; see the script's docstring. Downloads in
+`Atharva Papers/Validation/{opentargets,GSE141549}`.
+
+**Open Targets** (MONDO_0005133, 3,619 targets; 270 at score >= 0.1, 244 in
+our vocabulary). Modest enrichment at our disease end: 25 in our top 5%
+against 12.2 expected, one-sided MWU P = 0.047. **Directionless.**
+
+**EndometDB** (GSE141549, WG-6, 62 patient against 38 control endometria,
+phase-adjusted). ⚠ **The rule's list is empty**: no gene differs at FDR
+0.05 either way (smallest q 0.065). Without a threshold, **our ranking
+correlates NEGATIVELY with the patient-control t**: rho -0.110 over 14,044
+genes; our top 15 average t -0.68. In untreated women with a known phase
+(33 against 20, a SENSITIVITY, not the main result) it is stronger, rho
+-0.356, and holds in each phase alone.
+
+**Leading explanation, not proven.** Bulk measures how many immune cells a
+tissue has; our ranking describes what each immune cell is doing. In the
+untreated subset patients' bulk tilts towards epithelium and away from
+immune, stromal and endothelial markers (none significant alone), and the
+control end of our ranking is the epithelial-identity end X12 already
+flagged. **Consequence: no bulk list, Zhao's included, can validate a
+within-immune direction**, and Zhao's 4-of-15 overlap does not survive a
+cohort eight times its size. X17's held-out single-cell test is the
+replication that can.
