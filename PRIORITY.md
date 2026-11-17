@@ -218,6 +218,147 @@ outcome row ("four genes never before reported"), Fig 2f.
     download it by browser (the site's certificate fails here); it has no
     direction, like Open Targets, which AW kept.
 
+# ⓕ FINAL CHECKLIST, before submission (AW, 18 November)
+
+Run AFTER the gene ranking is redone and its prose rewritten (⓪), because
+that changes Abstract, Results E3, Discussion, Note 6, Fig 1a and Fig 2.
+Every pass produces findings as **current / proposed / why** for anything
+in AW's text; only spelling and grammar are fixed directly. Each pass ends
+with a short findings file in `audit/`, so the next session sees what was
+checked and what was not.
+
+**Limits that apply** (NMI Article, `Nature_websites/_txt/NMI_Content_Types.txt`):
+main text ≤ 3,500 words excluding abstract, Methods, references and legends;
+abstract ≤ 150 words, unreferenced; ≤ 6 display items; references ~50 as a
+guideline; ≤ 10 Extended Data figures. **Where we are:** abstract 188 words
+(over by 38), main text ~3,950 (over by ~450), 41 unique citations in the
+main text, 5 display items (Figs 1-4, Table 1).
+
+## F1. Figures review: every main, Extended Data and supplementary figure
+
+For each figure, one row per panel, against six questions:
+- [ ] **Readability** at placed size: nothing below NMI's 5 pt floor once
+      scaled (titles 6.5 pt, body 5.5 pt, panel letters 10 pt bold, Arial;
+      `FIGURES_NEEDED.md`); 180 mm double / 90 mm single column, depth
+      ≤ 170 mm; no type over shaded areas, no white-on-colour text; axis
+      labels sentence case, no full stop, units with a space, thousands
+      with commas (Nature formatting guide).
+- [ ] **Importance**: does the panel carry something the text needs?
+      Nature: "Unnecessary figures and parts (panels) of figures should be
+      avoided ... small tables or histograms ... can generally be stated
+      briefly in the text." Anything that fails moves to Supplementary or
+      goes.
+- [ ] **Correctness**: every plotted value traces to a named CSV; the
+      figure script reads that file (no hard-coded numbers, cf. the
+      supp_figures novel-genes set); regenerated AFTER the gene redo
+      (Fig 1a fifth row, Fig 2f, Note 6 figures); panel content matches
+      what the caption and the text say it shows. Check against study and
+      cell type before believing a pattern (CONTINUITY, failure mode 3).
+- [ ] **Caption completeness** (REGISTER, *Figure legends*; NMI AIP):
+      brief title, then each panel in sequence; centre values and error
+      bars defined; n stated; statistical test named; P values given;
+      keys described in words ("open red triangles"), not symbols; no
+      methods detail; under 300 words (Nature guide). Captions wait on AW
+      signing each figure off (0a).
+- [ ] **NMI guideline violations**: image integrity (no flattened labels on
+      raster images, editable text), RGB, resolution, every panel cited in
+      the text in order, Extended Data referred to as discrete items,
+      Source Data file for every figure with plotted data.
+- [ ] **Colour scheme**: Okabe-Ito for cell families and the eleven study
+      hues (yellow-olive-brown band removed) used IDENTICALLY in every
+      figure, main and supplementary (Fig 1a, Fig 2f rug rows, UMAPs,
+      Notes); one meaning per colour across the paper; sequential vs
+      diverging scales chosen by the data; check each figure under a
+      colour-blind simulation; no red/green-only contrasts.
+
+## F2. Citations review, and additions
+
+- [ ] Every statement about prior work, a dataset, a tool or a method
+      carries a citation (main text, Methods, legends, Notes, SM).
+      Introduction, Results and Methods have never had this pass (PRIORITY,
+      *Citations*); the Discussion went from 1 to 18.
+- [ ] **Additions known to be missing:** Reactome and GO in the main
+      Methods (the SM cites both); the software the pipeline rests on
+      (PyTorch, anndata/scanpy, scikit-learn, scIB, UMAP) with versions;
+      every comparison method at the point it is named.
+- [ ] Every citation supports the exact claim it is attached to (open the
+      paper, not the abstract). Records to fix: `kedzierska2025zeroshot`
+      (no pages), `duempelmann2026endometrium` (no volume, pages); the
+      preprints `vasilevsky2022mondo`, `czi2023cellxgene` checked for
+      journal versions; the six bib entries cited zero times removed.
+- [ ] NMI format: numbered, sequential across main text, Methods and Data
+      availability; article titles present; ~50 as the guideline;
+      Supplementary has its own reference list.
+- [ ] **Guide's file**: citations go in as ONE pointed pass of find/replace
+      changes naming each location and number (AW, 14 Nov); his Results has
+      none and his Discussion has author-year brackets.
+
+## F3. Prose: a full read-through, every section, main and supplementary
+
+- [ ] **Tone**: state the case, then the caveat, never both in one sentence;
+      no pre-empting objections nobody made; no clawing at our own work; no
+      hedging (CONTINUITY, *My failure modes*; REGISTER §5-6).
+- [ ] **Accuracy**: every number through `audit_numbers.py` and
+      `verify_numbers.py` (build.sh runs both; extend them to Methods and
+      the Notes); every claim against `CLAIMS_LEDGER.md`; the four
+      main-Methods errors in ⓪ item 4 raised with AW.
+- [ ] **Consistency**: one term per concept, the paper's own (adversarial
+      weight = λ_dab, information cost = w_kl, ELAJ_B hi / B lo, donor vs
+      patient, study keys as `\texttt{}`); every number identical wherever
+      it recurs (abstract, Results, captions, Notes, SM, tables); British
+      spelling; tense (past for what was done, present for what a figure
+      shows); every Supplementary Note / Table / Fig / Data pointer
+      resolves and its number matches after any reordering.
+- [ ] **Readability and sharpness**: one point per paragraph, topic
+      sentence first; procedure in a clause, never a sentence (REGISTER
+      §13); every number lands a conclusion (§3); cut to the limits above,
+      cutting Results first (it carries the excess).
+
+## F4. Comparison against the guide's version (his file is the paper)
+
+Protocol (CONTINUITY, *The supervisor is in the loop now*; *Word maths does
+not survive a copy*; `make_changeset.py`):
+1. AW sends the latest `.docx` from the guide's OneDrive.
+2. Read `word/comments.xml` and anchors in `word/document.xml`; diff his
+   text against ours paragraph by paragraph (tracked changes are off).
+3. Sync HIS edits into the `.tex`, so the two do not drift.
+4. For OUR changes: edit the `.tex`, build the Word file, and hand AW a
+   changeset from `make_changeset.py`: short maths-free `edit` fragments,
+   `maths` entries he inserts with Word's equation tool, `paste` only for
+   genuinely new maths-free prose, new references listed in Nature style.
+   Never a whole-paragraph paste over a paragraph holding maths.
+
+Known gaps to close in that comparison:
+- [ ] Batch 2026-11-10 never confirmed applied; Figure 1 has changed since.
+- [ ] X13 additions to Results and the Discussion are only in the `.tex`.
+- [ ] Everything since: Abstract and Introduction (AW-edited 17 Nov), the
+      gene-claim rewrite, new Figs 2 and 4 with captions, the Supplementary
+      Methods.
+- [ ] His open comments: `[97]`, `[42]`, `[82]`, `[503]`, `[511]` ours;
+      `[132]`, `[467]`, `[507]` his to clear; the two cuts AW raises in
+      person.
+
+## F5. Added: things that also have to be true before submission
+
+- [ ] **Both PDFs build green**: `build.sh` (number checks pass) and
+      `build_supp.sh`; zero overfull, zero undefined references, figures at
+      full resolution (`FIGS=1`).
+- [ ] **One checkpoint, one set of numbers**: every figure, table, Note and
+      Supplementary Data file regenerated from the final CSVs after the gene
+      redo, then nothing re-run.
+- [ ] **Source Data** for every main and Extended Data figure; Supplementary
+      Data D1-D5 current (D1 depends on the gene ranking).
+- [ ] **Reporting Summary**, **Data availability** (every corpus study with
+      accession), **Code availability** (repository, licence, Zenodo DOI,
+      run documentation in the repository, the supervisor's third batch).
+- [ ] Back matter AW owns: author list and contributions, funding, competing
+      interests, ethics statement for public data, cover letter, preprint.
+- [ ] **Reproducibility**: each reported number regenerable by a named
+      command from a committed script; HPC commands recorded in the
+      experiment log.
+- [ ] Push both repos when AW asks; no `Co-Authored-By` or `Claude-Session`
+      trailers in any commit.
+
 # 0a. Figures in flux, 17 November — CAPTIONS ARE A TODO FOR AFTER
 
 **AW, 17 Nov: "Figure captions are a todo for after figures are fixed."**
