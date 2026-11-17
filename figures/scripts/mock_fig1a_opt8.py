@@ -211,8 +211,9 @@ def pic_latent(ax, cx, cy):
 
 # ── outcomes ────────────────────────────────────────────────────────────
 def res_dominance(ax, cx, cy):
-    """Unsquashed: the axes are the point, so give them room."""
-    w, h = 15.0, 10.0
+    """Unsquashed: the axes are the point, so give them room. 13 x 8.5, not
+    15 x 10, since the fifth outcome row (17 Nov) cut the row pitch to 11.8."""
+    w, h = 13.0, 8.5
     x0, y0 = cx - w / 2, cy - h / 2
     ax.add_patch(Rectangle((x0 + w * .34, y0), w * .66, h * .66,
                            fc="#F3E7E5", ec="none", zorder=2))
@@ -259,6 +260,23 @@ def res_dissociation(ax, cx, cy):
     for s in (1, -1):
         ax.plot([cx + 2.3, cx + 4.5][::s], [cy - 1.1, cy + 1.1],
                 color=ROSE, lw=1.3, solid_capstyle="round", zorder=5)
+
+
+def res_new_genes(ax, cx, cy):
+    """AW, 17 Nov: 'F1 pictogram is good. Please add it to Fig 1a Outcomes.'
+    A strand of gene tags, four lit, each with a small mark above it: the
+    four disease-side genes with no prior endometriosis report."""
+    xs = np.linspace(cx - 6.3, cx + 6.3, 8)
+    ax.plot([cx - 7.2, cx + 7.2], [cy - 0.5, cy - 0.5], color=GREY_E, lw=.6, zorder=3)
+    for i, x in enumerate(xs):
+        on = i in (1, 3, 4, 6)
+        ax.add_patch(FancyBboxPatch((x - .62, cy - 2.3), 1.24, 3.6,
+                                    "round,pad=0.12", fc=AMB_F if on else GREY_F,
+                                    ec=AMB_E if on else GREY_E, lw=.9 if on else .6,
+                                    zorder=4))
+        if on:
+            ax.plot([x - .3, x, x + .3], [cy + 2.2, cy + 2.9, cy + 2.2],
+                    color=AMB_E, lw=.8, zorder=5)
 
 
 def main() -> None:
@@ -356,11 +374,12 @@ def main() -> None:
     # ── Outcomes ────────────────────────────────────────────────────────
     head(ax, 131, TOP, "Outcomes", "what they hold, and how they compare", AMB_E)
     RX, RY, RW, RH = 131.0, 5.0, 46.0, 59.0
-    rh = RH / 4
     rdraw = [(res_dominance, ["better than all nine", "on both axes at once"]),
              (res_donor, ["least donor identity", "of anything tested"]),
              (res_cycle, ["most cycle signal", "of anything tested"]),
-             (res_dissociation, ["disease status legible,", "rASRM stage not"])]
+             (res_dissociation, ["disease status legible,", "rASRM stage not"]),
+             (res_new_genes, ["four genes never before", "reported in endometriosis"])]
+    rh = RH / len(rdraw)
     for i, (fn, lines) in enumerate(rdraw):
         cy = RY + RH - rh * (i + .5)
         fn(ax, RX + 9.0, cy)
@@ -370,6 +389,10 @@ def main() -> None:
 
     OUT.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUT / "mock_fig1a_opt8.png",
+                dpi=int(os.environ.get("FIGDPI", 400)))
+    # figure1.py reads panel_a_abstract.png; it was a hand copy of this file,
+    # so write it here and the two cannot drift
+    fig.savefig(OUT / "panel_a_abstract.png",
                 dpi=int(os.environ.get("FIGDPI", 400)))
     print(f"wrote {OUT / 'mock_fig1a_opt8.png'}  ({W:.0f} x {H:.0f} mm)")
     print(f"  tiles: {len(per)} donor groups summing to {per.sum()}")
