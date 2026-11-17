@@ -170,6 +170,16 @@ and smaller exposure, which is that those three cohorts staged their
 samples to their own definitions, and we have assumed those definitions
 agree.
 
+What the one cohort does allow is a test of the cycle from outside it. A
+single linear direction in the latent, fitted to the phase labels of
+\texttt{marecko\_2024} and \texttt{garcia\_alonso\_2021} alone, orders
+\texttt{duempelmann\_2026}'s 60 donors by the cycle day the clinic
+recorded (Spearman $\rho$ = 0.7565, $P$ = 2.7 $\times$ 10$^{-12}$) and by
+serum progesterone ($\rho$ = 0.8435, $P$ = 2.7 $\times$ 10$^{-17}$;
+Supplementary Fig.~\ref{sfig:cycle-external}). Neither variable was ever
+an input to the model or to the fit, so the day's limits above bound how
+precisely the cycle can be read, not whether the latent holds it.
+
 \begin{figure}[t]
 \centering
 \includegraphics[width=.6\textwidth]{figures/cycle_day_coverage.png}
@@ -183,6 +193,23 @@ followed within anyone, and cycle length varies between people and is
 altered by endometriosis, so the same numbered day is not the same
 physiological point in every donor.}
 \label{sfig:cycleday}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\textwidth]{figures/x16_cycle_axis_external.png}
+\caption[The cycle axis orders a cohort it was never fitted on]{\textbf{The
+cycle axis orders a cohort it was never fitted on.} Each point is one of
+the 60 \texttt{duempelmann\_2026} donors: the median position of its cells
+on the cycle axis against the cycle day recorded by the clinic (\textbf{a})
+and against serum progesterone (\textbf{b}), coloured by the donor's own
+phase label. The axis is the first linear discriminant of menstrual phase
+over the sixteen-dimensional latent of ELAJ$_{B\,hi}$, fitted on
+\texttt{marecko\_2024} and \texttt{garcia\_alonso\_2021} only and oriented
+along rising cycle day. Within the periovulatory label alone the axis still
+orders donors by day ($\rho$ = 0.6421, $P$ = 0.0041, 18 donors). Main-text
+Fig.~4f draws the same axis over the whole embedding.}
+\label{sfig:cycle-external}
 \end{figure}
 
 \paragraph{One study is follicular fluid labelled as endometrium.}

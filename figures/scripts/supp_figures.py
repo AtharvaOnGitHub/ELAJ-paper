@@ -1875,13 +1875,25 @@ def x16():
     dn["proj"] *= sgn
     r_day, p_day = spearmanr(dn.proj, dn.day)
     r_pg, p_pg = spearmanr(dn.proj, dn.prog)
+    ph_first = (pd.DataFrame({"pid": m.patient_id.values[te],
+                              "ph": m["menstrual phase"].values[te]})
+                .groupby("pid").ph.first())
+    dn["coarse"] = ph_first.reindex(dn.index).map(PHASE_COARSE)
 
     # ── FIGURE a/b: the axis against two variables the model never saw ───
     fig, axes = plt.subplots(1, 2, figsize=(165 * MM, 68 * MM))
     for ax, (col, xl, r_, p_, pl) in zip(axes, (
             ("day", "cycle day recorded by the clinic", r_day, p_day, "a"),
             ("prog", "serum progesterone (nmol/l)", r_pg, p_pg, "b"))):
-        ax.scatter(dn[col], dn.proj, s=16, color=FAM_C["stromal"], lw=.4,
+        # COLOURED BY THE DONOR'S OWN PHASE LABEL (AW, 17 Nov: this is
+        # Figure 2 candidate C2, moved to Note 3), so a reader sees the axis
+        # resolve order inside a label as well as across labels
+        for ph_, c_ in zip(PHASE_ORDER, PHASE_C):     # not p_: that is the P value
+            s_ = dn[dn.coarse == ph_]
+            ax.scatter(s_[col], s_.proj, s=16, color=c_, lw=.4,
+                       edgecolor="white", zorder=3)
+        s_ = dn[dn.coarse.isna()]
+        ax.scatter(s_[col], s_.proj, s=16, color="#9AA3AE", lw=.4,
                    edgecolor="white", zorder=3)
         ax.set_xlabel(xl); ax.set_ylabel("position on the cycle axis")
         ax.text(.03, .97, f"Spearman $\\rho$ = {r_:+.3f}\n$P$ = {p_:.1e}, n = {len(dn)} donors",
@@ -1890,7 +1902,11 @@ def x16():
         ax.set_title(f"{pl}", fontsize=FS_TITLE, loc="left", fontweight="bold")
         for sp in ("top", "right"):
             ax.spines[sp].set_visible(False)
-    fig.subplots_adjust(wspace=.28, bottom=.19)
+    fig.legend(handles=[Line2D([], [], marker="o", lw=0, ms=4, color=c_, label=ph_)
+                        for ph_, c_ in zip(PHASE_ORDER, PHASE_C)],
+               loc="lower center", ncol=len(PHASE_ORDER), fontsize=FS_LEG,
+               bbox_to_anchor=(.5, .0), frameon=False)
+    fig.subplots_adjust(wspace=.28, bottom=.24)
     save(fig, "x16_cycle_axis_external", cite=True)
 
     # ── FIGURE: the cycle closes ─────────────────────────────────────────
