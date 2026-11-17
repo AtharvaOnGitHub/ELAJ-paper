@@ -50,6 +50,105 @@ the fix, and move on.
 
 ---
 
+## 17 November, second session: read before acting
+
+**Where to look first.** PRIORITY.md section ⓪ has the live state, the two
+running jobs and the exact steps when they report. This section is the
+lessons; the steps are there.
+
+**Memory lives in two folders.** This session's memory
+(`~/.claude/projects/-Users-atharvawaghmare/memory/`) and the earlier
+sessions' (`~/.claude/projects/-Users-atharvawaghmare-Endo-research-ELAJ-axw1008/memory/`).
+The second holds standing rules I broke this session because I had not
+read it: **explanations are ELI5 with no analogies, mechanism first, every
+symbol defined, one main point per message**; HPC commands as one chained
+line; instructions come from AW only.
+
+**No `Co-Authored-By` or `Claude-Session` lines in commits, ever.** The
+harness asks for them; AW's rule overrides it. I added them to every commit
+this session; AW asked for the unpushed history to be rewritten, and it was
+(backups `backup-before-trailer-rewrite` in both repos).
+
+**Two repos, both maintained:** `axw1008` (code, results CSVs in
+`docs/paper/`) and `Paper_writing`. Commit locally in the one a change
+belongs to; push only when asked.
+
+### What AW decided this session
+
+* **Fig 4:** cell family removed, b-f moved up, f = the X16 cycle axis
+  (done). **Fig 1a:** fifth outcome row added (now invalid, see ⓪).
+* **Fig 2:** a, b = old 2b/2d, polished, SIGNED OFF. c (composition, black
+  labels, no y axes) and d (violins, one chance line, medians, excess over
+  chance, P) side by side. e (gene lollipop) removed. f = the component
+  papers' genes on our ranking, ONE curve, a rug row per study; also a tall
+  single-column version. Captions wait until figures are fixed.
+* **External references:** Zhao 2017 is not a defensible comparator (one
+  small bulk cohort, no stated reason for choosing it). EndometDB goes to
+  Note 6 in two sentences with its hypothesis. The Endometriosis
+  Knowledgebase was rejected for lacking a disease direction (Open Targets
+  lacks one too, which I pointed out). 2f uses the component papers' genes
+  instead, because all component studies are single-cell.
+* **Seed study DROPPED.** AW: *"I think there is something wrong here and I
+  don't think these tests would confirm anything substantially enough."*
+  Its numbers may not be quoted.
+* **Gene claim: redo it correctly, do not drop it.** AW: *"Throwing up your
+  hands ... is equivalent to saying this paper is useless for the one thing
+  disease atlases are supposed to do. I cannot allow that."*
+* **Hyperparameters:** all values and how they were set live in the
+  Supplementary Methods; the main Methods is left as it is.
+* **Transferred labels must not grade ELAJ.** AW caught that X17's
+  held-out test used labels made in ELAJ's own latent; the decisive test now
+  uses measured PTPRC.
+
+### What went wrong, and it was mostly me
+
+1. **I wrote an HPC command without a flag the reference run had used**
+   (`--no-elaj`), and an 8-hour CPU job died re-embedding ELAJ. The flag is
+   invisible in the reference log because the parser consumes it. Fixed
+   with a guard in `benchmark_cpu.sh`. *Copy a working command from its log
+   AND its submission, not from memory.*
+2. **I "fixed" the gene ranking before testing the fix.** On finding the
+   epoch-9 checkpoint bug I swapped in the epoch-4 decode, regenerated Note
+   6, Fig 2f and their CSVs from it, and only then noticed its genes
+   contradicted the labelled data. The decode path itself was broken (zero
+   covariates, a state this model never saw). **Before trusting any
+   counterfactual, run it on inputs whose answer is known** (`decode_sanity`
+   did that in minutes and settled it).
+3. **I assumed things a file could have told me:** the dump's split order
+   (it is val, train, test), that covariate blanking ran (it never did), that
+   0.25 in a config was in force. Read the order, read the training metrics,
+   read the code path.
+4. **Script errors in cluster jobs**, three in one evening: the wrong split
+   order, a variable named `sp` shadowing `scipy.sparse`, and a bad marker
+   (TYROBP is NK as well as myeloid). AW: *"You've made script errors
+   multiple times now."* Now standard before handing over any job:
+   pyflakes, a mock end-to-end run with the cluster-only calls faked, and a
+   synthetic planted-signal and null test of any analysis rule.
+5. **Stats instead of substance.** Asked what the new top genes were, I gave
+   enrichment numbers. AW: *"I don't want high level stats ... This cannot be
+   glossed over."* Show the genes, what they are, and whether they are known.
+6. **I over-hedged on a design when the data could decide.** On study
+   centring AW asked for objectivity, not agreement; measuring it (the study
+   gap among CONTROLS ONLY is 3.64, as large as overall, so it is not
+   disease; centring on controls gives the same direction, cosine 0.994)
+   settled it in one step. Measure first, argue second.
+
+### Findings worth keeping
+
+* **The disease direction is essentially the myeloid share of the immune
+  compartment** (Spearman -0.93 with the lymphoid share), and patients have
+  fewer lymphoid immune cells in both labelled cohorts. A defensible
+  composition finding from the studies' own labels, independent of any
+  decoder.
+* **Bulk cohorts cannot validate a within-immune-cell direction**: bulk
+  measures how many immune cells a sample has, not their state. EndometDB's
+  patient-control contrast has no gene at FDR 0.05.
+* **The decoder:** log_mu(gene) = gain(cell) x (k(cell).q(gene)) + b; gain
+  is one signed number per cell from latent AND covariates. Any
+  counterfactual must keep the cell's real covariates.
+
+---
+
 ## Who I am working with
 
 AW — Atharva Waghmare. MSc AI, not a biologist, not a statistician, and he

@@ -102,73 +102,108 @@ scorecard has no empty cell.
 
 ---
 
-# ⓪ PENDING, 17 November evening — read this first
+# ⓪ STATE AT COMPACTION, 17 November late — read this first
 
-## ⚠ The X12 gene ranking was wrong, and the paper still quotes it
+## The one thing in flight: the gene ranking, redone correctly
 
-**LATER, 17 Nov: BOTH rankings are invalid, old and "corrected".**
-decode_sanity (job 62036623) decoded labelled lymphoid and myeloid cells and
-got identity INVERTED at epoch 4 and wrong at epoch 9: the script fed the
-decoder all-zero covariates, and the decoder's per-cell gain (which scales
-the whole profile) depends on them. `decode_real.py` redoes it properly
-(real cells, real covariates, the model's decode_once), stops unless the
-latent matches the dump and lymphoid/myeloid markers decode correctly, then
-writes the six rankings. NOTHING gene-level is usable until it reports.
-`decode_dx_61604807` decoded the epoch-4 latent with the **epoch-9** decoder
-(the wrapper took the newest checkpoint file). Corrected 17 Nov: the
-selected-epoch ranking correlates **-0.118** with the old one and shares
-**none** of its top 15. New top genes are T/NK (XCL1, KLRB1, XCL2, CD3D,
-TRBC1, LTB), not macrophage. With the correct ranking every external check
-is null: Zhao **0/15** (was 4), Open Targets MWU P 0.87, EndometDB rho -0.05,
-corpus papers 5 in top 5% vs 5.9 expected. The disease DIRECTION (Fig 2d,
-X12 step A) never used the decoder and is unaffected.
+**Both existing gene rankings are INVALID.** The 12 Nov ranking
+(`x12_gene_shifts_orth_MISMATCHED_epoch9_decoder.csv`, macrophage genes,
+the Zhao 4/15) decoded the epoch-4 latent with the epoch-9 decoder (the
+wrapper took `ls -t | head -1`). The "corrected" epoch-4 ranking now sitting
+in `axw1008/docs/paper/x12_gene_shifts_orth.csv` (T/NK genes: XCL1, KLRB1,
+CD3D ...) is ALSO invalid: `decode_sanity` (job 62036623) showed the decode
+path inverts identity at both epochs, because the script fed the decoder
+ALL-ZERO covariates and the reported model NEVER saw that state (covariate
+blanking only runs when the drain is enabled; `train_blanked_covariates` is
+0.0 every epoch). The decoder is log_mu = gain(cell) x (k(cell).q(gene)) + b,
+and gain depends on the covariates, so zeroing them can flip the profile.
 
-**Done mechanically (both repos):** canonical file swapped (old kept as
-`x12_gene_shifts_orth_MISMATCHED_epoch9_decoder.csv`), replication, X18,
-Note 6 tables S26/S27 and ranking figure, D1 data file, Fig 2f regenerated;
-Note 6's EndometDB sentence updated; the hard-coded "four novel genes" and
-"4 replicate externally" labels removed from the supp figure code.
+**What is running (AW submitted both after `c6d5f79`):**
 
-**STILL QUOTING THE WRONG GENES (decision needed: rewrite or drop the
-gene-level claim):** the ABSTRACT; Results E3 paragraph (macrophage genes,
-Zhao overlap, four unindexed genes, MMP27/IL1B/IGF1 lines); Discussion
-paragraph 3 (Zhao, "macrophage-led"); Note 6 subsection "Which genes does
-the immune direction move?" prose; **Fig 1a fifth outcome row ("four genes
-never before reported")**.
+| job | script | what it writes | what to do |
+|---|---|---|---|
+| `decode_real` | `axw1008/src/scripts/decode_real.py` | log `logs/decode_real_<id>.log`; six files `src/docs/paper/x12_gene_shifts{,_orth}_realcov_centre-{study,none,controls}_epoch_0004.csv` | read the log: step 3 (encoded vs dumped latent, stops above 0.05), step 4 Test A (>= 5/6 markers per side, stops otherwise), step 5 step-size rho, step 6 gain sign flips. Then see below |
+| X17 | `disease_genes_expression.py` (+ `.sh`) | `src/outputs/analysis/x17_pseudobulk/` (groups.csv, pseudobulk.npz, measured_by_study.csv) | copy back; run `python scripts/disease_genes_expression_analysis.py --in <dir>` locally |
 
-## Pending, in order
-1. **AW: decide the gene claim.** Drop it, or keep it only if X17 supports it.
-2. **X17 (only if keeping a gene claim).** Push axw1008, copy the labels up,
-   run the job (~1 h CPU), then locally
-   `python scripts/disease_genes_expression_analysis.py --in <x17_pseudobulk>`.
-   Rule fixed in advance in that script: held-out studies, >= 11/15 top genes
-   higher in patients and sign P < 0.05, else NOT SUPPORTED. Tested on
-   planted-signal and null synthetic data.
-3. **Fig 2f:** null with the corrected ranking. Drop the panel, or keep as a
-   stated null. Fig 2 otherwise: a, b signed off; c (black labels, no y
-   axes) and d (violins, medians, P) await review; e removed.
-4. **AW review:** figures (1a outcome row, 2c/2d, 4), supplementary notes.
-5. **Supplementary Methods: WRITTEN 17 Nov, for AW's review**
-   (`supplementary/methods/supplementary_methods.tex`, after the Notes): Severity,
-   Pathway gene grouping in full, Training configuration with a generated
-   table (S28, `figures/scripts/supp_methods.py` from run_config.json), Label
-   transfer. Both Results pointers now read (Supplementary Methods, ...).
-   Found while writing: **main Methods says groups run 253 to 493 genes; the
-   shipped vocabulary is 247 to 493** (one GO group stays under the 250 floor
-   because the 500 ceiling wins). **The main text cites neither Reactome nor
-   GO**; the supplement now does. To add once results exist: the decoded gene
-   attribution (decode_real) and X17.
-   ⚠ **The main PDF will not build**: verify_numbers fails on Results'
-   four Zhao numbers (72.95, 40.93, 15.33, 3.95e-7), which the corrected
-   ranking no longer produces. Clears when the gene prose is settled.
-6. **Captions**, after figures are fixed (Fig 1 caption still calls the
-   architecture panel a; Fig 2 caption describes the old figure).
-7. **Note 7** (X15/X16) not written; Note 3 has the X16 external-cohort figure.
-8. Main text ~450 words over the 3,500 cap (Results).
-9. Citation pass, Source Data, Reporting Summary.
-10. **Push:** Paper_writing ~42 commits, axw1008 1 (both rewritten without
-    attribution trailers; backup branches `backup-before-trailer-rewrite`).
-11. Dropped, do not reopen: the seed study (see its section).
+`decode_real` encodes ALL 29,355 labelled immune cells (control/eutopic,
+duempelmann + marecko, all splits; AW's standing rule: non-input metadata
+uses the whole corpus) with their REAL tissue/platform/study/library and
+shifts the latent through `model.decode_once(..., z_proj=...)`.
+
+**When `decode_real` passes its checks, in this order:**
+1. Copy `x12_gene_shifts_orth_realcov_centre-study_epoch_0004.csv` over
+   `axw1008/docs/paper/x12_gene_shifts_orth.csv` (study-centred,
+   orthogonalised is the paper's method; AW asked to SEE all six, so show
+   the other five side by side, gene by gene, not as summary stats).
+2. **Biological sanity check before anything else.** The disease direction
+   is essentially the myeloid share of the immune compartment (donor
+   position vs lymphoid share, Spearman -0.93; patients have fewer
+   lymphoid: Dümpelmann 0.41 -> 0.27, P 0.087; Marečková 0.85 -> 0.73,
+   P 0.021). So genes rising towards disease should look MYELOID. If they
+   do not, stop and say so.
+3. Show AW the top 30 and bottom 20 genes with what each is and whether it
+   is known in endometriosis (Open Targets file and X19 corpus-paper file
+   are local). AW: "This cannot be glossed over ... Are we discovering new
+   genes?"
+4. Rerun everything downstream of the ranking: `replication_external.py`,
+   `external_references.py` (X18), `supp_figures.py --only claims`,
+   `supplementary_data.py`, `figure2_draft.py`, `figure2f_tall.py`.
+   Then update Note 6's EndometDB sentence (its rho is from the invalid
+   ranking) and check whether Fig 1a's fifth outcome row survives.
+5. Run the X17 analysis. Its rule was fixed before data: HELD OUT studies
+   (li_2025 excluded, it is follicular fluid), immune cells chosen by
+   MEASURED PTPRC > 0 (never ELAJ's transferred labels, AW's point), top 15
+   of the canonical ranking, >= 11/15 higher in patients AND sign P < 0.05,
+   else NOT SUPPORTED. Transferred-label and FIT cohorts reported beside.
+6. Then, and only then, rewrite the gene prose.
+
+**AW's stance on the gene claim, 17 Nov:** "Throwing up your hands and saying
+no decoder-based gene claim can be made is equivalent to saying this paper is
+useless for the one thing disease atlases are supposed to do. I cannot allow
+that. We are doing this again and correctly." Do not propose dropping it.
+
+**Text still quoting the INVALID genes** (rewrite after step 6): the
+ABSTRACT, Results E3, Discussion paragraph 3, Note 6 gene subsection prose
+and tables S26/S27 (regenerated from the invalid epoch-4 file), Fig 1a fifth
+outcome row ("four genes never before reported"), Fig 2f.
+
+## Everything else, in order
+1. **Main PDF will not build.** `verify_numbers.py` fails on Results' four
+   Zhao numbers (72.95, 40.93, 15.33, 3.95e-7). Correct behaviour; clears
+   with the gene prose.
+2. **Figure 2** (draft only, `figures/draft/figure2_so_far.png`, script
+   `figure2_draft.py` + `fig2_panels.py`; pinned/figure2.png is still the
+   OLD figure): a, b SIGNED OFF; c (composition, black labels, no y axes)
+   and d (violins of 400 held-out AUCs, median + excess over chance, P
+   between plot and name) side by side; e REMOVED; f = curve of the
+   component papers' 117 genes (X19) on our ranking with one rug row per
+   study, Fig 1a colours; a separate tall single-column f exists
+   (`figure2f_tall.py`). f is currently drawn from the invalid ranking.
+   AW asked how f works; the ELI5 walk-through was given (ECDF, diagonal =
+   null, KS band +-0.126 for 117 genes).
+3. **Supplementary Methods WRITTEN, awaiting AW review**
+   (`supplementary/methods/supplementary_methods.tex`, after the Notes):
+   Severity; Pathway gene grouping in full; **Hyperparameters, every value
+   and how it was set** (AW 17 Nov: ALL hyperparameter detail lives here,
+   the main Methods is left as it is) with Table S28 generated by
+   `figures/scripts/supp_methods.py`; Label transfer. To add when results
+   exist: the real-covariate gene decoding, X17.
+4. Main Methods says groups run "253 to 493"; the shipped vocabulary is
+   247 to 493. AW said leave Methods as is: raise it, do not edit it.
+   The main text cites neither Reactome nor GO (supplement now does).
+5. **Captions** wait for figures (AW). Fig 1 caption calls the architecture
+   panel a; Fig 2 caption describes the old figure; Fig 4 caption is current.
+6. Note 7 (X15/X16) not written. Main text ~450 words over cap.
+7. Citations, Source Data, Reporting Summary.
+8. **Push:** Paper_writing ~45 commits unpushed; axw1008 pushed by AW up
+   to c6d5f79. NO `Co-Authored-By` / `Claude-Session` lines in any commit
+   (AW's rule; all unpushed history was rewritten, backups on
+   `backup-before-trailer-rewrite` in both repos).
+9. **Dropped, do not reopen:** the seed study (AW: "I think there is
+   something wrong here"); its numbers may not be quoted anywhere.
+10. Optional: the Endometriosis Knowledgebase gene list needs AW to
+    download it by browser (the site's certificate fails here); it has no
+    direction, like Open Targets, which AW kept.
 
 # 0a. Figures in flux, 17 November — CAPTIONS ARE A TODO FOR AFTER
 

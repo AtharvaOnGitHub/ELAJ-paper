@@ -371,3 +371,85 @@ it.
 `\caption[short]{long}` prints the short form in the contents list. That one
 is a **title, three to seven words**, and it is the only place a content
 label is right.
+
+---
+
+# Supplementary Methods. Read off MIDAS, IBDex and scGPT, 17 November
+
+AW: *"Please read NMI reference papers (supplementary methods section) and
+IBDex for reference. Understand tone, style of writing, way each paragraph
+is presented, what and how much is explained to what level of detail,
+before writing anything. Register.md should have pointers but historically
+they have not been enough."* So this section records what was read, not
+just rules.
+
+**What was read in full.** MIDAS's Supplementary Methods (NMI 2026, the only
+comparator with a formal SM section; text extracted to the scratchpad from
+`Atharva Papers/NMI_supplementary/PMC13201160_files/..._MOESM1_ESM.pdf`),
+IBDex's Methods (`Atharva Papers/_txt/IBDex.txt`, lines 140 to 320), and
+scGPT Note 12, *Evaluation metric calculations*
+(`_txt/scGPT_supplementary.txt` line 601). TIGON folds its derivations into
+Note 1 and has no SM; Eye2Gene has none.
+
+## The paragraph, as MIDAS and IBDex build it
+
+1. **What the inputs were**, with counts: *"Raw count data were extracted
+   for each cell subtype after excluding normal, dying, or unknown cell
+   subtypes."*
+2. **What was done**, first person or impersonal past, with the package
+   and version: *"pseudobulked and normalised using the
+   variance-stabilisation transformation from DESeq2 (version 1.34.0)"*.
+3. **Every setting with its value**, in the sentence, not deferred:
+   *"Ten train-test splits (75% train) ... five-fold quintuple CV"*.
+4. **One clause of reason**, often cited: *"due to the risk of confounding,
+   as the MANA score is defined on these subtypes"*; IBDex: *"This
+   asymmetric conditioning required a provenance-independent latent code
+   while preserving anatomy as an explicit decoder variable."*
+5. **How it was checked**: *"Successful batch correction was confirmed by
+   inspecting PCA biplots"*; *"100 randomised null models"*.
+
+Equations only where a quantity is defined, each introduced by a sentence
+saying what it computes and numbered. No narrative of how the method
+evolved, no history of failed attempts. Headings are topics, two levels
+deep (MIDAS: *Check-point inhibitor response prediction* > *Models for bulk
+transcriptomics and exome data*).
+
+**scGPT Note 12, for definitions:** what the metric measures, its formula,
+its range and which direction is better, and the library that computes it.
+Four moves, every metric.
+
+## Rules applied, and the counts after (17 Nov)
+
+Our own `SUPPLEMENTARY_REGISTER.md` applies unchanged: first person for
+procedure, connectives at the joints, no semicolon chains, at most one
+*rather than* per section, no internal vocabulary (*arm, wave, dump,
+auditor, registered*, X-numbers), procedure before outcome, a plain summary
+sentence closing each subsection. Measured on the written section, tables
+excluded: 2,336 words, semicolons 0, *rather than* 0, internal words 0,
+*we* 0.51 and connectives 0.60 per hundred words.
+
+## What belongs in it, by AW's rulings
+
+* **15 Nov:** the method material Results points at goes here, ordered as
+  the main Methods, placed after the Notes. Results points by name:
+  `(Supplementary Methods, \emph{Severity})`.
+* **17 Nov:** *"hyper parameter values are all supposed to be moved to
+  supplementary methods ... No NMI paper does that [in the main Methods].
+  Leave the methods section as is."* So the SM hyperparameter subsection
+  must stand alone: every value, and how it was set, in three kinds:
+  varied in the paper (the two knobs), fixed in development with the
+  measurement behind each, never varied (checked in git).
+
+## Traps found while writing it
+
+* **A stored setting is not the setting in force.** `run_config.json`
+  records `blank_covariates_p 0.25`, but the model applies it only when the
+  drain is enabled, and it was not. Read the code path and the training
+  metrics, not the config, before stating a value.
+* **A Note's `\ref` prints "Supplementary Note N".** Write `(\ref{...})`,
+  never `Supplementary Note~\ref{...}`.
+* **Give the project's own reason, not a plausible one.** The Reactome-first
+  reason is in `Thesis/appendices/D-gene-grouping.tex`; the weights' reasons
+  are in the experiment configs' descriptions (`m5_combined.yaml`,
+  `p1_dab168_kl1.yaml`). If no reason is recorded, state the value without
+  one.
