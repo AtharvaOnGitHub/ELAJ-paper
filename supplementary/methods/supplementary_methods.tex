@@ -186,21 +186,22 @@ vocabulary, and checked against the partition the training run recorded.}
 \label{smeth:hyperparameters}
 
 Supplementary Table~\ref{stab:hyperparameters} lists every setting of the
-model reported in the main text. The settings fall into two kinds: varied
-for the frontier and set during development. The information cost,
-$w_{\mathrm{kl}}$, and the adversary's reversal strength,
-$\lambda_{\mathrm{dab}}$, were varied systematically for their effect on
-the frontier and are detailed in the main paper. The rest were set during
-development, and some of them are detailed below. No automated
-hyperparameter search was used.
+model reported in the main text. The settings fall into two kinds:
+varied for the frontier and set during development.
+Information cost ($w_{\mathrm{kl}}$) and adversarial weight ($\lambda_{\mathrm{dab}}$) were varied
+systematically for their effects on the frontier and are detailed in 
+the main paper. The rest were set during development, some of which are 
+detailed below. No automated hyperparameter search was used.
 
-\textbf{Gene masking.} On training steps, each cell's measured genes were
-hidden from the encoder at random until 12{,}500 remained. This number lies
-just under the smallest panel in the corpus, 13{,}144 genes, so every cell
-shows the encoder the same number of measured genes and a study cannot be
-recognised from how many genes it measured. The decoder does not predict
-DNS genes. The token width and the 44 groups follow from the sizing
-argument of \ref{note:grouping}.
+\textbf{Input.} Counts were scaled as $\log(1 + 10^{4}\,x/n)$, where $x$
+is a gene's count and $n$ the cell's library size. On training steps, each cell's
+measured genes were hidden from the encoder at random until 12{,}500
+remained. This number lies just under the smallest panel in the corpus,
+13{,}144 genes, so every cell shows the encoder the same number of
+measured genes and a study cannot be recognised from how many genes it
+measured. The decoder is still required to predict every measured gene,
+including the hidden ones. The decoder does not predict DNS genes. The 
+token width and the 44 groups follow from the sizing argument of \ref{note:grouping}.
 
 \textbf{Covariates are never withheld.} The run's recorded configuration
 carries a probability of 0.25 for withholding the decoder's covariates on a
