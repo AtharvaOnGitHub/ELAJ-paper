@@ -102,6 +102,53 @@ scorecard has no empty cell.
 
 ---
 
+# ⓪ PENDING, 17 November evening — read this first
+
+## ⚠ The X12 gene ranking was wrong, and the paper still quotes it
+`decode_dx_61604807` decoded the epoch-4 latent with the **epoch-9** decoder
+(the wrapper took the newest checkpoint file). Corrected 17 Nov: the
+selected-epoch ranking correlates **-0.118** with the old one and shares
+**none** of its top 15. New top genes are T/NK (XCL1, KLRB1, XCL2, CD3D,
+TRBC1, LTB), not macrophage. With the correct ranking every external check
+is null: Zhao **0/15** (was 4), Open Targets MWU P 0.87, EndometDB rho -0.05,
+corpus papers 5 in top 5% vs 5.9 expected. The disease DIRECTION (Fig 2d,
+X12 step A) never used the decoder and is unaffected.
+
+**Done mechanically (both repos):** canonical file swapped (old kept as
+`x12_gene_shifts_orth_MISMATCHED_epoch9_decoder.csv`), replication, X18,
+Note 6 tables S26/S27 and ranking figure, D1 data file, Fig 2f regenerated;
+Note 6's EndometDB sentence updated; the hard-coded "four novel genes" and
+"4 replicate externally" labels removed from the supp figure code.
+
+**STILL QUOTING THE WRONG GENES (decision needed: rewrite or drop the
+gene-level claim):** the ABSTRACT; Results E3 paragraph (macrophage genes,
+Zhao overlap, four unindexed genes, MMP27/IL1B/IGF1 lines); Discussion
+paragraph 3 (Zhao, "macrophage-led"); Note 6 subsection "Which genes does
+the immune direction move?" prose; **Fig 1a fifth outcome row ("four genes
+never before reported")**.
+
+## Pending, in order
+1. **AW: decide the gene claim.** Drop it, or keep it only if X17 supports it.
+2. **X17 (only if keeping a gene claim).** Push axw1008, copy the labels up,
+   run the job (~1 h CPU), then locally
+   `python scripts/disease_genes_expression_analysis.py --in <x17_pseudobulk>`.
+   Rule fixed in advance in that script: held-out studies, >= 11/15 top genes
+   higher in patients and sign P < 0.05, else NOT SUPPORTED. Tested on
+   planted-signal and null synthetic data.
+3. **Fig 2f:** null with the corrected ranking. Drop the panel, or keep as a
+   stated null. Fig 2 otherwise: a, b signed off; c (black labels, no y
+   axes) and d (violins, medians, P) await review; e removed.
+4. **AW review:** figures (1a outcome row, 2c/2d, 4), supplementary notes.
+5. **Supplementary Methods: not written.** Two Results pointers dangle.
+6. **Captions**, after figures are fixed (Fig 1 caption still calls the
+   architecture panel a; Fig 2 caption describes the old figure).
+7. **Note 7** (X15/X16) not written; Note 3 has the X16 external-cohort figure.
+8. Main text ~450 words over the 3,500 cap (Results).
+9. Citation pass, Source Data, Reporting Summary.
+10. **Push:** Paper_writing ~42 commits, axw1008 1 (both rewritten without
+    attribution trailers; backup branches `backup-before-trailer-rewrite`).
+11. Dropped, do not reopen: the seed study (see its section).
+
 # 0a. Figures in flux, 17 November — CAPTIONS ARE A TODO FOR AFTER
 
 **AW, 17 Nov: "Figure captions are a todo for after figures are fixed."**

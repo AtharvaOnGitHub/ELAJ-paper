@@ -895,3 +895,11 @@ eutopic case-control papers sit at our disease end (median rank Marečková
 not (Sarsenova 48%, Tan 57%, Fonseca 94%, García-Alonso 97%).
 ⚠ **No direction.** DKK1 is our rank 8 and Marečková reports it DOWN in
 stromal cells; a highlight is co-location, not agreement.
+
+## ⚠ X12 step B, X18, X19: CORRECTED 17 Nov evening
+Every number in the X12 step B, X18 and X19 entries above was computed on a
+gene ranking decoded with the epoch-9 decoder against epoch-4 latents. With
+the selected epoch-4 decoder: Zhao 0 of 15 at the disease end; Open Targets
+>= 0.1, 20 in our top 5% (12.2 expected) but MWU P 0.87; EndometDB rho
+-0.052 (untreated +0.037); corpus papers 5 in top 5% (5.9 expected), MWU P
+0.89. Current numbers are in x18_external_references.csv; see PRIORITY 0.

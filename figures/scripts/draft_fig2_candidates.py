@@ -126,7 +126,7 @@ gs["disease"] = -gs.shift_towards_control
 gs = gs.sort_values("disease", ascending=False).reset_index(drop=True)
 n = len(gs)
 ext = pd.read_csv(CLAIMS / "replication_external.csv")
-hits = set(ext.loc[ext.end == "disease side", "genes"].iloc[0].split(";"))
+hits = set(str(ext.loc[ext.end == "disease side", "genes"].fillna("").iloc[0]).split(";")) - {""}
 novel = {"SIGLEC7", "ADAMDEC1", "ALPK2", "KCNH1"}
 top = gs.head(15)
 

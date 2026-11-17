@@ -286,7 +286,7 @@ def i4b(fig, rect):
     """rect = (x0, y0, w, h) in figure fractions. Returns the list axes."""
     gs = _ranking()
     ext = pd.read_csv(CLAIMS / "replication_external.csv")
-    hits = set(ext.loc[ext.end == "disease side", "genes"].iloc[0].split(";"))
+    hits = set(str(ext.loc[ext.end == "disease side", "genes"].fillna("").iloc[0]).split(";")) - {""}
     novel = {"SIGLEC7", "ADAMDEC1", "ALPK2", "KCNH1"}
     top = gs.head(15)
     x0, y0, w, h = rect

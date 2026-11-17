@@ -1131,9 +1131,14 @@ def claims():
     gs["shift_towards_disease"] = -gs.shift_towards_control
     gs = gs.sort_values("shift_towards_disease", ascending=False).reset_index(drop=True)
     ext = pd.read_csv(CLAIMS / "replication_external.csv")
-    hits = set(ext.loc[ext.end == "disease side", "genes"].iloc[0].split(";"))
+    hits = set(str(ext.loc[ext.end == "disease side", "genes"].fillna("").iloc[0]).split(";")) - {""}
     fold = {g_: float(ext.loc[ext.end == "disease side", f"fold_{g_}"].iloc[0]) for g_ in hits}
-    novel = {"SIGLEC7", "ADAMDEC1", "ALPK2", "KCNH1"}     # Results names these four
+    # EMPTY until re-established. The four "never reported" genes (SIGLEC7,
+    # ADAMDEC1, ALPK2, KCNH1) came from the ranking decoded with the epoch-9
+    # decoder against epoch-4 latents (decode_dx_61604807, found 17 Nov); none
+    # is in the top 15 of the corrected ranking, and novelty for the new top
+    # 15 has not been checked.
+    novel: set[str] = set()
     top = gs.head(15)
     rows = []
     for i, r in top.iterrows():
@@ -1176,12 +1181,15 @@ def claims():
                 mew=.35, zorder=3)
     # one bracket per end, carrying the count that is the whole point
     lo, hi = ax.get_ylim()
-    ax.annotate("top 15, Table S26\n4 replicate externally", xy=(0, yv[0]),
+    n_top = int(ext.loc[ext.end == "disease side", "hits"].iloc[0])
+    n_bot = int(ext.loc[ext.end == "control side", "hits"].iloc[0])
+    word = lambda k: "none replicates" if k == 0 else f"{k} replicate{'s' if k == 1 else ''} externally"
+    ax.annotate(f"top 15, Table S26\n{word(n_top)}", xy=(0, yv[0]),
                 xytext=(len(gs) * .10, yv[0] - (hi - lo) * .04),
                 fontsize=FS_BODY, color="#8C2D3F", va="top", ha="left",
                 linespacing=1.4,
                 arrowprops=dict(arrowstyle="-", color="#8C2D3F", lw=.5))
-    ax.annotate("bottom 15, Table S27\nnone replicates", xy=(len(gs) - 1, yv[-1]),
+    ax.annotate(f"bottom 15, Table S27\n{word(n_bot)}", xy=(len(gs) - 1, yv[-1]),
                 xytext=(len(gs) * .90, yv[-1] + (hi - lo) * .04),
                 fontsize=FS_BODY, color=SOFT, va="bottom", ha="right",
                 linespacing=1.4,
