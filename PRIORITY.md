@@ -106,6 +106,10 @@ scorecard has no empty cell.
 
 ## The one thing in flight: the gene ranking, redone correctly
 
+**The full record of what went wrong, with job IDs, numbers and commits, is in
+CONTINUITY.md, section *THE GENE-DISEASE RANKING: the full record*. Read it
+before acting on anything gene-level.**
+
 **Both existing gene rankings are INVALID.** The 12 Nov ranking
 (`x12_gene_shifts_orth_MISMATCHED_epoch9_decoder.csv`, macrophage genes,
 the Zhao 4/15) decoded the epoch-4 latent with the epoch-9 decoder (the

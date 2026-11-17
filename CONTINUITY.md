@@ -149,6 +149,160 @@ belongs to; push only when asked.
 
 ---
 
+## THE GENE-DISEASE RANKING: the full record (12 to 17 November)
+
+**Read this whole section before touching anything gene-level.** It is the
+single place this episode is documented; PRIORITY section ⓪ has only the
+next steps. AW: *"This is incredibly bad at such a late stage of the paper."*
+
+### 1. What the claim was, and where it went
+
+X12 was two steps.
+
+* **Step A, the disease direction (VALID, no decoder).**
+  `axw1008/src/scripts/disease_direction_by_family.py`. Per donor, average
+  the 16 latent numbers of the donor's immune cells; subtract each study's
+  mean donor; direction w = mean(control donors) - mean(patient donors),
+  unit length. Held out over 400 donor splits it separates patients from
+  controls at AUC 0.7084, P 0.015, 94 donors (`x12_by_family_annotated.csv`,
+  split values in `x12_by_family_annotated_splits.csv`). Fig 2d shows this.
+  Nothing in this step uses the decoder, and nothing below touches it.
+* **Step B, the genes (INVALID, both versions).**
+  `decode_disease_direction.py`: shift 4,000 immune cells' latents by w,
+  decode both, average the per-gene change, rank 15,496 genes. Written to
+  `axw1008/docs/paper/x12_gene_shifts_orth.csv` on 12 Nov by job
+  **`decode_dx_61604807`**.
+
+The 12 Nov ranking's top 15 towards disease: LRRC15, TREM1, SCARA5, CCL13,
+CST11, SIGLEC7, KCNH1, DKK1, SERPINB2, IL1B, MMP19, MMP27, ADAMDEC1, INHBA,
+ALPK2. Claims built on it: "macrophage-led inflammation"; 4 of 15 on Zhao
+2017's upregulated list (SERPINB2 72.95x, MMP27 40.93x, LRRC15 25.20x,
+INHBA 15.33x, hypergeometric P 3.95e-7); "four genes never before reported"
+(SIGLEC7, ADAMDEC1, ALPK2, KCNH1); IL1B as the top gene of Dümpelmann's
+classifier; IGF1 agreeing with HECA.
+
+**Where those claims live (all must be rewritten from the corrected
+ranking):** the ABSTRACT; Results E3 (*Immune genes identify
+endometriosis*); Discussion paragraph 3; Note 6 subsection *Which genes does
+the immune direction move?* with tables S26/S27 and the ranking figure; Fig
+1a's fifth outcome row ("four genes never before reported", added 17 Nov);
+Fig 2f; Supplementary Data D1; `replication_external.csv`, X18
+(`x18_external_references.csv`), X19 statistics. `verify_numbers.py` now
+fails on the four Zhao numbers, so the main PDF will not build until the
+prose changes. That is correct behaviour.
+
+### 2. How it unravelled, in order
+
+1. **AW questioned the decode's centring** (subtracting study means), then
+   the orthogonalisation. I measured both on the labelled data: the study
+   gap among CONTROLS ONLY is 3.64, as large as overall, so it is not
+   disease; centring on each study's controls gives the same direction
+   (cosine 0.994). Both steps are defensible. To show the variants AW asked
+   for six decodes (three centrings x orthogonalised or not), commit
+   `axw1008 e689b02`, jobs **`decode_dx_62023676`** (orth) and
+   **`decode_dx_62023730`** (raw).
+2. **Bug 1, wrong checkpoint.** Writing that job I noticed the wrapper chose
+   its checkpoint with `ls -t checkpoints/*.pt | head -1`, the NEWEST file,
+   i.e. epoch 9, while the latent it decodes (`outputs/cells/p1_dab168_kl1/
+   latent.npy`) and every benchmark number come from the SELECTED epoch 4
+   (lowest val_nb 0.4024). AW checked: the 12 Nov log loaded epoch 9. Fixed
+   with `--checkpoint auto` (resolve_checkpoint).
+3. **The epoch-4 decodes disagreed completely** with the paper's ranking:
+   rank correlation -0.118, none of the top 15 shared. New top genes were
+   T/NK identity genes (XCL1, KLRB1, XCL2, CD3D, TRBC1, LTB, CTSW, IFNG, CCL5,
+   CD3E, GZMB ...), no corpus paper naming any of them. **My mistake:** I
+   immediately made this the canonical file (`axw1008 ea2b417`) and
+   regenerated Note 6, Fig 2f, X18 and the replication file from it
+   (`Paper_writing 3e721f9`), before testing it.
+4. **The labelled cells contradicted it.** Using the studies' own lymphoid
+   and myeloid labels: a donor's position along w tracks its lymphoid share
+   at Spearman **-0.93**; lymphoid cells sit on the CONTROL side (+2.25
+   along w towards control, myeloid -2.90); patients have fewer lymphoid
+   immune cells (Dümpelmann 0.41 -> 0.27, P 0.087; Marečková 0.85 -> 0.73,
+   P 0.021). So genes rising towards disease should be MYELOID, which the
+   12 Nov ranking showed and the epoch-4 ranking inverted.
+5. **Same latent on both machines** (md5 `c98cf29d87fef86a6da24be85635d1f9`,
+   22 Oct), so the inversion was not a file mix-up.
+6. **Bug 2, the decode path itself.** `decode_sanity.py`, job
+   **`62036623`**: decode the real latents of labelled cells. Test A FAILED
+   at epoch 4 (lymphoid cells came out LOWER on CD3D -0.19, CD3E -0.19,
+   KLRD1 -0.17 and HIGHER on C1QA +0.15, CD14 +0.13) and was wrong at epoch
+   9 too. Root cause, read from `bilinear_decoder.py`:
+   log_mu(gene) = gain(cell) x (k(cell) . q(gene)) / 8 + b, with
+   gain = w_out . W_v(context) ONE SIGNED NUMBER PER CELL and context =
+   [latent projection, tissue, platform, study]. The script set the three
+   covariates to zero, justified in its docstring as "a state it has seen
+   for a quarter of training" (blank_covariates_p 0.25). **That was false:
+   blanking only runs when the drain is enabled, and in the reported model
+   it was not** (`train_blanked_covariates` is 0.0 every epoch). The decoder
+   was asked about inputs it never saw, which can flip gain's sign and so
+   every gene's relative level.
+7. **So both rankings are invalid:** 12 Nov = epoch-9 decoder + zero
+   covariates; the "corrected" one = epoch-4 decoder + zero covariates. Its
+   null external checks (Zhao 0/15, Open Targets MWU P 0.87, EndometDB rho
+   -0.052, corpus papers 5 in top 5% vs 5.9) are equally meaningless.
+   Earlier EndometDB numbers on the 12 Nov ranking (rho -0.110, untreated
+   -0.356) are meaningless too.
+
+### 3. The correct method, now running
+
+`axw1008/src/scripts/decode_real.py` (+ `data_collation/scripts/
+decode_real.sh`), commits `c8b23c8`, `e8a885b`, `48244c9`, `c6d5f79`:
+* checkpoint = the run's selected best (epoch 4);
+* ALL 29,355 labelled immune cells (control/eutopic, Dümpelmann and
+  Marečková, all splits; non-input metadata uses the whole corpus);
+* each cell loaded through the training data loader WITH ITS OWN tissue,
+  platform, study and library size, encoded, and shifted through the
+  model's own probe `decode_once(batch, latent, gene_queries, z_proj=...)`;
+* STOPS unless every encoded latent matches the dump within 0.05 (proves
+  the epoch and the row mapping), and unless at least 5 of 6 lymphoid and
+  5 of 6 myeloid markers decode the right way round (Test A, TYROBP
+  excluded because NK cells express it);
+* writes six rankings `x12_gene_shifts{,_orth}_realcov_centre-
+  {study,none,controls}_epoch_0004.csv` into `src/docs/paper/`, a step-size
+  check, and how often zeroing covariates flips gain's sign (confirms the
+  root cause).
+The first submission stopped on an assertion: the dump's split blocks run
+**val, train, test**, not train, val, test. Fixed by reading the order.
+
+**X17, the measured check** (`disease_genes_expression.py`, analysis in
+`disease_genes_expression_analysis.py`): per-donor immune pseudobulk of the
+MEASURED counts, every gene. Rule fixed before data: held-out studies only
+(li_2025 excluded, it is follicular fluid labelled endometrium), immune
+cells chosen by measured **PTPRC > 0** (AW: transferred labels are made in
+ELAJ's latent and would let ELAJ grade itself), top 15 of the canonical
+ranking, >= 11/15 higher in patients and sign P < 0.05, else NOT SUPPORTED.
+Tested on planted-signal and null synthetic data. Caveat known in advance: a
+family pseudobulk mixes subtypes, so a pass means "higher in patients'
+immune cells as measured", which includes a myeloid-share shift.
+
+### 4. What is and is not affected
+
+| result | status |
+|---|---|
+| disease direction and per-family AUC (Fig 2d, immune 0.7084) | valid, no decoder |
+| composition unchanged by disease (Fig 2c, X8) | valid |
+| the direction is mostly the myeloid share of immune cells | valid, from the studies' own labels; matches Marečková's "higher abundance of uM1 macrophages in endometriosis cases" |
+| any named gene, the Zhao overlap, "novel genes", Fig 2f, Note 6 tables | invalid until decode_real reports |
+| benchmark, frontier, UMAPs, cycle axis, staging, X13 | untouched |
+
+### 5. The lessons, so this does not recur
+
+* **Test a counterfactual on inputs whose answer is known before trusting
+  it.** `decode_sanity` took minutes and would have caught both bugs on 12
+  Nov.
+* **Never regenerate downstream files from an untested replacement.** I did
+  it within the hour and had to undo it.
+* **A stored config value is not the value in force.** Read the code path
+  and the training metrics.
+* **Never pick a checkpoint by file time.** Use the run's own selection.
+* **Show the genes, not enrichment statistics** (AW: *"I don't want high
+  level stats ... This cannot be glossed over."*).
+* **Do not propose dropping the gene claim** (AW: *"I cannot allow that. We
+  are doing this again and correctly."*).
+
+---
+
 ## Who I am working with
 
 AW — Atharva Waghmare. MSc AI, not a biologist, not a statistician, and he
