@@ -223,6 +223,17 @@ thirds of the job's cost again, and is AW's call.
 
 ## The seed arm: SCORED 17 Nov, and it moves the cycle more than predicted
 
+⛔ **DROPPED, AW 17 Nov: "I think there is something wrong here and I don't
+think these tests would confirm anything substantially enough. We don't have
+time to run a few more seed variability studies."** NOTHING below, and
+nothing in `seed_band.csv`, may be quoted in the paper. Notes 3 and 5 keep
+their single-run limitation as written. What was found before stopping, for
+the record: configs, code and logs match; the local scorer reproduces both
+benchmark rows; the phase gap is in the TEST half only (val -0.004, test
+-0.054), and all 20 phase-labelled test donors score lower under seed 42.
+The untested lead was the checkpoint epoch (seed 42 epoch 2, base epoch 4,
+each picked by a val_nb that moves +-0.003 between epochs).
+
 Rescored with `--no-elaj` after 61932543. Landed at
 `Outputs/Benchmarks/full_a1_seed42/` (NOT under `full/`, which is fine:
 `a1_seed42` is deliberately not in `table1.A_SERIES`). Every number in
