@@ -170,6 +170,25 @@ P 0.94, NOT SUPPORTED. Within-lineage directions (B): myeloid AUC 0.7594
 P 0.0425; lymphoid 0.7054 P 0.080. B's decode (`decode_real --within`) is
 the next cluster job.
 
+**B's decode REPORTED, 19 Nov (job 62116534, `decode_real --within`;
+all checks passed; files `axw1008/src/docs/paper/
+x12_gene_shifts_within-{myeloid,lymphoid}_realcov_epoch_0004.csv`, committed
+by AW in `8e4f969`).** Raw top genes in BOTH lineages are stromal
+(collagens, SFRP4, POSTN). Measured counts agree: stromal transcripts in
+immune pseudobulks are higher in patients (Dümpelmann 52.8 vs 38.9 per
+10k, MWU P 0.018; Marečková 38.1 vs 10.5, P 0.019; epithelial genes no
+difference), and Marečková patients' STROMAL cells express ~2x those genes
+(316.6 vs 160.5, P 0.002). Contamination from a more matrix-active stroma
+vs biology: not separable with these data. Restricted to 794
+immune-specific genes (>= 0.1/10k and > 2x every other family):
+within-myeloid disease end = resident/lipid macrophage (GPNMB, LYVE1,
+SIGLEC1, MAF, LPL, ABCA1), control end = DC/mast/lymphoid (CCR7, HLA-DR,
+CCL17, TPSAB1, CD3D, CD79A): sub-composition within the label.
+Within-lymphoid control end = activated NK/T (IL1A, XCL1/2, TNF, IFNG,
+CCL3/4, GNLY, NKG7, KLRD1, CRTAM), i.e. patients' NK/T less activated;
+disease end = macrophage genes in lymphoid-labelled cells (C1Q, CD163,
+LYVE1). Awaiting AW's decision on how B is reported.
+
 **How the paper reports A (AW, 18 Nov, verbatim intent):** the paper states
 exactly *"From this test alone we cannot tell whether the pattern is
 specific to those two cohorts or whether 25 donors is too few to see it."*
