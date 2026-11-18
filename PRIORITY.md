@@ -174,15 +174,19 @@ the next cluster job.
 all checks passed; files `axw1008/src/docs/paper/
 x12_gene_shifts_within-{myeloid,lymphoid}_realcov_epoch_0004.csv`, committed
 by AW in `8e4f969`).** Raw top genes in BOTH lineages are stromal
-(collagens, SFRP4, POSTN). Measured counts, POOLED (X17's statistic:
-within-study difference, donor-weighted, permutation within study; AW:
-pooled numbers lead, per-study only as detail): stromal genes in patients'
-IMMUNE cells x1.70, P 0.0025 (94 donors); epithelial genes x0.95, P 0.63;
-in patients' STROMAL cells x1.36, P 0.0024 (101 donors). Divided by the
-same donor's stromal level, the immune excess is x1.27, P 0.14: most of it
-follows the stroma, the signature of ambient-RNA contamination. Estimated
-contamination of immune cells by stromal RNA: median 12.9% (IQR 8.4 to
-18.7%, 91 donors), typical for droplet data from dissociated tissue. Restricted to 794
+(collagens, SFRP4, POSTN). Measured counts, POOLED ACROSS ALL DONORS
+with no study step (AW, 19 Nov: "The method needs to not care about
+study"): stromal genes in patients' IMMUNE cells x2.07 (48.8 vs 23.5 per
+10k, MWU P < 0.0001, 44 vs 50 donors); in patients' STROMAL cells x1.34
+(P 0.0006); immune level divided by the same donor's stromal level 0.168
+vs 0.103, P 0.0004. So the excess is NOT explained by the stroma alone:
+it is a disease-associated difference in immune cells. AW's point: noise
+that is the same in every cell cannot make a disease axis; this is not the
+same. Source (contamination that differs with disease, doublets of
+interacting cells, or immune-stromal biology) not determinable here. My
+earlier "signature of ambient contamination" (from within-study averaging)
+is WITHDRAWN. X17's own statistic is within-study weighted (fixed 17 Nov);
+raised with AW. Restricted to 794
 immune-specific genes (>= 0.1/10k and > 2x every other family):
 within-myeloid disease end = resident/lipid macrophage (GPNMB, LYVE1,
 SIGLEC1, MAF, LPL, ABCA1), control end = DC/mast/lymphoid (CCR7, HLA-DR,
