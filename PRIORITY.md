@@ -161,6 +161,23 @@ shifts the latent through `model.decode_once(..., z_proj=...)`.
    else NOT SUPPORTED. Transferred-label and FIT cohorts reported beside.
 6. Then, and only then, rewrite the gene prose.
 
+**UPDATE 18 Nov: steps 1-5 DONE, the gene prose plan is set (do not write
+it until B's decode reports).** Canonical ranking = `x12_gene_ranking.csv`
+(`gene_ranking.py`: study-centred, NOT orthogonalised, expression floor 0.1
+per 10,000 reads; AW: "Take whatever is recommended"). X17: FIT 14/15, sign
+P 0.0005, Spearman +0.69; HELD OUT (lin_2023 + tan_2022, 25 donors) 5/15,
+P 0.94, NOT SUPPORTED. Within-lineage directions (B): myeloid AUC 0.7594
+P 0.0425; lymphoid 0.7054 P 0.080. B's decode (`decode_real --within`) is
+the next cluster job.
+
+**How the paper reports A (AW, 18 Nov, verbatim intent):** the paper states
+exactly *"From this test alone we cannot tell whether the pattern is
+specific to those two cohorts or whether 25 donors is too few to see it."*
+Summarised in Results and the Discussion IN PLACE OF the earlier gene
+claim, and detailed in the Supplementary (Note 6 and the Supplementary
+Methods: the real-covariate decode, the ranking choices, X17's rule and
+its amendment, all three cohorts). Then B's within-lineage result beside it.
+
 **AW's stance on the gene claim, 17 Nov:** "Throwing up your hands and saying
 no decoder-based gene claim can be made is equivalent to saying this paper is
 useless for the one thing disease atlases are supposed to do. I cannot allow
