@@ -174,12 +174,15 @@ the next cluster job.
 all checks passed; files `axw1008/src/docs/paper/
 x12_gene_shifts_within-{myeloid,lymphoid}_realcov_epoch_0004.csv`, committed
 by AW in `8e4f969`).** Raw top genes in BOTH lineages are stromal
-(collagens, SFRP4, POSTN). Measured counts agree: stromal transcripts in
-immune pseudobulks are higher in patients (Dümpelmann 52.8 vs 38.9 per
-10k, MWU P 0.018; Marečková 38.1 vs 10.5, P 0.019; epithelial genes no
-difference), and Marečková patients' STROMAL cells express ~2x those genes
-(316.6 vs 160.5, P 0.002). Contamination from a more matrix-active stroma
-vs biology: not separable with these data. Restricted to 794
+(collagens, SFRP4, POSTN). Measured counts, POOLED (X17's statistic:
+within-study difference, donor-weighted, permutation within study; AW:
+pooled numbers lead, per-study only as detail): stromal genes in patients'
+IMMUNE cells x1.70, P 0.0025 (94 donors); epithelial genes x0.95, P 0.63;
+in patients' STROMAL cells x1.36, P 0.0024 (101 donors). Divided by the
+same donor's stromal level, the immune excess is x1.27, P 0.14: most of it
+follows the stroma, the signature of ambient-RNA contamination. Estimated
+contamination of immune cells by stromal RNA: median 12.9% (IQR 8.4 to
+18.7%, 91 donors), typical for droplet data from dissociated tissue. Restricted to 794
 immune-specific genes (>= 0.1/10k and > 2x every other family):
 within-myeloid disease end = resident/lipid macrophage (GPNMB, LYVE1,
 SIGLEC1, MAF, LPL, ABCA1), control end = DC/mast/lymphoid (CCR7, HLA-DR,
