@@ -120,7 +120,7 @@ save(fig, "I2b_family_signal")
 # fifteen genes that shift most towards disease, ranked, coloured by what is
 # known about them. A slim bar above the list shows where they sit in the
 # full ranking: the tip, and nothing more is said about the rest.
-gs = pd.read_csv(CLAIMS / "x12_gene_shifts_orth.csv")
+gs = pd.read_csv(CLAIMS / "x12_gene_ranking.csv")
 gs = gs.rename(columns={gs.columns[0]: "gene"})
 gs["disease"] = -gs.shift_towards_control
 gs = gs.sort_values("disease", ascending=False).reset_index(drop=True)

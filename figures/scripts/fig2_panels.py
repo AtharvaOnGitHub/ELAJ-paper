@@ -276,7 +276,7 @@ def i2b(ax, xpos=None, labels=True):
 # e — I4b, the disease end
 # ═════════════════════════════════════════════════════════════════════════
 def _ranking():
-    gs = pd.read_csv(CLAIMS / "x12_gene_shifts_orth.csv")
+    gs = pd.read_csv(CLAIMS / "x12_gene_ranking.csv")
     gs = gs.rename(columns={gs.columns[0]: "gene"})
     gs["disease"] = -gs.shift_towards_control
     return gs.sort_values("disease", ascending=False).reset_index(drop=True)

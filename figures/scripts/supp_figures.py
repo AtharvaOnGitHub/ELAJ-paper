@@ -1126,7 +1126,7 @@ def claims():
          ["cosine stability of the direction across splits", num(q.cosine_stability)]]))
 
     # X12 step B: ranked shifts and external replication
-    gs = pd.read_csv(CLAIMS / "x12_gene_shifts_orth.csv")
+    gs = pd.read_csv(CLAIMS / "x12_gene_ranking.csv")
     gs = gs.rename(columns={gs.columns[0]: "gene"})
     gs["shift_towards_disease"] = -gs.shift_towards_control
     gs = gs.sort_values("shift_towards_disease", ascending=False).reset_index(drop=True)

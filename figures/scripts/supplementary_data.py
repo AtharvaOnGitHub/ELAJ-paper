@@ -56,7 +56,7 @@ def manifest() -> dict:
 
 def d1_gene_shifts() -> tuple[str, pd.DataFrame]:
     """Every gene's shift along the immune disease direction."""
-    df = pd.read_csv(CLAIMS / "x12_gene_shifts_orth.csv")
+    df = pd.read_csv(CLAIMS / "x12_gene_ranking.csv")
     # the source CSV writes the gene symbol into an unnamed index column, and
     # a shipped file cannot have one: a reader loading it gets "Unnamed: 0".
     if df.columns[0].startswith("Unnamed") or df.columns[0] == "":
