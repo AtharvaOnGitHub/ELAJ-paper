@@ -1194,7 +1194,7 @@ def claims():
                 fontsize=FS_BODY, color=SOFT, va="bottom", ha="right",
                 linespacing=1.4,
                 arrowprops=dict(arrowstyle="-", color=SOFT, lw=.5))
-    ax.set_xlabel("genes ranked by decoder response to the immune disease direction (15,496)")
+    ax.set_xlabel(f"genes ranked by decoder response to the immune disease direction ({len(gs):,})")
     ax.set_ylabel("shift towards disease")
     ax.legend(handles=[Line2D([], [], marker="o", lw=0, color="#8C2D3F", ms=3.4,
                               label="on the external up-regulated list"),
