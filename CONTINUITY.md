@@ -282,7 +282,7 @@ immune cells as measured", which includes a myeloid-share shift.
 |---|---|
 | disease direction and per-family AUC (Fig 2d, immune 0.7084) | valid, no decoder |
 | composition unchanged by disease (Fig 2c, X8) | valid |
-| the direction is mostly the myeloid share of immune cells | valid, from the studies' own labels; matches Marečková's "higher abundance of uM1 macrophages in endometriosis cases" |
+| the direction is mostly the myeloid share of immune cells | valid, from the studies' own labels. **CORRECTED 18 Nov:** this does NOT simply match Marečková. She defines uM1 as pro-inflammatory (IL1B, EREG, TNF) and uM2 as anti-inflammatory tissue-resident (HMOX1, FOLR2, LYVE1), and reports MORE uM1 in cases plus IGF1 up in uM2 of cases. Our realcov ranking's disease end is uM2-like (LYVE1 20, IGF1 84, FOLR2 138, HMOX1 237 of 14,668; IL1B 2,126, EREG 1,647, TNF 14,350) |
 | any named gene, the Zhao overlap, "novel genes", Fig 2f, Note 6 tables | invalid until decode_real reports |
 | benchmark, frontier, UMAPs, cycle axis, staging, X13 | untouched |
 
