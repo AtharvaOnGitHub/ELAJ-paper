@@ -242,6 +242,15 @@ claim, and detailed in the Supplementary (Note 6 and the Supplementary
 Methods: the real-covariate decode, the ranking choices, X17's rule and
 its amendment, all three cohorts). Then B's within-lineage result beside it.
 
+**TEXT DONE 19 Nov (figures excluded, AW: "we need to finalise all figs
+separately").** Results disease subsection, Discussion, Abstract, Results
+opening, Note 6 (ledger row, both disease subsections, summary), Tables
+S26/S27 columns (measured immune expression, Open Targets), and a new
+Supplementary Methods subsection *Decoding a latent direction* with the
+measured-count test. STILL STALE, FIGURE WORK: Fig 1a fifth outcome row,
+the caption of Supplementary Fig. x12-rank (Zhao and "unindexed" genes),
+Fig 2f caption, Fig 2 overall.
+
 **AW's stance on the gene claim, 17 Nov:** "Throwing up your hands and saying
 no decoder-based gene claim can be made is equivalent to saying this paper is
 useless for the one thing disease atlases are supposed to do. I cannot allow

@@ -1139,18 +1139,24 @@ def claims():
     # is in the top 15 of the corrected ranking, and novelty for the new top
     # 15 has not been checked.
     novel: set[str] = set()
-    top = gs.head(15)
-    rows = []
-    for i, r in top.iterrows():
-        rows.append([str(i + 1), r.gene, num(r.shift_towards_disease),
-                     (f"{fold[r.gene]:.2f}" if r.gene in hits else "--"),
-                     ("none found" if r.gene in novel else "")])
-    tex("x12_top_genes", tabular("@{}rlrrl@{}",
-        ["rank", "gene", "shift towards disease", "external up-list, fold",
-         "indexed report"], rows))
+    # COLUMNS, AW 19 Nov ("do everything other than figure edits"): the
+    # external fold and "indexed report" columns served the retired Zhao and
+    # novelty claims and were empty for every gene. Each gene now carries
+    # what the prose needs: how much immune cells express it, measured, and
+    # its Open Targets endometriosis association (-- where none).
+    _ot = (pd.read_csv(ROOT.parent / "Atharva Papers" / "Validation" / "opentargets"
+                       / "opentargets_MONDO_0005133_associations.csv")
+           .groupby("gene").score.max())
+    def _row(rank, r, shift):
+        o = _ot.get(r.gene)
+        return [str(rank), r.gene, num(shift), f"{r.immune_per10k:.2f}",
+                "--" if o is None or pd.isna(o) else f"{o:.3f}"]
+    head = ["rank", "gene", "shift", "immune cells, per 10{,}000 reads", "Open Targets"]
+    tex("x12_top_genes", tabular("@{}rlrrr@{}", ["rank", "gene", "shift towards disease"] + head[3:],
+        [_row(i + 1, r, r.shift_towards_disease) for i, r in gs.head(15).iterrows()]))
     bottom = gs.tail(15).iloc[::-1]
-    tex("x12_bottom_genes", tabular("@{}rlr@{}", ["rank", "gene", "shift towards control"],
-        [[str(len(gs) - i), r.gene, num(-r.shift_towards_disease)] for i, r in bottom.iterrows()]))
+    tex("x12_bottom_genes", tabular("@{}rlrrr@{}", ["rank", "gene", "shift towards control"] + head[3:],
+        [_row(len(gs) - i, r, -r.shift_towards_disease) for i, r in bottom.iterrows()]))
     # NO FRAGMENT. AW, 17 November: "What point is Table S28 supposed to
     # make?? There are barely any numbers there." Two rows under six
     # headings, four of them dashes. The four values that matter are now in

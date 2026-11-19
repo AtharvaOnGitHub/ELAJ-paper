@@ -61,7 +61,7 @@ claim & source, donors & test here, donors & outcome \\
 eutopic endometrium of patients is transcriptionally altered & \texttt{duempelmann\_2026}, 60;\newline \texttt{tan\_2022}, 31 & cross-donor disease agreement, 207 donor records & supported: 0.3364, $P = 0.005$ \\
 composition barely differs between patients and controls once phase is accounted for & \texttt{duempelmann\_2026}, 60 & X8, per-donor composition, 194 & supported: no family moves, $P \geq 0.24$ \\
 severity is a dose: severe disease gives five times the differentially expressed genes of mild & \texttt{duempelmann\_2026}, 60 & latent severity among patients, 57; composition among patients, 51 & not recoverable at this donor count, in either readout; a different quantity, not a contradiction \\
-macrophages and decidualised stromal cells are the compartments most likely dysregulated & \texttt{marecko\_2024}, 58,\newline from GWAS & X12, held-out disease direction within each family, 85 to 114 & immune half supported, 0.7084 at $P = 0.015$; stromal half not recoverable, 0.5920 at $P = 0.175$ \\
+macrophages and decidualised stromal cells are the compartments most likely dysregulated & \texttt{marecko\_2024}, 58,\newline from GWAS & X12, held-out disease direction within each family, no study step, 85 to 101 & both halves separate, immune 0.7631 and stromal 0.7100; each traces to composition, the cycle and the sample, and with phase removed neither reaches $P < 0.05$ \\
 prior atlases lack reproducible marker signatures & \texttt{marecko\_2024} & X13, below & not supported on the marker half: 61 to 76 of each family's top hundred reproduce \\
 disease abolishes the cyclical variation of immune composition & \texttt{lin\_2023}\newline (Huang), 13 & X3, cycle agreement by disease, 112; X3b, phase-by-disease interaction on composition, 101 & not supported in either test \\
 composition differs between lesion and eutopic tissue & \texttt{ferrero\_2024}\newline (Sarsenova), 4 pairs & X9, per-donor composition by tissue, 151 & one family moves, epithelial 6.6-fold lower, confounded with dissociation; perivascular not resolvable \\
@@ -202,26 +202,32 @@ donors and scoring by AUC on the remaining 30\%, repeated over 400
 donor-level splits with a shuffled-label null. We centred study out and
 used donors rather than cells as the units.
 
-Globally no such direction exists: 0.5360 against a shuffled 0.4820 over
-207 donor records, with 28\% of shuffles above it
-(Table~\ref{stab:x12g}). That does not contradict our cross-donor disease
-figure, which is local. A cell's neighbours from other donors can share its
-label without any single axis separating the donors.
+Inside each family, with the studies' own labels and no study step
+anywhere, a direction appears in three of the four: immune cells at an AUC
+of 0.7631 ($P = 0.015$, 94 donors), endothelial at 0.7582 ($P = 0.010$, 85)
+and stromal at 0.7100 ($P = 0.028$, 101); epithelial reaches 0.6673
+($P = 0.063$, 98). Each traces to a source other than disease. Patients'
+samples carry more stromal RNA in every non-stromal family, 2.07-fold in
+immune, 1.92 in epithelial and 1.71 in endothelial cells, and in the
+stroma's own identity genes as much as in collagens, so the sample differs
+rather than one cell type. Removing each cell's stromal-RNA score from its
+latent leaves the immune direction at 0.7385 ($P = 0.015$) and the stromal
+one at 0.6911 ($P = 0.030$), and takes the endothelial one to 0.5944. What
+remains in immune cells is the balance of myeloid against lymphoid cells,
+which a donor's position tracks at a rank correlation of 0.96. What remains
+in stromal cells is sequencing depth, at 0.69, with ribosomal transcripts
+on the control side. Both follow menstrual phase, across which patients and
+controls were not sampled evenly, and with phase removed they reach 0.6797
+($P = 0.080$) and 0.6778 ($P = 0.070$).
 
-Inside each family, over the 118 donors with the studies' own labels, the
-direction appears and it is immune: AUC 0.7084 against 0.4806,
-$P = 0.015$ over 94 donors; endothelial 0.6818 at $P = 0.050$; stromal
-0.5920 at 0.175; epithelial 0.4663 at 0.590; and the four families pooled
-0.6048 at 0.155 (Table~\ref{stab:x12a},
-Supplementary Fig.~\ref{sfig:x12-auc-a}). Mixing the families destroys a
-signal that is present inside one of them. We tested four families, so a
-Bonferroni correction puts immune at about 0.06 and endothelial at 0.20,
-and immune is the only compartment worth calling real rather than
-emphatic. On the transferred labels over 207 donor records the pattern
-holds and weakens, immune 0.5960 at $P = 0.072$ over 162
-(Table~\ref{stab:x12t}, Supplementary Fig.~\ref{sfig:x12-auc-t}). Our
-reason for reporting 118 rather than 207 is given in
-\ref{note:limitations}.
+Globally, with study centred, no single direction separates the 207 donor
+records: 0.5360 against a shuffled 0.4820 (Table~\ref{stab:x12g}). Tables
+\ref{stab:x12a} and~\ref{stab:x12t} and Supplementary
+Figs~\ref{sfig:x12-auc-a} and~\ref{sfig:x12-auc-t} give the per-family test
+with study centred, on the studies' labels and on the transferred labels.
+Neither result contradicts our cross-donor disease figure, which is local.
+A cell's neighbours from other donors can share its label without any
+single axis separating the donors.
 
 \begin{table}[t]
 \centering
@@ -291,53 +297,53 @@ Supplementary Fig.~\ref{sfig:x12-auc-a} should be quoted alone.}
 
 \subsection{Which genes does the immune direction move?}
 
-To name the genes behind that direction, we pushed it through the decoder.
-We moved 4{,}000 immune cells along it and recorded the change in every one
-of the 15{,}496 decoded genes, after removing the component of the
-direction lying along the family axes. The ranking is stable in the step
-size, with a rank correlation of 0.9973 between two step lengths.
+To read the immune direction as genes, we decoded all 29{,}355 labelled
+immune cells with their own tissue, platform, study and library size,
+moved each cell's latent along the direction, and recorded the change in
+every decoded gene (Supplementary Methods). The real covariates are
+necessary: the decoder scales each cell's whole profile by one learned
+number that depends on them, and with the covariates set to zero that
+number changes sign for most cells and the decoded profile inverts. We
+ranked the 8{,}436 genes that immune cells express at 0.1 or more per
+10{,}000 reads. The ranking is unchanged by halving the step. It uses the
+study-centred direction, on which the measured-count test below was fixed
+before it ran; the direction with no study step decodes to the same
+ranking, at a rank correlation of 0.95 with 13 of the top fifteen shared.
 
 Table~\ref{stab:x12top} gives the fifteen genes that move most towards
 disease and Table~\ref{stab:x12bot} the fifteen that move most towards
-control. Supplementary Fig.~\ref{sfig:x12-rank} draws the whole ranking.
-The disease end is macrophage and inflammatory transcripts, TREM1, IL1B,
-CCL13, SIGLEC7, the matrix proteases MMP19 and MMP27, LRRC15 and INHBA,
-with CCL3 at rank 52 and ITGAX at 47 just outside the table.
+control; Supplementary Fig.~\ref{sfig:x12-rank} draws the whole ranking.
+The disease end is macrophage transcripts, complement (C1QA, C1QB, C1QC),
+resident and scavenger markers (F13A1, CD163, LYVE1, STAB1) and
+lipid-handling genes (GPNMB, TREM2). The control end is T and NK cell
+transcripts, XCL1, KLRB1, IFNG, CD3D and KLRD1. This is the balance of the
+previous subsection read as genes: it names which immune cells are more
+common in patients rather than how any one cell has changed. Of the prior
+atlas's gene-level predictions, IGF1 rising in macrophages is the one about
+this compartment, and it ranks 54th of 8{,}436 towards disease
+\citep{mareckova2024heca}.
 
-Three external readings bear on it. An independent cohort outside the
-corpus, eight patients against five controls, published 66 genes
-upregulated in the eutopic endometrium of patients
-\citep{zhao2017transcriptome}. Four of our fifteen disease-end genes are on
-that list, SERPINB2 at 72.95-fold, MMP27 at 40.93, LRRC15 at 25.20 and
-INHBA at 15.33, a hypergeometric $P$ of $3.95 \times 10^{-7}$ for fifteen
-draws from 15{,}496, and none of our fifteen control-end genes is on it at
-all. In addition, IL1B, tenth here, is the
-highest-ranked gene in \texttt{duempelmann\_2026}'s own supervised
-classifier of disease, so two models with different objectives select it,
-and CCL3 and ITGAX appear in that cohort's ligand-receptor findings as well
-\citep{duempelmann2026endometrium}. Of the four gene-level predictions of
-the prior atlas, only IGF1 rising in macrophages is a claim about this
-compartment, and it agrees, at rank 285 of 15{,}496 towards disease. GREB1,
-DKK1 and IGF2 are predictions about decidualised stromal cells, and there
-is no stromal direction to test them on.
+We tested the fifteen disease-end genes in the measured counts under a
+rule fixed before the data existed: the donors' immune pseudobulk, patients
+against controls, at least 11 of 15 higher and a sign-test $P < 0.05$ in
+studies the direction never saw, with immune cells chosen by measured
+PTPRC rather than by any label made in the latent. In the two annotated
+cohorts, 14 of the 15 are higher in patients (sign test $P = 0.0005$, 94
+donors). In the held-out studies with both patients and controls,
+\texttt{lin\_2023} and \texttt{tan\_2022}, 5 of 15 are, over 25 donors
+($P = 0.94$), and the rule returns not supported. From this test alone we
+cannot tell whether the pattern is specific to those two cohorts or
+whether 25 donors is too few to see it.
 
-A larger bulk cohort does not bear on the direction either way: in
-EndometDB, 62 patient against 38 control endometria
-\citep{gabriel2020endometdb}, no gene differs at FDR 0.05, and our ranking
-is essentially uncorrelated with its patient-control statistic (Spearman
-$\rho = -0.052$; $+0.037$ in untreated women).
-
-Two cautions attach to the ranking. The control end is led by genes of
-epithelial identity and secretory function, VTCN1, SOX17, IHH and UGT2B17,
-with WNT7A, LGR5, MSLN and TFF3 inside the last 220. We do not read that
-end as disease biology and it replicates nothing. Separately, four of the
-fifteen disease-end genes, SIGLEC7, ADAMDEC1, ALPK2 and KCNH1, have no
-prior endometriosis report in the eleven pooled studies, the Open Targets
-Platform or PubMed. Two of the genes that do replicate, LRRC15 and MMP27,
-are absent from one or both of those indices despite being reported at 25-
-and 41-fold in the external cohort's supplementary tables. Thus absence
-from an index is not evidence of novelty, and we report the four as
-unindexed.
+Two external resources bear on the ranking. Genes the Open Targets
+Platform associates with endometriosis at a score of 0.1 or more rank
+towards the disease end (one-sided Mann-Whitney $P = 0.0058$; 11 of 141 in
+our top 5\%, against 7.1 expected). In EndometDB, 62 patient against 38
+control endometria \citep{gabriel2020endometdb}, no gene differs at FDR
+0.05, and our ranking is weakly related to its patient-control statistic
+(Spearman $\rho = 0.055$; $-0.124$ in untreated patients). A bulk cohort
+measures how many immune cells a sample holds, not their state, so it can
+neither confirm nor refute a direction inside the immune compartment.
 
 \begin{table}[p]
 \centering
@@ -499,16 +505,16 @@ within an order of magnitude of its own null.}
 
 \subsection{What the axis settled}
 
-Overall, of the twelve claims in the ledger we could test eight. Two were
-supported at three times the donor count that produced them: composition
-not differing between patients and controls, and the immune half of the
-dysregulated-compartment prediction. Two were not supported, the cycle
+Overall, of the twelve claims in the ledger we could test eight. One was
+supported at three times the donor count that produced it: composition
+not differing between patients and controls. Two were not supported, the cycle
 being flattened by disease, tested two ways, and the marker-signature
 complaint of the largest prior atlas. One was supported in
 direction and is confounded in this corpus, the epithelial depletion in
-lesions. Three were not recoverable at this donor count rather than
-refuted: the severity dose, the stromal half of the compartment prediction
-and the tissue effect within a family. The remaining four need either a
+lesions. Four were not recoverable at this donor count rather than
+refuted: the severity dose, both halves of the compartment prediction,
+which separate patients only through composition, the cycle and the
+sample, and the tissue effect within a family. The remaining four need either a
 finer cell vocabulary, a finer pathway vocabulary, or controls the
 deposited cohort does not contain. Every one of those eight tests was
 impossible in any single cohort of the corpus, and performing them is the
