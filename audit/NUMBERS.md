@@ -529,6 +529,7 @@ own docstring under `axw1008/src/scripts/`.
 | immune | auc_no_study_step | 0.7631 |
 | immune | p_no_study_step | 0.015 |
 | immune | donors | 94 |
+| immune | cos_disease_lineage_axis | 0.8823 |
 | immune | phase_kruskal_p | 0.001357 |
 | immune | rho_lym | 0.9573 |
 | immune | rho_lib | -0.1179 |
@@ -625,4 +626,13 @@ own docstring under `axw1008/src/scripts/`.
 | HELD OUT, transferred labels | RNASE2 | -0.04783 | 0.9747 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
 | HELD OUT, transferred labels | ANPEP | -0.08161 | 0.7268 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
 | HELD OUT, transferred labels | LYVE1 | -0.04117 | 0.7427 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+
+**`composition_spread.csv`**
+
+| family | donors | iqr | median_control | median_case | case_minus_control | iqr_over_difference |
+|---|---|---|---|---|---|---|
+| endothelial | 177 | 0.03539 | 0.01266 | 0.02132 | 0.008651 | 4.091 |
+| epithelial | 198 | 0.1566 | 0.05009 | 0.02392 | -0.02617 | 5.984 |
+| immune | 183 | 0.08207 | 0.01181 | 0.02042 | 0.008608 | 9.534 |
+| stromal | 185 | 0.7584 | 0.08212 | 0.1797 | 0.09758 | 7.772 |
 

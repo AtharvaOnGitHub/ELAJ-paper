@@ -1017,6 +1017,7 @@ _CLAIMS = {
     # measured test of the immune axis. Keyed on family and quantity, and on
     # cohort and gene, so no row can vouch for another.
     "axis_drivers_summary.csv":            ("family", "quantity"),
+    "composition_spread.csv":              ("family",),
     "x17_measured_expression.csv":         ("cohort", "gene"),
 }
 # Columns the prose will never quote. Registering them manufactures
@@ -1073,6 +1074,9 @@ PINNED = {
     "0.69": ("axis_drivers_summary.csv", "stromal/rho_lib"),
     "0.080": ("axis_drivers_summary.csv", "immune/p_phase_removed"),
     "0.0005": ("x17_measured_expression.csv", "FIT/F13A1 sign_p"),
+    "4.1": ("composition_spread.csv", "endothelial iqr_over_difference"),
+    "9.5": ("composition_spread.csv", "immune iqr_over_difference"),
+    "0.88": ("axis_drivers_summary.csv", "immune/cos_disease_lineage_axis"),
     # Ablations: the study gap at the last shared epoch. Pinned 19 Nov, when
     # axis_drivers_summary.csv brought a second value that rounds to 0.0010.
     "0.0010": ("study gap at epoch", "the last both arms ran"),

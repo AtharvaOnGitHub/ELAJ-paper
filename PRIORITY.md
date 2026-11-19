@@ -449,6 +449,34 @@ Known gaps to close in that comparison:
 - [ ] Push both repos when AW asks; no `Co-Authored-By` or `Claude-Session`
       trailers in any commit.
 
+# 0b. Results against figures: the audit, 19 November (AW asked)
+
+Every Results finding, and what shows it. "--" = nothing in the main figures.
+Fig 1, 3 and 4 were cited NOWHERE in Results before today; the four
+`Fig.~X` placeholders below are the open integration items.
+
+| subsection | finding | shown by |
+|---|---|---|
+| trade-off | donor recovery and cycle fall together over six arms | Fig 2a,b (cited) |
+| trade-off | B-hi beats all nine competitors on both axes | Fig 1 outcomes row, Table 1 (Fig 1 not cited) |
+| emergent biology | supervision is a minority of the cycle signal (phase head ablated) | Table 1 only |
+| emergent biology | cycle structure differs by compartment | Fig 3 (NOT cited) |
+| emergent biology | the cycle is one linear axis; orders an unseen cohort by day and progesterone | Fig 4d-f (cited 19 Nov) |
+| emergent biology | withheld labels recoverable (cell family 0.9807, stage) | Table 1; Fig 4g-i qualitatively (not cited) |
+| emergent biology | technical controls (mito, doublet) bound alternatives | -- (Supplementary) |
+| severity | disease status legible, severity not, in all ten methods | Fig 4g-i qualitatively (NOT cited); no quantitative panel |
+| severity | composition does not track severity | `Fig.~X` placeholder; Supplementary figure exists in figures_explore |
+| disease axes | label transfer validated; marker signatures reproduce (X13) | -- (Note 6 figure) |
+| disease axes | composition unchanged; donors differ 4.1-9.5x more than patients from controls | Fig 2c (cited 19 Nov) |
+| disease axes | per-family held-out AUCs, no study step | Fig 2d (cited) |
+| disease axes | stromal RNA in every non-stromal family | -- |
+| disease axes | immune axis = lymphoid-to-myeloid (cosine 0.88) | Fig 2e (cited) |
+| disease axes | phase sets donor position | Fig 2f (cited) |
+| disease axes | X17 measured test | -- (Note 6 tables) |
+| ablations | random groups best reconstruction, least disease | Table 1 |
+| ablations | phase head's contribution is not phase (epoch trajectory) | -- |
+| ablations | ECS and sentinel visible only in the latent | `Fig.~X` x2, placeholders; no figure exists |
+
 # 0a. Figures in flux, 17 November — CAPTIONS ARE A TODO FOR AFTER
 
 **AW, 17 Nov: "Figure captions are a todo for after figures are fixed."**

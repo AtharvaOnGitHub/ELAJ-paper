@@ -255,11 +255,12 @@ def _plane_xy():
     return Zi @ a, Zi @ W["immune"], case[k], li, float(W["immune"] @ a), m.patient_id.to_numpy()[k]
 
 
-def panel_plane(ax, cax):
+def panel_plane(ax, cax, cmap="RdBu_r", vmin=.2, vmax=.8, clw=.6, ctl=None, cas=None, alpha=1.0):
     """Immune cells in the plane of the myeloid-lymphoid axis and the disease
     axis. Hexagons: share of cells from patients. Lines: where control and
     patient cells are densest."""
     from scipy.ndimage import gaussian_filter
+    ctl, cas = ctl or CTL_C, cas or CASE_C
     x, y, ca, li, cos, pid = _plane_xy()
     # DONORS, NOT CELLS. Coloured by cells, one patient with many cells
     # painted a lymphoid cluster red (69% of its cells were that donor).
@@ -271,14 +272,14 @@ def panel_plane(ax, cax):
         u = np.unique(np.asarray(c, dtype=int))
         return is_case[u].mean() if len(u) >= _min else np.nan
     hb = ax.hexbin(x, y, C=codes.astype(float), reduce_C_function=share, gridsize=34,
-                   cmap="RdBu_r", vmin=.2, vmax=.8, mincnt=8, linewidths=0, zorder=1)
+                   cmap=cmap, vmin=vmin, vmax=vmax, mincnt=8, linewidths=0, zorder=1, alpha=alpha)
     ex = np.linspace(np.percentile(x, .5), np.percentile(x, 99.5), 70)
     ey = np.linspace(np.percentile(y, .5), np.percentile(y, 99.5), 70)
-    for sel, c in ((~ca, CTL_C), (ca, CASE_C)):
+    for sel, c in ((~ca, ctl), (ca, cas)):
         H, _, _ = np.histogram2d(x[sel], y[sel], [ex, ey], density=True)
         H = gaussian_filter(H.T, 1.4)
         ax.contour(ex[:-1], ey[:-1], H, levels=np.percentile(H[H > 0], [80, 95]),
-                   colors=c, linewidths=.6, zorder=2)
+                   colors=c, linewidths=clw, zorder=2)
     for nm, (tx, ty) in (("lymphoid", (np.median(x[li == "lymphoid"]), np.percentile(y[li == "lymphoid"], 2))),
                          ("myeloid", (np.median(x[li == "myeloid"]), np.percentile(y[li == "myeloid"], 99.5)))):
         ax.annotate(f"{nm} cells", (tx, ty), xytext=(-28 if nm == "lymphoid" else -95, -14 if nm == "lymphoid" else -6),
@@ -286,8 +287,8 @@ def panel_plane(ax, cax):
                     bbox=dict(boxstyle="square,pad=0.1", fc="white", ec="none"))
     cb = plt.colorbar(hb, cax=cax); cb.outline.set_visible(False)
     cb.set_label("share of donors who are patients (8+ donors per hexagon)", fontsize=FS_SMALL); cb.ax.tick_params(labelsize=FS_SMALL, length=2)
-    ax.plot([], [], color=CTL_C, lw=.8, label="control cells, densest")
-    ax.plot([], [], color=CASE_C, lw=.8, label="patient cells, densest")
+    ax.plot([], [], color=ctl, lw=clw, label="control cells, densest")
+    ax.plot([], [], color=cas, lw=clw, label="patient cells, densest")
     ax.legend(frameon=False, fontsize=FS_SMALL, loc="lower right", handlelength=1.4)
     ax.set_xlabel("lymphoid  to  myeloid axis", fontsize=FS_BODY)
     ax.set_ylabel("disease axis (towards patients)", fontsize=FS_BODY)
@@ -296,10 +297,12 @@ def panel_plane(ax, cax):
     ax.tick_params(labelsize=FS_SMALL, length=2); clean(ax)
 
 
-def panel_rain(axes):
+def panel_rain(axes, style="rain", ctl=None, cas=None, legend="right"):
     """Each donor's held-out position on its family's disease axis."""
+    ctl, cas = ctl or CTL_C, cas or CASE_C
     rng = np.random.default_rng(SEED)
     marks = {"proliferative": "o", "periovulatory": "D", "secretory": "s", "menstrual": "^"}
+    lims = []
     for ax, f in zip(axes, ("immune", "stromal")):
         D = DON[f]; M = D[[f"z{i}" for i in range(Z.shape[1])]].to_numpy(); y = D.case.to_numpy()
         tot, n = np.zeros(len(y)), np.zeros(len(y))
@@ -310,27 +313,42 @@ def panel_rain(axes):
             w = M[tr & ~y].mean(0) - M[tr & y].mean(0); w = -w / np.linalg.norm(w)
             tot[~tr] += M[~tr] @ w; n[~tr] += 1
         sc = tot / np.maximum(n, 1); sc = (sc - sc.mean()) / sc.std()
-        for xi, (sel, c) in enumerate(((~y, CTL_C), (y, CASE_C))):
+        lims += [sc.min(), sc.max()]
+        for xi, (sel, c) in enumerate(((~y, ctl), (y, cas))):
             v = sc[sel]
-            vp = ax.violinplot([v], positions=[xi], widths=.75, showextrema=False)
-            for b in vp["bodies"]:
-                b.set_facecolor(c); b.set_alpha(.3); b.set_edgecolor("none")
-                b.get_paths()[0].vertices[:, 0] = np.clip(b.get_paths()[0].vertices[:, 0], -1e9, xi)
+            if style == "rain":
+                vp = ax.violinplot([v], positions=[xi], widths=.75, showextrema=False)
+                for b in vp["bodies"]:
+                    b.set_facecolor(c); b.set_alpha(.3); b.set_edgecolor("none")
+                    b.get_paths()[0].vertices[:, 0] = np.clip(b.get_paths()[0].vertices[:, 0], -1e9, xi)
+            off, spread = (.07, .25) if style == "rain" else (-.22, .44)
             for ph, mk in marks.items():
                 q = sel & (D.phase.to_numpy() == ph)
-                ax.scatter(xi + .07 + rng.uniform(0, .25, q.sum()), sc[q], s=5, marker=mk,
-                           color=c, ec="white", lw=.2, zorder=3)
-            ax.plot([xi - .32, xi], [np.median(v)] * 2, color=c, lw=1.1)
+                ax.scatter(xi + off + rng.uniform(0, spread, q.sum()), sc[q], s=6, marker=mk,
+                           color=c, alpha=.8 if style == "strip" else 1, ec="white", lw=.2, zorder=3)
+            if style == "rain":
+                ax.plot([xi - .32, xi], [np.median(v)] * 2, color=c, lw=1.1)
+            else:                                   # as Figure 2c: a black median bar
+                ax.plot([xi - .3, xi + .3], [np.median(v)] * 2, color=INK, lw=1.0, zorder=4)
         ax.set_xticks([0, 1]); ax.set_xticklabels([f"control\n{(~y).sum()} donors", f"patient\n{y.sum()} donors"],
                                                   fontsize=FS_BODY)
         ax.set_title(f, fontsize=FS_BODY, color=INK, loc="left")
         ax.tick_params(labelsize=FS_SMALL, length=2); ax.tick_params(axis="x", length=0)
         clean(ax)
+    lo, hi = min(lims) - .15, max(lims) + .15
+    for ax in axes:                                  # one vertical scale for both
+        ax.set_ylim(lo, hi)
+    for ax in axes[1:]:
+        ax.set_yticklabels([])
     axes[0].set_ylabel("held-out position on the\ndisease axis (SD)", fontsize=FS_BODY)
     for ph, mk in marks.items():
-        axes[1].scatter([], [], marker=mk, color=SOFT, s=7, label=ph)
-    axes[1].legend(frameon=False, fontsize=FS_SMALL, title="menstrual phase", title_fontsize=FS_SMALL,
-                   loc="upper left", bbox_to_anchor=(1.0, 1.0), handletextpad=.2)
+        axes[-1].scatter([], [], marker=mk, color=SOFT, s=7, label=ph)
+    if legend == "below":
+        axes[0].legend(*axes[-1].get_legend_handles_labels(), frameon=False, fontsize=FS_SMALL, ncol=4,
+                       loc="upper left", bbox_to_anchor=(0, -.2), handletextpad=.1, columnspacing=.8)
+    else:
+        axes[-1].legend(frameon=False, fontsize=FS_SMALL, title="menstrual phase", title_fontsize=FS_SMALL,
+                        loc="upper left", bbox_to_anchor=(1.0, 1.0), handletextpad=.2)
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
