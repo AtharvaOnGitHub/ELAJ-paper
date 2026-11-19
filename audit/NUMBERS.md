@@ -399,10 +399,10 @@ own docstring under `axw1008/src/scripts/`.
 
 **`replication_external.csv`**
 
-| end | n_top | external_list | external_n | hits | genes | p_hypergeometric | fold_INHBA | fold_LRRC15 | fold_MMP27 | fold_SERPINB2 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| disease side | 15 | upregulated | 66 | 4 | INHBA;LRRC15;MMP27;SERPINB2 | 3.954e-07 | 15.33 | 25.2 | 40.93 | 72.95 |
-| control side | 15 | upregulated | 66 | 0 |  | 1 |  |  |  |  |
+| end | n_top | external_list | external_n | hits | genes | p_hypergeometric |
+|---|---|---|---|---|---|---|
+| disease side | 15 | upregulated | 66 | 0 |  | 1 |
+| control side | 15 | upregulated | 66 | 0 |  | 1 |
 
 **`x13_marker_reproducibility.csv`**
 
@@ -521,4 +521,108 @@ own docstring under `axw1008/src/scripts/`.
 | epithelial vs endothelial cycle axis, abs cosine | 0.8054 |  | 0 |
 | epithelial vs immune cycle axis, abs cosine | 0.7962 |  | 0 |
 | endothelial vs immune cycle axis, abs cosine | 0.6922 |  | 0 |
+
+**`axis_drivers_summary.csv`**
+
+| family | quantity | value |
+|---|---|---|
+| immune | auc_no_study_step | 0.7631 |
+| immune | p_no_study_step | 0.015 |
+| immune | donors | 94 |
+| immune | phase_kruskal_p | 0.001357 |
+| immune | rho_lym | 0.9573 |
+| immune | rho_lib | -0.1179 |
+| immune | rho_ng | -0.4112 |
+| immune | auc_stromal_removed | 0.7385 |
+| immune | p_stromal_removed | 0.015 |
+| immune | auc_phase_removed | 0.6797 |
+| immune | p_phase_removed | 0.08 |
+| immune | stromal_rna_ratio | 2.075 |
+| immune | stromal_rna_p | 1.54e-05 |
+| stromal | auc_no_study_step | 0.71 |
+| stromal | p_no_study_step | 0.0275 |
+| stromal | donors | 101 |
+| stromal | phase_kruskal_p | 1.956e-05 |
+| stromal | rho_lib | 0.6904 |
+| stromal | rho_ng | 0.4769 |
+| stromal | auc_stromal_removed | 0.6911 |
+| stromal | p_stromal_removed | 0.03 |
+| stromal | auc_phase_removed | 0.6778 |
+| stromal | p_phase_removed | 0.07 |
+| stromal | stromal_rna_ratio | 1.344 |
+| stromal | stromal_rna_p | 0.0006392 |
+| endothelial | auc_no_study_step | 0.7582 |
+| endothelial | p_no_study_step | 0.01 |
+| endothelial | donors | 85 |
+| endothelial | phase_kruskal_p | 0.0009696 |
+| endothelial | rho_lib | 0.2642 |
+| endothelial | rho_ng | -0.02212 |
+| endothelial | auc_stromal_removed | 0.5944 |
+| endothelial | p_stromal_removed | 0.2225 |
+| endothelial | auc_phase_removed | 0.5624 |
+| endothelial | p_phase_removed | 0.325 |
+| endothelial | stromal_rna_ratio | 1.707 |
+| endothelial | stromal_rna_p | 0.0001339 |
+| epithelial | auc_no_study_step | 0.6673 |
+| epithelial | p_no_study_step | 0.0625 |
+| epithelial | donors | 98 |
+| epithelial | phase_kruskal_p | 6.369e-06 |
+| epithelial | rho_lib | 0.577 |
+| epithelial | rho_ng | 0.4364 |
+| epithelial | auc_stromal_removed | 0.6139 |
+| epithelial | p_stromal_removed | 0.1375 |
+| epithelial | auc_phase_removed | 0.6203 |
+| epithelial | p_phase_removed | 0.1675 |
+| epithelial | stromal_rna_ratio | 1.925 |
+| epithelial | stromal_rna_p | 0.0009932 |
+
+**`x17_measured_expression.csv`**
+
+| cohort | gene | case_minus_control | p_one_sided | n_up | sign_p | spearman_all_genes | n_control | n_case | n_donors |
+|---|---|---|---|---|---|---|---|---|---|
+| FIT | F13A1 | 0.2315 | 0.009599 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | C1QC | 0.3156 | 0.0125 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | C1QB | 0.3379 | 0.0124 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | GPNMB | 0.1867 | 0.05529 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | C1QA | 0.3902 | 0.005 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | SIGLEC1 | 0.1978 | 0.0002 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | FN1 | 0.5191 | 0.0008999 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | NRG1 | -0.02289 | 0.894 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | CD163 | 0.3521 | 0.0004 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | TREM2 | 0.1566 | 0.0208 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | STAB1 | 0.283 | 0.0009999 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | RNASE1 | 0.3832 | 0.0141 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | RNASE2 | 0.02928 | 0.2268 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | ANPEP | 0.09058 | 0.0471 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| FIT | LYVE1 | 0.299 | 0.0009999 | 14 | 0.0004883 | 0.6915 | 50 | 44 | 94 |
+| HELD OUT | F13A1 | 0.004813 | 0.5409 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | C1QC | -0.3819 | 0.9451 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | C1QB | -0.6121 | 0.9816 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | GPNMB | -0.0966 | 0.6607 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | C1QA | -0.5309 | 0.9641 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | SIGLEC1 | -0.004183 | 0.5839 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | FN1 | 0.1609 | 0.3395 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | NRG1 | 0.00311 | 0.442 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | CD163 | 0.03059 | 0.4624 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | TREM2 | -0.1166 | 0.894 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | STAB1 | -0.0372 | 0.641 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | RNASE1 | 0.03819 | 0.4426 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | RNASE2 | -0.03138 | 0.929 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | ANPEP | -0.07203 | 0.7198 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT | LYVE1 | -0.009314 | 0.5794 | 5 | 0.9408 | -0.1389 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | F13A1 | -0.04373 | 0.6627 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | C1QC | -0.5125 | 0.9773 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | C1QB | -0.7809 | 0.9941 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | GPNMB | -0.1775 | 0.7345 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | C1QA | -0.7022 | 0.9869 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | SIGLEC1 | -0.03628 | 0.7552 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | FN1 | 0.109 | 0.4628 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | NRG1 | 0.0002457 | 0.4988 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | CD163 | -0.021 | 0.6094 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | TREM2 | -0.1783 | 0.9456 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | STAB1 | -0.1129 | 0.7775 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | RNASE1 | -0.05192 | 0.5936 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | RNASE2 | -0.04783 | 0.9747 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | ANPEP | -0.08161 | 0.7268 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
+| HELD OUT, transferred labels | LYVE1 | -0.04117 | 0.7427 | 2 | 0.9995 | -0.1587 | 10 | 15 | 25 |
 

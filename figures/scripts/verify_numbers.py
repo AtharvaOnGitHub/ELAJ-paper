@@ -1013,6 +1013,11 @@ _CLAIMS = {
     # different measurement rather than one measurement per group, so a
     # row's name IS its key and no two can vouch for each other.
     "x16_cycle_axis.csv":                  ("quantity",),
+    # The per-donor disease axes and their drivers (19 Nov), and X17's
+    # measured test of the immune axis. Keyed on family and quantity, and on
+    # cohort and gene, so no row can vouch for another.
+    "axis_drivers_summary.csv":            ("family", "quantity"),
+    "x17_measured_expression.csv":         ("cohort", "gene"),
 }
 # Columns the prose will never quote. Registering them manufactures
 # collisions: `auc_lo` for endothelial in the transferred run is 0.4812,
@@ -1023,7 +1028,8 @@ _CLAIMS = {
 _CLAIMS_SKIP = {"auc_lo", "auc_hi", "null_sd", "null_mean", "null_p95",
                 "overlap_jaccard", "top_k", "shuffle",
                 "cosine_stability", "genes", "n_permutations", "k",
-                "n_top"}
+                "n_top", "p_one_sided", "case_minus_control",
+                "spearman_all_genes"}
 for _fn, _keys in _CLAIMS.items():
     _f = _CLAIMS_DIR / _fn
     if not _f.exists():
@@ -1058,6 +1064,18 @@ for _fn, _keys in _CLAIMS.items():
 # not is a failure; an unpinned rounded number is a failure.
 # ──────────────────────────────────────────────────────────────────────────
 PINNED = {
+    # Results, per-donor disease axes (19 Nov): axis_drivers_summary.csv, X17.
+    "0.015": ("axis_drivers_summary.csv", "immune/p_no_study_step"),
+    "2.07": ("axis_drivers_summary.csv", "immune/stromal_rna_ratio"),
+    "1.92": ("axis_drivers_summary.csv", "epithelial/stromal_rna_ratio"),
+    "1.71": ("axis_drivers_summary.csv", "endothelial/stromal_rna_ratio"),
+    "0.96": ("axis_drivers_summary.csv", "immune/rho_lym"),
+    "0.69": ("axis_drivers_summary.csv", "stromal/rho_lib"),
+    "0.080": ("axis_drivers_summary.csv", "immune/p_phase_removed"),
+    "0.0005": ("x17_measured_expression.csv", "FIT/F13A1 sign_p"),
+    # Ablations: the study gap at the last shared epoch. Pinned 19 Nov, when
+    # axis_drivers_summary.csv brought a second value that rounds to 0.0010.
+    "0.0010": ("study gap at epoch", "the last both arms ran"),
     "0.58": ("validation.csv", "linear-corr/epithelial.pseudotime"),
     "0.47": ("validation.csv", "linear-corr/ProgesteroneSerum"),
     "0.34": ("validation.csv", "linear-corr/pct_counts_mt"),
