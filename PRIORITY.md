@@ -181,7 +181,12 @@ doublet-like half). Not the MMT of Zhong et al. 2025 (Mol Hum Reprod,
 gaaf051): TGFB1 lower in patients' immune cells (x0.86), myofibroblast
 genes weak (x1.45, P 0.038). Removing each cell's stromal score from the
 latent: immune held-out AUC 0.763 -> 0.738 (P 0.015, SURVIVES); myeloid
-0.725 -> 0.670 (P 0.115); lymphoid 0.679 -> 0.488. Decision with AW.
+0.725 -> 0.670 (P 0.115); lymphoid 0.679 -> 0.488. Per FAMILY, no study
+step (held-out AUC, then with each cell's stromal score removed): immune
+0.763 -> 0.738 (P 0.015); stromal 0.710 -> 0.691 (P 0.030); endothelial
+0.758 (P 0.010) -> 0.594 (P 0.22); epithelial 0.667 (P 0.062) -> 0.614.
+Robust: immune and stromal. Endothelial's separation WAS the stromal RNA.
+Decision with AW.
 
 **AW's RULING, 19 Nov, which reframes the whole gene claim.** "The paper
 is about that tool." (1) Cell proportions from labels, outside the latent,
