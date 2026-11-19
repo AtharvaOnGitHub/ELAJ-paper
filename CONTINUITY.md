@@ -50,6 +50,74 @@ the fix, and move on.
 
 ---
 
+## 18-19 November: the gene claim resolved, the paper reframed around the tool, figures finished
+
+**Read PRIORITY ⓪⓪ first.** This section is the lessons and rulings.
+
+### AW's rulings this stretch (do not reopen)
+* **"The paper is about that tool."** A disease result counts only if it
+  comes through ELAJ's latent AND is something only a single-cell atlas
+  could show. Label-based proportions outside the latent are batch-affected
+  and not results; gene lists are not our job (memory
+  `elaj-results-are-tool-results`).
+* **Pooled means all donors together, no study step anywhere** — never
+  within-study then averaged (memory `pooled-before-per-study`; the 2 Nov
+  rule already said so and I missed it).
+* **Cited studies are "the paper" / "they", never her/his** (memory).
+* **AW's text: spelling/grammar only; everything else current/proposed/why**
+  ("adversarial weight" = lambda_dab; I overrode him once this stretch;
+  memory `never-override-aw-text`).
+* **No ML workloads on AW's Mac** (10-year-old Intel); verify by reading
+  code (memory `no-local-ml-workloads`).
+* X17 is reported in AW's words: "From this test alone we cannot tell
+  whether the pattern is specific to those two cohorts or whether 25 donors
+  is too few to see it."
+* "donors differ from each other far more than patients differ from
+  controls" is a finding (4.1-9.5x), in Results.
+* Fig 2: c = the cycle closes (replacing composition); letters only, no
+  panel titles; e = option C thinner contours; f = option B.
+
+### What the disease analysis became (all in PRIORITY ⓪, numbers on file)
+decode_real with real covariates fixed the inversion (gain negative for all
+29,355 cells; zeroing covariates flipped 27,988). Canonical ranking
+`x12_gene_ranking.csv` (study-centred, not orthogonalised, floor 0.1/10k).
+X17: FIT 14/15, HELD OUT 5/15 not supported. Within-lineage directions were
+mostly sample-level stromal RNA, present in EVERY non-stromal family
+(x2.07 immune, x1.92 epithelial, x1.71 endothelial), so not an immune state;
+not doublets, not the MMT of Zhong et al. 2025. Per-donor disease axes trace
+to myeloid/lymphoid balance (rho 0.96), menstrual phase and sequencing depth;
+with phase removed none reaches P < 0.05. The paper's positive disease
+result is cross-donor agreement (0.3364, P = 0.005).
+
+### Mistakes I made, with the rule each taught
+1. Wrote cluster scripts with untested attribute names (`ds.study_id`) and a
+   wrong alignment key (raw vs canonical patient_id): trace every call
+   against the source before handing over a job.
+2. Ran the model locally on AW's Mac: never.
+3. Overrode AW's wording in the Supplementary Methods: protocol above.
+4. "Pooled" by averaging within studies: pooled = all donors together.
+5. Called the stromal signal contamination, then "can't tell", then (when
+   AW pushed) found the test that actually decides it (epithelial and
+   endothelial cells carry it too): look for the discriminating measurement
+   before arguing either way.
+6. Compared to Marečková's "uM1" without reading what uM1 is (it is the
+   pro-inflammatory subtype; our disease end is uM2-like).
+7. Claimed colour-blind safety without simulating; the simulation found two
+   failing pairs.
+8. Added a Results sentence that duplicated an existing one: grep before
+   adding a claim.
+
+### Mechanics worth keeping
+* `verify_numbers.py` and `audit_numbers.py` must register every new CSV
+  the prose quotes (`_CLAIMS` / `_CFILES`), and rounded numbers need PINNED
+  entries.
+* Fig 2 is drawn by `figures/scripts/fig2_variants.py` (not `figure2_draft.py`)
+  and copied to `figures/pinned/figure2.{png,pdf}`; Figs 1/3/4 by their own
+  scripts; Source Data in `Outputs/supplementary/source_data/`.
+* The Figure 2 options canvas: https://claude.ai/artifact/UZUWRS1bMBnvdSYPVju3rt
+
+---
+
 ## 17 November, second session: read before acting
 
 **Where to look first.** PRIORITY.md section ⓪ has the live state, the two

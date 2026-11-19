@@ -102,6 +102,47 @@ scorecard has no empty cell.
 
 ---
 
+# ⓪⓪ NEXT SESSION (AW, 19 Nov, before compaction) — read this first
+
+**Order of work, AW's:** (1) main-Methods errors, (2) citations pass (ⓕ F2),
+(3) prose read-through (ⓕ F3), which must also cut the main text to the cap.
+**Skipped by AW:** Note 7; the rest of the long tail. **Figures are DONE**
+except the decisions in 0e.
+
+## (1) Main-Methods errors. AW's protocol: Methods is HIS text; raise each as
+current / proposed / why, change nothing until he answers.
+
+| # | where (sections/04-methods.tex) | current | correct | evidence |
+|---|---|---|---|---|
+| M1 | line 664, *Optimisation* | "Real counts run from 253 to 493 genes" | 247 to 493 | `vocabulary_v1.json` group sizes; Table S28; Supplementary Methods *Size buckets* |
+| M2 | lines 665-667 | "49.0% of the attention arithmetic is spent on padding" | 46.7% (one block); 12.9% with the four buckets the model uses | `supp_methods.py` -> `tables/buckets.tex`, asserted against train log `train_57935604.log` |
+| M3 | lines 671-677 | equal-size buckets drop the mask and reach FlashAttention, 62.60 against 174.87 ms | in the reported vocabulary NO bucket is uniform; every bucket is masked; the saving is arithmetic only | `plan_buckets` on the shipped vocabulary: buckets 247-265, 283-343, 355-422, 436-493 |
+| M4 | lines 89-94, data split | "The split could not detect that: 17,873 held-out cells, 4.3% ... belong to a person who also appears under the other study's identifier" | the reported run merged the 15 two-ID people BEFORE splitting | `Outputs/p_series/p1_dab168_kl1/run_config.json` `donor_aliasing: True`; train log "30 donor ids resolve to 15 people ... split once" |
+| M5 | line 446, adversary | "The failure mode of a weaker discriminator is described in results" | it is not in Results; it is in Supplementary Methods *Hyperparameters* (64-unit adversary, loss 0.21 vs ln 11 = 2.40, 88% same-study neighbours) | grep Results: absent |
+| M6 | (not an error) | main Methods cites neither Reactome nor GO | add `gillespie2022reactome`, `go2023knowledgebase` where groups are introduced | the SM cites both |
+
+Line 495's "ablation studies described in results" is CORRECT (Results has them).
+
+## Still open that cannot be skipped (raised per AW: "Raise in priority if not")
+- **Main text 4,230 words vs NMI's 3,500 (730 over):** intro 685, Results
+  2,384, Discussion 1,161. The prose read-through must cut it.
+- **Fig 1 depth 213.5 mm vs NMI's 170 mm** (decision 0e(1)); Fig 1a/b are
+  raster (text not editable). NMI accepts any format at INITIAL submission
+  (check `Nature_websites/NMI_Formatting_your_initial_submission.pdf`), so
+  this can wait for revision if AW chooses.
+- **Source Data statement** missing from Data availability: "Source data are
+  provided with this paper." (Mine to add; files exist for Figs 1-4.)
+- **Abstract at exactly 150 words**: any edit must not lengthen it.
+
+## AW's own items, NOT all done (checked 19 Nov)
+- Code availability: `[GitHub link and licence to be added on deposit]`
+  in `04-methods.tex` -> push code to a new repository, add licence (+ DOI).
+- Acknowledgements: `[Supervision, funding and grant numbers to be added.
+  BlueBEAR's own form of words...]` in `05-backmatter.tex`.
+- Reporting Summary (separate Nature form).
+- Cover letter; push Paper_writing (many commits unpushed).
+- Supervisor's Word file sync (ⓕ F4) — AW may skip; raise once.
+
 # ⓪ STATE AT COMPACTION, 17 November late — read this first
 
 ## The one thing in flight: the gene ranking, redone correctly
