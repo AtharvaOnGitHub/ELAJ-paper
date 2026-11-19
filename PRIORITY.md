@@ -449,6 +449,20 @@ Known gaps to close in that comparison:
 - [ ] Push both repos when AW asks; no `Co-Authored-By` or `Claude-Session`
       trailers in any commit.
 
+# 0e. Figures 1, 3, 4 audited (19 Nov), and the distance to send-off
+DONE: Arial, 600 dpi + editable PDF for all four; Fig 4 study/disease/stage
+colours shared with Fig 1a and colour-blind safe, legends 5 pt, sentence
+case; captions for Figs 1 (rewritten, 278 words) and 4 (trimmed, 252) under
+300; Source Data for Figs 1-4 in Outputs/supplementary/source_data/.
+DECISIONS FOR AW: (1) Fig 1 is 180 x 213.5 mm, over NMI's 170 mm; its two
+pasted panels (overview 76 mm, architecture 51 mm) leave ~24 mm for c and d.
+(2) Fig 1a and 1b are raster images, so their text is not editable (NMI:
+do not flatten labels). (3) Family colours stromal/endothelial and
+epithelial/immune weak under colour-blindness. (4) Fig 2c's stage colours
+(twilight) differ from the phase colours of Figs 3 and 4.
+MAIN TEXT 4,230 words (intro 685, Results 2,384, Discussion 1,161) against
+3,500: 730 over. Abstract 150 (limit).
+
 # 0d. Figure 2 DONE (19 Nov): pinned, captioned, cited in order, Source Data
 `figures/pinned/figure2.{png,pdf}` from `fig2_variants.py`; caption under 300
 words in `06-display-items.tex`; colour pairs checked by deutan/protan/tritan
