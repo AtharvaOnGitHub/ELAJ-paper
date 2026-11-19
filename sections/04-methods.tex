@@ -88,10 +88,8 @@ a hormonal state, a handling protocol and in most cases a single biopsy,
 so a cell-level split would place near-duplicates on both sides and
 measure the model on cells it had effectively already seen. One study
 pair deposits the same fifteen people under two sets of identifiers, so
-the 269 identifiers in the corpus resolve to 254 people. The split could
-not detect that: 17{,}873 held-out cells, 4.3\% of the
-held-out set, therefore belong to a person who also appears under the
-other study's identifier.
+the 269 identifiers in the corpus resolve to 254 people. The fifteen were
+merged before splitting, so each person sits in one partition.
 
 
 % PRISMA SETTLED 7 November 2026, AW: it becomes panel (d) of Figure 1,
@@ -112,8 +110,8 @@ is ambiguous, and resolving it would mean guessing; all such aliases were
 dropped, removing 1{,}452 mappings.
 
 With the names settled, the set of genes the model reads still has to be
-chosen. The selection used here is derived from Reactome or Gene Ontology 
-(GO) pathway groups.  A fixed vocabulary of 15{,}496 genes was taken as those 
+chosen. The selection used here is derived from Reactome or Gene Ontology
+(GO) pathway groups \citep{gillespie2022reactome, go2023knowledgebase}.  A fixed vocabulary of 15{,}496 genes was taken as those 
 annotated to at least one Reactome or GO pathway, on the reasoning that a
 gene worth modelling is one known to participate in a biological process. 
 This has added benefits apparent in the encoder later. Restricted to this 
@@ -443,7 +441,7 @@ traces the frontier reported in this paper.
 As with any adversarial network, the discriminator's capacity is a sensitive 
 hyperparameter. A strong discriminator prevents the model from learning 
 anything while a weaker one is easily fooled by the encoder. The failure 
-mode of a weaker discriminator is described in results. \elaj uses a 
+mode of a weaker discriminator is described in the Supplementary Methods. \elaj uses a 
 discriminator with three linear layers of width 256, with a leaky rectifier, no
 dropout, and layer normalisation after each layer.
 
@@ -661,23 +659,18 @@ cell type, so cell family is not a withheld label for it.
 
 \subsection*{Optimisation}
 
-The 44 gene groups are not the same size. Real counts run from 253 to 493
+The 44 gene groups are not the same size. Real counts run from 247 to 493
 genes. Running all of them in one batched call means padding every group to
-the largest, and attention is quadratic in sequence length, so 49.0\% of the
-attention arithmetic is spent on padding. 
+the largest, and attention is quadratic in sequence length, so run as one
+block, 46.7\% of the attention arithmetic would be spent on padding.
 
 The groups are therefore sorted by size and run in four buckets, each padded
-only to its own largest member. The indirect saving is the larger one.
-FlashAttention refuses a non-null attention mask, and the only reason a mask
-exists here is to hide padding. A bucket whose groups are all the same size
-needs no padding and therefore no mask, which lets the call reach the flash
-kernel: 62.60~ms against 174.87~ms for the same call with a mask, measured on
-an A100 at the real training shapes. Nothing about the model changes. Each
+only to its own largest member. This lowers the share spent on padding to
+12.9\%. Nothing about the model changes. Each
 group keeps its own weights and its own independence, and only the order they
 are executed in differs.
 
-Training runs in bf16 for the same reason, since FlashAttention has no fp32
-kernel. The Power Spherical sampler and the negative-binomial loss are held
+Training runs in bf16 for its efficiency. The Power Spherical sampler and the negative-binomial loss are held
 in fp32 regardless, because neither is numerically safe at reduced precision.
 
 The remaining settings are AdamW at a learning rate of $10^{-3}$, weight decay
@@ -732,7 +725,7 @@ GSE213216 \citep{fonseca2023endometriosis}, GSE203191
 ArrayExpress: E-MTAB-14039 \citep{mareckova2024heca}. CZ CELLxGENE
 Discover: collections \texttt{9ddea8d9} and \texttt{968885c5}
 \citep{garciaalonso2021endometrium}. CNGBdb: CNP0006183
-\citep{li2025iron}.
+\citep{li2025iron}. Source data are provided with this paper.
 
 
 \subsection*{Code availability}
