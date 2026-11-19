@@ -68,10 +68,16 @@ P.i2b(ax_d)
 ax_d.set_xlim(-.55, 3.95)
 letter(92, 145, "d", "How well disease can be read from those cells' state")
 
-# ── row 3: the corpus papers' genes, with headroom (AW, 17 Nov) ─────────
-f1, f2 = P.i6(fig, mm(34, 8, 142, 72))
-letter(4, 88, "f", "Genes the corpus's own papers report in endometriosis, on our ranking")
-fig.text(176 / W, 88 / H, "DRAFT", fontsize=P.FS_SMALL, va="baseline", ha="right",
+# ── row 3 (AW, 19 Nov): e, immune cells in the plane of the two axes;
+# f, every donor's held-out position on the immune and stromal axes ───────
+import fig2f_prototypes as F                                         # noqa: E402
+ax_e = fig.add_axes(mm(14, 12, 62, 62)); cax_e = fig.add_axes(mm(78, 12, 2.2, 62))
+F.panel_plane(ax_e, cax_e)
+letter(4, 82, "e", "Immune cells: the disease axis follows the lymphoid-to-myeloid axis")
+f_axes = [fig.add_axes(mm(108 + i * 30, 16, 24, 58)) for i in range(2)]
+F.panel_rain(f_axes)
+letter(96, 82, "f", "Every donor, held out: where it sits on the axis")
+fig.text(176 / W, 4 / H, "DRAFT", fontsize=P.FS_SMALL, va="baseline", ha="right",
          color="#B03A2E", fontweight="bold")
 
 OUT.mkdir(parents=True, exist_ok=True)

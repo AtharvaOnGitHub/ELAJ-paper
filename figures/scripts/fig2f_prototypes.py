@@ -23,7 +23,7 @@ import pandas as pd
 from scipy import stats
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from fig2_panels import FAM_C, FAMS, CTL_C, CASE_C, INK, SOFT, HAIR, clean  # noqa: E402
+from fig2_panels import FAM_C, FAMS, CTL_C, CASE_C, INK, SOFT, FS_BODY, FS_SMALL, clean  # noqa: E402
 
 ROOT = Path("/Users/atharvawaghmare/Endo research/ELAJ")
 ARM, MINC, SEED = "p1_dab168_kl1", 50, 24
@@ -244,6 +244,93 @@ def raincloud():
     fig.tight_layout()
     fig.savefig(OUT / "fig2f_proto4_raincloud.png", dpi=400, bbox_inches="tight"); plt.close(fig)
 
+
+
+# ── PANELS FOR THE ASSEMBLED FIGURE (AW, 19 Nov: 3b with contours = e,
+#    the raincloud = f) ───────────────────────────────────────────────────
+def _plane_xy():
+    k = cc & (fam == "immune") & (lin != "")
+    Zi = Z[k]; li = lin[k]
+    a = Zi[li == "myeloid"].mean(0) - Zi[li == "lymphoid"].mean(0); a /= np.linalg.norm(a)
+    return Zi @ a, Zi @ W["immune"], case[k], li, float(W["immune"] @ a), m.patient_id.to_numpy()[k]
+
+
+def panel_plane(ax, cax):
+    """Immune cells in the plane of the myeloid-lymphoid axis and the disease
+    axis. Hexagons: share of cells from patients. Lines: where control and
+    patient cells are densest."""
+    from scipy.ndimage import gaussian_filter
+    x, y, ca, li, cos, pid = _plane_xy()
+    # DONORS, NOT CELLS. Coloured by cells, one patient with many cells
+    # painted a lymphoid cluster red (69% of its cells were that donor).
+    # Each hexagon is the share of its DONORS who are patients, each donor
+    # counted once, and blank under MIN_DONORS donors.
+    codes, uniq = pd.factorize(pid)
+    is_case = pd.Series(ca).groupby(codes).first().to_numpy()
+    def share(c, _min=8):
+        u = np.unique(np.asarray(c, dtype=int))
+        return is_case[u].mean() if len(u) >= _min else np.nan
+    hb = ax.hexbin(x, y, C=codes.astype(float), reduce_C_function=share, gridsize=34,
+                   cmap="RdBu_r", vmin=.2, vmax=.8, mincnt=8, linewidths=0, zorder=1)
+    ex = np.linspace(np.percentile(x, .5), np.percentile(x, 99.5), 70)
+    ey = np.linspace(np.percentile(y, .5), np.percentile(y, 99.5), 70)
+    for sel, c in ((~ca, CTL_C), (ca, CASE_C)):
+        H, _, _ = np.histogram2d(x[sel], y[sel], [ex, ey], density=True)
+        H = gaussian_filter(H.T, 1.4)
+        ax.contour(ex[:-1], ey[:-1], H, levels=np.percentile(H[H > 0], [80, 95]),
+                   colors=c, linewidths=.6, zorder=2)
+    for nm, (tx, ty) in (("lymphoid", (np.median(x[li == "lymphoid"]), np.percentile(y[li == "lymphoid"], 2))),
+                         ("myeloid", (np.median(x[li == "myeloid"]), np.percentile(y[li == "myeloid"], 99.5)))):
+        ax.annotate(f"{nm} cells", (tx, ty), xytext=(-28 if nm == "lymphoid" else -95, -14 if nm == "lymphoid" else -6),
+                    textcoords="offset points", fontsize=FS_BODY, color=INK, ha="center",
+                    bbox=dict(boxstyle="square,pad=0.1", fc="white", ec="none"))
+    cb = plt.colorbar(hb, cax=cax); cb.outline.set_visible(False)
+    cb.set_label("share of donors who are patients (8+ donors per hexagon)", fontsize=FS_SMALL); cb.ax.tick_params(labelsize=FS_SMALL, length=2)
+    ax.plot([], [], color=CTL_C, lw=.8, label="control cells, densest")
+    ax.plot([], [], color=CASE_C, lw=.8, label="patient cells, densest")
+    ax.legend(frameon=False, fontsize=FS_SMALL, loc="lower right", handlelength=1.4)
+    ax.set_xlabel("lymphoid  to  myeloid axis", fontsize=FS_BODY)
+    ax.set_ylabel("disease axis (towards patients)", fontsize=FS_BODY)
+    ax.text(.02, .98, f"the two axes: cosine {cos:.2f}", transform=ax.transAxes,
+            fontsize=FS_SMALL, color=SOFT, va="top")
+    ax.tick_params(labelsize=FS_SMALL, length=2); clean(ax)
+
+
+def panel_rain(axes):
+    """Each donor's held-out position on its family's disease axis."""
+    rng = np.random.default_rng(SEED)
+    marks = {"proliferative": "o", "periovulatory": "D", "secretory": "s", "menstrual": "^"}
+    for ax, f in zip(axes, ("immune", "stromal")):
+        D = DON[f]; M = D[[f"z{i}" for i in range(Z.shape[1])]].to_numpy(); y = D.case.to_numpy()
+        tot, n = np.zeros(len(y)), np.zeros(len(y))
+        for _ in range(400):
+            tr = rng.random(len(y)) < .7
+            if len(set(y[tr])) < 2:
+                continue
+            w = M[tr & ~y].mean(0) - M[tr & y].mean(0); w = -w / np.linalg.norm(w)
+            tot[~tr] += M[~tr] @ w; n[~tr] += 1
+        sc = tot / np.maximum(n, 1); sc = (sc - sc.mean()) / sc.std()
+        for xi, (sel, c) in enumerate(((~y, CTL_C), (y, CASE_C))):
+            v = sc[sel]
+            vp = ax.violinplot([v], positions=[xi], widths=.75, showextrema=False)
+            for b in vp["bodies"]:
+                b.set_facecolor(c); b.set_alpha(.3); b.set_edgecolor("none")
+                b.get_paths()[0].vertices[:, 0] = np.clip(b.get_paths()[0].vertices[:, 0], -1e9, xi)
+            for ph, mk in marks.items():
+                q = sel & (D.phase.to_numpy() == ph)
+                ax.scatter(xi + .07 + rng.uniform(0, .25, q.sum()), sc[q], s=5, marker=mk,
+                           color=c, ec="white", lw=.2, zorder=3)
+            ax.plot([xi - .32, xi], [np.median(v)] * 2, color=c, lw=1.1)
+        ax.set_xticks([0, 1]); ax.set_xticklabels([f"control\n{(~y).sum()} donors", f"patient\n{y.sum()} donors"],
+                                                  fontsize=FS_BODY)
+        ax.set_title(f, fontsize=FS_BODY, color=INK, loc="left")
+        ax.tick_params(labelsize=FS_SMALL, length=2); ax.tick_params(axis="x", length=0)
+        clean(ax)
+    axes[0].set_ylabel("held-out position on the\ndisease axis (SD)", fontsize=FS_BODY)
+    for ph, mk in marks.items():
+        axes[1].scatter([], [], marker=mk, color=SOFT, s=7, label=ph)
+    axes[1].legend(frameon=False, fontsize=FS_SMALL, title="menstrual phase", title_fontsize=FS_SMALL,
+                   loc="upper left", bbox_to_anchor=(1.0, 1.0), handletextpad=.2)
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
