@@ -54,9 +54,11 @@ import pandas as pd                                                  # noqa: E40
 import supp_figures as S                                             # noqa: E402
 from scipy.ndimage import gaussian_filter                            # noqa: E402
 
-CTL, CAS = "#2C7FA8", "#D2691E"                  # more contrast, still blue/orange
+CTL, CAS = "#3F4A59", "#C1447E"                  # f, AW 19 Nov: a different pair; slate against magenta
+# NMI: Arial throughout (other modules reset it on import), editable text in the PDF
+plt.rcParams.update({"font.family": "Arial", "pdf.fonttype": 42, "ps.fonttype": 42})
 FS, FSS = P.FS_BODY, P.FS_SMALL
-W, H = 180.0, 214.0
+W, H = 180.0, 170.0                              # NMI: full page depth is 170 mm
 fig = plt.figure(figsize=(W * MM, H * MM))
 mm = lambda x, y, w, h: [x / W, y / H, w / W, h / H]
 
@@ -74,16 +76,19 @@ def tidy(ax):
 
 
 # a, b
-ax_a = fig.add_axes(mm(14, 154, 70, 52)); ax_b = fig.add_axes(mm(106, 154, 70, 52))
+ax_a = fig.add_axes(mm(14, 126, 70, 38)); ax_b = fig.add_axes(mm(106, 126, 70, 38))
 P.frontier_by_kl(ax_a); P.frontier_by_dab(ax_b)
-letter(4, 208, "a"); letter(96, 208, "b")
+for _ax in (ax_a, ax_b):                         # NMI: sentence case, no full stop
+    _ax.set_xlabel(_ax.get_xlabel()[:1].upper() + _ax.get_xlabel()[1:])
+    _ax.set_ylabel(_ax.get_ylabel()[:1].upper() + _ax.get_ylabel()[1:])
+letter(4, 166, "a"); letter(96, 166, "b")
 
 # c: the cycle closes. A thick translucent band through the phase centroids,
 # each segment in its stage's colour; coarse phases annotate regions, the
 # finer stages sit inside the band. Statistic in the caption, not the panel.
 Zs, m_, Wc, ev, rng = S._cycle_setup()
 _f, _a = plt.subplots(); obs, pcirc, cen, ang = S.cycle_closes(_a, Zs, m_, Wc, ev, rng); plt.close(_f)
-ax = fig.add_axes(mm(20, 90, 62, 48))
+ax = fig.add_axes(mm(20, 78, 56, 33))
 cm = plt.get_cmap("twilight"); n = len(cen)
 cols = [cm(i / n) for i in range(n)]
 xs, ys = list(cen.a) + [cen.a.iloc[0]], list(cen.b) + [cen.b.iloc[0]]
@@ -99,20 +104,26 @@ for k_, r in cen.iterrows():
 sec = cen.loc[[k for k in fine]]
 ax.text(sec.a.mean() - .15, sec.b.mean(), "secretory", fontsize=FS, color="#6b6b6b",
         style="italic", ha="center", va="center")
-pro = cen.loc[["menstrual", "proliferative_early", "proliferative", "proliferative_late", "periovulatory"]]
-ax.annotate("menstrual, proliferative\nand periovulatory", (pro.a.mean(), pro.b.mean()),
-            xytext=(pro.a.mean() + .05, pro.b.max() + .75), fontsize=FS, color="#6b6b6b",
-            style="italic", ha="center", va="bottom",
-            arrowprops=dict(arrowstyle="-", color="#9AA3AE", lw=.5))
-ax.margins(.18)
+# The five stages that crowd together are kept apart (AW): each on its own
+# leader line, fanned into the empty space to the right, in cycle order.
+crowd = ["menstrual", "proliferative_early", "proliferative", "proliferative_late", "periovulatory"]
+x_lab = cen.a.max() + .55
+ys_lab = np.linspace(cen.b.max() + .35, cen.b.min() + .2, len(crowd))
+# labels in the vertical order of their points, so no two leader lines cross
+for k_, yl in zip(sorted(crowd, key=lambda q: -cen.loc[q, "b"]), ys_lab):
+    r_ = cen.loc[k_]
+    ax.annotate(k_.replace("_", " "), (r_.a, r_.b), xytext=(x_lab, yl), fontsize=FSS, color=P.INK,
+                ha="left", va="center", arrowprops=dict(arrowstyle="-", color="#9AA3AE", lw=.45,
+                                                          shrinkA=0, shrinkB=2))
+ax.margins(.12); ax.set_xlim(ax.get_xlim()[0], x_lab + 1.25)
 ax.set_xlabel(f"Cycle axis 1\n({ev[0]:.0%} of phase separation)", fontsize=FS)
 ax.set_ylabel(f"Cycle axis 2\n({ev[1]:.0%} of phase separation)", fontsize=FS)
-tidy(ax); letter(4, 142, "c")
+tidy(ax); letter(4, 118, "c")
 
 # d: disease from each family's state, held-out donors, no study step
 t = pd.read_csv(P.CLAIMS / "x12_by_family_nostudy.csv").set_index("family")
 sp_ = pd.read_csv(P.CLAIMS / "x12_by_family_nostudy_splits.csv"); sp_ = sp_[sp_.kind == "held-out"]
-ax = fig.add_axes(mm(106, 96, 66, 42))
+ax = fig.add_axes(mm(106, 80, 66, 31))
 for x, f in enumerate(P.FAMS):
     v = sp_.loc[sp_.family == f, "auc"].to_numpy(); med = float(np.median(v))
     vp = ax.violinplot([v], positions=[x], widths=.62, showextrema=False, points=200, bw_method=.35)
@@ -121,7 +132,8 @@ for x, f in enumerate(P.FAMS):
     lo, hi = np.percentile(v, [5, 95])
     ax.plot([x, x], [lo, hi], color=P.INK, lw=.8, zorder=3)
     ax.scatter([x], [med], s=14, color="white", ec=P.INK, lw=.8, zorder=4)
-    ax.text(x + .07, med, f"{med:.2f}", fontsize=FSS, color=P.INK, va="center", ha="left", zorder=5)
+    ax.text(x + .07, med, f"{med:.2f}", fontsize=FSS, color=P.INK, va="center", ha="left", zorder=5,
+            bbox=dict(boxstyle="square,pad=0.05", fc="white", ec="none", alpha=.8))   # NMI: no type on shading
     ax.text(x, -.07, f"{med - .5:+.2f}\nP = {float(t.loc[f, 'p']):.3f}", transform=ax.get_xaxis_transform(),
             fontsize=FSS, color="#6b6b6b", ha="center", va="top", linespacing=1.3)
 ax.axhline(.5, color="#9AA3AE", lw=.7, ls=(0, (3, 2)), zorder=1)
@@ -129,11 +141,11 @@ ax.set_ylim(.4, 1.0); ax.set_yticks([.5, .75, 1.0]); ax.set_yticklabels(["0.50\n
 ax.set_xticks(range(4)); ax.set_xticklabels([]); ax.tick_params(axis="x", length=0)
 for x, f in enumerate(P.FAMS):
     ax.text(x, 1.0, f, transform=ax.get_xaxis_transform(), fontsize=FS, ha="center", va="bottom")
-ax.set_ylabel("Held-out AUC", fontsize=FS); tidy(ax); letter(92, 142, "d")
+ax.set_ylabel("Held-out AUC", fontsize=FS); tidy(ax); letter(92, 118, "d")
 
 # e: immune cells in the plane of the two axes
 x, y, ca, li, cos, pid = F._plane_xy()
-ax = fig.add_axes(mm(16, 14, 60, 60)); cax = fig.add_axes(mm(78, 14, 2.2, 60))
+ax = fig.add_axes(mm(16, 10, 52, 52)); cax = fig.add_axes(mm(70, 10, 2.2, 52))
 codes, _u = pd.factorize(pid)
 is_case = pd.Series(ca).groupby(codes).first().to_numpy()
 def share(c):
@@ -152,12 +164,12 @@ ax.text(.97, .17, f"axes' cosine {cos:.2f}", transform=ax.transAxes, fontsize=FS
 cb = plt.colorbar(hb, cax=cax); cb.outline.set_visible(False); cb.solids.set_alpha(.45)
 cb.set_label("Share of donors who are patients", fontsize=FSS); cb.ax.tick_params(labelsize=FSS, length=2)
 ax.set_xlabel("Lymphoid to myeloid axis", fontsize=FS); ax.set_ylabel("Control to disease axis", fontsize=FS)
-tidy(ax); letter(4, 80, "e")
+tidy(ax); letter(4, 66, "e")
 
 # f: each donor's held-out position, one shared vertical axis
 marks = {"proliferative": "o", "periovulatory": "D", "secretory": "s", "menstrual": "^"}
 r = np.random.default_rng(F.SEED)
-axes = [fig.add_axes(mm(110, 24, 31, 52)), fig.add_axes(mm(141, 24, 31, 52))]
+axes = [fig.add_axes(mm(110, 14, 31, 50)), fig.add_axes(mm(141, 14, 31, 50))]   # stretched
 lims = []
 for k, (ax, f) in enumerate(zip(axes, ("immune", "stromal"))):
     D = F.DON[f]; M = D[[f"z{i}" for i in range(F.Z.shape[1])]].to_numpy(); yv = D.case.to_numpy()
@@ -180,7 +192,8 @@ for k, (ax, f) in enumerate(zip(axes, ("immune", "stromal"))):
             ax.scatter(xi + .07 + r.uniform(0, .25, q.sum()), sc[q], s=5, marker=mk, color=c, ec="white", lw=.2, zorder=3)
         md = float(np.median(v))
         ax.plot([xi - .32, xi], [md] * 2, color=c, lw=1.2, zorder=4)
-        ax.text(xi - .16, md + .06, f"{md:+.2f}", fontsize=FSS, color=c, ha="center", va="bottom", zorder=5)
+        ax.text(xi - .16, md + .06, f"{md:+.2f}", fontsize=FSS, color=c, ha="center", va="bottom", zorder=5,
+                bbox=dict(boxstyle="square,pad=0.05", fc="white", ec="none", alpha=.8))
     ax.set_xticks([0, 1]); ax.set_xticklabels([f"control\n({(~yv).sum()})", f"patient\n({yv.sum()})"], fontsize=FSS)
     ax.tick_params(axis="x", length=0)
     ax.text(.5, 1.0, f, transform=ax.transAxes, fontsize=FS, ha="center", va="bottom")
@@ -192,8 +205,9 @@ for ax in axes:
 axes[0].set_ylabel("Held-out disease score (SD)", fontsize=FS)
 for ph, mk in marks.items():
     axes[0].scatter([], [], marker=mk, color="#6b6b6b", s=7, label=ph)
-axes[0].legend(frameon=False, fontsize=FSS, ncol=4, loc="upper left", bbox_to_anchor=(0, -.13),
+axes[0].legend(frameon=False, fontsize=FSS, ncol=4, loc="upper left", bbox_to_anchor=(0, -.12),
                handletextpad=.1, columnspacing=.7)
-letter(96, 80, "f")
+letter(96, 66, "f")
 fig.savefig(OUT / "figure2_v2.png", dpi=300, facecolor="white")
+fig.savefig(OUT / "figure2_v2.pdf", facecolor="white")          # NMI: vector, editable text
 print("drew figure2_v2")
