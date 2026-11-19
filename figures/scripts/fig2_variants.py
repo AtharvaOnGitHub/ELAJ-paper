@@ -48,11 +48,14 @@ for style in ("strip", "rain"):
     fig.savefig(OUT / f"f_{style}_legend_below.png", dpi=300, facecolor="white"); plt.close(fig)
     print("drew f", style)
 
-# ── the whole figure: no panel titles (NMI figures carry letters only),
-# the calmer pair throughout, family colours kept (they are the paper's)
-# but quieter in d ────────────────────────────────────────────────────────
-P.CTL_C, P.CASE_C = CTL, CAS
-F.CTL_C, F.CASE_C = CTL, CAS
+# ── the whole figure, settled (AW, 19 Nov) ─────────────────────────────
+import numpy as np                                                   # noqa: E402
+import pandas as pd                                                  # noqa: E402
+import supp_figures as S                                             # noqa: E402
+from scipy.ndimage import gaussian_filter                            # noqa: E402
+
+CTL, CAS = "#2C7FA8", "#D2691E"                  # more contrast, still blue/orange
+FS, FSS = P.FS_BODY, P.FS_SMALL
 W, H = 180.0, 214.0
 fig = plt.figure(figsize=(W * MM, H * MM))
 mm = lambda x, y, w, h: [x / W, y / H, w / W, h / H]
@@ -62,24 +65,135 @@ def letter(x, y, l):
     fig.text(x / W, y / H, l, fontsize=P.FS_LETTER, fontweight="bold", va="baseline", color=P.INK)
 
 
+def tidy(ax):
+    for sp in ("top", "right"):
+        ax.spines[sp].set_visible(False)
+    for sp in ("left", "bottom"):
+        ax.spines[sp].set_color("#B8BDC4"); ax.spines[sp].set_linewidth(.6)
+    ax.tick_params(labelsize=FSS, length=2, color="#B8BDC4")
+
+
+# a, b
 ax_a = fig.add_axes(mm(14, 154, 70, 52)); ax_b = fig.add_axes(mm(106, 154, 70, 52))
 P.frontier_by_kl(ax_a); P.frontier_by_dab(ax_b)
 letter(4, 208, "a"); letter(96, 208, "b")
-# c: the cycle closes (AW, 19 Nov: replaces the composition panel, which
-# moves to the Supplementary). Same drawing as Supplementary x16_cycle_closes.
-import supp_figures as S                                            # noqa: E402
-_Zs, _m, _W, _ev, _rng = S._cycle_setup()
-ax_c = fig.add_axes(mm(18, 90, 62, 48))
-S.cycle_closes(ax_c, _Zs, _m, _W, _ev, _rng, box=(.97, .03, "right", "bottom")); letter(4, 142, "c")
-ax_d = fig.add_axes(mm(104, 92, 64, 44)); P.i2b(ax_d); ax_d.set_xlim(-.55, 3.95); letter(92, 142, "d")
-for b in ax_d.collections:
-    try:
-        b.set_alpha(.35); b.set_edgecolor("#7d8590"); b.set_linewidth(.4)
-    except Exception:
-        pass
-ax_e = fig.add_axes(mm(14, 14, 62, 62)); cax_e = fig.add_axes(mm(78, 14, 2.2, 62))
-F.panel_plane(ax_e, cax_e, **E_OPTS["e_C_faded_original"]); letter(4, 80, "e")   # AW 19 Nov: C, thinner lines
-f_axes = [fig.add_axes(mm(108 + i * 32, 22, 28, 54)) for i in range(2)]
-F.panel_rain(f_axes, style="rain", ctl=CTL, cas=CAS, legend="below"); letter(96, 80, "f")   # AW 19 Nov: B
+
+# c: the cycle closes. A thick translucent band through the phase centroids,
+# each segment in its stage's colour; coarse phases annotate regions, the
+# finer stages sit inside the band. Statistic in the caption, not the panel.
+Zs, m_, Wc, ev, rng = S._cycle_setup()
+_f, _a = plt.subplots(); obs, pcirc, cen, ang = S.cycle_closes(_a, Zs, m_, Wc, ev, rng); plt.close(_f)
+ax = fig.add_axes(mm(20, 90, 62, 48))
+cm = plt.get_cmap("twilight"); n = len(cen)
+cols = [cm(i / n) for i in range(n)]
+xs, ys = list(cen.a) + [cen.a.iloc[0]], list(cen.b) + [cen.b.iloc[0]]
+for i in range(n):
+    ax.plot(xs[i:i + 2], ys[i:i + 2], color=cols[i], lw=9, alpha=.35, solid_capstyle="round", zorder=1)
+ax.scatter(cen.a, cen.b, s=10, color=cols, ec="white", lw=.4, zorder=3)
+fine = {"secretory_early": "early", "secretory_early_mid": "early-mid", "secretory_mid": "mid",
+        "secretory_late": "late"}
+for k_, r in cen.iterrows():
+    if k_ in fine:
+        ax.annotate(fine[k_], (r.a, r.b), xytext=(0, 6), textcoords="offset points", ha="center",
+                    fontsize=FSS, color=P.INK)
+sec = cen.loc[[k for k in fine]]
+ax.text(sec.a.mean() - .15, sec.b.mean(), "secretory", fontsize=FS, color="#6b6b6b",
+        style="italic", ha="center", va="center")
+pro = cen.loc[["menstrual", "proliferative_early", "proliferative", "proliferative_late", "periovulatory"]]
+ax.annotate("menstrual, proliferative\nand periovulatory", (pro.a.mean(), pro.b.mean()),
+            xytext=(pro.a.mean() + .05, pro.b.max() + .75), fontsize=FS, color="#6b6b6b",
+            style="italic", ha="center", va="bottom",
+            arrowprops=dict(arrowstyle="-", color="#9AA3AE", lw=.5))
+ax.margins(.18)
+ax.set_xlabel(f"Cycle axis 1\n({ev[0]:.0%} of phase separation)", fontsize=FS)
+ax.set_ylabel(f"Cycle axis 2\n({ev[1]:.0%} of phase separation)", fontsize=FS)
+tidy(ax); letter(4, 142, "c")
+
+# d: disease from each family's state, held-out donors, no study step
+t = pd.read_csv(P.CLAIMS / "x12_by_family_nostudy.csv").set_index("family")
+sp_ = pd.read_csv(P.CLAIMS / "x12_by_family_nostudy_splits.csv"); sp_ = sp_[sp_.kind == "held-out"]
+ax = fig.add_axes(mm(106, 96, 66, 42))
+for x, f in enumerate(P.FAMS):
+    v = sp_.loc[sp_.family == f, "auc"].to_numpy(); med = float(np.median(v))
+    vp = ax.violinplot([v], positions=[x], widths=.62, showextrema=False, points=200, bw_method=.35)
+    for b in vp["bodies"]:
+        b.set_facecolor(P.FAM_C[f]); b.set_edgecolor("none"); b.set_alpha(.75)
+    lo, hi = np.percentile(v, [5, 95])
+    ax.plot([x, x], [lo, hi], color=P.INK, lw=.8, zorder=3)
+    ax.scatter([x], [med], s=14, color="white", ec=P.INK, lw=.8, zorder=4)
+    ax.text(x + .07, med, f"{med:.2f}", fontsize=FSS, color=P.INK, va="center", ha="left", zorder=5)
+    ax.text(x, -.07, f"{med - .5:+.2f}\nP = {float(t.loc[f, 'p']):.3f}", transform=ax.get_xaxis_transform(),
+            fontsize=FSS, color="#6b6b6b", ha="center", va="top", linespacing=1.3)
+ax.axhline(.5, color="#9AA3AE", lw=.7, ls=(0, (3, 2)), zorder=1)
+ax.set_ylim(.4, 1.0); ax.set_yticks([.5, .75, 1.0]); ax.set_yticklabels(["0.50\nchance", "0.75", "1.00"])
+ax.set_xticks(range(4)); ax.set_xticklabels([]); ax.tick_params(axis="x", length=0)
+for x, f in enumerate(P.FAMS):
+    ax.text(x, 1.0, f, transform=ax.get_xaxis_transform(), fontsize=FS, ha="center", va="bottom")
+ax.set_ylabel("Held-out AUC", fontsize=FS); tidy(ax); letter(92, 142, "d")
+
+# e: immune cells in the plane of the two axes
+x, y, ca, li, cos, pid = F._plane_xy()
+ax = fig.add_axes(mm(16, 14, 60, 60)); cax = fig.add_axes(mm(78, 14, 2.2, 60))
+codes, _u = pd.factorize(pid)
+is_case = pd.Series(ca).groupby(codes).first().to_numpy()
+def share(c):
+    u = np.unique(np.asarray(c, dtype=int)); return is_case[u].mean() if len(u) >= 8 else np.nan
+hb = ax.hexbin(x, y, C=codes.astype(float), reduce_C_function=share, gridsize=34, cmap="RdBu_r",
+               vmin=.2, vmax=.8, mincnt=8, linewidths=0, zorder=1, alpha=.45)
+ex = np.linspace(np.percentile(x, .5), np.percentile(x, 99.5), 70)
+ey = np.linspace(np.percentile(y, .5), np.percentile(y, 99.5), 70)
+for sel, c, lab in ((~ca, "#1F6F6A", "control cells"), (ca, "#8E2A26", "patient cells")):
+    Hh, _, _ = np.histogram2d(x[sel], y[sel], [ex, ey], density=True)
+    Hh = gaussian_filter(Hh.T, 1.4)
+    ax.contour(ex[:-1], ey[:-1], Hh, levels=np.percentile(Hh[Hh > 0], [80, 95]), colors=c, linewidths=.85, zorder=2)
+    ax.plot([], [], color=c, lw=.85, label=lab)
+lg = ax.legend(frameon=False, fontsize=FSS, loc="lower right", handlelength=1.4)
+ax.text(.97, .17, f"axes' cosine {cos:.2f}", transform=ax.transAxes, fontsize=FSS, color="#6b6b6b", ha="right")
+cb = plt.colorbar(hb, cax=cax); cb.outline.set_visible(False); cb.solids.set_alpha(.45)
+cb.set_label("Share of donors who are patients", fontsize=FSS); cb.ax.tick_params(labelsize=FSS, length=2)
+ax.set_xlabel("Lymphoid to myeloid axis", fontsize=FS); ax.set_ylabel("Control to disease axis", fontsize=FS)
+tidy(ax); letter(4, 80, "e")
+
+# f: each donor's held-out position, one shared vertical axis
+marks = {"proliferative": "o", "periovulatory": "D", "secretory": "s", "menstrual": "^"}
+r = np.random.default_rng(F.SEED)
+axes = [fig.add_axes(mm(110, 24, 31, 52)), fig.add_axes(mm(141, 24, 31, 52))]
+lims = []
+for k, (ax, f) in enumerate(zip(axes, ("immune", "stromal"))):
+    D = F.DON[f]; M = D[[f"z{i}" for i in range(F.Z.shape[1])]].to_numpy(); yv = D.case.to_numpy()
+    tot, nn = np.zeros(len(yv)), np.zeros(len(yv))
+    for _ in range(400):
+        tr = r.random(len(yv)) < .7
+        if len(set(yv[tr])) < 2:
+            continue
+        w = M[tr & ~yv].mean(0) - M[tr & yv].mean(0); w = -w / np.linalg.norm(w)
+        tot[~tr] += M[~tr] @ w; nn[~tr] += 1
+    sc = tot / np.maximum(nn, 1); sc = (sc - sc.mean()) / sc.std(); lims += [sc.min(), sc.max()]
+    for xi, (sel, c) in enumerate(((~yv, CTL), (yv, CAS))):
+        v = sc[sel]
+        vp = ax.violinplot([v], positions=[xi], widths=.75, showextrema=False)
+        for b in vp["bodies"]:
+            b.set_facecolor(c); b.set_alpha(.4); b.set_edgecolor("none")
+            b.get_paths()[0].vertices[:, 0] = np.clip(b.get_paths()[0].vertices[:, 0], -1e9, xi)
+        for ph, mk in marks.items():
+            q = sel & (D.phase.to_numpy() == ph)
+            ax.scatter(xi + .07 + r.uniform(0, .25, q.sum()), sc[q], s=5, marker=mk, color=c, ec="white", lw=.2, zorder=3)
+        md = float(np.median(v))
+        ax.plot([xi - .32, xi], [md] * 2, color=c, lw=1.2, zorder=4)
+        ax.text(xi - .16, md + .06, f"{md:+.2f}", fontsize=FSS, color=c, ha="center", va="bottom", zorder=5)
+    ax.set_xticks([0, 1]); ax.set_xticklabels([f"control\n({(~yv).sum()})", f"patient\n({yv.sum()})"], fontsize=FSS)
+    ax.tick_params(axis="x", length=0)
+    ax.text(.5, 1.0, f, transform=ax.transAxes, fontsize=FS, ha="center", va="bottom")
+    tidy(ax)
+    if k:
+        ax.spines["left"].set_visible(False); ax.tick_params(axis="y", left=False, labelleft=False)
+for ax in axes:
+    ax.set_ylim(min(lims) - .2, max(lims) + .35)
+axes[0].set_ylabel("Held-out disease score (SD)", fontsize=FS)
+for ph, mk in marks.items():
+    axes[0].scatter([], [], marker=mk, color="#6b6b6b", s=7, label=ph)
+axes[0].legend(frameon=False, fontsize=FSS, ncol=4, loc="upper left", bbox_to_anchor=(0, -.13),
+               handletextpad=.1, columnspacing=.7)
+letter(96, 80, "f")
 fig.savefig(OUT / "figure2_v2.png", dpi=300, facecolor="white")
 print("drew figure2_v2")
