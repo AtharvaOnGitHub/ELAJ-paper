@@ -26,7 +26,7 @@
 %   CALLBACK 3  cross-donor evaluation     (Evaluation)
 % =====================================================================
 
-\section{Methods}
+\section*{Methods}
 
 The methods section elaborates on the full \elaj pipeline. Starting from 
 the data and its representation, we deconstruct all major architectural 
@@ -104,7 +104,7 @@ The datasets in this corpus cover a heterogeneous set of genes. Gene
 names are also not stable.
 
 In an effort to standardise, every gene was resolved against the HGNC 
-approved symbol set, with anything unresolved dropped and recorded against 
+approved symbol set \citep{seal2023genenames}, with anything unresolved dropped and recorded against 
 its study of origin. An alias pointing to two different approved symbols 
 is ambiguous, and resolving it would mean guessing; all such aliases were 
 dropped, removing 1{,}452 mappings.
@@ -185,7 +185,7 @@ under results.
 \subsection*{Pathway gene grouping}
 
 Self-attention compares every token with every other token, so its cost
-grows with the square of the sequence length. One token per gene over
+grows with the square of the sequence length \citep{vaswani2017attention}. One token per gene over
 15{,}496 genes is roughly 240 million pairs for a single cell. That is
 where the parameters and the compute of most single-cell transformers go,
 and it is why those models need to be trained on tens of millions of cells. 
@@ -673,7 +673,7 @@ are executed in differs.
 Training runs in bf16 for its efficiency. The Power Spherical sampler and the negative-binomial loss are held
 in fp32 regardless, because neither is numerically safe at reduced precision.
 
-The remaining settings are AdamW at a learning rate of $10^{-3}$, weight decay
+The remaining settings are AdamW \citep{loshchilov2019decoupled} at a learning rate of $10^{-3}$, weight decay
 $10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
 Kullback--Leibler term is ramped from zero to 0.5 over the first 5\% of
 steps, as above. The learning rate follows a cosine schedule whose period is set

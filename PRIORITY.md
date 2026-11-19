@@ -111,6 +111,8 @@ except the decisions in 0e.
 
 **DONE 19 Nov (`2792ed9`): M1-M6 applied as accepted; bf16 "for its efficiency"; Source Data statement added. Acknowledgements left to the guide (no funding). Reporting Summary deferred until after the guide.**
 
+**Guide package built 19 Nov** in `for_guide_2026-11-19/` (gitignored): captions-only docx (main + supplementary, pandoc + `assets/docx_captions_only.lua`, Nature CSL), main_figures, supplementary_figures (numbered S1-S33), source_data. Citations pass done on MAIN prose only (Supplementary skipped, AW). Methods unnumbered. Known: 3 main + 8 supp equations render as raw TeX in Word (AW: do not spend tokens). OPEN M7: Methods "Optimisation" says the Power Spherical sampler is held in fp32, but the reported model's latent is Gaussian only (d_gauss 16), so the sentence looks stale; raise with AW.
+
 ## (1) Main-Methods errors. AW's protocol: Methods is HIS text; raise each as
 current / proposed / why, change nothing until he answers.
 

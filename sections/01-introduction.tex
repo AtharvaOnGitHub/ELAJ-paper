@@ -95,7 +95,7 @@ subject due to single-biopsy donors is not among them.
 We therefore built \elaj, a single-cell disease atlas of endometriosis 
 that replaces foundation model-level scale with intelligently adapted 
 inductive biases (Fig.~\ref{fig:model}a,b). \elaj\ is a 1{,}883{,}986 parameter transformer-based 
-conditional variational autoencoder (CVAE) that groups a cell's genes 
+conditional variational autoencoder (CVAE) \citep{kingma2014auto, sohn2015learning} that groups a cell's genes 
 into 44 biological pathway groups and compresses it into a 
 sixteen-dimensional interpretable latent space.
 Through \elaj\ we define a Pareto front on donor-blindness 
