@@ -170,6 +170,19 @@ P 0.94, NOT SUPPORTED. Within-lineage directions (B): myeloid AUC 0.7594
 P 0.0425; lymphoid 0.7054 P 0.080. B's decode (`decode_real --within`) is
 the next cluster job.
 
+**VERIFICATION OF (4) BELOW, 19 Nov, AW asked to be sure. It does NOT hold
+as an immune-cell result.** All donors together: stromal RNA is raised in
+patients' EPITHELIAL (x1.92, P 0.001) and ENDOTHELIAL (x1.71, P 0.0001)
+cells as much as in immune cells (x2.07), and stroma IDENTITY genes
+(HOXA10/11, PGR, PDGFRA) rise as much as collagens, so it is a SAMPLE-level
+excess of stromal RNA, not an immune state. Not doublets (doublet
+percentile unchanged, P 0.40/0.64; excess survives removing the most
+doublet-like half). Not the MMT of Zhong et al. 2025 (Mol Hum Reprod,
+gaaf051): TGFB1 lower in patients' immune cells (x0.86), myofibroblast
+genes weak (x1.45, P 0.038). Removing each cell's stromal score from the
+latent: immune held-out AUC 0.763 -> 0.738 (P 0.015, SURVIVES); myeloid
+0.725 -> 0.670 (P 0.115); lymphoid 0.679 -> 0.488. Decision with AW.
+
 **AW's RULING, 19 Nov, which reframes the whole gene claim.** "The paper
 is about that tool." (1) Cell proportions from labels, outside the latent,
 are batch-affected and NOT results. (2) Composition read through the latent
