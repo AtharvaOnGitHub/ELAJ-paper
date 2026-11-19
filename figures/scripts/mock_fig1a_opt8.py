@@ -262,21 +262,30 @@ def res_dissociation(ax, cx, cy):
                 color=ROSE, lw=1.3, solid_capstyle="round", zorder=5)
 
 
-def res_new_genes(ax, cx, cy):
-    """AW, 17 Nov: 'F1 pictogram is good. Please add it to Fig 1a Outcomes.'
-    A strand of gene tags, four lit, each with a small mark above it: the
-    four disease-side genes with no prior endometriosis report."""
-    xs = np.linspace(cx - 6.3, cx + 6.3, 8)
-    ax.plot([cx - 7.2, cx + 7.2], [cy - 0.5, cy - 0.5], color=GREY_E, lw=.6, zorder=3)
-    for i, x in enumerate(xs):
-        on = i in (1, 3, 4, 6)
-        ax.add_patch(FancyBboxPatch((x - .62, cy - 2.3), 1.24, 3.6,
-                                    "round,pad=0.12", fc=AMB_F if on else GREY_F,
-                                    ec=AMB_E if on else GREY_E, lw=.9 if on else .6,
-                                    zorder=4))
-        if on:
-            ax.plot([x - .3, x, x + .3], [cy + 2.2, cy + 2.9, cy + 2.2],
-                    color=AMB_E, lw=.8, zorder=5)
+def res_pooled(ax, cx, cy):
+    """AW, 19 Nov: puzzle, 'the pooled corpus settles claims no single cohort
+    could'. Ten pieces in the corpus's study colours (Fig 1a's own palette,
+    garcia_alonso_2021 merged as in panel a), jigsaw knobs on the shared
+    edges, the last piece sliding into place."""
+    w, h, r = 2.5, 2.4, .55
+    x0, y0 = cx - 2.5 * w, cy - h
+    cells = [(i, j) for j in (1, 0) for i in range(5)]
+    last = len(cells) - 1
+    li, lj = cells[last]
+    ax.add_patch(Rectangle((x0 + li * w, y0 + lj * h), w, h, fc="none", ec=GREY_E,
+                           lw=.6, ls=(0, (2, 1.5)), zorder=3))      # the empty slot
+    for k, (i, j) in enumerate(cells):
+        dx, dy = (1.3, -1.2) if k == last else (0, 0)
+        x, y = x0 + i * w + dx, y0 + j * h + dy
+        c = SC[k % len(SC)]
+        z = 7 if k == last else 4
+        ax.add_patch(Rectangle((x, y), w, h, fc=c, ec="white", lw=1.0, zorder=z))
+        if i < 4 and k != last - 1:                             # knob into the right neighbour
+            ax.add_patch(Circle((x + w, y + h / 2), r, fc=c, ec="none", zorder=z + 1))
+        if j == 1:                                              # knob into the piece below
+            ax.add_patch(Circle((x + w / 2, y), r, fc=c, ec="none", zorder=z + 1))
+        if k == last:                                           # its knob reaching for the gap
+            ax.add_patch(Circle((x, y + h / 2), r, fc=c, ec="none", zorder=z + 1))
 
 
 def main() -> None:
@@ -378,7 +387,7 @@ def main() -> None:
              (res_donor, ["least donor identity", "of anything tested"]),
              (res_cycle, ["most cycle signal", "of anything tested"]),
              (res_dissociation, ["disease status legible,", "rASRM stage not"]),
-             (res_new_genes, ["four genes never before", "reported in endometriosis"])]
+             (res_pooled, ["the pooled corpus settles claims", "no single cohort could"])]
     rh = RH / len(rdraw)
     for i, (fn, lines) in enumerate(rdraw):
         cy = RY + RH - rh * (i + .5)

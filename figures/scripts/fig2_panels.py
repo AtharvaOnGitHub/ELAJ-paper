@@ -225,8 +225,8 @@ def i2b(ax, xpos=None, labels=True):
     mean AUC. The chance line is drawn at 0.5; the per-family permutation
     nulls sit at 0.48-0.50 and live in the table, not the figure.
     """
-    t = pd.read_csv(CLAIMS / "x12_by_family_annotated.csv").set_index("family")
-    sp = pd.read_csv(CLAIMS / "x12_by_family_annotated_splits.csv")
+    t = pd.read_csv(CLAIMS / "x12_by_family_nostudy.csv").set_index("family")
+    sp = pd.read_csv(CLAIMS / "x12_by_family_nostudy_splits.csv")   # AW 19 Nov: no study step
     sp = sp[sp.kind == "held-out"]
     xpos = list(xpos) if xpos is not None else [0, 1, 2, 3]
     step = xpos[1] - xpos[0]
