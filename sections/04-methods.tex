@@ -670,8 +670,8 @@ only to its own largest member. This lowers the share spent on padding to
 group keeps its own weights and its own independence, and only the order they
 are executed in differs.
 
-Training runs in bf16 for its efficiency. The Power Spherical sampler and the negative-binomial loss are held
-in fp32 regardless, because neither is numerically safe at reduced precision.
+Training runs in bf16 for its efficiency. The negative-binomial loss is held
+in fp32 regardless, because it is not numerically safe at reduced precision.
 
 The remaining settings are AdamW \citep{loshchilov2019decoupled} at a learning rate of $10^{-3}$, weight decay
 $10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
