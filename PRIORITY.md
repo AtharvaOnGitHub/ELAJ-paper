@@ -449,6 +449,16 @@ Known gaps to close in that comparison:
 - [ ] Push both repos when AW asks; no `Co-Authored-By` or `Claude-Session`
       trailers in any commit.
 
+# 0d. Figure 2 DONE (19 Nov): pinned, captioned, cited in order, Source Data
+`figures/pinned/figure2.{png,pdf}` from `fig2_variants.py`; caption under 300
+words in `06-display-items.tex`; colour pairs checked by deutan/protan/tritan
+simulation (f worst-case dE 35, e 44.8); Source Data
+`Outputs/supplementary/source_data/Figure2_source_data.xlsx`. Figure citation
+order across the paper is now 1 -> 2 -> 3 -> 4 with panels in order. OPEN,
+for AW: family colours stromal/endothelial (dE 17.0) and epithelial/immune
+(18.3) are weak under colour-blindness, paper-wide. NEXT: the same audit for
+Figs 1, 3, 4 (Fig 1 pinned image still shows the retired genes row).
+
 # 0c. Figure 2, settled so far (19 Nov)
 a, b frontier; **c = the cycle closes** (AW: replaces composition; drawn by
 `supp_figures.cycle_closes`, shared with the Supplementary figure); d per-

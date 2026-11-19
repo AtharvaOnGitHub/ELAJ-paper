@@ -54,7 +54,7 @@ import pandas as pd                                                  # noqa: E40
 import supp_figures as S                                             # noqa: E402
 from scipy.ndimage import gaussian_filter                            # noqa: E402
 
-CTL, CAS = "#3F4A59", "#C1447E"                  # f, AW 19 Nov: a different pair; slate against magenta
+CTL, CAS = "#8FA9BC", "#882255"                  # f: blue-grey against wine; worst-case dE 35 under deutan, protan, tritan simulation
 # NMI: Arial throughout (other modules reset it on import), editable text in the PDF
 plt.rcParams.update({"font.family": "Arial", "pdf.fonttype": 42, "ps.fonttype": 42})
 FS, FSS = P.FS_BODY, P.FS_SMALL
@@ -154,7 +154,7 @@ hb = ax.hexbin(x, y, C=codes.astype(float), reduce_C_function=share, gridsize=34
                vmin=.2, vmax=.8, mincnt=8, linewidths=0, zorder=1, alpha=.45)
 ex = np.linspace(np.percentile(x, .5), np.percentile(x, 99.5), 70)
 ey = np.linspace(np.percentile(y, .5), np.percentile(y, 99.5), 70)
-for sel, c, lab in ((~ca, "#1F6F6A", "control cells"), (ca, "#8E2A26", "patient cells")):
+for sel, c, lab in ((~ca, "#4A90C2", "control cells"), (ca, "#7A1F3D", "patient cells")):   # worst-case dE 44.8
     Hh, _, _ = np.histogram2d(x[sel], y[sel], [ex, ey], density=True)
     Hh = gaussian_filter(Hh.T, 1.4)
     ax.contour(ex[:-1], ey[:-1], Hh, levels=np.percentile(Hh[Hh > 0], [80, 95]), colors=c, linewidths=.85, zorder=2)
@@ -170,7 +170,7 @@ tidy(ax); letter(4, 66, "e")
 marks = {"proliferative": "o", "periovulatory": "D", "secretory": "s", "menstrual": "^"}
 r = np.random.default_rng(F.SEED)
 axes = [fig.add_axes(mm(110, 14, 31, 50)), fig.add_axes(mm(141, 14, 31, 50))]   # stretched
-lims = []
+lims, SD_f = [], []
 for k, (ax, f) in enumerate(zip(axes, ("immune", "stromal"))):
     D = F.DON[f]; M = D[[f"z{i}" for i in range(F.Z.shape[1])]].to_numpy(); yv = D.case.to_numpy()
     tot, nn = np.zeros(len(yv)), np.zeros(len(yv))
@@ -181,6 +181,9 @@ for k, (ax, f) in enumerate(zip(axes, ("immune", "stromal"))):
         w = M[tr & ~yv].mean(0) - M[tr & yv].mean(0); w = -w / np.linalg.norm(w)
         tot[~tr] += M[~tr] @ w; nn[~tr] += 1
     sc = tot / np.maximum(nn, 1); sc = (sc - sc.mean()) / sc.std(); lims += [sc.min(), sc.max()]
+    SD_f.append(pd.DataFrame({"family": f, "donor": np.arange(len(yv)) + 1,
+                              "status": np.where(yv, "patient", "control"), "phase_at_biopsy": D.phase.to_numpy(),
+                              "held_out_disease_score_sd": sc}))
     for xi, (sel, c) in enumerate(((~yv, CTL), (yv, CAS))):
         v = sc[sel]
         vp = ax.violinplot([v], positions=[xi], widths=.75, showextrema=False)
@@ -210,4 +213,22 @@ axes[0].legend(frameon=False, fontsize=FSS, ncol=4, loc="upper left", bbox_to_an
 letter(96, 66, "f")
 fig.savefig(OUT / "figure2_v2.png", dpi=300, facecolor="white")
 fig.savefig(OUT / "figure2_v2.pdf", facecolor="white")          # NMI: vector, editable text
+
+# ── SOURCE DATA (NMI): every plotted value, one sheet per panel ─────────
+SRC = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data")
+SRC.mkdir(parents=True, exist_ok=True)
+with pd.ExcelWriter(SRC / "Figure2_source_data.xlsx") as xw:
+    pd.DataFrame([{"adversarial_weight": d_, "information_cost": k_, "study_separation": v[0],
+                   "cross_donor_phase_agreement": v[1]} for (d_, k_), v in sorted(P.KNOB.items())]
+                 ).to_excel(xw, sheet_name="a_b", index=False)
+    cen.reset_index().rename(columns={"ph": "phase", "a": "cycle_axis_1", "b": "cycle_axis_2",
+                                      "ord": "biological_order"}).assign(
+        mean_resultant_length=obs, permutation_p=pcirc).to_excel(xw, sheet_name="c", index=False)
+    sp_.merge(t[["p", "n_donors"]], left_on="family", right_index=True).rename(
+        columns={"auc": "held_out_auc", "p": "permutation_p"}).to_excel(xw, sheet_name="d", index=False)
+    pd.DataFrame({"lymphoid_to_myeloid_axis": x, "control_to_disease_axis": y,
+                  "status": np.where(ca, "patient", "control"), "donor": codes + 1, "lineage": li}
+                 ).assign(axes_cosine=cos).to_excel(xw, sheet_name="e", index=False)
+    pd.concat(SD_f).to_excel(xw, sheet_name="f", index=False)
+print("wrote", SRC / "Figure2_source_data.xlsx")
 print("drew figure2_v2")

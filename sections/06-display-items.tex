@@ -106,25 +106,33 @@ confounds and leave cell identity where it was.
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure2.png}
-\caption{\textbf{How the two knobs move the frontier.} The six arms of the
-factorial, three adversarial weights crossed with two settings of the
-latent's information cost, plotted against donor recovery (\textbf{a},
-\textbf{c}, \textbf{e}, \textbf{g}) and study separation (\textbf{b},
-\textbf{d}, \textbf{f}, \textbf{h}), with both cost axes reversed so that
-better is up and to the right throughout. Points are joined by shared
-information cost in the left four panels and by shared adversarial weight in
-the right four. Arms are labelled by their two knob values,
-$\lambda_{\text{dab}}$/$w_{\text{kl}}$; the two carried forward are named.
-\\Joined by information cost, the two lines are separated vertically and that
-separation is the cost itself: raising it from 1 to 30 moves an arm down and
-to the right in every panel. Along each line the adversarial sweep doubles
-back, 336 sitting to the left of 168 on both cost axes, so the adversary
-improves the trade only as far as the middle weight. Joined by adversarial
-weight, the three lines run close to parallel, which is the same statement
-read the other way: the information cost does the same thing wherever the
-adversary is set. The lower row is drawn on a range five times narrower than
-the upper one, and the lines in it are close to flat; cell identity survives
-every setting of both knobs.}
+\caption{\textbf{Two coefficients set the trade-off, the latent closes the
+cycle, and per-donor disease axes follow composition and the cycle.}
+\textbf{a},~\textbf{b}, Six \elaj\ configurations, adversarial weight
+$\lambda$ (7, 168, 336) crossed with information cost $w_{kl}$ (1, 30), by
+study separation (lower is better) and cross-donor phase agreement. Lines
+join equal $w_{kl}$ in \textbf{a}, arrows in order of rising $\lambda$, and
+equal $\lambda$ in \textbf{b}. From $\lambda$ 7 to 168 study separation falls
+from 0.86 to 0.76 at unchanged phase agreement (0.73); raising $w_{kl}$
+moves every configuration along the trade-off. \textbf{c}, Centroids of the
+nine harmonised phases on the first two linear discriminants of phase (63\%
+and 22\% of the separation), joined in biological order by a band
+coloured by stage: they advance round a closed loop (mean resultant length
+0.80, permutation $P = 0.0018$). \textbf{d}, Disease status read from
+held-out donors per cell family, as the area under the receiver operating
+characteristic curve (AUC) over 400 70/30 donor splits: violin, the
+splits; dot, median; line, 5th to 95th percentile; beneath, the median's
+excess over chance (dashed) and permutation $P$. Stromal 101 donors,
+epithelial 98, endothelial 85, immune 94. \textbf{e}, The 29{,}355 immune
+cells two studies label lymphoid or myeloid, on the lymphoid-to-myeloid
+axis and the immune disease axis (cosine 0.88). Hexagons, share of donors
+who are patients, each counted once, blank below eight donors; blue and
+dark red lines, the densest 20\% and 5\% of control and patient cells.
+\textbf{f}, Each donor's held-out position on the immune and stromal
+disease axes; shape, phase at biopsy; line and number, median; donors in
+brackets. Secretory-phase donors sit at the control end whatever their
+status. No step in \textbf{d}--\textbf{f} uses study, and disease status
+was never given to the model.}
 \label{fig:knobs}
 \end{figure}
 

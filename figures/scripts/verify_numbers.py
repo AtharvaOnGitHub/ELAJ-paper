@@ -1077,8 +1077,6 @@ PINNED = {
     "4.1": ("composition_spread.csv", "endothelial iqr_over_difference"),
     "9.5": ("composition_spread.csv", "immune iqr_over_difference"),
     "0.88": ("axis_drivers_summary.csv", "immune/cos_disease_lineage_axis"),
-    "0.80": ("x16_cycle_axis.csv", "phase centroids advance in biological order"),
-    "0.0018": ("x16_cycle_axis.csv", "phase centroids advance in biological order"),
     # Ablations: the study gap at the last shared epoch. Pinned 19 Nov, when
     # axis_drivers_summary.csv brought a second value that rounds to 0.0010.
     "0.0010": ("study gap at epoch", "the last both arms ran"),
