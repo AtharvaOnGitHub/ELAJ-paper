@@ -58,35 +58,30 @@ frontier panels also overlap Figure 2 and that overlap has not been resolved.
 
 \begin{figure}[p]\centering
 \includegraphics[width=\linewidth]{figures/pinned/figure1.png}
-\caption{\textbf{About \elaj} \textbf{a}, The architecture, in five stages. A
-cell enters as the 30{,}962 genes shared across the corpus and is reduced to
-the 15{,}496 that map to a pathway group, with genes a study never assayed
-carried by a did-not-sample sentinel rather than by a zero. The gene encoder
-reads those genes in 44 pathway groups, normalises each group per study, and
-summarises it with its own transformer into nine tokens of 32 dimensions. The
-cell encoder compresses the resulting 396 tokens to sixteen. Four heads read
-that latent: the study adversary (DAB), whose gradient is reversed on the way
-back to the encoder; reconstruction; elastic cell similarity (ECS), which
-holds similar cells together; and the supervised menstrual-phase classifier
-(Phase CLS). Study, platform and anatomical site condition the reconstruction
-head alone and never reach the encoder. Disease status is given to nothing.
-\textbf{b},~\textbf{c}, Cross-donor
-agreement on menstrual phase against each of the two costs, over all ten
-representations on the same held-out donors, with the Pareto front drawn.
-Higher is better vertically and lower is better horizontally, so the upper
-left corner is the goal. \textbf{d},~\textbf{e}, The ELAJ$_{B\,hi}$ latent
-over all 1{,}577{,}728 cells, 400{,}000 drawn at random, coloured by cell
-family and by study. Cells with no cell-family label are grey; every cell
-carries a study. Studies are named by the first author of the paper the data
-come from and ordered by the number of cells they contribute.
-\\Two readings. In \textbf{b} the front is two points and both are ours:
-ELAJ$_{B\,hi}$ holds the most cycle signal of anything tested (0.7346) while
-giving up the least donor identity (0.5188), and the nearest competitor on
-cycle, Scanorama at 0.7303, is also the representation from which a donor is
-most easily recovered (0.7892). In \textbf{c} Harmony joins the front, and
-the comparison between \textbf{d} and \textbf{e} is what that costs: cell
-families occupy contiguous territory while studies do not separate into
-their own.}
+\caption{\textbf{\elaj\ pools eleven endometrial single-cell studies into
+one sixteen-dimensional latent that keeps more cycle biology and less donor
+identity than nine alternatives.} \textbf{a}, Overview. Data: every
+eligible public study, drawn by its donor count (254 donors, 1{,}577{,}728
+cells), with the corpus split by disease status. Model: the inductive biases
+that replace pretraining scale. Outcomes: what the trained latent holds and
+how it compares. \textbf{b}, Architecture. A cell enters as the genes shared
+across the corpus, reduced to the 15{,}496 that map to one of 44 pathway
+groups; a gene a study never assayed is carried by a did-not-sample (DNS)
+sentinel, not a zero. Each group is normalised per study (domain-specific
+batch normalisation, DSBN) and summarised by its own transformer into nine
+tokens of 32 dimensions; a cell transformer compresses the 396 tokens to
+sixteen Gaussian dimensions. Four heads read the latent: domain-adversarial
+study removal (DAB), whose gradient is reversed on its way to the encoder;
+reconstruction, conditioned on study, platform and site, which never reach
+the encoder; elastic cell similarity (ECS); and a menstrual-phase classifier
+(Phase CLS). Disease status is given to no part of the model.
+\textbf{c}, Cross-donor agreement on menstrual phase against donor
+recovery, both on the same held-out donors, for the two reported \elaj\
+configurations (B$_{hi}$, B$_{lo}$, joined) and nine alternatives: five
+integration and dimension-reduction methods and four pretrained foundation
+models. Up and to the left is better. \textbf{d}, The B$_{hi}$ latent, 400{,}000
+of all cells drawn at random, by cell family; cells without a family label
+are grey. Uniform manifold approximation and projection (UMAP).}
 \label{fig:model}
 \end{figure}
 
@@ -217,18 +212,12 @@ cells and runs from early to late in the cycle. Severity in \textbf{h} merges th
 cohorts' vocabularies onto one three-level scale; rASRM I--II are mild, 
 rASRM III--IV are severe. Of the nine variables only menstrual phase was 
 supplied to the model, through one supervised head.
-\\Read as a grid, the figure separates the variables that have a cellular
-correlate from those that do not. Cycle day (\textbf{d}), serum
-progesterone (\textbf{e}) and the cycle axis (\textbf{f}) each organise the
-embedding into contiguous structure and trace the same gradient: the cycle
-read as a continuum rather than as phases, and held by the latent along one
+\\Cycle day (\textbf{d}), serum progesterone (\textbf{e}) and the cycle
+axis (\textbf{f}) trace one gradient, the cycle as a continuum, held along a
 direction that orders a cohort it was never fitted on. Merged severity
-(\textbf{h}) and surgical stage (\textbf{i}) are drawn on the same cells at
-the same scale and organise nothing, a result that holds across all ten
-representations tested. Study (\textbf{a}) and anatomical site
-(\textbf{b}) retain visible structure: both are decoder covariates, and how
-much of each survives in the latent is the cost this model is measured
-against.}
+(\textbf{h}) and surgical stage (\textbf{i}) organise nothing, as in all ten
+representations tested. Study (\textbf{a}) and site (\textbf{b}), both
+decoder covariates, retain visible structure.}
 \label{fig:endo}
 \end{figure}
 

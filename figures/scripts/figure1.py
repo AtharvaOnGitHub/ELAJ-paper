@@ -252,6 +252,8 @@ def frontier(ax, D, cost_test, cost_label, xlabel):
         g = D[key]
         pts.append((float(g[(cost_test, cost_label)]),
                     float(g[("cross-donor", "menstrual phase")]), nm, True))
+    global FRONTIER_PTS
+    FRONTIER_PTS = pts
 
     front = sorted(p for p in pts
                    if not any(q[0] <= p[0] and q[1] >= p[1] and q[:2] != p[:2]
@@ -389,6 +391,17 @@ def main() -> None:
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
+    fig.savefig(HERE / "figure1.pdf")                         # NMI: vector
+    import pandas as _pd
+    _src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)     # NMI Source Data
+    with _pd.ExcelWriter(_src / "Figure1_source_data.xlsx") as xw:
+        _g = meta.groupby("study").agg(donors=("patient_id", "nunique"), cells=("patient_id", "size"))
+        _g.to_excel(xw, sheet_name="a_studies")
+        meta.groupby("disease_status").size().rename("cells").to_frame().to_excel(xw, sheet_name="a_disease_status")
+        _pd.DataFrame(FRONTIER_PTS, columns=["donor_recovery", "cross_donor_cycle_agreement", "representation",
+                                             "is_elaj"]).to_excel(xw, sheet_name="c", index=False)
+        _pd.DataFrame({"umap_1": xy[:, 0], "umap_2": xy[:, 1], "cell_family": m["cell family"].to_numpy()}
+                      ).to_excel(xw, sheet_name="d", index=False)
     print(f"wrote {HERE / 'figure1.png'}  ({W:.0f} x {H:.1f} mm)")
 
 

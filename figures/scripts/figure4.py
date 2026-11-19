@@ -42,7 +42,8 @@ ARM = "p1_dab168_kl1"
 OUT = Path(__file__).resolve().parents[1] / "pinned"
 MM = 1 / 25.4
 INK, SOFT = "#1a1a1a", "#6b6b6b"
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 6.5,
+plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42,   # NMI: Arial, editable text
+                     "font.family": "Arial", "font.size": 6.5,
                      "text.color": INK})
 
 xy = np.load(ROOT / f"Outputs/analysis/umaps/{ARM}/_umap_cache/global_400000.npy")
@@ -80,7 +81,7 @@ from endo_model.evaluation.label_harmonisation import (            # noqa: E402
 m["severity"] = merge_columns({c: m[c].to_numpy() for c in SEVERITY_SOURCE_COLUMNS},
                               SEVERITY_SOURCE_COLUMNS, SEVERITY)
 SEV_ORDER = list(SEVERITY.order)
-SEV_COL = ["#2F6690", "#D9A441", "#8C2F39"]        # ordered scale, ordered hue
+SEV_COL = ["#5BA3A0", "#FC8D59", "#B30000"]        # control as Figure 1a; mild and severe on the surgical-stage scale
 
 # ONE RANDOM Z-ORDER, SHARED BY EVERY PANEL. Drawing one class at a time
 # puts the last class on top of all the others: disease status is 42%
@@ -93,7 +94,7 @@ SHUF = np.random.default_rng(1).permutation(len(m))
 # stored as a float, so the panel legend read "0.0 1.0 2.0 3.0 4.0"; it is the
 # revised ASRM scale and 0 is marecko's coding for its controls, established
 # by arithmetic in validate_latent's _union_severity.
-LABEL = {"Endometriosis_stage": {"0.0": "control", "1.0": "rASRM I",
+LABEL = {"study_fig": None, "Endometriosis_stage": {"0.0": "control", "1.0": "rASRM I",
                                  "2.0": "rASRM II", "3.0": "rASRM III",
                                  "4.0": "rASRM IV"}}
 
@@ -118,23 +119,41 @@ ax_score = (sgn * proj)[idx]
 m["cycle axis"] = np.where(m["menstrual phase"].notna(), ax_score, np.nan)
 del Zs, _meta_full
 
+# COLOURS SHARED WITH FIGURE 1 (NMI: one meaning per colour across the
+# paper, and colour-blind safe). Study: Figure 1a's palette and names, the
+# two Garcia-Alonso deposits merged as there. Disease status: Figure 1a's
+# bar. Site: Okabe-Ito. Surgical stage: an ordered scale, control as in 1a.
+from fig2_panels import _study_colours                              # noqa: E402
+from mock_fig1a_opt8 import DIS_C                                    # noqa: E402
+_SC = _study_colours()
+m["study_fig"] = m.study.where(~m.study.str.startswith("garcia_alonso"), "garcia_alonso_2021")
+STUDY_ORDER = list(_SC); STUDY_COL = [_SC[k][0] for k in STUDY_ORDER]
+LABEL_STUDY = {k: v[1] for k, v in _SC.items()}
+TIS_ORDER = ["endometrium", "myometrium", "ovary", "peritoneum", "rectum", "urinary bladder"]
+TIS_COL = ["#0072B2", "#56B4E9", "#E69F00", "#D55E00", "#CC79A7", "#009E73"]
+DIS_ORDER = ["control", "eutopic", "ectopic", "adenomyosis"]
+DIS_COL = [DIS_C[k] for k in DIS_ORDER]
+STAGE_ORDER = ["0.0", "1.0", "2.0", "3.0", "4.0"]
+STAGE_COL = [DIS_C["control"], "#FDBB84", "#FC8D59", "#D7301F", "#7F0000"]
+
+LABEL["study_fig"] = LABEL_STUDY
 PANELS = [
-    ("study", "study", "cat", None),
-    ("tissue", "tissue", "cat", None),
+    ("study", "study_fig", "cat", (STUDY_ORDER, STUDY_COL)),
+    ("tissue", "tissue", "cat", (TIS_ORDER, TIS_COL)),
     ("menstrual phase", "phase group", "cat", (PHASE_ORDER, PHASE_COL)),
     ("cycle day", "CycleDay", "seq", None),
     ("serum progesterone", "ProgesteroneSerum", "seq", None),
     ("cycle axis", "cycle axis", "axis", None),
-    ("disease status", "disease_status", "cat", None),
+    ("disease status", "disease_status", "cat", (DIS_ORDER, DIS_COL)),
     ("severity", "severity", "cat", (SEV_ORDER, SEV_COL)),
-    ("surgical stage", "Endometriosis_stage", "cat", None),
+    ("surgical stage", "Endometriosis_stage", "cat", (STAGE_ORDER, STAGE_COL)),
 ]
 
 fig, axes = plt.subplots(3, 3, figsize=(180 * MM, 168 * MM))
 # right=.955, not .988: the third column carries a colourbar and at .988 its
 # tick labels ran off the canvas.
 plt.subplots_adjust(left=.012, right=.955, top=.962, bottom=.012,
-                    hspace=.20, wspace=.03)
+                    hspace=.26, wspace=.03)
 
 for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
     ax.set_xticks([]); ax.set_yticks([])
@@ -147,9 +166,10 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
         levels, cols = (override if override else
                         (sorted(v.dropna().unique(), key=str),
                          [CAT[i % 10] for i in range(v.nunique())]))
-        lut = {lv: cols[i] for i, lv in enumerate(levels)}
+        from matplotlib.colors import to_rgb
+        lut = {lv: to_rgb(cols[i]) for i, lv in enumerate(levels)}
         keep = SHUF[ok[SHUF]]                       # shuffled, labelled only
-        rgb = np.array([lut.get(z, (1, 1, 1)) for z in v.to_numpy()[keep]])
+        rgb = np.array([lut.get(z, lut.get(str(z), (1, 1, 1))) for z in v.to_numpy()[keep]])
         ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.40,
                    rasterized=True, zorder=2)
         # NOT TRUNCATED. `[:18]` printed garcia_alonso_2021_a and _b as two
@@ -160,9 +180,13 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
                           label=LABEL.get(col, {}).get(str(lv), str(lv)))
                    for lv in levels]
         ncol = 2 if len(levels) > 5 else 1
-        ax.legend(handles=handles, fontsize=4.0, frameon=False, ncol=ncol,
-                  loc="lower left", handletextpad=.3, columnspacing=.6,
-                  borderpad=.1, labelspacing=.25)
+        # Ten studies at 5 pt would sit on the cells: that legend goes under
+        # its panel in three columns; the short ones stay in the corner.
+        many = len(levels) > 6
+        ax.legend(handles=handles, fontsize=5.0, frameon=False, ncol=3 if many else ncol,
+                  loc="upper left" if many else "lower left",
+                  bbox_to_anchor=(0, .02) if many else None, handletextpad=.3,
+                  columnspacing=.6, borderpad=.1, labelspacing=.25)
     elif kind == "axis":
         # unitless, so no numbers on the bar: early and late, clipped to the
         # 2nd-98th percentile so a few extreme cells do not flatten the rest
@@ -173,7 +197,7 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
                         vmin=lo, vmax=hi, lw=0, alpha=.45, rasterized=True, zorder=2)
         cb = fig.colorbar(sc, ax=ax, fraction=.035, pad=.01, ticks=[lo, hi])
         cb.ax.set_yticklabels(["early", "late"])
-        cb.ax.tick_params(labelsize=4.2, length=1.5, color=SOFT)
+        cb.ax.tick_params(labelsize=5.0, length=1.5, color=SOFT)
         cb.outline.set_visible(False)
     else:
         # viridis for both continuous panels, perceptually uniform and the
@@ -185,15 +209,21 @@ for ax, (title, col, kind, override) in zip(axes.ravel(), PANELS):
                         cmap="viridis", lw=0, alpha=.45, rasterized=True,
                         zorder=2)
         cb = fig.colorbar(sc, ax=ax, fraction=.035, pad=.01)
-        cb.ax.tick_params(labelsize=4.2, length=1.5, color=SOFT)
+        cb.ax.tick_params(labelsize=5.0, length=1.5, color=SOFT)
         cb.outline.set_visible(False)
     n = int(ok.sum())
-    ax.set_title(f"{title}   ({100*n/len(m):.0f}% of cells labelled)",
+    ax.set_title(f"{title[:1].upper() + title[1:]}   ({100*n/len(m):.0f}% of cells labelled)",
                  fontsize=6.4, pad=3, color=INK)
 
 for ax, letter in zip(axes.ravel(), "abcdefghi"):
     ax.text(.012, .985, letter, transform=ax.transAxes, fontsize=9,
             fontweight="bold", va="top", ha="left")
 
-fig.savefig(OUT / "figure4.png", dpi=int(os.environ.get("FIGDPI", 200)))
+fig.savefig(OUT / "figure4.png", dpi=int(os.environ.get("FIGDPI", 600)))   # NMI: >= 300 dpi
+fig.savefig(OUT / "figure4.pdf")
+_src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)        # NMI Source Data
+_sd = pd.DataFrame({"umap_1": xy[:, 0], "umap_2": xy[:, 1]})
+for _t, _c, _k, _o in PANELS:
+    _sd[_t.replace(" ", "_")] = m[_c].to_numpy()
+_sd.to_csv(_src / "Figure4_source_data.csv.gz", index=False)                                              # NMI: vector, editable
 print(f"wrote figure4.png — 9 panels, {len(m):,} cells each")

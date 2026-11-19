@@ -38,7 +38,8 @@ MM = 1 / 25.4
 INK, SOFT, GHOST = "#1a1a1a", "#6b6b6b", "#ededed"
 ARMS = [("p1_dab168_kl1", "ELAJ$_{B\\,hi}$"), ("p1_dab168_kl30", "ELAJ$_{B\\,lo}$")]
 FAMS = ["stromal", "epithelial", "endothelial", "immune"]
-plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 6.5,
+plt.rcParams.update({"pdf.fonttype": 42, "ps.fonttype": 42,   # NMI: Arial, editable text
+                     "font.family": "Arial", "font.size": 6.5,
                      "text.color": INK})
 
 meta = pd.read_csv(ROOT / "Outputs/cells/p1_dab168_kl1/metadata.csv.gz",
@@ -81,8 +82,13 @@ fig, axes = plt.subplots(len(ARMS), len(FAMS) + 1,
 plt.subplots_adjust(left=.055, right=.995, top=.925, bottom=.085,
                     hspace=.10, wspace=.03)
 
+_SD = []
 for r, (arm, armlab) in enumerate(ARMS):
     xy = np.load(ROOT / f"Outputs/analysis/umaps/{arm}/_umap_cache/global_400000.npy")
+    _SD.append(pd.DataFrame({"model": armlab.replace("$_{B\\,", "_B").replace("}$", ""),
+                             "umap_1": xy[:, 0], "umap_2": xy[:, 1],
+                             "cell_family": m["cell family"].to_numpy(),
+                             "menstrual_phase_group": phase.to_numpy()}))
     for c, fam in enumerate(["all labelled cells"] + FAMS):
         ax = axes[r, c]
         ax.set_xticks([]); ax.set_yticks([])
@@ -98,7 +104,7 @@ for r, (arm, armlab) in enumerate(ARMS):
         ax.scatter(xy[keep, 0], xy[keep, 1], s=.5, c=rgb, lw=0, alpha=.45,
                    rasterized=True, zorder=2)
         if r == 0:
-            ax.set_title(fam, fontsize=6.6, pad=3)
+            ax.set_title(fam[:1].upper() + fam[1:], fontsize=6.6, pad=3)   # NMI: sentence case
         if c == 0:
             ax.text(-.04, .5, armlab, transform=ax.transAxes, fontsize=7.4,
                     rotation=90, va="center", ha="right")
@@ -112,5 +118,8 @@ fig.legend(handles=[Line2D([], [], lw=0, marker="o", ms=4, color=COL[p],
                              label="unlabelled or other phase")],
            ncol=len(PH) + 1, fontsize=6.0, frameon=False, loc="lower center",
            bbox_to_anchor=(.5, -.004), columnspacing=1.6, handletextpad=.4)
-fig.savefig(OUT / "figure3.png", dpi=int(os.environ.get("FIGDPI", 200)))
+fig.savefig(OUT / "figure3.png", dpi=int(os.environ.get("FIGDPI", 600)))   # NMI: >= 300 dpi
+fig.savefig(OUT / "figure3.pdf")                                              # NMI: vector, editable
+_src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)       # NMI Source Data
+pd.concat(_SD).to_csv(_src / "Figure3_source_data.csv.gz", index=False)
 print(f"wrote figure3.png — {len(ARMS)} arms x {len(FAMS) + 1} panels")
