@@ -109,6 +109,8 @@ scorecard has no empty cell.
 **Skipped by AW:** Note 7; the rest of the long tail. **Figures are DONE**
 except the decisions in 0e.
 
+**DONE 19 Nov (`2792ed9`): M1-M6 applied as accepted; bf16 "for its efficiency"; Source Data statement added. Acknowledgements left to the guide (no funding). Reporting Summary deferred until after the guide.**
+
 ## (1) Main-Methods errors. AW's protocol: Methods is HIS text; raise each as
 current / proposed / why, change nothing until he answers.
 
