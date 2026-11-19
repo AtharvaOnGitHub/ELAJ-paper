@@ -170,6 +170,20 @@ P 0.94, NOT SUPPORTED. Within-lineage directions (B): myeloid AUC 0.7594
 P 0.0425; lymphoid 0.7054 P 0.080. B's decode (`decode_real --within`) is
 the next cluster job.
 
+**AW's RULING, 19 Nov, which reframes the whole gene claim.** "The paper
+is about that tool." (1) Cell proportions from labels, outside the latent,
+are batch-affected and NOT results. (2) Composition read through the latent
+(macrophages up, NK/T down) is reliable but bulk-reachable: corroboration,
+briefly. (3) The within-myeloid sub-composition (resident macrophage vs
+DC/mast) is a proportion statement the studies' finer annotations could
+give: not an ELAJ result. (4) **Stromal transcripts in patients' immune
+cells, found along a within-lineage latent direction and confirmed in
+counts, is the first result only a single-cell atlas could give. It is to
+be developed. Not to be hedged as contamination** (measured defence:
+epithelial RNA in immune cells x0.95, P 0.63; the excess is x1.6 beyond the
+donor's own stroma, P 0.0004). (5) Gene lists are not our job; X17 and the
+decoded lists become supporting material.
+
 **B's decode REPORTED, 19 Nov (job 62116534, `decode_real --within`;
 all checks passed; files `axw1008/src/docs/paper/
 x12_gene_shifts_within-{myeloid,lymphoid}_realcov_epoch_0004.csv`, committed
