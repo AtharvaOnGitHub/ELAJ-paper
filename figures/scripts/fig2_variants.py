@@ -32,7 +32,7 @@ SEQ = LinearSegmentedColormap.from_list("seq", ["#F3F1EC", "#E3B48F", "#B8622C"]
 E_OPTS = {
     "e_A_soft_diverging": dict(cmap=SOFT_DIV, vmin=.2, vmax=.8, clw=1.1, ctl=CTL_D, cas=CAS_D),
     "e_B_sequential":     dict(cmap=SEQ, vmin=0, vmax=1, clw=1.1, ctl=CTL_D, cas=CAS_D),
-    "e_C_faded_original": dict(cmap="RdBu_r", vmin=.2, vmax=.8, clw=1.2, ctl="#1F6F6A", cas="#8E2A26", alpha=.45),
+    "e_C_faded_original": dict(cmap="RdBu_r", vmin=.2, vmax=.8, clw=.85, ctl="#1F6F6A", cas="#8E2A26", alpha=.45),
 }
 for name, kw in E_OPTS.items():
     fig = plt.figure(figsize=(80 * MM, 66 * MM))
@@ -75,8 +75,8 @@ for b in ax_d.collections:
     except Exception:
         pass
 ax_e = fig.add_axes(mm(14, 14, 62, 62)); cax_e = fig.add_axes(mm(78, 14, 2.2, 62))
-F.panel_plane(ax_e, cax_e, **E_OPTS["e_A_soft_diverging"]); letter(4, 80, "e")
+F.panel_plane(ax_e, cax_e, **E_OPTS["e_C_faded_original"]); letter(4, 80, "e")   # AW 19 Nov: C, thinner lines
 f_axes = [fig.add_axes(mm(108 + i * 32, 22, 28, 54)) for i in range(2)]
-F.panel_rain(f_axes, style="strip", ctl=CTL, cas=CAS, legend="below"); letter(96, 80, "f")
+F.panel_rain(f_axes, style="rain", ctl=CTL, cas=CAS, legend="below"); letter(96, 80, "f")   # AW 19 Nov: B
 fig.savefig(OUT / "figure2_v2.png", dpi=300, facecolor="white")
 print("drew figure2_v2")
