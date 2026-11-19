@@ -449,6 +449,16 @@ Known gaps to close in that comparison:
 - [ ] Push both repos when AW asks; no `Co-Authored-By` or `Claude-Session`
       trailers in any commit.
 
+# 0c. Figure 2, settled so far (19 Nov)
+a, b frontier; **c = the cycle closes** (AW: replaces composition; drawn by
+`supp_figures.cycle_closes`, shared with the Supplementary figure); d per-
+family AUCs, no study step; e = option C, thinner contours; f = option B.
+Letters only, calmer control/patient pair. Script: `fig2_variants.py`
+(figure2_v2.png) -- promote to `figure2_draft.py`/pinned when signed off.
+TODO: the composition panel (donor spread 4.1-9.5x) needs a Supplementary
+figure in Note 6, which Results now cites; d's median markers too faint;
+"case" vs "patient" wording across panels.
+
 # 0b. Results against figures: the audit, 19 November (AW asked)
 
 Every Results finding, and what shows it. "--" = nothing in the main figures.

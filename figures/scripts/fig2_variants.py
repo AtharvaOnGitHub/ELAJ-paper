@@ -65,9 +65,12 @@ def letter(x, y, l):
 ax_a = fig.add_axes(mm(14, 154, 70, 52)); ax_b = fig.add_axes(mm(106, 154, 70, 52))
 P.frontier_by_kl(ax_a); P.frontier_by_dab(ax_b)
 letter(4, 208, "a"); letter(96, 208, "b")
-cw, gap, cx0 = 17.0, 1.5, 12.0
-c_axes = [fig.add_axes(mm(cx0 + i * (cw + gap), 92, cw, 44)) for i in range(4)]
-P.i1(c_axes); letter(4, 142, "c")
+# c: the cycle closes (AW, 19 Nov: replaces the composition panel, which
+# moves to the Supplementary). Same drawing as Supplementary x16_cycle_closes.
+import supp_figures as S                                            # noqa: E402
+_Zs, _m, _W, _ev, _rng = S._cycle_setup()
+ax_c = fig.add_axes(mm(18, 90, 62, 48))
+S.cycle_closes(ax_c, _Zs, _m, _W, _ev, _rng, box=(.97, .03, "right", "bottom")); letter(4, 142, "c")
 ax_d = fig.add_axes(mm(104, 92, 64, 44)); P.i2b(ax_d); ax_d.set_xlim(-.55, 3.95); letter(92, 142, "d")
 for b in ax_d.collections:
     try:

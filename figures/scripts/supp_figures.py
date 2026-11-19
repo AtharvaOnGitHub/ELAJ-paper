@@ -1874,6 +1874,63 @@ def _cycle_setup():
     return Zs, m, W, lda.explained_variance_ratio_, rng
 
 
+def cycle_closes(ax, Zs, m, W, ev, rng, box=(.03, .97, "left", "top")):
+    """The phase centroids in the plane of the first two cycle axes, joined
+    in biological order. Drawn into any axes, so the Supplementary figure
+    and Figure 2c (AW, 19 Nov) are one drawing. Returns (resultant, P).
+
+    NO SIGN FLIP IN THIS FRAME. `sgn` orients the 1-D projection so the
+    scatters read left to right with the cycle; applying it to one of two
+    axes would MIRROR the plane, which reverses the direction of rotation
+    and destroys the very ordering this test is about. That bug took the
+    resultant from 0.80 to 0.26 before it was caught.
+    """
+    has = m["menstrual phase"].notna().values
+    Pa = Zs[has] @ W
+    cen = (pd.DataFrame({"a": Pa[:, 0], "b": Pa[:, 1],
+                         "ph": m["menstrual phase"].values[has]})
+           .groupby("ph").mean())
+    cen["ord"] = cen.index.map(PHASE_ORD)
+    cen = cen.sort_values("ord")
+    ang = np.degrees(np.arctan2(cen.b, cen.a)) % 360
+
+    def resultant(a_rad, o):
+        """Reflection-invariant: a cycle traced clockwise is still a cycle.
+
+        The statistic is the mean resultant length of the phase angles
+        minus an evenly spaced ramp in label order. Taking the better of
+        the ramp and its reverse makes it blind to which way round the
+        loop runs, and the null below takes the same maximum, so nothing
+        is gained by the extra degree of freedom.
+        """
+        k = 2 * np.pi * np.asarray(o) / len(o)
+        return max(float(np.abs(np.mean(np.exp(1j * (a_rad - k))))),
+                   float(np.abs(np.mean(np.exp(1j * (a_rad + k))))))
+
+    ar = np.radians(ang.values)
+    obs = resultant(ar, cen["ord"].values)
+    null = [resultant(ar, rng.permutation(cen["ord"].values)) for _ in range(20000)]
+    pcirc = float(np.mean(np.array(null) >= obs))
+
+    cm = plt.get_cmap("twilight")
+    ax.plot(list(cen.a) + [cen.a.iloc[0]], list(cen.b) + [cen.b.iloc[0]],
+            color=SOFT, lw=.9, ls="-", zorder=1, alpha=.8)
+    for i, (k, r) in enumerate(cen.iterrows()):
+        ax.scatter(r.a, r.b, s=70, color=cm(i / len(cen)), lw=.6,
+                   edgecolor="white", zorder=3)
+    pts = [(r.a, r.b, k.replace("_", " "), INK) for k, r in cen.iterrows()]
+    label_points(ax, pts, fontsize=FS_LEG, gap=7.5)
+    ax.axhline(0, color=HAIR, lw=.4); ax.axvline(0, color=HAIR, lw=.4)
+    ax.margins(.22)
+    ax.set_xlabel(f"cycle axis 1 ({ev[0]:.0%} of phase separation)")
+    ax.set_ylabel(f"cycle axis 2 ({ev[1]:.0%})")
+    ax.text(box[0], box[1], f"labels advance round the circle in\nbiological order: "
+                      f"resultant {obs:.2f}, $P$ = {pcirc:.4f}",
+            transform=ax.transAxes, ha=box[2], va=box[3], fontsize=FS_BODY, linespacing=1.5,
+            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
+    return obs, pcirc, cen, ang
+
+
 def x16():
     from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
     Zs, m, W, ev, rng = _cycle_setup()
@@ -1923,55 +1980,9 @@ def x16():
     fig.subplots_adjust(wspace=.28, bottom=.24)
     save(fig, "x16_cycle_axis_external", cite=True)
 
-    # ── FIGURE: the cycle closes ─────────────────────────────────────────
-    # NO SIGN FLIP IN THIS FRAME. `sgn` orients the 1-D projection so the
-    # scatters above read left to right with the cycle; applying it to one
-    # of two axes would MIRROR the plane, which reverses the direction of
-    # rotation and destroys the very ordering this test is about. That bug
-    # took the resultant from 0.80 to 0.26 before it was caught.
-    Pa = Zs[has] @ W
-    cen = (pd.DataFrame({"a": Pa[:, 0], "b": Pa[:, 1],
-                         "ph": m["menstrual phase"].values[has]})
-           .groupby("ph").mean())
-    cen["ord"] = cen.index.map(PHASE_ORD)
-    cen = cen.sort_values("ord")
-    ang = np.degrees(np.arctan2(cen.b, cen.a)) % 360
-
-    def resultant(a_rad, o):
-        """Reflection-invariant: a cycle traced clockwise is still a cycle.
-
-        The statistic is the mean resultant length of the phase angles
-        minus an evenly spaced ramp in label order. Taking the better of
-        the ramp and its reverse makes it blind to which way round the
-        loop runs, and the null below takes the same maximum, so nothing
-        is gained by the extra degree of freedom.
-        """
-        k = 2 * np.pi * np.asarray(o) / len(o)
-        return max(float(np.abs(np.mean(np.exp(1j * (a_rad - k))))),
-                   float(np.abs(np.mean(np.exp(1j * (a_rad + k))))))
-
-    ar = np.radians(ang.values)
-    obs = resultant(ar, cen["ord"].values)
-    null = [resultant(ar, rng.permutation(cen["ord"].values)) for _ in range(20000)]
-    pcirc = float(np.mean(np.array(null) >= obs))
-
+    # ── FIGURE: the cycle closes (drawn by cycle_closes, shared with Fig 2c)
     fig, ax = fig_ax(104, 92)
-    cm = plt.get_cmap("twilight")
-    ax.plot(list(cen.a) + [cen.a.iloc[0]], list(cen.b) + [cen.b.iloc[0]],
-            color=SOFT, lw=.9, ls="-", zorder=1, alpha=.8)
-    for i, (k, r) in enumerate(cen.iterrows()):
-        ax.scatter(r.a, r.b, s=70, color=cm(i / len(cen)), lw=.6,
-                   edgecolor="white", zorder=3)
-    pts = [(r.a, r.b, k.replace("_", " "), INK) for k, r in cen.iterrows()]
-    label_points(ax, pts, fontsize=FS_LEG, gap=7.5)
-    ax.axhline(0, color=HAIR, lw=.4); ax.axvline(0, color=HAIR, lw=.4)
-    ax.margins(.22)
-    ax.set_xlabel(f"cycle axis 1 ({ev[0]:.0%} of phase separation)")
-    ax.set_ylabel(f"cycle axis 2 ({ev[1]:.0%})")
-    ax.text(.03, .97, f"labels advance round the circle in\nbiological order: "
-                      f"resultant {obs:.2f}, $P$ = {pcirc:.4f}",
-            transform=ax.transAxes, va="top", fontsize=FS_BODY, linespacing=1.5,
-            bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=HAIR, lw=.5))
+    obs, pcirc, cen, ang = cycle_closes(ax, Zs, m, W, ev, rng)
     save(fig, "x16_cycle_closes", cite=True)
 
     # ── per family: whose cycle axis is it? ──────────────────────────────
