@@ -186,7 +186,13 @@ step (held-out AUC, then with each cell's stromal score removed): immune
 0.763 -> 0.738 (P 0.015); stromal 0.710 -> 0.691 (P 0.030); endothelial
 0.758 (P 0.010) -> 0.594 (P 0.22); epithelial 0.667 (P 0.062) -> 0.614.
 Robust: immune and stromal. Endothelial's separation WAS the stromal RNA.
-Decision with AW.
+DRIVERS (disease_axis_drivers.py): immune axis = lymphoid share (rho +0.96;
+myeloid genes AIF1, HCK, SPI1, TYROBP vs T/NK TRBC1, KLRB1, KLRD1, RUNX3)
+and phase (patients 13/17 periovulatory+proliferative heavy, controls
+secretory heavy); phase removed -> AUC 0.680, P 0.080. Stromal axis =
+sequencing depth (log library rho +0.69, ribosomal genes on control side)
+and phase (P 2e-5); phase removed -> 0.678, P 0.070. Library size itself
+does not differ by status (P 0.11 stromal). Decision with AW.
 
 **AW's RULING, 19 Nov, which reframes the whole gene claim.** "The paper
 is about that tool." (1) Cell proportions from labels, outside the latent,
