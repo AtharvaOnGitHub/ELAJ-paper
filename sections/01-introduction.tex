@@ -22,7 +22,7 @@
 %[para about endo being hard]
 Endometriosis is a disease where tissue resembling the inner lining of the
 uterus grows outside it. It affects roughly 190 million people worldwide 
-\citep{who2025endometriosis}. Despite the prevalence, it has no validated 
+\citep{who2025endometriosis}. Despite its prevalence, it has no validated 
 non-invasive test and a confirmed diagnosis requires laparoscopic surgery 
 \citep{who2025endometriosis,bontempo2025diagnostic}, making large studies 
 difficult. Scale is necessary for answering deeper questions about 
@@ -67,20 +67,17 @@ Removing batch effects without removing biology therefore remains an open
 problem.
 
 %[para about foundation models not being enough]
-A foundation model, built for representation of large amounts of 
-biological information, is the wrong tool despite its scale.
-Models pretrained across tens of millions of cells
-\citep{cui2024scgpt,theodoris2023geneformer,hao2024scfoundation,heimberg2025scimilarity}
-return one representation per corpus. Although they are a promising 
-direction for multi-disease and multi-organ representations, their 
-zero-shot behaviour is uneven \citep{kedzierska2025zeroshot}. 
-Re-training or fine-tuning these models requires huge amounts of 
-compute and does not provide any disease-specific guarantee. 
+Foundation models, pretrained across tens of millions of cells
+\citep{cui2024scgpt,theodoris2023geneformer,hao2024scfoundation,heimberg2025scimilarity},
+offer a generic answer: one representation for every corpus. Although they
+are a promising direction for multi-disease and multi-organ representations,
+their zero-shot behaviour is uneven \citep{kedzierska2025zeroshot}, and
+re-training or fine-tuning them costs large amounts of compute with no
+disease-specific guarantee.
 Additionally, endometriosis, being influenced by the menstrual 
 cycle \citep{who2025endometriosis,garciaalonso2021endometrium}, is subject 
 to the most drastic short term cyclicity in the human body 
 \citep{salamonsen2021endometrial} that no model has been trained for.
-
 
 %[para about disease atlases being a good idea]
 To overcome the limitations of donor counts and avoid pitfalls of 
@@ -90,7 +87,7 @@ against one shared reference, and established that such a reference can
 outlive the studies that built it \citep{regev2017hca}. At organ scale, the 
 Human Lung Cell Atlas integrated 49 datasets, 2.4 million cells from 486 
 individuals, into a single reference spanning health and disease 
-\citep{sikkema2023hlca}. In inflammatory bowel disease, scIBD then showed 
+\citep{sikkema2023hlca}. In inflammatory bowel disease, scIBD showed 
 that published single-cell studies alone, with no new sequencing, are 
 enough to assemble a disease-focused meta-atlas \citep{nie2023scibd}. 
 While the individual results from these studies are promising, a recent
@@ -102,7 +99,7 @@ pathophysiology of the disease is needed \citep{hrovatin2025atlases}.
 In this study, we collate every publicly available single-cell study of
 endometriosis into a corpus of 1{,}577{,}728 cells from 254 donors across
 eleven studies. \elaj\ is a single-cell disease atlas of endometriosis built
-on top of that corpus in the form of a 1{,}883{,}986-parameter
+on that corpus as a 1{,}883{,}986-parameter
 transformer-based conditional variational autoencoder (CVAE)
 \citep{kingma2014auto, sohn2015learning} that reads a cell's genes in 44
 pathway groups and compresses each cell into a sixteen-dimensional
