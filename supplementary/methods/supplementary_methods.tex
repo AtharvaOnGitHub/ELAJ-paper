@@ -166,7 +166,7 @@ pooled summary statistics are computed over a group's real genes only. A
 test in the code base copies one set of weights into the bucketed and the
 unbucketed encoder and requires the two to give the same output for every
 group. The implementation can also drop the mask, and with it reach the
-fused attention kernel, for a bucket whose groups are all one size. No
+fused attention kernel \citep{dao2022flashattention}, for a bucket whose groups are all one size. No
 bucket in the reported vocabulary is uniform, so every bucket carries a
 mask and the saving is in arithmetic alone.
 

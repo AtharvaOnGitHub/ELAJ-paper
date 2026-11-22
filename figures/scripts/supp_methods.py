@@ -31,6 +31,8 @@ BUCKETING = SRC / "endo_model/model/encoders/batched/bucketing.py"
 VOCAB = SRC / "data" / "vocabulary_v1.json"      # the file run_config names
 
 
+ADAMW_CITE = " \\citep{loshchilov2019decoupled}"
+
 def _plan_buckets():
     """`plan_buckets` and `SizeBucket` exactly as the model runs them, taken
     from the module's source so this script needs no torch."""
@@ -145,7 +147,7 @@ def main() -> None:
         ("Cell-similarity weight, threshold",
          f"{f(M['loss']['w_ecs'])}, {f(M['ecs']['threshold'])}"),
         ("Optimisation", None),
-        ("Optimiser", f"{T['optimizer']['name']}, $\\beta = ({T['optimizer']['betas'][0]}, {T['optimizer']['betas'][1]})$"),
+        ("Optimiser", f"{T['optimizer']['name']}{ADAMW_CITE if T['optimizer']['name'] == 'AdamW' else ''}, $\\beta = ({T['optimizer']['betas'][0]}, {T['optimizer']['betas'][1]})$"),
         ("Learning rate, weight decay", "$10^{-3}$, $10^{-4}$" if (T['optimizer']['lr'], T['optimizer']['weight_decay']) == (0.001, 0.0001)
          else f"{f(T['optimizer']['lr'])}, {f(T['optimizer']['weight_decay'])}"),
         ("Schedule", f"cosine over {T['max_epochs']} epochs"),

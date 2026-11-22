@@ -57,7 +57,11 @@ family.} Eleven representations, ten metrics, 176{,}803 held-out cells
 from the two studies that annotated their cells; batch is study. The five
 columns on the left are scIB's batch-correction half and the five on the
 right its biological-conservation half. Every metric is scaled so that one
-is best.}
+is best. The comparison representations are Harmony
+\citep{korsunsky2019harmony}, Scanorama \citep{hie2019scanorama}, scVI
+\citep{lopez2018scvi}, scANVI \citep{xu2021scanvi}, scGPT \citep{cui2024scgpt},
+Geneformer \citep{theodoris2023geneformer}, SCimilarity
+\citep{heimberg2025scimilarity} and scFoundation \citep{hao2024scfoundation}.}
 \label{stab:scib-family}
 \footnotesize\setlength{\tabcolsep}{3pt}
 \resizebox{\textwidth}{!}{\input{tables/scib_cellfamily}}
@@ -68,7 +72,7 @@ is best.}
 \caption[scIB scorecard, refined annotation]{\textbf{The scIB scorecard on
 the sixty-level annotation.} The seven metrics that are defined when the
 label comes from a single study, over 132{,}261 held-out cells carrying
-\texttt{duempelmann\_2026}'s \texttt{AnnotationRefined}. PCR batch is one
+\texttt{duempelmann\_2026}'s \citep{duempelmann2026endometrium} \texttt{AnnotationRefined}. PCR batch is one
 for every representation because there is one study, so the variance
 explained by study is zero before and after.}
 \label{stab:scib-refined}
@@ -79,10 +83,10 @@ explained by study is zero before and after.}
 \subsection{What the ten metrics ask}
 
 The five batch metrics ask whether the declared batch, study identity, has
-stopped being visible. iLISI counts how many studies a cell's
-neighbourhood draws on. kBET asks the stricter version of the same
+stopped being visible. iLISI \citep{korsunsky2019harmony} counts how many studies a cell's
+neighbourhood draws on. kBET \citep{buttner2019kbet} asks the stricter version of the same
 question, whether the local mix of studies matches the global one.
-Silhouette batch asks whether studies separate within one cell label. PCR
+Silhouette batch \citep{rousseeuw1987silhouettes} asks whether studies separate within one cell label. PCR
 batch compares the variance a study explains before and after integration.
 Graph connectivity asks whether each label's cells still form one connected
 neighbour graph.
@@ -91,8 +95,8 @@ The five biological metrics ask whether the cell label survived. cLISI is
 iLISI's mirror and counts how many labels a neighbourhood draws on, where
 one is best. Silhouette bio asks whether labels separate with a margin.
 Isolated labels asks whether the label present in fewest studies stays
-separable. ARI and NMI do something different from the other eight: they
-run Leiden clustering over a sweep of resolutions and report the best
+separable. ARI \citep{hubert1985comparing} and NMI do something different from the other eight: they
+run Leiden clustering \citep{traag2019louvain} over a sweep of resolutions and report the best
 agreement between the clusters found and the label. Two metrics therefore
 score a partition, and eight score a neighbourhood. That distinction is
 what the rest of this note turns on.

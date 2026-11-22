@@ -58,17 +58,17 @@ used.}
 \toprule
 claim & source, donors & test here, donors & outcome \\
 \midrule
-eutopic endometrium of patients is transcriptionally altered & \texttt{duempelmann\_2026}, 60;\newline \texttt{tan\_2022}, 31 & cross-donor disease agreement, 207 donor records & supported: 0.3364, $P = 0.005$ \\
+eutopic endometrium of patients is transcriptionally altered & \texttt{duempelmann\_2026} \citep{duempelmann2026endometrium}, 60;\newline \texttt{tan\_2022} \citep{tan2022singlecell}, 31 & cross-donor disease agreement, 207 donor records & supported: 0.3364, $P = 0.005$ \\
 composition barely differs between patients and controls once phase is accounted for & \texttt{duempelmann\_2026}, 60 & X8, per-donor composition, 194 & supported: no family moves, $P \geq 0.24$ \\
 severity is a dose: severe disease gives five times the differentially expressed genes of mild & \texttt{duempelmann\_2026}, 60 & latent severity among patients, 57; composition among patients, 51 & not recoverable at this donor count, in either readout; a different quantity, not a contradiction \\
-macrophages and decidualised stromal cells are the compartments most likely dysregulated & \texttt{marecko\_2024}, 58,\newline from GWAS & X12, held-out disease direction within each family, no study step, 85 to 101 & both halves separate, immune 0.7631 and stromal 0.7100; each traces to composition, the cycle and the sample, and with phase removed neither reaches $P < 0.05$ \\
+macrophages and decidualised stromal cells are the compartments most likely dysregulated & \texttt{marecko\_2024} \citep{mareckova2024heca}, 58,\newline from GWAS & X12, held-out disease direction within each family, no study step, 85 to 101 & both halves separate, immune 0.7631 and stromal 0.7100; each traces to composition, the cycle and the sample, and with phase removed neither reaches $P < 0.05$ \\
 prior atlases lack reproducible marker signatures & \texttt{marecko\_2024} & X13, below & not supported on the marker half: 61 to 76 of each family's top hundred reproduce \\
-disease abolishes the cyclical variation of immune composition & \texttt{lin\_2023}\newline (Huang), 13 & X3, cycle agreement by disease, 112; X3b, phase-by-disease interaction on composition, 101 & not supported in either test \\
-composition differs between lesion and eutopic tissue & \texttt{ferrero\_2024}\newline (Sarsenova), 4 pairs & X9, per-donor composition by tissue, 151 & one family moves, epithelial 6.6-fold lower, confounded with dissociation; perivascular not resolvable \\
-the same cell type differs transcriptionally by tissue site & \texttt{fonseca\_2023}, 48 & X14, tissue within a transferred family, 262 & weak residue in stromal and endothelial, $P = 0.08$ and $0.10$; tissue is a decoder covariate \\
-lesions carry a less differentiated, progenitor-like epithelium & \texttt{garcia\_alonso\_2021}\newline (bulk deconvolution);\newline \texttt{tan\_2022}, 14 & needs epithelial subtypes & not tested; 58 ectopic donors available \\
-four case-against-control findings, two at $P < 10^{-16}$ & \texttt{shih\_2022}, 11 here & none possible & untestable: no controls in the deposited cohort \\
-metabolic reprogramming in named pathways; steroid signalling; iron and senescence & \texttt{ferrero\_2024};\newline \texttt{li\_2025} & needs single-pathway resolution & not tested; the groups merge the pathways named \\
+disease abolishes the cyclical variation of immune composition & \texttt{lin\_2023} \citep{huang2023immune}\newline (Huang), 13 & X3, cycle agreement by disease, 112; X3b, phase-by-disease interaction on composition, 101 & not supported in either test \\
+composition differs between lesion and eutopic tissue & \texttt{ferrero\_2024} \citep{sarsenova2024metabolic}\newline (Sarsenova), 4 pairs & X9, per-donor composition by tissue, 151 & one family moves, epithelial 6.6-fold lower, confounded with dissociation; perivascular not resolvable \\
+the same cell type differs transcriptionally by tissue site & \texttt{fonseca\_2023} \citep{fonseca2023endometriosis}, 48 & X14, tissue within a transferred family, 262 & weak residue in stromal and endothelial, $P = 0.08$ and $0.10$; tissue is a decoder covariate \\
+lesions carry a less differentiated, progenitor-like epithelium & \texttt{garcia\_alonso\_2021} \citep{garciaalonso2021endometrium}\newline (bulk deconvolution);\newline \texttt{tan\_2022}, 14 & needs epithelial subtypes & not tested; 58 ectopic donors available \\
+four case-against-control findings, two at $P < 10^{-16}$ & \texttt{shih\_2022} \citep{shih2022menstrual}, 11 here & none possible & untestable: no controls in the deposited cohort \\
+metabolic reprogramming in named pathways; steroid signalling; iron and senescence & \texttt{ferrero\_2024};\newline \texttt{li\_2025} \citep{li2025iron} & needs single-pathway resolution & not tested; the groups merge the pathways named \\
 perivascular and mural cell findings in three cohorts & \texttt{duempelmann\_2026},\newline \texttt{tan\_2022},\newline \texttt{ferrero\_2024} & needs a finer vocabulary & future work \\
 \bottomrule
 \end{tabular}
@@ -351,7 +351,7 @@ cannot tell whether the pattern is specific to those two cohorts or
 whether 25 donors is too few to see it.
 
 Two external resources bear on the ranking. Genes the Open Targets
-Platform associates with endometriosis at a score of 0.1 or more rank
+Platform \citep{ochoa2023opentargets} associates with endometriosis at a score of 0.1 or more rank
 towards the disease end (one-sided Mann-Whitney $P = 0.0058$; 11 of 141 in
 our top 5\%, against 7.1 expected). In EndometDB, 62 patient against 38
 control endometria \citep{gabriel2020endometdb}, no gene differs at FDR

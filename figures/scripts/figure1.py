@@ -360,9 +360,9 @@ def main() -> None:
     x2 = L + cw + GAP_COL
 
     ax_a = mm(L, y_a, aw, abh)
-    ax_a.imshow(absm, interpolation="antialiased"); ax_a.axis("off")
+    ax_a.imshow(absm, interpolation="none")   # "none": the PDF keeps the full-resolution image instead of resampling to 100 dpi; ax_a.axis("off")
     ax_b = mm(L, y_b, aw, ah)
-    ax_b.imshow(arch, interpolation="antialiased"); ax_b.axis("off")
+    ax_b.imshow(arch, interpolation="none"); ax_b.axis("off")
 
     # the frontier's y-axis label needs a gutter the UMAP does not
     GUT = 9.0
@@ -391,7 +391,7 @@ def main() -> None:
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
-    fig.savefig(HERE / "figure1.pdf")                         # NMI: vector
+    fig.savefig(HERE / "figure1.pdf", dpi=int(os.environ.get("FIGDPI", 600)))   # dpi sets the rasterised UMAP layer                         # NMI: vector
     import pandas as _pd
     _src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)     # NMI Source Data
     with _pd.ExcelWriter(_src / "Figure1_source_data.xlsx") as xw:
