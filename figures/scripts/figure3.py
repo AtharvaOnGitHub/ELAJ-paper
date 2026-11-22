@@ -119,7 +119,7 @@ fig.legend(handles=[Line2D([], [], lw=0, marker="o", ms=4, color=COL[p],
            ncol=len(PH) + 1, fontsize=6.0, frameon=False, loc="lower center",
            bbox_to_anchor=(.5, -.004), columnspacing=1.6, handletextpad=.4)
 fig.savefig(OUT / "figure3.png", dpi=int(os.environ.get("FIGDPI", 600)))   # NMI: >= 300 dpi
-fig.savefig(OUT / "figure3.pdf")                                              # NMI: vector, editable
+fig.savefig(OUT / "figure3.pdf", dpi=int(os.environ.get("FIGDPI", 600)))   # dpi sets the rasterised UMAP layers                                              # NMI: vector, editable
 _src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)       # NMI Source Data
 pd.concat(_SD).to_csv(_src / "Figure3_source_data.csv.gz", index=False)
 print(f"wrote figure3.png — {len(ARMS)} arms x {len(FAMS) + 1} panels")

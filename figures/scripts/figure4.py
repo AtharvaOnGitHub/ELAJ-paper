@@ -220,7 +220,7 @@ for ax, letter in zip(axes.ravel(), "abcdefghi"):
             fontweight="bold", va="top", ha="left")
 
 fig.savefig(OUT / "figure4.png", dpi=int(os.environ.get("FIGDPI", 600)))   # NMI: >= 300 dpi
-fig.savefig(OUT / "figure4.pdf")
+fig.savefig(OUT / "figure4.pdf", dpi=int(os.environ.get("FIGDPI", 600)))   # dpi sets the rasterised UMAP layers
 _src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)        # NMI Source Data
 _sd = pd.DataFrame({"umap_1": xy[:, 0], "umap_2": xy[:, 1]})
 for _t, _c, _k, _o in PANELS:

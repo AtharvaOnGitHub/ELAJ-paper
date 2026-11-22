@@ -6,6 +6,7 @@ titles in a calmer palette. Drafts only, to figures/draft/variants/.
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
@@ -211,8 +212,8 @@ for ph, mk in marks.items():
 axes[0].legend(frameon=False, fontsize=FSS, ncol=4, loc="upper left", bbox_to_anchor=(0, -.12),
                handletextpad=.1, columnspacing=.7)
 letter(96, 66, "f")
-fig.savefig(OUT / "figure2_v2.png", dpi=300, facecolor="white")
-fig.savefig(OUT / "figure2_v2.pdf", facecolor="white")          # NMI: vector, editable text
+fig.savefig(OUT / "figure2_v2.png", dpi=int(os.environ.get("FIGDPI", 600)), facecolor="white")
+fig.savefig(OUT / "figure2_v2.pdf", dpi=int(os.environ.get("FIGDPI", 600)), facecolor="white")          # NMI: vector, editable text
 
 # ── SOURCE DATA (NMI): every plotted value, one sheet per panel ─────────
 SRC = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data")
