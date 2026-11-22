@@ -360,7 +360,8 @@ def main() -> None:
     x2 = L + cw + GAP_COL
 
     ax_a = mm(L, y_a, aw, abh)
-    ax_a.imshow(absm, interpolation="none")   # "none": the PDF keeps the full-resolution image instead of resampling to 100 dpi; ax_a.axis("off")
+    # interpolation "none" stops the PDF resampling the image to 100 dpi
+    ax_a.imshow(absm, interpolation="none"); ax_a.axis("off")
     ax_b = mm(L, y_b, aw, ah)
     ax_b.imshow(arch, interpolation="none"); ax_b.axis("off")
 
@@ -391,7 +392,24 @@ def main() -> None:
 
     HERE.mkdir(parents=True, exist_ok=True)
     fig.savefig(HERE / "figure1.png", dpi=int(os.environ.get("FIGDPI", 600)))
-    fig.savefig(HERE / "figure1.pdf", dpi=int(os.environ.get("FIGDPI", 600)))   # dpi sets the rasterised UMAP layer                         # NMI: vector
+    # PDF: panel a goes in as its own vector PDF, not as a picture of it.
+    # Hide the raster copy, save, then place panel_a_abstract.pdf into the
+    # same box. dpi sets the rasterised UMAP layer.
+    VEC_A = HERE / "panel_a_abstract.pdf"
+    if VEC_A.exists():
+        import pymupdf
+        box = ax_a.get_position()                      # figure fraction
+        ax_a.set_visible(False)
+        fig.savefig(HERE / "figure1.pdf", dpi=int(os.environ.get("FIGDPI", 600)))
+        ax_a.set_visible(True)
+        doc = pymupdf.open(HERE / "figure1.pdf"); pg = doc[0]; R = pg.rect
+        rect = pymupdf.Rect(box.x0 * R.width, (1 - box.y1) * R.height, box.x1 * R.width, (1 - box.y0) * R.height)
+        src = pymupdf.open(VEC_A)
+        pg.show_pdf_page(rect, src, 0, keep_proportion=True)
+        doc.save(HERE / "figure1.tmp.pdf", garbage=3, deflate=True); doc.close()
+        os.replace(HERE / "figure1.tmp.pdf", HERE / "figure1.pdf")
+    else:
+        fig.savefig(HERE / "figure1.pdf", dpi=int(os.environ.get("FIGDPI", 600)))   # NMI: vector
     import pandas as _pd
     _src = Path("/Users/atharvawaghmare/Endo research/ELAJ/Outputs/supplementary/source_data"); _src.mkdir(parents=True, exist_ok=True)     # NMI Source Data
     with _pd.ExcelWriter(_src / "Figure1_source_data.xlsx") as xw:

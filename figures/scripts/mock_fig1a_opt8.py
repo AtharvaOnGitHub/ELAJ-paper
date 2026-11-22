@@ -403,6 +403,7 @@ def main() -> None:
     # so write it here and the two cannot drift
     fig.savefig(OUT / "panel_a_abstract.png",
                 dpi=int(os.environ.get("FIGDPI", 400)))
+    fig.savefig(OUT / "panel_a_abstract.pdf")   # vector, placed into figure1.pdf
     print(f"wrote {OUT / 'mock_fig1a_opt8.png'}  ({W:.0f} x {H:.0f} mm)")
     print(f"  tiles: {len(per)} donor groups summing to {per.sum()}")
 
