@@ -119,11 +119,7 @@ added, atlas last line, paras 5+6 merged; read-through items 1, 4, 5, 6,
 8, 10, 11 applied (`cdbb421`).
 
 **Open, in order:**
-1. **Intro read-through, items 7 and 12**: options given to AW (7: the
-   cycle sentence closing the foundation-model paragraph, which must now
-   also carry the "wrong tool" verdict; 12: the ablation sentence, purpose
-   = truthfulness and validating architectural assumptions). Apply his
-   pick, update the change file.
+1. **Intro read-through DONE** (7 skipped by AW, 12A applied). Next: apply the change file to the guide's copy.
 2. **Fig 1 quality** (guide). Also 213.5 mm deep vs NMI's 170 mm; 1a/b raster.
 3. Main text over the cap: Introduction now ~790 words; Results carries the cut.
 4. Regenerate Word files when AW asks (numbering in existing docx is stale).
