@@ -50,6 +50,97 @@ the fix, and move on.
 
 ---
 
+## 19-22 November: the guide package, the guide's comments, the Introduction rebuilt
+
+**Read PRIORITY ⓪⓪⓪ first for state.** This section is rulings, register and mistakes.
+
+### Workflow rulings (do not reopen)
+* **Change file, not Word.** AW 22 Nov: "let's do a change file, keep tex up
+  to date, and generate the full (combined one as well as final main and
+  supplementary ones) word doc only when needed." The change file is
+  `changesets/changes-2026-11-22.md` (+ `ELAJ_changes_2026-11-22.docx`);
+  every accepted change goes in it as was/now. **AW has not yet applied any
+  of it to the guide's OneDrive file.**
+* The guide wants **figures as separate files**; the docx carries captions
+  only. Tables stay in the docx. Equations numbered in both files.
+  Supplementary prints "Supplementary Note N" above each Note heading and
+  "Supplementary Fig./Table N |" captions. Body double spaced.
+* Word tooling (all in `assets/`): pandoc 3.10 + `docx_captions_only.lua` +
+  `nature.csl`, then `docx_tools/number.py <src> <dst> <aux> <main|supp>`,
+  `t7.py` (regenerates the LaTeX tables pandoc breaks), `replace.py`
+  (cross-run replace; mind the NBSP in "Fig.\xa0X"). PDF via Word
+  AppleScript. Table 1 is rotated portrait (btLr + transpose + exact row
+  heights). AW's working file: `for_guide_2026-11-19/ELAJ_main_numbered.docx`
+  — its supplementary numbering is now STALE.
+* **Supplementary numbering:** S prefix dropped (Supplementary Fig. 1, not
+  S1). Notes reordered so every item is first cited from main text in
+  ascending order (NMI rule): 1 frontier arms, 2 scIB, 3 claims axis,
+  4 ablations, 5 limitations, 6 gene sizing, then Supplementary Methods.
+  One accepted slip: Table 12 is cited before 7-11 (AW chose it; two of
+  three NMI papers on disk have one such slip). Supplementary figures need
+  not each be cited from main prose; the Note/Methods pointer carries them,
+  but we cite ranges anyway.
+* M1-M7 applied (M7: "The negative-binomial loss is held in fp32
+  regardless, because it is not numerically safe at reduced precision").
+
+### The guide's comments (22 Nov) and what each became
+| comment | became |
+|---|---|
+| "(Fig. X)" placeholders | Supplementary Table 12 (new, severity composition), Figs 23/24 |
+| rephrase intro para 2 (all but last line) | rewritten as a funnel to scRNA (AW: the conclusion is right, the arguments and their order were wrong) |
+| new para after para 2: models before foundation models | batch-correction paragraph (Harmony, Scanorama, scVI, scANVI, Luecken benchmark), lands "remains an open problem" |
+| para 4 last line | AW's "While the individual results ... tailored approach based on the pathophysiology of the disease is needed" |
+| merge paras 5+6, start "In this study" | one 250-word paragraph, AW-edited |
+| not all figures mentioned | every supplementary item now pointed to from main text |
+| Fig 1 quality | **NOT YET DONE** |
+
+### The Introduction's logic, AW's, and it governs every edit
+endometriosis + the data-collation argument → narrow to scRNA (funnel) →
+what has been done (batch methods) → the generic solution the field tried
+(foundation models) → atlases and the need for a tailored solution → what
+we did. **A paragraph that refers to something not yet introduced breaks
+the flow** ("before foundation models" before foundation models exist).
+
+### Introduction register lessons (also in REGISTER §19-23)
+* I **reworded his points instead of positioning them**, twice. He wants
+  the argument ordered, not paraphrased.
+* My para 2 was **"leisurely"**: one sentence per rejected modality. IBDex
+  ticks several boxes per sentence. Re-read REGISTER before drafting.
+* Do not **drop results** when merging: "don't drop important results out
+  of the prose just because the sentence wording is weird". Rewrite them.
+* "remodels" too casual; "fidelity" fine; "cohort" is reserved for groups
+  of datasets, so scRNA groups are "scRNA studies"; "This corpus is not a
+  sample of the field; it is the field" reads as a brag; no repeated
+  "which we" across consecutive sentences.
+* **The ELAJ frontier is named because ELAJ dominates every competitor on
+  both axes.** Keep his "because".
+* Final paragraph is 50/50: state the findings, then "we use the atlas to
+  test claims", then the ablation line. Do not describe ablation results.
+* Ablations exist "as a machine learning exercise for truthfulness and
+  validating our architectural bets/assumptions" (AW, 22 Nov). Phrase them
+  that way, not as "understanding model behaviour" or "limits".
+* My suggested sentence for the cycle in the foundation-model paragraph
+  ("None has been trained on a tissue that cycles as fast...") was
+  rejected as **"very AI, not in the right register"**.
+* Skipped proposals and his reasons, so they are not re-proposed:
+  "Scale is necessary ... collation is necessary" stays (it is an a=b, b=c
+  argument on purpose); "has established methods for collating them" stays
+  ("established methods exist" is the meaning); "avoid pitfalls of
+  foundation models ... disease atlases" stays ("the line is good
+  regardless of citation").
+
+### Mistakes this stretch
+1. Placed a new supplementary table after the wrong mention (after a Fig
+   S12 cite instead of after Table 11). Check order against the aux.
+2. Rotated the page instead of the table; AW wanted a portrait page with
+   the table read bottom-to-top.
+3. Edit scripts failed on line-broken anchors; always assert count == 1.
+4. After compaction I forgot the register and had to be told to re-read
+   it. **After every compaction read REGISTER, CONTINUITY, PRIORITY ⓪⓪⓪
+   and MEMORY before the first reply, and say that I have.**
+
+---
+
 ## 18-19 November: the gene claim resolved, the paper reframed around the tool, figures finished
 
 **Read PRIORITY ⓪⓪ first.** This section is the lessons and rulings.

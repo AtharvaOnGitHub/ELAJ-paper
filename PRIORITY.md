@@ -102,6 +102,33 @@ scorecard has no empty cell.
 
 ---
 
+# ⓪⓪⓪ STATE, 22 November — read this first
+
+**Mode:** working through the guide's 22 Nov comments in tex, recording
+every accepted change in `changesets/changes-2026-11-22.md`. Word files are
+regenerated ONLY when AW asks (main, supplementary, combined; tooling in
+CONTINUITY 19-22 Nov). AW has not applied the change file to the guide's
+OneDrive file yet.
+
+**Done 19-22 Nov:** M1-M7; Source Data statement; Methods unnumbered;
+citations pass on main prose; guide package (`for_guide_2026-11-19/`);
+placeholders filled; supplementary renumbered (no S prefix, Notes
+reordered, Note headings numbered), every supplementary item cited from
+main text in order; Introduction para 2 rewritten, batch-methods paragraph
+added, atlas last line, paras 5+6 merged; read-through items 1, 4, 5, 6,
+8, 10, 11 applied (`cdbb421`).
+
+**Open, in order:**
+1. **Intro read-through, items 7 and 12**: options given to AW (7: the
+   cycle sentence closing the foundation-model paragraph, which must now
+   also carry the "wrong tool" verdict; 12: the ablation sentence, purpose
+   = truthfulness and validating architectural assumptions). Apply his
+   pick, update the change file.
+2. **Fig 1 quality** (guide). Also 213.5 mm deep vs NMI's 170 mm; 1a/b raster.
+3. Main text over the cap: Introduction now ~790 words; Results carries the cut.
+4. Regenerate Word files when AW asks (numbering in existing docx is stale).
+5. Later: citations pass on supplementary; Code availability; push when asked.
+
 # ⓪⓪ NEXT SESSION (AW, 19 Nov, before compaction) — read this first
 
 **Order of work, AW's:** (1) main-Methods errors, (2) citations pass (ⓕ F2),

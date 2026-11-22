@@ -453,3 +453,45 @@ excluded: 2,336 words, semicolons 0, *rather than* 0, internal words 0,
   are in the experiment configs' descriptions (`m5_combined.yaml`,
   `p1_dab168_kl1.yaml`). If no reason is recorded, state the value without
   one.
+
+---
+
+# The Introduction. Learned rebuilding it, 22 November
+
+## 19. Funnel, not survey
+
+To justify a modality, narrow from the property the disease demands (it
+follows a cycle measured in days) through each alternative to the one left
+standing. **Each alternative gets a clause, not a sentence**, and one
+sentence can dispose of two: "bulk sequencing averages expression across
+cell types and spatial methods remain too costly for cohort scale, leaving
+scRNA as the one readout with daily fidelity, cellular resolution and
+enough public data to pool." My first draft gave each modality its own
+sentence; AW: "very leisurely".
+
+## 20. Position the argument, do not reword it
+
+When AW gives points, the job is to **order them into his logic**, not to
+paraphrase them in sequence. Twice I returned his points reworded; both
+were rejected. Check each paragraph opens on something already introduced.
+
+## 21. Present the field's answer before judging it
+
+A paragraph about a rival approach opens on what it offers, then its
+limits in one dense sentence, then the verdict as the landing line. Opening
+on the verdict ("is the wrong tool") judges something the reader has not
+been shown.
+
+## 22. Merging keeps every result
+
+A merge rewrites; it never drops a finding because its sentence read
+badly. The closing paragraph of the Introduction states the findings
+(as IBDex and four of six NMI comparators do), then the purpose of the
+remaining work, without describing its results.
+
+## 23. Words AW has ruled on
+
+casual: "remodels", "huge". fine: "fidelity". reserved: "cohort" (groups of
+datasets). brag: "not a sample of the field; it is the field". AI-sounding:
+tidy aphoristic closers that restate a cited fact in my own image ("a
+tissue that cycles as fast as..."); keep his claim, compress it.
