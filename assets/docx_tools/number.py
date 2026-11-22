@@ -26,6 +26,16 @@ def style(e):
     return s.get(qn('w:val')) if s is not None else None
 nf=nt=0
 if kind=="supp":
+    # Note headings: pandoc drops the \thesection redefinition, so the Word file
+    # loses "Supplementary Note N". Put it back as its own line above the title,
+    # as NMI supplementaries print it.
+    k=0
+    for p in list(b.iter(qn('w:p'))):
+        if style(p)=='Heading1' and ''.join(t.text or '' for t in p.iter(qn('w:t'))).strip() not in ('Supplementary Methods','References'):
+            k+=1
+            r=OxmlElement('w:r'); t=OxmlElement('w:t'); t.text=f"Supplementary Note {k}"; r.append(t); r.append(OxmlElement('w:br'))
+            first=next((c for c in p if c.tag!=qn('w:pPr')),None)
+            (first.addprevious(r) if first is not None else p.append(r))
     for bm in list(b.iter(qn('w:bookmarkStart'))):
         n=bm.get(qn('w:name'))
         if n.startswith('sfig:'):
