@@ -27,9 +27,9 @@
 \input{../preamble}
 
 % ── Supplementary numbering ────────────────────────────────────────────
-% Prefixed so "Supplementary Fig. 3" can never be read as "Fig. 3".
-\renewcommand{\thefigure}{S\arabic{figure}}
-\renewcommand{\thetable}{S\arabic{table}}
+% No S prefix (AW, 22 Nov): Nature writes "Supplementary Fig. 3".
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thetable}{\arabic{table}}
 \renewcommand{\thesection}{Supplementary Note \arabic{section}}
 \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
 
@@ -81,12 +81,14 @@
 % of the claims axis inside Note 3 with one table and one figure, and "Note
 % 8 can be folded in to note 7", so the marker-reproducibility test is a
 % subsection of the claims note. File names track the Note numbers.
-\input{notes/N1-gene-grouping}\clearpage
-\input{notes/N2-scib}\clearpage
-\input{notes/N3-limitations}\clearpage
+% Ordered by first citation from the main text (NMI: supplementary figures and
+% tables are numbered in the order the main text first cites them; AW 22 Nov).
 \input{notes/N4-frontier-arms}\clearpage
-\input{notes/N5-ablations}\clearpage
+\input{notes/N2-scib}\clearpage
 \input{notes/N6-claims-axis}\clearpage
+\input{notes/N5-ablations}\clearpage
+\input{notes/N3-limitations}\clearpage
+\input{notes/N1-gene-grouping}\clearpage
 
 % ── Supplementary Methods ─────────────────────────────────────────────
 % After the Notes, as MIDAS orders it (AW, 15 Nov). Unnumbered, because

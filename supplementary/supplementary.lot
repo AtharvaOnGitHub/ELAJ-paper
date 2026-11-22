@@ -1,30 +1,31 @@
 \babel@toc {british}{}\relax 
-\contentsline {table}{\numberline {S1}{\ignorespaces Measured terms and feasible bands}}{6}{table.caption.4}%
-\contentsline {table}{\numberline {S2}{\ignorespaces The shipped vocabulary}}{7}{table.caption.5}%
-\contentsline {table}{\numberline {S3}{\ignorespaces scIB scorecard, cell family}}{10}{table.caption.7}%
-\contentsline {table}{\numberline {S4}{\ignorespaces scIB scorecard, refined annotation}}{10}{table.caption.8}%
-\contentsline {table}{\numberline {S5}{\ignorespaces scIB metrics against the paper's axes}}{13}{table.caption.10}%
-\contentsline {table}{\numberline {S6}{\ignorespaces The earlier split, sample by sample}}{16}{table.caption.14}%
-\contentsline {table}{\numberline {S7}{\ignorespaces Label coverage by study}}{24}{table.caption.15}%
-\contentsline {table}{\numberline {S8}{\ignorespaces Correlations across the ten representations}}{24}{table.caption.20}%
-\contentsline {table}{\numberline {S9}{\ignorespaces Transfer validation}}{24}{table.caption.22}%
-\contentsline {table}{\numberline {S10}{\ignorespaces Every arm, biological axes}}{26}{table.caption.25}%
-\contentsline {table}{\numberline {S11}{\ignorespaces Every arm, cost axes and training}}{26}{table.caption.26}%
-\contentsline {table}{\numberline {S12}{\ignorespaces Every arm, cross-donor values with $P$}}{26}{table.caption.27}%
-\contentsline {table}{\numberline {S13}{\ignorespaces Ablations, biological axes}}{33}{table.caption.36}%
-\contentsline {table}{\numberline {S14}{\ignorespaces Ablations, stage, grade and cost axes}}{33}{table.caption.37}%
-\contentsline {table}{\numberline {S15}{\ignorespaces Ablations, training record}}{33}{table.caption.38}%
-\contentsline {table}{\numberline {S16}{\ignorespaces The claims ledger}}{42}{table.caption.49}%
-\contentsline {table}{\numberline {S17}{\ignorespaces X3, cycle agreement by disease}}{43}{table.caption.50}%
-\contentsline {table}{\numberline {S18}{\ignorespaces X3, the difference and its null}}{43}{table.caption.51}%
-\contentsline {table}{\numberline {S19}{\ignorespaces X3b, the interaction test}}{44}{table.caption.52}%
-\contentsline {table}{\numberline {S20}{\ignorespaces X9, composition by tissue}}{44}{table.caption.53}%
-\contentsline {table}{\numberline {S21}{\ignorespaces X12, the global direction}}{45}{table.caption.55}%
-\contentsline {table}{\numberline {S22}{\ignorespaces X12, direction within each family, own labels}}{46}{table.caption.56}%
-\contentsline {table}{\numberline {S23}{\ignorespaces X12, direction within each family, transferred labels}}{46}{table.caption.57}%
-\contentsline {table}{\numberline {S24}{\ignorespaces X12, the disease end of the ranking}}{47}{table.caption.60}%
-\contentsline {table}{\numberline {S25}{\ignorespaces X12, the control end of the ranking}}{47}{table.caption.61}%
-\contentsline {table}{\numberline {S26}{\ignorespaces X14, tissue within a family}}{48}{table.caption.63}%
-\contentsline {table}{\numberline {S27}{\ignorespaces Marker reproducibility by family}}{50}{table.caption.64}%
-\contentsline {table}{\numberline {S28}{\ignorespaces Size buckets}}{54}{table.caption.67}%
-\contentsline {table}{\numberline {S29}{\ignorespaces Hyperparameters}}{57}{table.caption.68}%
+\contentsline {table}{\numberline {1}{\ignorespaces Every arm, biological axes}}{5}{table.caption.2}%
+\contentsline {table}{\numberline {2}{\ignorespaces Every arm, cost axes and training}}{5}{table.caption.3}%
+\contentsline {table}{\numberline {3}{\ignorespaces Every arm, cross-donor values with $P$}}{5}{table.caption.4}%
+\contentsline {table}{\numberline {4}{\ignorespaces scIB scorecard, cell family}}{12}{table.caption.14}%
+\contentsline {table}{\numberline {5}{\ignorespaces scIB scorecard, refined annotation}}{12}{table.caption.15}%
+\contentsline {table}{\numberline {6}{\ignorespaces scIB metrics against the paper's axes}}{15}{table.caption.17}%
+\contentsline {table}{\numberline {7}{\ignorespaces Composition against severity}}{17}{table.caption.20}%
+\contentsline {table}{\numberline {8}{\ignorespaces The claims ledger}}{18}{table.caption.21}%
+\contentsline {table}{\numberline {9}{\ignorespaces X3, cycle agreement by disease}}{19}{table.caption.22}%
+\contentsline {table}{\numberline {10}{\ignorespaces X3, the difference and its null}}{19}{table.caption.23}%
+\contentsline {table}{\numberline {11}{\ignorespaces X3b, the interaction test}}{20}{table.caption.24}%
+\contentsline {table}{\numberline {12}{\ignorespaces X9, composition by tissue}}{20}{table.caption.25}%
+\contentsline {table}{\numberline {13}{\ignorespaces X12, the global direction}}{21}{table.caption.27}%
+\contentsline {table}{\numberline {14}{\ignorespaces X12, direction within each family, own labels}}{22}{table.caption.28}%
+\contentsline {table}{\numberline {15}{\ignorespaces X12, direction within each family, transferred labels}}{22}{table.caption.29}%
+\contentsline {table}{\numberline {16}{\ignorespaces X12, the disease end of the ranking}}{23}{table.caption.32}%
+\contentsline {table}{\numberline {17}{\ignorespaces X12, the control end of the ranking}}{23}{table.caption.33}%
+\contentsline {table}{\numberline {18}{\ignorespaces X14, tissue within a family}}{24}{table.caption.35}%
+\contentsline {table}{\numberline {19}{\ignorespaces Marker reproducibility by family}}{26}{table.caption.36}%
+\contentsline {table}{\numberline {20}{\ignorespaces Ablations, biological axes}}{29}{table.caption.38}%
+\contentsline {table}{\numberline {21}{\ignorespaces Ablations, stage, grade and cost axes}}{29}{table.caption.39}%
+\contentsline {table}{\numberline {22}{\ignorespaces Ablations, training record}}{29}{table.caption.40}%
+\contentsline {table}{\numberline {23}{\ignorespaces The earlier split, sample by sample}}{38}{table.caption.51}%
+\contentsline {table}{\numberline {24}{\ignorespaces Label coverage by study}}{46}{table.caption.52}%
+\contentsline {table}{\numberline {25}{\ignorespaces Correlations across the ten representations}}{46}{table.caption.57}%
+\contentsline {table}{\numberline {26}{\ignorespaces Transfer validation}}{46}{table.caption.59}%
+\contentsline {table}{\numberline {27}{\ignorespaces Measured terms and feasible bands}}{49}{table.caption.64}%
+\contentsline {table}{\numberline {28}{\ignorespaces The shipped vocabulary}}{50}{table.caption.65}%
+\contentsline {table}{\numberline {29}{\ignorespaces Size buckets}}{54}{table.caption.67}%
+\contentsline {table}{\numberline {30}{\ignorespaces Hyperparameters}}{57}{table.caption.68}%

@@ -1238,6 +1238,8 @@ tex = re.sub(r"^%.*$", "", tex, flags=re.M)
 # as "gave up 7.4" and the two levels were invisible to the audit.
 tex = re.sub(r"(?<!\\)%.*$", "", tex, flags=re.M)
 tex = re.sub(r"Fig\.~\d+[a-z]?(--[a-z])?", "", tex)
+# supplementary item pointers: "Supplementary Tables~8--19 and Supplementary\nFigs.~12--16"
+tex = re.sub(r"Supplementary\s+(?:Notes?|Tables?|Figs?\.)~?\d+(?:(?:--|,|\s+and\s+)\d+)*", "", tex)
 # Ordinals are words. "95th percentile" is the name of a quantity, not a
 # measurement, and 95 has no source row by design.
 tex = re.sub(r"\d+(?:st|nd|rd|th)\b", "", tex)

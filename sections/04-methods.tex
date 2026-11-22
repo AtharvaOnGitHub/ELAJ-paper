@@ -57,7 +57,8 @@ ArrayExpress \citep{athar2019arrayexpress}, CZ CELLxGENE Discover
 \citep{regev2017hca}.
 The term \texttt{endometriosis} was matched against title, description
 and keyword fields over the fifteen years preceding the search. A sixth
-archive, CNGBdb \citep{chen2020cngbdb}, was searched by hand.
+archive, CNGBdb \citep{chen2020cngbdb}, was searched by hand. Record selection
+is summarised in Extended Data Fig.~\ref{fig:prisma}.
 
 A candidate dataset had to satisfy three conditions to enter the corpus: the data
 had to be of or contain single-cell RNA sequencing information; the
@@ -218,7 +219,8 @@ $32 \times 44 = 1{,}408$, rather than the token width alone. For
 comparison, Gene2vec, which is the conventional off-the-shelf gene
 embedding, uses 512 dimensions. Effectively, a 32-dimensional token here
 is a slice of a gene space nearly three times wider than the standard one. The 
-derivation is given in Supplementary Note 1.
+derivation is given in Supplementary Note~6, Supplementary Tables~27 and 28
+and Supplementary Figs.~32 and 33.
 
 The reason it is an effective space and the reason it is able to encode 
 more information is the same: the block diagonal nature of the gene space 
@@ -665,7 +667,7 @@ the largest, and attention is quadratic in sequence length, so run as one
 block, 46.7\% of the attention arithmetic would be spent on padding.
 
 The groups are therefore sorted by size and run in four buckets, each padded
-only to its own largest member. This lowers the share spent on padding to
+only to its own largest member (Supplementary Table~29). This lowers the share spent on padding to
 12.9\%. Nothing about the model changes. Each
 group keeps its own weights and its own independence, and only the order they
 are executed in differs.
@@ -674,7 +676,7 @@ Training runs in bf16 for its efficiency. The negative-binomial loss is held
 in fp32 regardless, because it is not numerically safe at reduced precision.
 
 The remaining settings are AdamW \citep{loshchilov2019decoupled} at a learning rate of $10^{-3}$, weight decay
-$10^{-4}$, batch size 256 and gradient clipping at 1.0. The weight on the
+$10^{-4}$, batch size 256 and gradient clipping at 1.0 (Supplementary Table~30). The weight on the
 Kullback--Leibler term is ramped from zero to 0.5 over the first 5\% of
 steps, as above. The learning rate follows a cosine schedule whose period is set
 to a twenty-epoch horizon. That horizon fixes how long the learning rate stays 
