@@ -29,23 +29,42 @@ difficult. Scale is necessary for answering deeper questions about
 the disease and collation of data is necessary for achieving that scale.
 
 %[para about single cell being a good idea]
-Single-cell RNA sequencing (scRNA) suits this question for three reasons.
-Unlike bulk sequencing, which averages expression over every cell in a
-sample, it resolves the individual cell populations that the disease
-alters \citep{haque2017practical}. Unlike spatial transcriptomics, which
-remains costlier and lower in throughput \citep{moses2022museum}, it has
-been applied widely enough in endometriosis for independent cohorts to be
-pooled. And it is less exposed than the metabolome, which shifts with diet
-and time of day \citep{dallmann2012circadian}, to the circumstances of a
-single sampling day. scRNA studies find that lesions carry transcriptional
-programmes of their own \citep{fonseca2023endometriosis,tan2022singlecell}
-and that the endometrium of an affected person is already altered
-\citep{duempelmann2026endometrium,shih2022menstrual}. Immune involvement
-recurs across these studies \citep{huang2023immune,chen2022adenomyosis},
-and reference atlases now map the cell types of healthy endometrium across
-the cycle \citep{mareckova2024heca}. Evidently, single-cell transcriptomics has 
-shown promising results in cohorts of tens of donors 
-\citep{duempelmann2026endometrium,mareckova2024heca}.
+Endometriosis follows the menstrual cycle
+\citep{who2025endometriosis,garciaalonso2021endometrium}, in which the
+endometrium is shed and regenerated within days
+\citep{salamonsen2021endometrial}, so its measurement requires a similar
+fidelity. Metabolomic and proteomic profiles shift with diet, time of day
+and physical activity within hours
+\citep{dallmann2012circadian,depner2018mistimed,contrepois2020molecular},
+making daily changes harder to detect. The transcriptome follows both
+disease and cycle \citep{mareckova2024heca} and is read genome-wide. Within
+transcriptomics, bulk sequencing averages expression across cell types
+\citep{haque2017practical} and spatial methods remain too costly for cohort
+scale \citep{moses2022museum}, leaving single-cell RNA sequencing (scRNA) as
+the one readout with daily fidelity, cellular resolution and enough public
+data to pool. scRNA studies show that lesions carry transcriptional
+programmes of their own \citep{fonseca2023endometriosis,tan2022singlecell},
+that the endometrium of an affected person is already altered
+\citep{duempelmann2026endometrium,shih2022menstrual} and that immune
+involvement recurs \citep{huang2023immune,chen2022adenomyosis}, against a
+reference of a healthy cycle \citep{mareckova2024heca}. Single-cell
+transcriptomics has thus shown promise in groups of tens of donors
+\citep{duempelmann2026endometrium,mareckova2024heca} and has established
+methods for collating them.
+
+Collating scRNA studies requires correcting batch effects, the differences
+in sample handling, sequencing platform and other non-biological factors
+between studies \citep{luecken2022benchmarking}. Harmony iteratively
+clusters cells in principal-component space to mix batches
+\citep{korsunsky2019harmony}, and Scanorama stitches datasets together
+through mutual nearest neighbours \citep{hie2019scanorama}. scVI instead
+models raw counts with a variational autoencoder conditioned on batch
+\citep{lopez2018scvi}, and scANVI extends it with cell-type labels where they
+exist \citep{xu2021scanvi}. A benchmark of 68 method and preprocessing
+combinations found, however, that preprocessing alone can push a method to
+remove batch at the expense of biology \citep{luecken2022benchmarking}.
+Removing batch effects without removing biology therefore remains an open
+problem.
 
 %[para about foundation models not being enough]
 A foundation model, built for representation of large amounts of 
