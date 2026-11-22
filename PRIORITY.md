@@ -120,6 +120,7 @@ added, atlas last line, paras 5+6 merged; read-through items 1, 4, 5, 6,
 
 **Open, in order:**
 1. **Intro read-through DONE** (7 skipped by AW, 12A applied). Next: apply the change file to the guide's copy.
+   **22 Nov:** change file rebuilt as smallest edits (`assets/docx_tools/edits_doc.py`, guide's copy has Track Changes on, so no paragraph replacements). Fresh supplementary in `for_guide_2026-11-22/` (ELAJ_supplementary.docx with AW's styles, supplementary_figures renumbered 1-33). ED figures now numbered from 1.
 2. **Fig 1 quality** (guide). Also 213.5 mm deep vs NMI's 170 mm; 1a/b raster.
 3. Main text over the cap: Introduction now ~790 words; Results carries the cut.
 4. Regenerate Word files when AW asks (numbering in existing docx is stale).

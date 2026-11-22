@@ -40,9 +40,16 @@ if kind=="supp":
         n=bm.get(qn('w:name'))
         if n.startswith('sfig:'):
             tc=bm
-            while tc.tag!=qn('w:tc'): tc=tc.getparent()
-            caps=[p for p in tc.iter(qn('w:p')) if style(p)=='ImageCaption']
-            if not caps:
+            while tc is not None and tc.tag!=qn('w:tc'): tc=tc.getparent()
+            if tc is None:   # bookmark at body level, figure table follows it
+                tbl=bm.getnext()
+                while tbl is not None and tbl.tag!=qn('w:tbl'): tbl=tbl.getnext()
+                caps=[p for p in tbl.iter(qn('w:p')) if style(p)=='ImageCaption']
+                if not caps:
+                    nx=tbl.getnext(); caps=[nx] if nx is not None and style(nx)=='ImageCaption' else []
+            else:
+                caps=[p for p in tc.iter(qn('w:p')) if style(p)=='ImageCaption']
+            if not caps and tc is not None:
                 tbl=tc
                 while tbl.tag!=qn('w:tbl'): tbl=tbl.getparent()
                 nx=tbl.getnext(); caps=[nx] if style(nx)=='ImageCaption' else []
@@ -50,8 +57,14 @@ if kind=="supp":
             prefix(caps[0],f"Supplementary Fig. {lab[n]} | "); nf+=1
         elif n.startswith('stab:'):
             p=bm
-            while p.tag!=qn('w:p'): p=p.getparent()
-            assert style(p)=='TableCaption',n
+            while p is not None and p.tag!=qn('w:p'): p=p.getparent()
+            if p is None or style(p)!='TableCaption':   # bookmark outside the caption paragraph
+                q=bm
+                while q.getparent().tag!=qn('w:body'): q=q.getparent()
+                q=q.getnext()
+                while q is not None and not (q.tag==qn('w:p') and style(q)=='TableCaption'): q=q.getnext()
+                p=q
+            assert p is not None and style(p)=='TableCaption',n
             prefix(p,f"Supplementary Table {lab[n]} | "); nt+=1
 # equation numbers: wrap each display equation in a borderless 3-column table
 eqs=[v for k,v in sorted(((k,v) for k,v in lab.items() if k.startswith('eq:')), key=lambda kv:int(kv[1]))]
@@ -61,7 +74,8 @@ for om in b.iter(M+'oMathPara'):
     while p.tag!=qn('w:p'): p=p.getparent()
     paras.append(p)
 assert len(paras)==len(eqs),(len(paras),eqs)
-W=int(d.sections[0].page_width-d.sections[0].left_margin-d.sections[0].right_margin)
+sc=d.sections[0]
+W=int(sc.page_width-sc.left_margin-sc.right_margin) if sc.page_width is not None and sc.left_margin is not None else 5943600  # 6.5 in when pandoc writes no page size
 for p,num in zip(paras,eqs):
     t=d.add_table(rows=1,cols=3); T=t._tbl
     pr=T.tblPr
