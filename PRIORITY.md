@@ -102,6 +102,21 @@ scorecard has no empty cell.
 
 ---
 
+# ⓪⓪⓪⓪ GUIDE'S FINAL COMMENTS, 23 November — work ONE AT A TIME, AW reviews each
+
+| # | item | state |
+|---|---|---|
+| 1 | Key points for the guide (`submission/key_points.md`): dense one-page crib for talking to NMI | IN PROGRESS: first draft rejected as far too long |
+| 2a | SM *Pathway gene grouping* merges into main Methods *Pathway gene grouping* | todo |
+| 2b | SM *Severity* merges into the claims-checking Note (Note 3, N6-claims-axis) | todo |
+| 2c | SM *Size buckets* becomes its own Supplementary Note | todo |
+| 2d | SM *Hyperparameters* becomes its own Supplementary Note | todo |
+| 2e | SM *Decoding a latent direction* becomes its own Supplementary Note | todo |
+| 2f | SM *Label transfer* moves to main Methods | todo |
+| 2g | after 2a-2f: Supplementary Methods heading gone, pointers, numbering, citation order rechecked, docx regenerated when asked | todo |
+| 3 | GitHub: new repo on AW's personal GitHub carrying ALL history of axw1008; README/run instructions (what to run, how to see results). LAST | todo |
+| 4 | NMI Reporting Summary (`submission/reporting_summary.md`): AW reviews after 2 is done. Open: ethics statement missing from manuscript, software versions (HPC pip freeze), multiple-comparison sentence, sidedness, cell QC | waiting |
+
 # ⓪⓪⓪ STATE, 22 November — read this first
 
 **Mode:** working through the guide's 22 Nov comments in tex, recording
