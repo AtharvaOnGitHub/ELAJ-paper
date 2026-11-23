@@ -135,6 +135,11 @@ the flow** ("before foundation models" before foundation models exist).
 2. Rotated the page instead of the table; AW wanted a portrait page with
    the table read bottom-to-top.
 3. Edit scripts failed on line-broken anchors; always assert count == 1.
+5. (23 Nov) Wrote the key points with an invented one-liner and a "method
+   and evaluation" pitch, when THE STORY OF THE PAPER (below) settled AW's
+   line on 11 Nov and rejected every method-centred framing as a case-study
+   trap. **Anything that summarises the paper starts from that section,
+   verbatim.**
 4. After compaction I forgot the register and had to be told to re-read
    it. **After every compaction read REGISTER, CONTINUITY, PRIORITY ⓪⓪⓪
    and MEMORY before the first reply, and say that I have.**
