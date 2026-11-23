@@ -15,7 +15,7 @@ limited by donors.
   al., Nat. Methods 2025) says *"no one-size-fits-all protocol for atlas
   building exists"*. The paper also doesn't cover our case, where a biological
   variable looks a lot like a batch effect.
-- **Size.** Our model is 20 to 50 times smaller than the models we beat. 
+- **Size.** Our model is up to 50 times smaller than the foundation models we beat. 
 - **Biological inductive bias.** We make assumptions about the data that 
   others try to solve using more parameters and more data. The assumptions 
   are based in biology.
