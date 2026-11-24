@@ -106,7 +106,7 @@ scorecard has no empty cell.
 
 | # | item | state |
 |---|---|---|
-| 1 | Key points for the guide (`submission/key_points.md`): dense one-page crib for talking to NMI | IN PROGRESS: first draft rejected as far too long |
+| 1 | Key points for the guide (`submission/key_points.md`): dense one-page crib for talking to NMI | IN PROGRESS: cut, one-liner fixed from CONTINUITY, AW edited, spelling/grammar pass done, point 2 applied (`2c013df`). LEFT: the Why-NMI placeholder; local NMI pages hold only content-type definitions, so AW is fetching the aims & scope page (nature.com/natmachintell/aims) |
 | 2a | SM *Pathway gene grouping* merges into main Methods *Pathway gene grouping* | todo |
 | 2b | SM *Severity* merges into the claims-checking Note (Note 3, N6-claims-axis) | todo |
 | 2c | SM *Size buckets* becomes its own Supplementary Note | todo |
