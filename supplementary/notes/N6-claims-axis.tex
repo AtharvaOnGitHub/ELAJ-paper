@@ -28,7 +28,7 @@ the main Methods (\emph{Label transfer}), and its limits under
 \emph{Beyond two studies the cell families are predictions} in
 \ref{note:limitations}.
 
-\subsection{The ledger}
+\subsection{Ledger of published claims}
 
 Table~\ref{stab:ledger} lists every claim that bears on the disease, with
 the cohort it was made from, the test we applied and the outcome. We took
@@ -75,7 +75,7 @@ perivascular and mural cell findings in three cohorts & \texttt{duempelmann\_202
 \end{tabular}
 \end{table}
 
-\subsection{Does disease flatten the menstrual cycle? The latent}
+\subsection{Menstrual-cycle structure by disease status in the latent}
 
 The claim is that in controls the proportions of immune cells vary across
 the menstrual cycle and in endometriosis that variation disappears
@@ -116,7 +116,7 @@ the two groups and its permutation null.}}
 \input{tables/x3_difference}
 \end{table}
 
-\subsection{Does disease flatten the menstrual cycle? The proportions}
+\subsection{Menstrual-cycle variation in composition by disease status}
 
 The claim is about proportions and not about latent geometry, so our second
 test uses no model output. For each of 101 donors carrying a family label,
@@ -141,7 +141,7 @@ on immune composition}, 101 donors, study as a covariate.}
 \input{tables/x3b_interaction}
 \end{table}
 
-\subsection{Does composition differ between lesion and endometrium?}
+\subsection{Composition of lesion and eutopic endometrium}
 
 The claim is that perivascular, endothelial and immune cells form a larger
 share of lesions and stromal cells a smaller one
@@ -193,44 +193,50 @@ are not one of the four families and stay out of reach.}
 \end{figure}
 
 
-\subsection{Is severity a dose?}
+\subsection{Severity among patients}
 
-The claim is that endometriosis acts as a dose, with severe disease giving
-five times the differentially expressed genes of mild disease
-\citep{duempelmann2026endometrium}, from 60 donors. Two studies in the
-corpus record severity, and they record it in different vocabularies.
-\texttt{marecko\_2024} records the stage of the revised American Society for
-Reproductive Medicine (rASRM) classification \citep{asrm1997revised}, which
-scores the number, depth and adhesion of lesions found at surgery into
-stages I to IV, with controls coded 0. \texttt{duempelmann\_2026} grades each
-patient mild or severe and records controls separately.
+The claim is that severity acts as a dose, with severe disease giving five
+times the differentially expressed genes of mild disease
+\citep{duempelmann2026endometrium}, from 60 donors.
+Two studies in the corpus record how severe each patient's disease is, and
+they record it in different vocabularies. In \texttt{marecko\_2024},
+severity is the stage of the revised American Society for Reproductive
+Medicine (rASRM) classification \citep{asrm1997revised}, which scores the
+number, depth and adhesion of lesions found at surgery into stages I to
+IV, with controls coded 0. In \texttt{duempelmann\_2026}, each patient is
+graded mild or severe and controls are recorded separately. No other study
+in the corpus records severity.
 
-To test the claim across both studies, we placed the two vocabularies on one
-three-level scale. Controls from either study became \emph{control}. Stages
-I and II, which the rASRM classification names minimal and mild disease,
-joined the mild grade as \emph{mild}, and stages III and IV, moderate and
-severe disease, joined the severe grade as \emph{severe}. Each study
-supplies only one of the two fields, so no cell required the vocabularies to
-be reconciled against each other. The merged scale covers 641{,}024 cells
-from 118 donors: 61 controls, 29 patients with mild disease and 28 with
-severe disease. However, a contrast that includes controls is partly a test
-of disease status, which the latent separates (main text). We therefore
-tested the claim among patients only, which leaves 333{,}984 cells from 57
-patients. One implementation of the mapping serves every analysis and figure
-in the paper, and all three forms, merged with controls, merged among
-patients and each study's own vocabulary, are given per donor in
-Supplementary Data~3.
+We placed both vocabularies on one three-level scale. Controls from either
+study were assigned to \emph{control}. Stages I and II, which the rASRM
+classification names minimal and mild disease, were assigned to
+\emph{mild} together with the mild grade, and stages III and IV, moderate
+and severe disease, to \emph{severe} together with the severe grade. Each
+cell takes its value from one source field, because each study supplies
+only one of the two, so no cell required the vocabularies to be reconciled
+against each other. The merged scale covers 641{,}024 cells from 118
+donors: 61 controls, 29 patients with mild disease and 28 with severe
+disease.
 
-Neither readout recovers severity. In the latent, mild against severe
-reached a cross-donor agreement of 0.0744 and did not clear its permutation
-null, at $P = 0.129$ over 57 donors. In composition, we computed each
-family's share for the 51 patients with at least 200 cells and tested low
-against high severity after study, with 5{,}000 reassignments of severity
-among donors within study. No family clears its null, the nearest being
-endothelial at $P = 0.1624$ (Table~\ref{stab:severity-composition}).
-Overall, severity is not recoverable at this donor count in either readout.
-The source measured differential expression, a different quantity, so the
-result does not contradict it.
+A contrast that includes controls is partly a test of disease status,
+which the latent separates (main text). We therefore also used the
+same scale with controls removed, which leaves 333{,}984 cells from 57
+patients. A single implementation of the mapping is shared by all 
+analyses and figures in the paper, and all three forms are given per 
+donor in Supplementary Data~3. Overall, severity is assessed
+in three forms: merged with controls, merged among patients only, and in
+each study's own vocabulary.
+
+We tested the claim among patients on both readouts. In the latent,
+cross-donor agreement for mild against severe disease was 0.0744, short of
+its permutation null at $P = 0.129$ over 57 donors. In composition, each
+family's share was computed for the 51 patients with at least 200 cells and
+compared between low and high severity after study, with 5{,}000
+reassignments of severity among donors within study. No family differed,
+the closest being endothelial cells at $P = 0.1624$
+(Table~\ref{stab:severity-composition}). Severity is therefore not
+recoverable at this donor count in either readout. Neither readout is
+differential expression, the measure the source used.
 
 \begin{table}[t]
 \centering
@@ -247,7 +253,7 @@ study.}
 \input{tables/severity_composition}
 \end{table}
 
-\subsection{Where in the latent does the disease live?}
+\subsection{Disease direction within each cell family}
 
 The claim is that macrophages and decidualised stromal cells are the
 compartments most likely dysregulated in endometriosis, derived by
@@ -351,7 +357,7 @@ Supplementary Fig.~\ref{sfig:x12-auc-a} should be quoted alone.}
 \label{sfig:x12-auc-t}
 \end{figure}
 
-\subsection{Which genes does the immune direction move?}
+\subsection{Genes carried by the immune disease direction}
 
 To read the immune direction as genes, we decoded all 29{,}355 labelled
 immune cells with their own tissue, platform, study and library size,
@@ -438,7 +444,7 @@ same ranking, drawn the same way against the same list, returns none.}
 \label{sfig:x12-rank}
 \end{figure}
 
-\subsection{Does tissue separate cells within one family?}
+\subsection{Tissue site within a cell family}
 
 The claim is that the same cell type is transcriptionally different
 depending on the tissue it sits in \citep{fonseca2023endometriosis}.
@@ -468,7 +474,7 @@ tissue within each transferred family}, 262 donors.}
 \input{tables/x14_tissue}
 \end{table}
 
-\subsection{Do marker signatures reproduce across cohorts?}
+\subsection{Reproducibility of marker signatures across studies}
 
 The largest prior atlas of the endometrium states that earlier atlases lack
 reproducible marker gene signatures, consensus annotation, and even cycle
@@ -559,7 +565,7 @@ within an order of magnitude of its own null.}
 \label{sfig:x13}
 \end{figure}
 
-\subsection{What the axis settled}
+\subsection{Summary of the claims axis}
 
 Overall, of the twelve claims in the ledger we could test eight. One was
 supported at three times the donor count that produced it: composition

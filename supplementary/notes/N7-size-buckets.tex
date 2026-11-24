@@ -3,13 +3,8 @@
 % comment: no Supplementary Methods; NMI allows algorithm detail as a Note).
 % =====================================================================
 
-\section{Running the gene groups in size buckets}
+\section{Size bucketing of gene groups}
 \label{note:buckets}
-
-The main Methods (\emph{Optimisation}) states that the 44 gene groups are
-run in four size buckets. In this note we give why the groups are batched at
-all, how the division into buckets is chosen, and why bucketing leaves the
-model unchanged.
 
 Each gene group is read by its own transformer, with its own weights. At a
 token width of 32 every matrix product inside one of these transformers is
@@ -39,7 +34,7 @@ reported vocabulary the four buckets hold 9, 14, 13 and 8 groups, and the
 share of arithmetic spent on padding falls to 12.9\%. Each further bucket
 would remove less than the one before.
 
-\textbf{What bucketing does not change.} Bucketing changes the order in which groups are computed and nothing else.
+Bucketing changes the order in which groups are computed and nothing else.
 Each group keeps its own weights. Padded positions are masked as keys, so
 no gene attends to them, and they are never read as outputs, so the eight
 pooled summary statistics are computed over a group's real genes only. A
@@ -61,7 +56,3 @@ vocabulary, and checked against the partition the training run recorded.}
 \small
 \input{tables/buckets}
 \end{table}
-
-In summary, bucketing is a scheduling choice. It removes most of the
-arithmetic spent on padding and leaves every group's computation as it
-would be if the group ran alone.

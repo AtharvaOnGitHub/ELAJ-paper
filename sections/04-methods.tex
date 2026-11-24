@@ -211,35 +211,33 @@ to 5.72 million, a reduction of 97.6\%, and no data-losing assumptions
 have been made.
 
 Gene membership was taken from the Reactome 2022 and GO Biological Process
-2023 libraries distributed by Enrichr \citep{kuleshov2016enrichr}, and the
-parent--child structure from each hierarchy's own relation file, restricted
-to human pathways for Reactome. Both hierarchies were cut by one procedure
-that holds every group between 250 and 500 genes, bounds derived in
-Supplementary Note~6. Starting from the roots, any node above 500 genes is
-replaced by its children until none exceeds the ceiling. Genes annotated to
-a replaced node but to none of its children are kept as a residual group of
-that node, so that nothing is lost in the descent. Every gene then goes to
-the smallest node that contains it, since both hierarchies allow several
-parents, with ties broken by node identifier so that every run gives the
-same result. Finally, groups below the floor are merged, smallest first,
-into the partner with which they share the most specific common ancestor,
-and the smaller of two equally related partners is preferred. A merged group therefore stays one branch of the hierarchy and is named
-after that ancestor.
+2023 libraries distributed by Enrichr \citep{kuleshov2016enrichr}, and each
+hierarchy from its own relation file, restricted to human pathways for
+Reactome. Both hierarchies were cut with the same procedure, which holds
+every group between 250 and 500 genes (Supplementary Note~6). Starting from
+the roots, any node with more than 500 genes was replaced by its children
+until no node exceeded that ceiling. Genes annotated to a replaced node but
+to none of its children were kept as a residual group of that node. Each
+gene was then assigned to the smallest node containing it, since both
+hierarchies allow a gene several parents, with ties broken by node
+identifier. Finally, groups below 250 genes were merged, smallest first,
+into the partner sharing their most specific common ancestor, preferring
+the smaller of two equally related partners. Each merged group is therefore
+one branch of the hierarchy and is named after that ancestor.
 
-The ceiling takes precedence over the floor. It bounds the memory of
-attention, and because groups are run in buckets padded to their largest
+No merge was allowed to exceed 500 genes. The ceiling bounds the memory of
+attention, and because groups run in size buckets padded to their largest
 member (\emph{Optimisation}), one oversized group is paid for by every group
-in its bucket. No merge that would exceed 500 genes is made, and one group
-of 247 genes is left below the floor as a result.
+in its bucket. One group of 247 genes is left below the floor as a result.
 
-Reactome was cut first, over the 30{,}962 genes of the corpus, and assigned
-10{,}114 genes to 28 groups. It takes precedence because it is manually
-curated and organised by pathway, whereas GO is broader and its annotation
-is a graph rather than a tree. GO was then cut over the genes Reactome had
-not assigned, adding 5{,}382 genes in 16 groups. The result is the
-vocabulary of 15{,}496 genes in 44 groups, of 247 to 493 genes each with a
-median of 342. Every gene belongs to exactly one group (Supplementary
-Data~5), and the grouping was fixed before training and never adjusted.
+Reactome was cut first, over all 30{,}962 genes of the corpus, and assigned
+10{,}114 genes to 28 groups. It was given precedence because it is manually
+curated and organised by pathway, whereas GO is broader and structured as a
+graph rather than a tree. GO was then cut over the genes Reactome had not
+assigned, adding 5{,}382 genes in 16 groups. The resulting vocabulary has
+15{,}496 genes in 44 groups of 247 to 493 genes, median 342, with every gene
+in exactly one group (Supplementary Data~5). The grouping was fixed before
+training and never adjusted.
 
 Apart from parameter efficiency, gene grouping also increases the effective
 subspace in which gene identity lives. Each group is processed independently, and
@@ -694,37 +692,33 @@ cell type, so cell family is not a withheld label for it.
 
 Only two studies annotated their own cells. \texttt{duempelmann\_2026} and
 \texttt{marecko\_2024} supply a cell family for 640{,}606 cells from 118
-donors, and the other nine studies supply none. To compare cell families
+donors. To compare cell families
 across the whole corpus, each of the remaining 937{,}122 cells was given the
 family held by the majority of its 25 nearest annotated cells, by Euclidean
-distance in the latent of the reported model, found with scikit-learn
-\citep{pedregosa2011scikit} and with ties broken in a fixed order. Annotated cells keep their own label.
-The nine target studies contribute no annotated cells, so every transfer
+distance in the latent of the reported model and with ties broken in a 
+fixed order. The nine target studies contribute no annotated cells, so every transfer
 crosses both a donor and a study by construction.
 
 The transfer uses the four families the two studies share: stromal,
-epithelial, endothelial and immune. Below that level they annotate 45 and 63
-cell types in vocabularies that do not agree with each other, and nothing in
-the corpus could validate a transfer at that resolution. Each assignment
-also records the share of the 25 neighbours that voted for the winning
+epithelial, endothelial and immune. Finer annotation was available in 
+each study separately but the labels could not be combined. Each assignment
+records the share of the 25 neighbours that voted for the winning
 family, their mean distance, and how many donors and studies they came from,
 so that any downstream analysis can restrict itself to confident calls.
 
-Two tests had to pass before any label was written. First, labels were
-transferred between the two annotated studies in each direction, with
-60{,}000 cells of one as the reference and 60{,}000 of the other as the test
-set, and a balanced accuracy above 0.90 was required. Balanced accuracy is
-the measure because the two studies' compositions differ widely, so
-inheriting the reference's majority family alone would score 0.8805 in one
-direction and 0.5252 in the other. Transfer from \texttt{marecko\_2024} to
-\texttt{duempelmann\_2026} reached an accuracy of 0.9862 and a balanced
-accuracy of 0.9596, and the reverse reached 0.9845 and 0.9640. Second,
-labels were transferred into \texttt{li\_2025}, a follicular-fluid study
-whose own annotation uses a different vocabulary, and its immune cells had
-to be recovered as immune. They were, at 0.9966. The same test showed the
-procedure's failure mode: granulosa cells, which have no counterpart in
-endometrium, were absorbed into an existing family and not flagged as
-unfamiliar (Supplementary Note~5).
+The transfer was validated in two ways before any label was written. The
+first tests whether a label survives the move from one study to another.
+Each annotated study was used as the reference for 60{,}000 cells of the
+other, and a balanced accuracy above 0.90 was required. Labels from
+\texttt{marecko\_2024} recovered the annotation of \texttt{duempelmann\_2026}
+at a balanced accuracy of 0.9596, and the reverse at 0.9640, with accuracies
+of 0.9862 and 0.9845. The second tests a tissue absent from both references.
+\texttt{li\_2025} profiles follicular fluid and annotates its cells in its
+own vocabulary, so its immune cells were required to be called immune. They
+were, at an accuracy of 0.9966. Its granulosa cells have no endometrial
+counterpart and were assigned to an existing family without being flagged
+(Supplementary Note~5).
+
 
 \subsection*{Optimisation}
 

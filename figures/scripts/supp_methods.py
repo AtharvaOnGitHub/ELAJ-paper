@@ -127,12 +127,8 @@ def main() -> None:
         ("Decoder", None),
         ("Width $d_{\\mathrm{dec}}$", f(M["d_dec"])),
         ("Tissue, platform, study embeddings", f"{M['d_tissue']}, {M['d_platform']}, {M['d_study']} dimensions"),
-        # THE VALUE IN FORCE, NOT THE STORED ONE. run_config records 0.25 under
-        # model.drain, but EndoFoundationModel applies it only when the drain is
-        # enabled, and it was not: train_blanked_covariates is 0.0 every epoch.
         ("Disease embedding", "none" if M["d_disease"] == 0 else f(M["d_disease"])),
-        ("Covariates zeroed per step", f"probability {f(M['drain']['blank_covariates_p'])}"
-         if M["drain"]["enabled"] else "never"),
+        # Covariate withholding row removed, AW 24 Nov (it is never in force).
         ("Objective", None),
         ("Reconstruction weight $w_{\\mathrm{nb}}$", f(M["loss"]["w_nb"])),
         ("KL weight $w_{\\mathrm{kl}}$", f(M["loss"]["w_kl_gauss"])),

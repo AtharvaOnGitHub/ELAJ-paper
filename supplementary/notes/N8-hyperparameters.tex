@@ -3,16 +3,16 @@
 % comment: no Supplementary Methods; NMI allows algorithm detail as a Note).
 % =====================================================================
 
-\section{Every setting of the reported model}
+\section{Hyperparameters}
 \label{note:hyperparameters}
 
-Table~\ref{stab:hyperparameters} lists every setting of the model reported in
-the main text. Two of them, the information cost $w_{\mathrm{kl}}$ and the
-adversarial weight $\lambda_{\mathrm{dab}}$, were varied systematically, and
-their effects on the frontier are the subject of the main text and
-\ref{note:frontier}. The rest were set during development, and no automated
-hyperparameter search was used. In this note we give the reason for each
-setting that was chosen against a measurement.
+Supplementary Table~\ref{stab:hyperparameters} lists every setting of the
+model reported in the main text. The settings fall into two kinds:
+varied for the frontier and set during development.
+Information cost ($w_{\mathrm{kl}}$) and adversarial weight ($\lambda_{\mathrm{dab}}$) were varied
+systematically for their effects on the frontier and are detailed in 
+the main paper. The rest were set during development, some of which are 
+detailed below. No automated hyperparameter search was used.
 
 \textbf{Input.} On training steps, each cell's
 measured genes were hidden from the encoder at random until 12{,}500
@@ -22,13 +22,6 @@ measured genes and a study cannot be recognised from how many genes it
 measured. The decoder does not predict unmeasured genes, which are set
 through the DNS sentinel. The 
 token width and the 44 groups follow from the sizing argument of \ref{note:grouping}.
-
-\textbf{Covariates are never withheld.} The run's recorded configuration
-carries a probability of 0.25 for withholding the decoder's covariates on a
-training step. That setting takes effect only together with a latent
-component that no configuration in this paper uses, and the training metrics
-confirm that no step withheld them. The table therefore gives the value in
-force.
 
 \textbf{Objective weights.} Each term other than reconstruction was
 weighted so that its gradient on the latent stays below that of
@@ -61,12 +54,8 @@ differs from it only in the settings named where it is introduced
 (\ref{note:frontier} and~\ref{note:ablations}).
 
 \textbf{Data.} Donors that one source deposited under two identifiers were
-grouped before splitting (main Methods, \emph{Data collection}). Two deposits were excluded from training and
+grouped before splitting. Two deposits were excluded from training and
 evaluation: one of chorionic villus and decidua, and one of organoids.
-
-Overall, every setting in the table is the value in force during the
-reported run, read from its recorded configuration and log, and every
-other configuration in the paper differs from it only where stated.
 
 \begin{table}[t]
 \centering
