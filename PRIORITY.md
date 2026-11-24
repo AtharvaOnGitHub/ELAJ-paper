@@ -115,7 +115,8 @@ scorecard has no empty cell.
 | 2f | SM *Label transfer* moves to main Methods | todo |
 | 2g | after 2a-2f: Supplementary Methods heading gone, pointers, numbering, citation order rechecked, docx regenerated when asked | todo |
 | 3 | GitHub: new repo on AW's personal GitHub carrying ALL history of axw1008; README/run instructions (what to run, how to see results). LAST | todo |
-| 4 | NMI Reporting Summary (`submission/reporting_summary.md`): AW reviews after 2 is done. Open: ethics statement missing from manuscript, software versions (HPC pip freeze), multiple-comparison sentence, sidedness, cell QC | waiting |
+| 3b | NMI **Software submission checklist** (Editorial Policies: required when new code is central to the claims). Do with item 3 | todo |
+| 4 | NMI Reporting Summary (`submission/reporting_summary.md`): AW reviews after 2 is done. Open: ethics statement missing from manuscript, software versions (HPC pip freeze), multiple-comparison sentence, sidedness, cell QC. Also check the Nature Portfolio AI policy (linked from NMI Editorial Policies) on declaring LLM use | waiting |
 
 # ⓪⓪⓪ STATE, 22 November — read this first
 
