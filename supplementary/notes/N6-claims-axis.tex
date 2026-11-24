@@ -23,8 +23,9 @@ another's, because no two share donors or a cell vocabulary. Our claims
 axis asks which of those claims the pooled corpus can settle, and settles
 the ones it can. In this note we give the ledger of claims, then each test
 as a protocol with its full table, in the order the tests depend on one
-another. The label transfer that every composition test rests on is set out
-under \emph{Beyond two studies the cell families are predictions} in
+another. The label transfer that every composition test rests on is described in
+the main Methods (\emph{Label transfer}), and its limits under
+\emph{Beyond two studies the cell families are predictions} in
 \ref{note:limitations}.
 
 \subsection{The ledger}
@@ -191,6 +192,46 @@ are not one of the four families and stay out of reach.}
 \label{sfig:comp-ee}
 \end{figure}
 
+
+\subsection{Is severity a dose?}
+
+The claim is that endometriosis acts as a dose, with severe disease giving
+five times the differentially expressed genes of mild disease
+\citep{duempelmann2026endometrium}, from 60 donors. Two studies in the
+corpus record severity, and they record it in different vocabularies.
+\texttt{marecko\_2024} records the stage of the revised American Society for
+Reproductive Medicine (rASRM) classification \citep{asrm1997revised}, which
+scores the number, depth and adhesion of lesions found at surgery into
+stages I to IV, with controls coded 0. \texttt{duempelmann\_2026} grades each
+patient mild or severe and records controls separately.
+
+To test the claim across both studies, we placed the two vocabularies on one
+three-level scale. Controls from either study became \emph{control}. Stages
+I and II, which the rASRM classification names minimal and mild disease,
+joined the mild grade as \emph{mild}, and stages III and IV, moderate and
+severe disease, joined the severe grade as \emph{severe}. Each study
+supplies only one of the two fields, so no cell required the vocabularies to
+be reconciled against each other. The merged scale covers 641{,}024 cells
+from 118 donors: 61 controls, 29 patients with mild disease and 28 with
+severe disease. However, a contrast that includes controls is partly a test
+of disease status, which the latent separates (main text). We therefore
+tested the claim among patients only, which leaves 333{,}984 cells from 57
+patients. One implementation of the mapping serves every analysis and figure
+in the paper, and all three forms, merged with controls, merged among
+patients and each study's own vocabulary, are given per donor in
+Supplementary Data~3.
+
+Neither readout recovers severity. In the latent, mild against severe
+reached a cross-donor agreement of 0.0744 and did not clear its permutation
+null, at $P = 0.129$ over 57 donors. In composition, we computed each
+family's share for the 51 patients with at least 200 cells and tested low
+against high severity after study, with 5{,}000 reassignments of severity
+among donors within study. No family clears its null, the nearest being
+endothelial at $P = 0.1624$ (Table~\ref{stab:severity-composition}).
+Overall, severity is not recoverable at this donor count in either readout.
+The source measured differential expression, a different quantity, so the
+result does not contradict it.
+
 \begin{table}[t]
 \centering
 \caption[Composition against severity]{\textbf{Cell-family composition does
@@ -315,7 +356,7 @@ Supplementary Fig.~\ref{sfig:x12-auc-a} should be quoted alone.}
 To read the immune direction as genes, we decoded all 29{,}355 labelled
 immune cells with their own tissue, platform, study and library size,
 moved each cell's latent along the direction, and recorded the change in
-every decoded gene (Supplementary Methods). The real covariates are
+every decoded gene (\ref{note:decoding}). The real covariates are
 necessary: the decoder scales each cell's whole profile by one learned
 number that depends on them, and with the covariates set to zero that
 number changes sign for most cells and the decoded profile inverts. We

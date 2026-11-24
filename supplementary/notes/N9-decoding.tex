@@ -1,0 +1,58 @@
+% =====================================================================
+% Note 9, decoding a latent direction. Moved out of the Supplementary Methods, 24 November (guide's
+% comment: no Supplementary Methods; NMI allows algorithm detail as a Note).
+% =====================================================================
+
+\section{Decoding a latent direction}
+\label{note:decoding}
+
+The decoder turns a latent position into expected counts, so moving a cell
+along a latent direction and decoding it again shows which genes the
+direction carries. \ref{note:claims} uses this to read the immune disease
+direction as genes. In this note we give the procedure, the two checks that
+had to pass before any ranking, and the test of the ranking against measured
+counts.
+
+We decoded the 29{,}355 immune cells that the two
+annotated studies label as lymphoid or myeloid, from control or eutopic
+endometrium, from every split. Each cell was loaded with its own tissue,
+platform, study and library size and encoded by the selected checkpoint.
+Its latent was then moved one unit along the direction and decoded through
+the same covariates, and the change in log expected count was averaged per
+gene over the cells whose study measured it. A half-unit step gave the same
+ranking.
+
+The covariates must be the cell's own. The decoder multiplies each cell's
+predicted profile by one number computed from the latent and the
+covariates together. With every cell's real covariates that number was
+negative, and with the covariates set to zero it changed sign for most
+cells, which inverts every gene's relative level. Two checks therefore
+preceded any ranking. First, every cell's encoded latent had to match the
+stored latent to within 0.05, which confirms the checkpoint and the row
+mapping. Second, six lymphoid and six myeloid markers had to decode the
+right way round in labelled cells, at least five of six on each side, and
+all twelve did.
+
+The direction was the study-centred control-minus-patient difference of
+donor means used throughout \ref{note:claims}, without removing its
+component along the cell-family axes. Removing that component sent the
+leading genes to transcripts that immune cells do not express. Genes that
+immune cells express below 0.1 per 10{,}000 reads were excluded from the
+ranking, because a decoded change on a gene the cells barely express has
+no measured counterpart. Both choices were made after the ranking was seen
+and before the measured-count test was run.
+
+\textbf{Measured-count test.} The rule was fixed before the data existed.
+For each donor with at least 50 immune cells, their raw counts were summed and scaled
+as $\log(1 + 10^{4}\,x/n)$. In studies other than the two annotated ones,
+immune cells were those with a measured PTPRC count above zero, a label
+that never passes through the latent. For each of the fifteen genes
+leading the ranking, the patient-minus-control difference was averaged
+over studies, weighted by donors, and tested by permuting labels within
+study 10{,}000 times. The claim required at least 11 of 15 genes higher in
+patients and a sign-test $P < 0.05$, in held-out studies with at least
+three patients and three controls. \texttt{li\_2025} was excluded because
+its endometrium samples are follicular fluid (\ref{note:limitations}).
+Overall, the decoding reads a direction through the model's own decoder
+under the conditions it was trained on, and the test checks the result
+against counts the model never produced.

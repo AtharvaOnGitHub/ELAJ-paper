@@ -1,0 +1,80 @@
+% =====================================================================
+% Note 8, hyperparameters. Moved out of the Supplementary Methods, 24 November (guide's
+% comment: no Supplementary Methods; NMI allows algorithm detail as a Note).
+% =====================================================================
+
+\section{Every setting of the reported model}
+\label{note:hyperparameters}
+
+Table~\ref{stab:hyperparameters} lists every setting of the model reported in
+the main text. Two of them, the information cost $w_{\mathrm{kl}}$ and the
+adversarial weight $\lambda_{\mathrm{dab}}$, were varied systematically, and
+their effects on the frontier are the subject of the main text and
+\ref{note:frontier}. The rest were set during development, and no automated
+hyperparameter search was used. In this note we give the reason for each
+setting that was chosen against a measurement.
+
+\textbf{Input.} On training steps, each cell's
+measured genes were hidden from the encoder at random until 12{,}500
+remained. This number lies just under the smallest panel in the corpus,
+13{,}144 genes, so every cell shows the encoder the same number of
+measured genes and a study cannot be recognised from how many genes it
+measured. The decoder does not predict unmeasured genes, which are set
+through the DNS sentinel. The 
+token width and the 44 groups follow from the sizing argument of \ref{note:grouping}.
+
+\textbf{Covariates are never withheld.} The run's recorded configuration
+carries a probability of 0.25 for withholding the decoder's covariates on a
+training step. That setting takes effect only together with a latent
+component that no configuration in this paper uses, and the training metrics
+confirm that no step withheld them. The table therefore gives the value in
+force.
+
+\textbf{Objective weights.} Each term other than reconstruction was
+weighted so that its gradient on the latent stays below that of
+reconstruction. We measured these gradients after the first epoch and
+adjusted the weights against them, which reduced the menstrual-phase
+classifier's weight from 500 to 40 and set the cell-similarity weight.
+
+The adversary's capacity was set by its failure mode. An earlier
+single-layer adversary of 64 units was beaten by the encoder without the
+studies becoming inseparable. Its training loss fell to 0.21, against a
+chance level of $\ln 11 = 2.40$, while the cells' nearest neighbours in the
+latent still came from their own study 88\% of the time after balancing
+for study size. The encoder had learned to fool that adversary, not to
+remove study.
+
+\textbf{Why the information-cost ramp is short.} By the end of the first
+epoch the latent already held about 44 nats per cell in development. A ramp
+that ends later prices information only after it has been stored, and a
+cost cannot then remove it. The free-bits allowance never constrained the
+latent, which stayed far above it throughout development.
+
+\textbf{Learning rate and checkpoint selection.} The learning rate was
+raised from an initial $3 \times 10^{-4}$ during development. The
+checkpoint is selected on reconstruction rather than on a biological label
+because the validation donors are uninformative about menstrual phase:
+chance agreement on phase is 0.664 on the validation split, against 0.380
+on the validation and test splits together. Every metric in the paper is
+computed on the one selected checkpoint, and every other configuration
+differs from it only in the settings named where it is introduced
+(\ref{note:frontier} and~\ref{note:ablations}).
+
+\textbf{Data.} Donors that one source deposited under two identifiers were
+grouped before splitting (main Methods, \emph{Data collection}). Two deposits were excluded from training and
+evaluation: one of chorionic villus and decidua, and one of organoids.
+
+Overall, every setting in the table is the value in force during the
+reported run, read from its recorded configuration and log, and every
+other configuration in the paper differs from it only where stated.
+
+\begin{table}[t]
+\centering
+\caption[Hyperparameters]{\textbf{Every setting of the reported model.}
+Generated from the training run's own recorded configuration and log. KL,
+Kullback--Leibler divergence. The adversary's gradient is reversed and
+scaled by $\lambda_{\mathrm{dab}}$ on its way to the encoder.}
+\label{stab:hyperparameters}
+\small
+\input{tables/hyperparameters}
+\end{table}

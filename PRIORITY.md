@@ -107,12 +107,12 @@ scorecard has no empty cell.
 | # | item | state |
 |---|---|---|
 | 1 | Key points for the guide (`submission/key_points.md`) | DONE 24 Nov: healthcare point added; Article-vs-Analysis point declined by AW |
-| 2a | SM *Pathway gene grouping* merges into main Methods *Pathway gene grouping* | todo |
-| 2b | SM *Severity* merges into the claims-checking Note (Note 3, N6-claims-axis) | todo |
-| 2c | SM *Size buckets* becomes its own Supplementary Note | todo |
-| 2d | SM *Hyperparameters* becomes its own Supplementary Note | todo |
-| 2e | SM *Decoding a latent direction* becomes its own Supplementary Note | todo |
-| 2f | SM *Label transfer* moves to main Methods | todo |
+| 2a | SM *Pathway gene grouping* merges into main Methods *Pathway gene grouping* | DRAFTED 24 Nov, awaiting AW's review |
+| 2b | SM *Severity* merges into the claims-checking Note (Note 3, N6-claims-axis) | DRAFTED 24 Nov, awaiting AW's review |
+| 2c | SM *Size buckets* becomes its own Supplementary Note | DRAFTED 24 Nov, awaiting AW's review |
+| 2d | SM *Hyperparameters* becomes its own Supplementary Note | DRAFTED 24 Nov, awaiting AW's review |
+| 2e | SM *Decoding a latent direction* becomes its own Supplementary Note | DRAFTED 24 Nov, awaiting AW's review |
+| 2f | SM *Label transfer* moves to main Methods | DRAFTED 24 Nov, awaiting AW's review |
 | 2g | after 2a-2f: Supplementary Methods heading gone, pointers, numbering, citation order rechecked, docx regenerated when asked | todo |
 | 3 | GitHub: new repo on AW's personal GitHub carrying ALL history of axw1008; README/run instructions (what to run, how to see results). LAST | todo |
 | 3b | NMI **Software submission checklist** (Editorial Policies: required when new code is central to the claims). Do with item 3 | todo |

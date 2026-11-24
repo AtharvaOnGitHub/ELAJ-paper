@@ -207,8 +207,39 @@ and interactions between groups of genes would be more relevant than
 between individual genes belonging to different groups. Following this idea, 
 attention is first run within each group and attention across groups is 
 run afterwards. Consequently, attention work falls from 240 million pairs 
-to 5.72 million, a reduction of 97.6\%, and no data-losing assumptions 
+to 5.72 million, a reduction of 97.6\%, and no data-losing assumptions
 have been made.
+
+Gene membership was taken from the Reactome 2022 and GO Biological Process
+2023 libraries distributed by Enrichr \citep{kuleshov2016enrichr}, and the
+parent--child structure from each hierarchy's own relation file, restricted
+to human pathways for Reactome. Both hierarchies were cut by one procedure
+that holds every group between 250 and 500 genes, bounds derived in
+Supplementary Note~6. Starting from the roots, any node above 500 genes is
+replaced by its children until none exceeds the ceiling. Genes annotated to
+a replaced node but to none of its children are kept as a residual group of
+that node, so that nothing is lost in the descent. Every gene then goes to
+the smallest node that contains it, since both hierarchies allow several
+parents, with ties broken by node identifier so that every run gives the
+same result. Finally, groups below the floor are merged, smallest first,
+into the partner with which they share the most specific common ancestor,
+and the smaller of two equally related partners is preferred. A merged group therefore stays one branch of the hierarchy and is named
+after that ancestor.
+
+The ceiling takes precedence over the floor. It bounds the memory of
+attention, and because groups are run in buckets padded to their largest
+member (\emph{Optimisation}), one oversized group is paid for by every group
+in its bucket. No merge that would exceed 500 genes is made, and one group
+of 247 genes is left below the floor as a result.
+
+Reactome was cut first, over the 30{,}962 genes of the corpus, and assigned
+10{,}114 genes to 28 groups. It takes precedence because it is manually
+curated and organised by pathway, whereas GO is broader and its annotation
+is a graph rather than a tree. GO was then cut over the genes Reactome had
+not assigned, adding 5{,}382 genes in 16 groups. The result is the
+vocabulary of 15{,}496 genes in 44 groups, of 247 to 493 genes each with a
+median of 342. Every gene belongs to exactly one group (Supplementary
+Data~5), and the grouping was fixed before training and never adjusted.
 
 Apart from parameter efficiency, gene grouping also increases the effective
 subspace in which gene identity lives. Each group is processed independently, and
@@ -443,7 +474,7 @@ traces the frontier reported in this paper.
 As with any adversarial network, the discriminator's capacity is a sensitive 
 hyperparameter. A strong discriminator prevents the model from learning 
 anything while a weaker one is easily fooled by the encoder. The failure 
-mode of a weaker discriminator is described in the Supplementary Methods. \elaj uses a 
+mode of a weaker discriminator is described in Supplementary Note~8. \elaj uses a 
 discriminator with three linear layers of width 256, with a leaky rectifier, no
 dropout, and layer normalisation after each layer.
 
@@ -659,6 +690,42 @@ and it is the setting in which these models have been evaluated directly
 \citep{kedzierska2025zeroshot}. SCimilarity is pretrained with supervision on
 cell type, so cell family is not a withheld label for it.
 
+\subsection*{Label transfer}
+
+Only two studies annotated their own cells. \texttt{duempelmann\_2026} and
+\texttt{marecko\_2024} supply a cell family for 640{,}606 cells from 118
+donors, and the other nine studies supply none. To compare cell families
+across the whole corpus, each of the remaining 937{,}122 cells was given the
+family held by the majority of its 25 nearest annotated cells, by Euclidean
+distance in the latent of the reported model, found with scikit-learn
+\citep{pedregosa2011scikit} and with ties broken in a fixed order. Annotated cells keep their own label.
+The nine target studies contribute no annotated cells, so every transfer
+crosses both a donor and a study by construction.
+
+The transfer uses the four families the two studies share: stromal,
+epithelial, endothelial and immune. Below that level they annotate 45 and 63
+cell types in vocabularies that do not agree with each other, and nothing in
+the corpus could validate a transfer at that resolution. Each assignment
+also records the share of the 25 neighbours that voted for the winning
+family, their mean distance, and how many donors and studies they came from,
+so that any downstream analysis can restrict itself to confident calls.
+
+Two tests had to pass before any label was written. First, labels were
+transferred between the two annotated studies in each direction, with
+60{,}000 cells of one as the reference and 60{,}000 of the other as the test
+set, and a balanced accuracy above 0.90 was required. Balanced accuracy is
+the measure because the two studies' compositions differ widely, so
+inheriting the reference's majority family alone would score 0.8805 in one
+direction and 0.5252 in the other. Transfer from \texttt{marecko\_2024} to
+\texttt{duempelmann\_2026} reached an accuracy of 0.9862 and a balanced
+accuracy of 0.9596, and the reverse reached 0.9845 and 0.9640. Second,
+labels were transferred into \texttt{li\_2025}, a follicular-fluid study
+whose own annotation uses a different vocabulary, and its immune cells had
+to be recovered as immune. They were, at 0.9966. The same test showed the
+procedure's failure mode: granulosa cells, which have no counterpart in
+endometrium, were absorbed into an existing family and not flagged as
+unfamiliar (Supplementary Note~5).
+
 \subsection*{Optimisation}
 
 The 44 gene groups are not the same size. Real counts run from 247 to 493
@@ -667,7 +734,7 @@ the largest, and attention is quadratic in sequence length, so run as one
 block, 46.7\% of the attention arithmetic would be spent on padding.
 
 The groups are therefore sorted by size and run in four buckets, each padded
-only to its own largest member (Supplementary Table~29). This lowers the share spent on padding to
+only to its own largest member (Supplementary Note~7, Supplementary Table~29). This lowers the share spent on padding to
 12.9\%. Nothing about the model changes. Each
 group keeps its own weights and its own independence, and only the order they
 are executed in differs.
@@ -676,7 +743,7 @@ Training runs in bf16 for its efficiency. The negative-binomial loss is held
 in fp32 regardless, because it is not numerically safe at reduced precision.
 
 The remaining settings are AdamW \citep{loshchilov2019decoupled} at a learning rate of $10^{-3}$, weight decay
-$10^{-4}$, batch size 256 and gradient clipping at 1.0 (Supplementary Table~30). The weight on the
+$10^{-4}$, batch size 256 and gradient clipping at 1.0 (Supplementary Note~8, Supplementary Table~30). The weight on the
 Kullback--Leibler term is ramped from zero to 0.5 over the first 5\% of
 steps, as above. The learning rate follows a cosine schedule whose period is set
 to a twenty-epoch horizon. That horizon fixes how long the learning rate stays 
