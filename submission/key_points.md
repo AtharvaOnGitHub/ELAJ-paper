@@ -27,7 +27,10 @@ limited by donors.
 - **Methods is unbounded.** The architecture and how it works are the
   contribution, and Methods is the place to explain it. NMI does not restrict
   the Methods section, so NMI is a good fit.
--[Add 1-2 points based on what NMI says they want/look for in a paper]
+- **Machine learning for healthcare.** NMI's aims cover "the significant
+  impact that these fields have on other scientific disciplines", naming
+  "scientific discovery, healthcare, medical diagnostics" among them. ELAJ is
+  a deep-learning model whose use case is a disease atlas.
 
 **Novelty**
 - **Every public endometriosis single-cell study in one atlas**: 1.58M cells,
