@@ -50,6 +50,25 @@ the fix, and move on.
 
 ---
 
+## 23-24 November: the guide's final comments (PRIORITY ⓪⓪⓪⓪)
+
+* Key points DONE (`7f40003`): AW's line verbatim, Why NMI = ML is the
+  contribution + Methods unbounded + ML for healthcare (NMI aims page).
+  AW declined the Article-vs-Analysis point.
+* NMI pages saved 24 Nov: Aims & Scope, Journal Information, Editorial
+  Policies (`Nature_websites/_txt/`). Editorial Policies adds the Software
+  submission checklist (PRIORITY 3b) and an AI-use policy (check at item 4).
+* **NMI numbers every supplementary item sequentially EXCEPT Notes**, so a
+  Note may be cited out of order; tables and figures may not.
+* 2a-f drafted in one go at AW's request (`d0056c0`), for his review:
+  grouping cut procedure merged into Methods *Pathway gene grouping*;
+  *Label transfer* is a new Methods subsection after *Comparison methods*;
+  severity is a new Note 3 subsection *Is severity a dose?* carrying Table
+  12; Notes 7 (size buckets), 8 (every setting), 9 (decoding).
+  supplementary_methods.tex deleted. Table numbers unchanged. AW's own
+  Methods text untouched apart from pointers. AW's instruction for this:
+  "be careful about register and tone ... don't just copy paste, integrate".
+
 ## 19-22 November: the guide package, the guide's comments, the Introduction rebuilt
 
 **Read PRIORITY ⓪⓪⓪ first for state.** This section is rulings, register and mistakes.
