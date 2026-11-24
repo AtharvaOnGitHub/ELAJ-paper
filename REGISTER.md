@@ -515,3 +515,11 @@ When a passage changes section, AW's sentences go with it unchanged. The
 only new words are the joins it needs to sit in its new place. No meta
 opener ("In this note we give...") and no summary closer ("In summary,
 X is a scheduling choice") wrapped around moved material.
+
+## 26. Figures for intuition, tables for numbers, prose for sense
+
+AW's rubric (CONTINUITY, 17 Nov, restated 24 Nov): a figure gives
+intuition, a table holds numbers, prose observes, infers and makes sense
+of them. **A distinction between two numbers is said in prose, never
+written into a table row.** I proposed annotating a table row to explain
+why 0.9969 and 0.9966 differ; the fix was one sentence in the Note.
