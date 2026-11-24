@@ -495,3 +495,23 @@ casual: "remodels", "huge". fine: "fidelity". reserved: "cohort" (groups of
 datasets). brag: "not a sample of the field; it is the field". AI-sounding:
 tidy aphoristic closers that restate a cited fact in my own image ("a
 tissue that cycles as fast as..."); keep his claim, compress it.
+
+---
+
+# Moving text between sections. Learned 24 November
+
+## 24. Supplementary headings are topics, never questions
+
+TIGON: "Necessity of including long-term reconstruction error in the loss
+function". scGPT: "Choice of the number of bins in data processing". IBDex
+Methods: "Latent-space validation". A question heading ("Is severity a
+dose?") or a slogan ("Every setting of the reported model") is out of
+register. Results headers state a result; Note and Methods headings name a
+topic.
+
+## 25. Moved text moves verbatim
+
+When a passage changes section, AW's sentences go with it unchanged. The
+only new words are the joins it needs to sit in its new place. No meta
+opener ("In this note we give...") and no summary closer ("In summary,
+X is a scheduling choice") wrapped around moved material.

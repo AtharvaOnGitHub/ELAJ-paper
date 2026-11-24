@@ -68,6 +68,17 @@ the fix, and move on.
   supplementary_methods.tex deleted. Table numbers unchanged. AW's own
   Methods text untouched apart from pointers. AW's instruction for this:
   "be careful about register and tone ... don't just copy paste, integrate".
+* **AW rejected the first pass outright** ("very badly written ... sounds
+  like a typical AI response and nothing like a Nature paper"). My faults:
+  (1) Note 3 headings were questions; supplementary headings are topics,
+  as in TIGON, scGPT and IBDex. (2) I titled Note 8 "Every setting of the
+  reported model". (3) **I replaced AW's own Note 8 opening with mine**,
+  which is overriding his text. (4) I wrapped moved text in meta openers
+  ("In this note we give...") and summary closers ("In summary, bucketing
+  is a scheduling choice"). (5) In the severity merge I paraphrased his
+  sentences instead of keeping them. Fixed in `1be76d5`: moved text is
+  verbatim, his sentences kept, headings as topics. **Moving text = moving
+  it verbatim; integration means placing it and writing only the joins.**
 
 ## 19-22 November: the guide package, the guide's comments, the Introduction rebuilt
 
