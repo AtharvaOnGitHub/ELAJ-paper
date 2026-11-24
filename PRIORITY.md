@@ -113,7 +113,7 @@ scorecard has no empty cell.
 | 2d | SM *Hyperparameters* becomes its own Supplementary Note | DONE 24 Nov (AW reviewed, `1be76d5`) |
 | 2e | SM *Decoding a latent direction* becomes its own Supplementary Note | DONE 24 Nov (AW reviewed, `1be76d5`) |
 | 2f | SM *Label transfer* moves to main Methods | DONE 24 Nov (AW reviewed, `1be76d5`) |
-| 2g | after 2a-2f: Supplementary Methods heading gone, pointers, numbering, citation order rechecked, docx regenerated when asked | todo |
+| 2g | Supplementary Methods gone, pointers fixed, duplication in Notes 3 and 5 cut, Enrichr cite dropped (refs stay 53). Change file `changesets/ELAJ_changes_2026-11-24.docx` (8 edits, assumes 22 Nov applied); supplementary replaced whole: `for_guide_2026-11-24/ELAJ_supplementary.docx`. OPEN: li_2025 immune 0.9966 (Methods, pre-transfer validation) vs 0.9969 (Note 5 table, final labels) | DONE 24 Nov |
 | 3 | GitHub: new repo on AW's personal GitHub carrying ALL history of axw1008; README/run instructions (what to run, how to see results). LAST | todo |
 | 3b | NMI **Software submission checklist** (Editorial Policies: required when new code is central to the claims). Do with item 3 | todo |
 | 4 | NMI Reporting Summary (`submission/reporting_summary.md`): AW reviews after 2 is done. Open: ethics statement missing from manuscript, software versions (HPC pip freeze), multiple-comparison sentence, sidedness, cell QC. Also check the Nature Portfolio AI policy (linked from NMI Editorial Policies) on declaring LLM use | waiting |
