@@ -360,14 +360,10 @@ Supplementary Fig.~\ref{sfig:x12-auc-a} should be quoted alone.}
 \subsection{Genes carried by the immune disease direction}
 
 To read the immune direction as genes, we decoded all 29{,}355 labelled
-immune cells with their own tissue, platform, study and library size,
-moved each cell's latent along the direction, and recorded the change in
-every decoded gene (\ref{note:decoding}). The real covariates are
-necessary: the decoder scales each cell's whole profile by one learned
-number that depends on them, and with the covariates set to zero that
-number changes sign for most cells and the decoded profile inverts. We
-ranked the 8{,}436 genes that immune cells express at 0.1 or more per
-10{,}000 reads. The ranking is unchanged by halving the step. It uses the
+immune cells with their own covariates, moved each cell's latent along the
+direction, and recorded the change in every decoded gene
+(\ref{note:decoding}). We ranked the 8{,}436 genes that immune cells
+express at 0.1 or more per 10{,}000 reads. The ranking uses the
 study-centred direction, on which the measured-count test below was fixed
 before it ran; the direction with no study step decodes to the same
 ranking, at a rank correlation of 0.95 with 13 of the top fifteen shared.
