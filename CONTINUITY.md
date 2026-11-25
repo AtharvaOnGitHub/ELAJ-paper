@@ -80,6 +80,21 @@ the fix, and move on.
   verbatim, his sentences kept, headings as topics. **Moving text = moving
   it verbatim; integration means placing it and writing only the joins.**
 
+## 25 November: Reporting Summary, and AW's submission ruling
+
+* **AW's ruling, do not reopen:** "I want to submit as soon as possible.
+  Being overtly cautious and trying to anticipate every issue a reviewer
+  might raise is counterproductive." Skip anything that would draw only a
+  reviewer comment, not a rejection. Only editorial-check blockers get done.
+* Applied: Ethics subsection, Code availability (GitHub, MIT, Zenodo at
+  acceptance), Claude Opus 5.5 in the LLM list, MIT LICENSE in axw1008.
+  Skipped: QC sentence, one-sided wording, multiple-comparison sentence.
+* GSE276193 is li_2025's BULK RNA-seq, never used; the scRNA is CNGBdb
+  CNP0006183. Do not list GSE276193 anywhere.
+* Versions: the `elaj` venv sits on top of the modules, and module
+  PYTHONPATH wins, so scanpy 1.9.8 / anndata 0.10.9 / NumPy 1.26.4 are the
+  versions in force, not the venv's stale dist-infos.
+
 ## 19-22 November: the guide package, the guide's comments, the Introduction rebuilt
 
 **Read PRIORITY ⓪⓪⓪ first for state.** This section is rulings, register and mistakes.
