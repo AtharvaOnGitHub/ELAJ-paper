@@ -5,6 +5,19 @@ text extracted alongside it). The form says: **never write "n/a" or "not
 applicable" in a text field**; use the help text's wording instead. Every
 ⚠ below is for AW to decide or supply.
 
+## Decisions for AW (everything else below is filled from the paper and code)
+
+| | what | proposed |
+|---|---|---|
+| D1 | Cell QC is applied but Methods does not say so | add to *Data collection*, after "No correction was applied to the expression values themselves.": "Before pooling, each study was filtered: genes detected in fewer than three cells were removed, as were cells with fewer than 200 counts, fewer than 100 detected genes or more than 25% of counts from mitochondrial genes. Doublets were not removed." |
+| D2 | Package versions in the BlueBEAR environments | run the one-line command in the reply on a login node and paste the output |
+| D3 | Held-out AUC P is one-sided, not stated | Results, "separated held-out donors at an AUC of ...": add "(one-sided permutation test)" at the first P |
+| D4 | No multiple-comparison correction, not stated | add to Methods, end of *Cross-donor agreement*: "No correction for multiple comparisons was applied: each test addresses a separately stated question, and every P value is reported, including those that did not reach significance." |
+| D5 | Confidence intervals | tick the item and describe the permutation-null percentiles in its place (as below) |
+| D6 | Code availability placeholder | GitHub URL now; licence MIT; Zenodo DOI minted at acceptance |
+| D7 | No ethics statement in the manuscript | new Methods subsection *Ethics*: "This study analysed only publicly available, de-identified data. Ethical approval and informed consent were obtained by each source study, as reported in its publication, and no further approval was required." Confirm against the University of Birmingham's rule for secondary analysis of public data |
+| D8 | *Use of large language models* names Claude Opus 5, Sonnet 4.8 and Sonnet 4.5 | add Claude Opus 5.5, used from November for the manuscript and code (your text; current/proposed only) |
+
 ---
 
 ## Statistics (tick "Confirmed" or the n/a box per row)
@@ -13,11 +26,11 @@ applicable" in a text field**; use the help text's wording instead. Every
 |---|---|---|
 | Exact n per group | Confirmed | Results and legends give cells and donors for every comparison (e.g. 207 donor records for disease, 57 patients for severity) |
 | Distinct samples or repeated measurement | Confirmed | Methods, *Data collection*: one biopsy per donor, donor-level split; cells from a donor are never treated as independent |
-| Test(s) and one- or two-sided | Confirmed ⚠ | Cross-donor agreement: permutation test, "The reported $p$ is one-sided" (Methods). Note 3: one-sided Mann-Whitney. ⚠ The held-out AUC permutation P and the Kruskal-Wallis P need their sidedness stated where they appear |
+| Test(s) and one- or two-sided | Confirmed ⚠ | Cross-donor agreement: one-sided permutation test (Methods). Held-out disease AUC: one-sided permutation test, the share of label-shuffled AUCs at or above the observed (`disease_direction.py`); ⚠ the paper does not say so yet (D3). Note 3: one-sided Mann-Whitney. Kruskal-Wallis is not reported anywhere in the paper |
 | All covariates tested | Confirmed | study as covariate or permutation stratum (Methods; Supplementary Table 12 caption); stromal score and phase removal (Results, *Per-donor disease axes*) |
-| Assumptions and corrections, incl. multiple comparisons | ⚠ | Tests are permutation-based, so no normality assumption. **No correction across the families of tests is stated.** Either add one sentence to Methods saying why none is applied (each P answers a separate pre-stated question) or apply one |
+| Assumptions and corrections, incl. multiple comparisons | Confirmed ⚠ | Tests are permutation-based, so no normality assumption. No correction for multiple comparisons; ⚠ Methods needs the sentence in D4 |
 | Central tendency and variation | Confirmed ⚠ | Point estimates against permutation-null ranges throughout. Variation across training runs is one repeat seed (Supplementary Note 5) |
-| Test statistic, CI, effect size, df, exact P | ⚠ | Exact P values are given. **Confidence intervals are mostly absent**; the permutation null width is the uncertainty we report. Tick and point to the null distributions, or leave unticked |
+| Test statistic, CI, effect size, df, exact P | Confirmed ⚠ | Exact P values, effect sizes and the statistic are given. In place of confidence intervals, each cross-donor value is reported with its permutation null's 95th percentile, and held-out AUCs by family with their 5th-95th percentile over splits (D5) |
 | Bayesian priors / MCMC | n/a box | no Bayesian analysis (the VAE prior is a model component, not inference) |
 | Hierarchical designs | Confirmed | donor-level split, within-study permutations, donor-mean tests (Methods, *Cross-donor agreement*) |
 | Effect sizes and how calculated | Confirmed | cross-donor excess over chance, AUC, Spearman ρ, fold differences in composition |
@@ -29,15 +42,14 @@ Index, NCBI GEO, BioStudies and ArrayExpress, CZ CELLxGENE Discover and the
 Human Cell Atlas Data Portal APIs; CNGBdb was searched by hand. Code is in
 the ELAJ repository (`data_collation/`).
 
-**Data analysis.** Python ⚠version; PyTorch ⚠; scanpy ⚠; anndata ⚠;
-scib-metrics ⚠; scvi-tools ⚠ (scVI, scANVI); harmonypy ⚠; Scanorama ⚠;
-scikit-learn ⚠; umap-learn ⚠; scGPT, Geneformer, scFoundation and SCimilarity
-as released by their authors ⚠. ELAJ: ⚠GitHub URL, licence and archive DOI.
-
-⚠ The repository pins minimum versions only. To get the versions actually
-used, run this on BlueBEAR inside each environment and paste the output here:
-`cd /rds/homes/a/axw1008/axw1008 && git pull && pip freeze | grep -iE "^(torch|scanpy|anndata|numpy|scipy|scikit-learn|scib|scvi|harmonypy|scanorama|umap)"`
-(numpy 1.26.4 on the HPC is already on record.)
+**Data analysis.** Training and evaluation on BlueBEAR used Python 3.12
+with PyTorch 2.7.1 (CUDA 12.6), scanpy 1.9.8, anndata 0.10.9, h5py 3.12.1,
+SciPy-bundle 2024.05 (NumPy 1.26.4, SciPy, pandas) and R 4.5.0
+(`src/setup_bluebear.sh`). ⚠ From the environments (D2): scikit-learn,
+scvi-tools (scVI, scANVI), scib-metrics, harmonypy, Scanorama, umap-learn.
+scGPT, Geneformer, scFoundation and SCimilarity were used through their
+published checkpoints. ELAJ: https://github.com/AtharvaOnGitHub/ELAJ
+(⚠ licence and archive DOI, D6).
 
 ## Data
 
@@ -92,10 +104,11 @@ studies.
 pre-stated inclusion criteria (single-cell RNA data, biopsied human tissue,
 relevance to endometriosis; Methods, *Data collection*). Deposits of
 placental tissue and of organoids were excluded. Fifteen people deposited
-under two identifiers were merged before splitting. ⚠ State whether any
-cell-level quality filtering was applied beyond the depositors' own
-filtered matrices; the Methods currently say only that no correction was
-applied to expression values.
+under two identifiers were merged before splitting. Within each study, genes
+detected in fewer than three cells were removed, as were cells with fewer
+than 200 counts, fewer than 100 detected genes or more than 25% of counts
+from mitochondrial genes; doublets were not removed. ⚠ Methods does not say
+this yet (D1).
 
 **Replication.** Each reported configuration is a single training run at
 seed 24. One configuration was retrained at a second seed (Supplementary
