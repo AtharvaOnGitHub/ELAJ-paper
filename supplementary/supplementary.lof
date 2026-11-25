@@ -15,20 +15,20 @@
 \contentsline {figure}{\numberline {14}{\ignorespaces Disease AUC by family, transferred labels}}{25}{figure.caption.32}%
 \contentsline {figure}{\numberline {15}{\ignorespaces The gene ranking along the immune direction}}{26}{figure.caption.35}%
 \contentsline {figure}{\numberline {16}{\ignorespaces Marker agreement against the label-shuffled null}}{27}{figure.caption.38}%
-\contentsline {figure}{\numberline {17}{\ignorespaces The ablations on the frontier}}{28}{figure.caption.42}%
-\contentsline {figure}{\numberline {18}{\ignorespaces Reconstruction loss per epoch, ablations}}{32}{figure.caption.43}%
-\contentsline {figure}{\numberline {19}{\ignorespaces Validation cycle agreement per epoch, ablations}}{33}{figure.caption.44}%
-\contentsline {figure}{\numberline {20}{\ignorespaces Decoder reliance on the latent, all arms}}{33}{figure.caption.45}%
-\contentsline {figure}{\numberline {21}{\ignorespaces UMAP, random grouping}}{34}{figure.caption.46}%
-\contentsline {figure}{\numberline {22}{\ignorespaces UMAP, head-free}}{34}{figure.caption.47}%
-\contentsline {figure}{\numberline {23}{\ignorespaces UMAP, no elastic cell similarity}}{35}{figure.caption.48}%
-\contentsline {figure}{\numberline {24}{\ignorespaces UMAP, no DNS sentinel}}{35}{figure.caption.49}%
-\contentsline {figure}{\numberline {25}{\ignorespaces UMAP, no order statistics}}{36}{figure.caption.50}%
-\contentsline {figure}{\numberline {26}{\ignorespaces Label coverage, drawn}}{39}{figure.caption.54}%
-\contentsline {figure}{\numberline {27}{\ignorespaces Donors per cycle day}}{40}{figure.caption.55}%
-\contentsline {figure}{\numberline {28}{\ignorespaces The cycle axis orders a cohort it was never fitted on}}{41}{figure.caption.56}%
-\contentsline {figure}{\numberline {29}{\ignorespaces Null width falls with donors}}{42}{figure.caption.57}%
-\contentsline {figure}{\numberline {30}{\ignorespaces Width against cycle agreement}}{43}{figure.caption.59}%
-\contentsline {figure}{\numberline {31}{\ignorespaces Distance to the reference, by group}}{44}{figure.caption.61}%
-\contentsline {figure}{\numberline {32}{\ignorespaces Parameters against group size}}{48}{figure.caption.63}%
-\contentsline {figure}{\numberline {33}{\ignorespaces Cost, capacity, and what each token width permits}}{49}{figure.caption.64}%
+\contentsline {figure}{\numberline {17}{\ignorespaces The ablations on the frontier}}{29}{figure.caption.42}%
+\contentsline {figure}{\numberline {18}{\ignorespaces Reconstruction loss per epoch, ablations}}{33}{figure.caption.43}%
+\contentsline {figure}{\numberline {19}{\ignorespaces Validation cycle agreement per epoch, ablations}}{34}{figure.caption.44}%
+\contentsline {figure}{\numberline {20}{\ignorespaces Decoder reliance on the latent, all arms}}{34}{figure.caption.45}%
+\contentsline {figure}{\numberline {21}{\ignorespaces UMAP, random grouping}}{35}{figure.caption.46}%
+\contentsline {figure}{\numberline {22}{\ignorespaces UMAP, head-free}}{35}{figure.caption.47}%
+\contentsline {figure}{\numberline {23}{\ignorespaces UMAP, no elastic cell similarity}}{36}{figure.caption.48}%
+\contentsline {figure}{\numberline {24}{\ignorespaces UMAP, no DNS sentinel}}{36}{figure.caption.49}%
+\contentsline {figure}{\numberline {25}{\ignorespaces UMAP, no order statistics}}{37}{figure.caption.50}%
+\contentsline {figure}{\numberline {26}{\ignorespaces Label coverage, drawn}}{40}{figure.caption.54}%
+\contentsline {figure}{\numberline {27}{\ignorespaces Donors per cycle day}}{41}{figure.caption.55}%
+\contentsline {figure}{\numberline {28}{\ignorespaces The cycle axis orders a cohort it was never fitted on}}{42}{figure.caption.56}%
+\contentsline {figure}{\numberline {29}{\ignorespaces Null width falls with donors}}{43}{figure.caption.57}%
+\contentsline {figure}{\numberline {30}{\ignorespaces Width against cycle agreement}}{44}{figure.caption.59}%
+\contentsline {figure}{\numberline {31}{\ignorespaces Distance to the reference, by group}}{45}{figure.caption.61}%
+\contentsline {figure}{\numberline {32}{\ignorespaces Parameters against group size}}{49}{figure.caption.63}%
+\contentsline {figure}{\numberline {33}{\ignorespaces Cost, capacity, and what each token width permits}}{50}{figure.caption.64}%
